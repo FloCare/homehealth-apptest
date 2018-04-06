@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { CardSection, Card, Input, Button } from './common';
-import * as PatientDAO from '../data/patientDAO'
+import * as PatientDAO from '../data/patientDAO';
 
-var uuid = require('uuid/v4');
+const uuid = require('uuid/v4');
 
 export default class NewPatient extends Component {
     constructor(props) {
@@ -70,7 +70,7 @@ export default class NewPatient extends Component {
 
                 </CardSection>
                 <CardSection>
-                    <Button onPress={console.log(PatientDAO.getAllLocalPatients())}>
+                    <Button onPress={() => { console.log(PatientDAO.getAllLocalPatients()); }}>
                         Show realm on console
                     </Button>
                 </CardSection>
