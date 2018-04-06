@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import firebase from 'firebase';
 import { Header, Button, Spinner, Card, CardSection } from './components/common';
 import { LoginForm } from './components/LoginForm';
+import NewPatient from "./components/NewPatient";
 
 class App extends Component {
 	state = { loggedIn: null };
@@ -51,7 +52,7 @@ class App extends Component {
 		return (
 			<View>
 				<Header headerText='Authentication' />
-				{this.renderContent()}
+				<NewPatient/>
 			</View>
 		);
 	}

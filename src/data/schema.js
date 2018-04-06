@@ -6,10 +6,10 @@ export const PatientSchema = {
     properties: {
         patientID:          'string',
         name:               'string',
-        emailID:            'string',
+        emailID:            'string?',
         phoneNumber:        'string',
-        addressID:          'string',
-        emergencyContact:   'string'
+        addressID:          'string?',
+        emergencyContact:   'string?'
     }
 };
 
