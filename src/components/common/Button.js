@@ -1,13 +1,14 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 
-const Button = ({ onPress, children }) => {
-	const { buttonStyle, textStyle } = styles;
+const Button = (props) => {
+	let buttonStyle = [styles.buttonStyle, props.buttonStyle ]
+	let textStyle = [styles.textStyle, props.textStyle ]
 
 	return (
-		<TouchableOpacity style={buttonStyle} onPress={onPress}>
+		<TouchableOpacity style={buttonStyle} onPress={props.onPress}>
 			<Text style={textStyle}>
-				{ children }
+				{ props.title }
 			</Text>
 		</TouchableOpacity>
 	);
@@ -18,16 +19,11 @@ const styles = {
 		flex: 1,	// expand horizontally to cover as much content as it can
 		alignSelf: 'stretch', // stretch to fill limits of the container
 		backgroundColor: '#fff',
-		borderRadius: 5,
-		borderWidth: 1,
-		borderColor: '#007aff',
-		marginLeft: 5,
-		marginRight: 5
 	},
 	textStyle: {
 		alignSelf: 'center',
-		color: '#007aff',
-		fontSize: 16,
+		color: '#fff',
+		fontSize: 20,
 		fontWeight: '600',
 		paddingTop: 10,
 		paddingBottom: 10
