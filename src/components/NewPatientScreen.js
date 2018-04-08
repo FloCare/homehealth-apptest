@@ -93,7 +93,6 @@ export default class NewPatientForm extends Component {
                             }}
                         />
                         <Input
-                            containerSt
                             label="City, State"
                             placeholder="Los Angeles, California"
                             value={this.state.patient.city}
