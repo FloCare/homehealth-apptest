@@ -4,14 +4,26 @@ export const PatientSchema = {
     name: 'Patient',
     primaryKey: 'patientID',
     properties: {
-        patientID:          'string',
-        name:               'string',
-        emailID:            'string?',
-        phoneNumber:        'string',
-        addressID:          'string?',
-        emergencyContact:   'string?'
+        patientID: 'string',
+        name: 'string',
+        streetAddress: 'string?',
+        zipCode: 'string?',
+        city: 'string?',
+        diagnosis: 'string?',
+        primaryContact: 'string?',
+        emergencyContact: 'string?',
+        notes: 'string?'
     }
 };
+
+export const Diagnosis = {
+    name: 'Diagnosis',
+    primaryKey: 'diagnosisId',
+    properties: {
+        diagnosisId: 'string',
+        name: 'string',
+    }
+}
 
 export const CaseSchema = {
     name: 'Case',
