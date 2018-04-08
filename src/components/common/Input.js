@@ -30,15 +30,12 @@ export default class Input extends Component {
 
     render() {
         const { inputStyle, labelStyle, containerStyle, errorStyle } = styles;
-        const { label, value, onChangeText, placeholder, secureTextEntry, type, downMargin } = this.props
+        const { label, downMargin } = this.props
         return (
             <View style={[containerStyle, downMargin ? {marginBottom: downMargin} : {}]}>
                 <Text style={labelStyle}>{label}</Text>
                 <TextInput
-                    secureTextEntry={secureTextEntry}
-                    placeholder={placeholder}
-                    value={value}
-                    onChangeText={onChangeText}
+                    {...this.props}
                     style={[inputStyle,this.state.editing ? {borderColor: '#34da92'}: {}]}
                     autoCorrect={false}
                     onFocus={() => this.setState({editing: true})}
