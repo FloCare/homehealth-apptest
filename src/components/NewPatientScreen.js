@@ -93,7 +93,6 @@ export default class NewPatientForm extends Component {
                             }}
                         />
                         <Input
-                            containerSt
                             label="City, State"
                             placeholder="Los Angeles, California"
                             value={this.state.patient.city}
@@ -133,6 +132,7 @@ export default class NewPatientForm extends Component {
                     />
                     <Input
                         label="Notes"
+                        multiline={true}
                         placeholder="Any important information about the patient."
                         value={this.state.patient.notes}
                         onChangeText={(text) => {
