@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CardSection, Card, Input, Button } from './common';
-import * as PatientDAO from '../data/patientDAO'
+import * as PatientDAO from '../utils/data/patientDAO'
 
 var uuid = require('uuid/v4');
 
