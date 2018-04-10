@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import firebase from 'firebase';
-import { Header, Button, Spinner, Card, CardSection } from './components/common';
+import { Header, Button, Spinner, Card, CardSection } from './components/common/index';
 import { LoginForm } from './components/LoginForm';
 import NewPatient from "./components/NewPatient";
 

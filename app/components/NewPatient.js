@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { CardSection, Card, Input, Button } from './common';
-import * as PatientDAO from '../data/patientDAO';
+import * as PatientDAO from '../utils/data/patientDAO'
 
-const uuid = require('uuid/v4');
+var uuid = require('uuid/v4');
 
 export default class NewPatient extends Component {
     constructor(props) {

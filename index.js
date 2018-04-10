@@ -1,5 +1,4 @@
 import { AppRegistry } from 'react-native';
-import App from './src/App';
-import NewPatientForm from "./src/components/NewPatientScreen";
+import App from './app/App';
 
-AppRegistry.registerComponent('mtp', () => NewPatientForm);
+AppRegistry.registerComponent('mtp', () => App);
