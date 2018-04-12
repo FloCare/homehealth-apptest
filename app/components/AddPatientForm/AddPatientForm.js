@@ -8,13 +8,15 @@ const Form = t.form.Form;
 
 class AddPatientForm extends Component {
     render() {
-        const { refName } = this.props;
+        const { refName, onChange, value } = this.props;
         return (
             <ScrollView style={styles.containerStyle}>
                 <Form
                     ref={refName}
                     type={AddPatientModel}
                     options={options}
+                    onChange={onChange}
+                    value={value}
                 />
             </ScrollView>
         );

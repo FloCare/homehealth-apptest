@@ -12,31 +12,45 @@ const AddPatientModel = t.struct({
     notes: t.maybe(t.String)
 });
 
+const nameError = (value) => {
+    if (!value) {
+        return 'Required';
+    }
+};
+
 const options = {
     fields: {
         name: {
             label: 'Patient Name',
-            error: 'Please enter a valid name for the patient',
+            error: nameError,
+            placeholder: 'John Doe',
+            returnKeyType: 'next',
+            autoCapitalize: 'words'
         },
         zip: {
             label: 'Zip Code',
             error: 'Please enter a valid zipCode for the patient',
+            placeholder: '123456'
         },
         primaryContact: {
             label: 'Primary Contact',
-            error: 'Please enter a valid primary contact number for the patient',
+            placeholder: '9999988888',
         },
         emergencyContact: {
             label: 'Emergency Contact',
+            placeholder: '9999988888'
         },
         diagnosis: {
             label: 'Diagnosis',
+            placeholder: '#ADHD'
         },
         streetAddress: {
             label: 'Street Address',
+            placeholder: '32, Private Drive'
         },
         city: {
             label: 'City, State',
+            placeholder: 'Los Angeles, CA'
         },
         notes: {
             label: 'Quick Information'

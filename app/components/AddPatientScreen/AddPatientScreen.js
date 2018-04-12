@@ -9,11 +9,13 @@ class AddPatientScreen extends Component {
         Presentational component - has for a form and button as children
      */
     render() {
-        const { refName, onSubmit } = this.props;
+        const { refName, onSubmit, onChange, value } = this.props;
         return (
             <View style={styles.containerStyle}>
                 <AddPatientForm
                     refName={refName}
+                    onChange={onChange}
+                    value={value}
                 />
                 <Button
                     styles={styles.buttonStyle}
