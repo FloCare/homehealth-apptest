@@ -1,6 +1,7 @@
 //TODO mark optional fields as such
 
-export const PatientSchema = {
+class Patient extends Realm.Object {}
+Patient.schema = {
     name: 'Patient',
     primaryKey: 'patientID',
     properties: {
@@ -13,7 +14,8 @@ export const PatientSchema = {
     }
 };
 
-export const CaseSchema = {
+class Case extends Realm.Object {}
+Case.schema = {
     name: 'Case',
     primaryKey: 'caseID',
     properties: {
@@ -25,7 +27,8 @@ export const CaseSchema = {
     }
 };
 
-export const VisitSchema = {
+class Visit extends Realm.Object {}
+Visit.schema = {
     name: 'Visit',
     primaryKey: 'visitID',
     properties: {
@@ -33,11 +36,13 @@ export const VisitSchema = {
         caseID:         {type: 'string', indexed: true},
         midnightEpoch:  'int',
         timestamp:      'int?',
-        isClosed:       {type: 'bool', default: false}
+        isDone:         {type: 'bool', default: false}
     }
 };
 
-export const NoteSchema = {
+//TODO change the way the schemas are defined to match the ones above
+class Note extends Realm.Object {}
+Note.schema = {
     name: 'Note',
     primaryKey: 'noteID',
     properties: {
@@ -48,7 +53,8 @@ export const NoteSchema = {
     }
 };
 
-export const AddressSchema = {
+class Address extends Realm.Object {}
+Address.schema = {
     name: 'Address',
     primaryKey: 'addressID',
     properties: {
@@ -60,3 +66,7 @@ export const AddressSchema = {
         state:      'string'
     }
 };
+
+const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema]});
+
+export {MyRealm, Patient, Case, Visit, Note, Address}

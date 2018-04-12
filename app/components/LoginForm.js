@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
 import firebase from 'firebase';
-//import Realm from 'realm';
+//import MyRealm from 'realm';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 //import { writeCredentialsToDB, getAllLocalCredentials } from '../daos/credentialsDao';
 //import { CredentialSchema } from '../schemas';
@@ -18,7 +18,7 @@ import realm from './realm';
 function writeCredentialsToDB(credential) {
 	console.log('inside write function');
 	//console.log(realm.objects('CredentialSchema'));
-	// Realm.open({ schema: [CredentialSchema] })
+	// MyRealm.open({ schema: [CredentialSchema] })
 	// .then(realm => {
 	// 	realm.write(() => realm.create(CredentialSchema.name, credential));
 	// });
@@ -29,7 +29,7 @@ function writeCredentialsToDB(credential) {
 }
 
 function getAllLocalCredentials() {
-    // Realm.open({ schema: [CredentialSchema] })
+    // MyRealm.open({ schema: [CredentialSchema] })
     // .then(realm => {
     //     realm.objects('CredentialSchema');
     // });

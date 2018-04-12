@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import firebase from 'firebase';
-import { Header, Button, Spinner, Card, CardSection } from './components/common/index';
+import { Spinner } from './components/common/index';
 import { LoginForm } from './components/LoginForm';
-import NewPatient from "./components/NewPatient";
+import {VisitCard} from "./components/common/visitCard";
+import {MyRealm, Patient, Visit, Case} from "./utils/data/schema";
+import {VisitsScreenContainer} from './screens/visitsScreenContainer'
 
 class App extends Component {
 	state = { loggedIn: null };
@@ -49,10 +51,11 @@ class App extends Component {
 	}
 
 	render() {
+		// MyRealm.write(()=>{MyRealm.create(Case.schema.name, {caseID: 'hsh', patientID: 'xyz', diagnosis: ['prick', 'bass']})});
+		// MyRealm.write(()=>{MyRealm.create(Visit.schema.name, {visitID: 'blah', midnightEpoch:0, caseID: 'hsh', isDone: false});MyRealm.create(Patient.schema.name, {patientID:'xyz', name: 'Roger Waters', phoneNumber: 'whatever'})});
 		return (
 			<View>
-				<Header headerText='Authentication' />
-				<NewPatient/>
+				<VisitsScreenContainer midnightEpoch={0}/>
 			</View>
 		);
 	}
