@@ -12,23 +12,23 @@ class AddPatientScreenContainer extends Component {
         this.setForm = this.setForm.bind(this);
     }
 
-    handleSubmit() {
-        // console.log(Object.getOwnPropertyNames(this.formValues.current.refs.input.refs.name.refs.input));
-        // const value = this.refs.addPatientForm.getValue();
-        const value = Object.getOwnPropertyNames(this.addPatientForm);
-        console.log('value: ', value);
-    }
-
     setForm(formElement) {
         this.addPatientForm = formElement;
-        const value = Object.getOwnPropertyNames(this.addPatientForm);
+        return this.addPatientForm;
+    }
+
+    handleSubmit() {
+        const value = this.addPatientForm.getValue();
         console.log('value: ', value);
     }
 
     render() {
         return (
             // Add header (navigation module)
-            <AddPatientScreen onSubmit={this.setForm} />
+            <AddPatientScreen
+                refName={this.setForm}
+                onSubmit={this.handleSubmit}
+            />
         );
     }
 }

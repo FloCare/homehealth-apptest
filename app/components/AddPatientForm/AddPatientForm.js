@@ -7,9 +7,6 @@ import styles from './styles';
 const Form = t.form.Form;
 
 class AddPatientForm extends Component {
-    constructor(props) {
-        super(props);
-    }
     render() {
         const { refName } = this.props;
         return (
