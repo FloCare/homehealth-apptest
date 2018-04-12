@@ -47,9 +47,9 @@ Note.schema = {
     primaryKey: 'noteID',
     properties: {
         noteID:     'string',
-        caseID:     'string',
-        body:       'string',
-        timestamp:  'int'
+        // caseID:     'string',
+        // body:       'string',
+        // timestamp:  'int'
     }
 };
 
@@ -68,5 +68,17 @@ Address.schema = {
 };
 
 const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema]});
+
+//TODO remove this code, for debug only
+export function CreateAndSaveDummies() {
+    let caseID = Math.random().toString();
+    let patientID = Math.random().toString();
+
+    MyRealm.write(() => {
+        MyRealm.create(Visit.schema.name, {visitID: Math.random().toString(), caseID: caseID, midnightEpoch: 0});
+        MyRealm.create(Case.schema.name, {caseID: caseID, patientID: patientID, diagnosis: ['random1', 'random2']});
+        MyRealm.create(Patient.schema.name, {patientID: patientID, name: 'aRoseByAnyOtherName'});
+    })
+}
 
 export {MyRealm, Patient, Case, Visit, Note, Address}
