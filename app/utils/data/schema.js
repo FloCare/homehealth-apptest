@@ -7,12 +7,13 @@ export const PatientSchema = {
         patientID: 'string',
         name: 'string',
         streetAddress: 'string?',
-        zipCode: 'string?',
+        zipCode: 'string',
         city: 'string?',
         diagnosis: 'string?',
-        primaryContact: 'string?',
+        primaryContact: 'string',
         emergencyContact: 'string?',
-        notes: 'string?'
+        notes: 'string?',
+        midnightEpoch: 'int',
     }
 };
 

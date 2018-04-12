@@ -1,16 +1,18 @@
-import {PatientSchema} from "./schema";
-import Realm from 'realm'
+import Realm from 'realm';
+import { PatientSchema } from './schema';
 
-export function writePatientToDB(patient) {
-    Realm.open({schema: [PatientSchema]}).
-    then(realm => {
-        realm.write(()=>realm.create(PatientSchema.name, patient));
-    });
+function writePatientToDB(patient) {
+    Realm.open({ schema: [PatientSchema] })
+        .then(realm => {
+            realm.write(() => realm.create(PatientSchema.name, patient));
+        });
 }
 
-export function getAllLocalPatients() {
-    Realm.open({schema: [PatientSchema]}).
-    then(realm => {
-        realm.objects(PatientSchema.name);
-    });
+function getAllLocalPatients() {
+    Realm.open({ schema: [PatientSchema] })
+        .then(realm => {
+            realm.objects(PatientSchema.name);
+        });
 }
+
+export default { writePatientToDB, getAllLocalPatients };
