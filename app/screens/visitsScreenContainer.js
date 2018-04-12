@@ -1,6 +1,6 @@
 import React from 'react';
 import {Component} from 'react';
-import {Case, MyRealm, Visit, Patient} from '../utils/data/schema';
+import {Case, MyRealm, Visit, Patient, CreateAndSaveDummies} from '../utils/data/schema';
 import {VisitScreen} from '../components/visitsScreen';
 
 class VisitsScreenContainer extends Component {
@@ -14,21 +14,32 @@ class VisitsScreenContainer extends Component {
             patientName: _patient.name,
             diagnosis: _case.diagnosis,
             isDone: visit.isDone
-        }
+        };
     }
 
     constructor(props) {
         super(props);
-        this.state = {midnightEpoch: this.props.midnightEpoch};
-        this.visits = MyRealm.objects(Visit.schema.name)
-                        .filtered('midnightEpoch == $0', this.state.midnightEpoch);
+        // CreateAndSaveDummies();
+        // CreateAndSaveDummies();
+        // CreateAndSaveDummies();
+        // CreateAndSaveDummies();
+        console.log(`visits count ${MyRealm.objects(Visit.schema.name).length}`);
+        // this.state = {midnightEpoch: this.props.midnightEpoch};
+        this.visits = MyRealm.objects(Visit.schema.name);
+                        // .filtered('midnightEpoch == 0');
+                        // .filtered('midnightEpoch == $0', this.state.midnightEpoch);
+                        // .sort('isDone');
+    }
+
+    onCheckboxClick(index) {
+        this.visits[index].isDone = !this.visits[index].isDone;
     }
 
     render() {
-
-        console.log(this.visits);
+        console.log(`here goes: ${this.visits}`);
+        this.visits.map(item => console.log(item));
         return (<VisitScreen
-            visitItems={this.visits.map(item => VisitsScreenContainer.constructVisitItemFromVisit(item))}
+            visitItems={this.visits.map(({item}) => VisitsScreenContainer.constructVisitItemFromVisit(item))}
         />);
     }
 }
