@@ -61,11 +61,12 @@
 // export default App;
 
 import React from 'react';
-import AddPatientScreenContainer from './screens/AddPatientScreenContainer';
+//import AddPatientScreenContainer from './screens/AddPatientScreenContainer';
+import PatientDetailScreenContainer from './screens/PatientDetailScreenContainer';
 
 const App = () => {
     return (
-        <AddPatientScreenContainer />
+        <PatientDetailScreenContainer />
     );
 };
 

@@ -4,7 +4,17 @@ import { PatientDetailScreen } from '../components/PatientDetailScreen';
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            patientDetail: {}
+        };
+    }
+
+    render() {
+        return (
+          <PatientDetailScreen
+              patientDetail={this.state.patientDetail}
+          />
+        );
     }
 }
 

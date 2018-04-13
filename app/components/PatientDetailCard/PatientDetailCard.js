@@ -1,9 +1,14 @@
 import React from 'react';
-import { Card } from 'react-native-elements';
+//import { Card } from 'react-native-elements';
+import { View, Text } from 'react-native';
 
 const PatientDetailCard = () => {
     return (
-        <Card />
+        <View>
+            <Text>
+                Hello
+            </Text>
+        </View>
     );
 };
 
