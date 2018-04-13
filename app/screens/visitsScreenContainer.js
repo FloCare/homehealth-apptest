@@ -9,19 +9,16 @@ class VisitsScreenContainer extends Component {
     static constructVisitItemFromVisit(visit) {
         //TODO check the results for length and error proof it
 
-/*
         console.log(`received visit is: ${visit}`);
         const _case = MyRealm.objects(Case.schema.name).filtered('caseID==$0', visit.caseID)[0];
         const _patient = MyRealm.objects(Patient.schema.name).filtered('patientID==$0', _case.patientID)[0];
 
         console.log(`${_case}, ${_case.length}`);
         console.log(`${_patient}, ${_patient.length}`);
-*/
         return {
-            patientName: 'Elliot Lugo',
-            address: '3256 Maple Court Naylor',
-            diagnosis: ['#COPD','#CHF','#ADR'],
-            isDone: false
+            patientName: _patient.name,
+            diagnosis: _case.diagnosis,
+            isDone: visit.isDone
         };
     }
 
@@ -37,7 +34,7 @@ class VisitsScreenContainer extends Component {
         // .sort('isDone');
         // .filtered('midnightEpoch == 0');
         // .filtered('midnightEpoch == $0', this.state.midnightEpoch);
-        this.visits = [1,2,3];
+        this.visits = MyRealm.objects(Visit.schema.name);
         this.state = {visitItems: this.visits.map(visit => VisitsScreenContainer.constructVisitItemFromVisit(visit))};
     }
 
@@ -49,13 +46,11 @@ class VisitsScreenContainer extends Component {
         // const modifiedVisitItem = Object.assign({}, this.state.visitItems[index], {isDone: !this.state.visitItems[index].isDone});
         // console.log("1: "+this.state.visitItems[index] + modifiedVisitItem)
         // const modifiedVisitItems = Object.assign([], this.state.visitItems, {index: modifiedVisitItem});
-/*
         this.setState((prevState) => {
             const visitItemsCopy = prevState.visitItems.slice();
             visitItemsCopy[index].isDone = !visitItemsCopy[index].isDone;
             return {visitItems: visitItemsCopy};
         });
-*/
     }
 
     render() {
