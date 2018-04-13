@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { PatientDetailScreen } from '../components/PatientDetailScreen';
+import React, {Component} from 'react';
+import {PatientDetailScreen} from '../components/PatientDetailScreen';
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
