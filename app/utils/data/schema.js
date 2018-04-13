@@ -77,7 +77,7 @@ export function CreateAndSaveDummies() {
     MyRealm.write(() => {
         MyRealm.create(Visit.schema.name, {visitID: Math.random().toString(), caseID: caseID, midnightEpoch: 0});
         MyRealm.create(Case.schema.name, {caseID: caseID, patientID: patientID, diagnosis: ['random1', 'random2']});
-        MyRealm.create(Patient.schema.name, {patientID: patientID, name: 'aRoseByAnyOtherName'});
+        MyRealm.create(Patient.schema.name, {patientID: patientID, name: 'aRoseByAnyOtherName', phoneNumber: 'number'});
     })
 }
 

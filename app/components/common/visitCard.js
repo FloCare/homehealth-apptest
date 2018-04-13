@@ -26,29 +26,25 @@ function VisitCard({patientName, diagnosis, address, isDone, onCheck, onCall, on
                         flexWrap: 'wrap'
                     }}
                     data={diagnosis}
-                    renderItem={({item}) => <Badge value={item}/>}
+                    renderItem={({item}) => <Badge value={item} />}
                 />
-                <Divider style={{marginBottom: 4}}/>
+                <Divider style={{marginBottom: 4}} />
                 <View style={{flexDirection: 'row'}}>
                     <Button
-                        icon={
-                            {
-                                name : 'phone',
-                                size : 15,
-                                color : 'blue'
-                            }
-                        }
+                        icon={{
+                                name: 'phone',
+                                size: 15,
+                                color: 'blue'
+                            }}
                         onPress={onCall}
                         title='CALL'
                     />
                     <Button
-                        icon={
-                            {
+                        icon={{
                                 name: 'phone',
                                 size: 15,
                                 color: 'yellow'
-                            }
-                        }
+                            }}
                         onPress={onNavigate}
                         title='NAVIGATE'
                     />

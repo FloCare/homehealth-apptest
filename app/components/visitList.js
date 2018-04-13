@@ -1,6 +1,6 @@
-import {FlatList} from 'react-native'
-import {VisitCard} from "./common/visitCard";
-import React from "react";
+import React from 'react';
+import {FlatList} from 'react-native';
+import {VisitCard} from './common/visitCard';
 
 function VisitList(props) {
     return (
@@ -9,11 +9,12 @@ function VisitList(props) {
             renderItem={({item, index}) =>
                 <VisitCard
                     patientName={item.patientName} address={item.address}
-                    diagnosis={item.diagnosis} completed={item.completed}
-                    onCheck={() => props.onCheck(index)}/>
+                    diagnosis={item.diagnosis} isDone={item.isDone}
+                    onCheck={() => { console.log(index); props.onCheck(index); }}
+                />
             }
         />
-    )
+    );
 }
 
-export {VisitList}
+export {VisitList};
