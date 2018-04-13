@@ -1,17 +1,15 @@
 import React from 'react';
-import { View } from 'react-native';
+import {View} from 'react-native';
 // import { Button } from 'react-native-elements';
-import { PatientDetailCard } from '../PatientDetailCard';
+import {PatientDetailCard} from '../PatientDetailCard';
 
 const PatientDetailScreen = (props) => {
-    const { patientDetail } = props;
+    const {patientDetail} = props;
     return (
-        <View>
-            <PatientDetailCard
-                data={patientDetail}
-            />
-        </View>
+        <PatientDetailCard
+            data={patientDetail}
+        />
     );
 };
 
-export { PatientDetailScreen };
+export {PatientDetailScreen};
