@@ -1,3 +1,6 @@
 {
-    "extends": "rallycoding"
+    "extends": "rallycoding",
+    "rules": {
+        "object-curly-spacing": ["error", "never"]
+    }
 }
