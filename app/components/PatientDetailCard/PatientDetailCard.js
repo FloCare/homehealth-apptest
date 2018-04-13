@@ -9,7 +9,7 @@ const renderDiagnosis = (item) => {
     );
 };
 
-const PatientDetailCard = ({primaryContact, diagnosis, visits, notes}) => {
+const PatientDetailCard = ({name, streetAddress, primaryContact, diagnosis, visits, notes}) => {
     return (
         <View style={styles.parentContainerStyle}>
             <View>

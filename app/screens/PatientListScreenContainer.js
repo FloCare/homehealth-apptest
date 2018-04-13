@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { PatientListScreen } from '../components/PatientListScreen';
+import React, {Component} from 'react';
+import {PatientListScreen} from '../components/PatientListScreen';
 
 class PatientListScreenContainer extends Component {
     constructor(props) {
