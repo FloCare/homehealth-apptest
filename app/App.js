@@ -1,14 +1,14 @@
 import {Navigation} from 'react-native-navigation';
-import NewPatient from './components/NewPatient';
+import {RegisterScreens} from './screens';
 
-Navigation.registerComponent('name', () => NewPatient);
+RegisterScreens();
 
 Navigation.startTabBasedApp({
-	tabs: [
-		{
-			label: 'one',
-			icon: require('../resources/ic_album_black_36px.svg'),
-			screen: 'name'
-		}
-	]
+    tabs: [
+        {
+            label: 'two',
+            icon: require('../resources/ic_fiber_pin_2x.png'),
+            screen: 'VisitsList'
+        }
+    ]
 });

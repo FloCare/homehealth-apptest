@@ -1,6 +1,7 @@
 //TODO mark optional fields as such
 
-export const PatientSchema = {
+class Patient extends Realm.Object {}
+Patient.schema = {
     name: 'Patient',
     primaryKey: 'patientID',
     properties: {
@@ -13,20 +14,12 @@ export const PatientSchema = {
         primaryContact: 'string',
         emergencyContact: 'string?',
         notes: 'string?',
-        midnightEpoch: 'int',
+        midnightEpoch: 'int'
     }
 };
 
-export const Diagnosis = {
-    name: 'Diagnosis',
-    primaryKey: 'diagnosisId',
-    properties: {
-        diagnosisId: 'string',
-        name: 'string',
-    }
-}
-
-export const CaseSchema = {
+class Case extends Realm.Object {}
+Case.schema = {
     name: 'Case',
     primaryKey: 'caseID',
     properties: {
@@ -38,7 +31,8 @@ export const CaseSchema = {
     }
 };
 
-export const VisitSchema = {
+class Visit extends Realm.Object {}
+Visit.schema = {
     name: 'Visit',
     primaryKey: 'visitID',
     properties: {
@@ -46,22 +40,25 @@ export const VisitSchema = {
         caseID:         {type: 'string', indexed: true},
         midnightEpoch:  'int',
         timestamp:      'int?',
-        isClosed:       {type: 'bool', default: false}
+        isDone:         {type: 'bool', default: false}
     }
 };
 
-export const NoteSchema = {
+//TODO change the way the schemas are defined to match the ones above
+class Note extends Realm.Object {}
+Note.schema = {
     name: 'Note',
     primaryKey: 'noteID',
     properties: {
         noteID:     'string',
-        caseID:     'string',
-        body:       'string',
-        timestamp:  'int'
+        // caseID:     'string',
+        // body:       'string',
+        // timestamp:  'int'
     }
 };
 
-export const AddressSchema = {
+class Address extends Realm.Object {}
+Address.schema = {
     name: 'Address',
     primaryKey: 'addressID',
     properties: {
@@ -73,3 +70,19 @@ export const AddressSchema = {
         state:      'string'
     }
 };
+
+const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema]});
+
+//TODO remove this code, for debug only
+export function CreateAndSaveDummies() {
+    let caseID = Math.random().toString();
+    let patientID = Math.random().toString();
+
+    MyRealm.write(() => {
+        MyRealm.create(Visit.schema.name, {visitID: Math.random().toString(), caseID: caseID, midnightEpoch: 0});
+        MyRealm.create(Case.schema.name, {caseID: caseID, patientID: patientID, diagnosis: ['random1', 'random2']});
+        MyRealm.create(Patient.schema.name, {patientID: patientID, name: 'aRoseByAnyOtherName', phoneNumber: 'number'});
+    })
+}
+
+export {MyRealm, Patient, Case, Visit, Note, Address}
