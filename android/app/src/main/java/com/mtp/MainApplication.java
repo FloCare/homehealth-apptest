@@ -3,6 +3,7 @@ package com.mtp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
 import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;

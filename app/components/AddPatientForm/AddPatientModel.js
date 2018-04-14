@@ -1,5 +1,6 @@
 import t from 'tcomb-form-native';
 import { PhoneNumber, zipCode } from '../../utils/lib';
+import stylesheet from "./formStyleSheet";
 
 const AddPatientModel = t.struct({
     name: t.String,
@@ -19,6 +20,7 @@ const nameError = (value) => {
 };
 
 const options = {
+    stylesheet: stylesheet,
     fields: {
         name: {
             label: 'Patient Name',
