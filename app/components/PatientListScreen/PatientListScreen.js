@@ -5,23 +5,11 @@ import styles from './styles';
 
 const renderItem = ({item}) => {
     return (
-        <View style={{ paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff' }}>
+        <View style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff'}}>
             <Text style={styles.nameStyle}>{item.name}</Text>
-            <Text style={styles.addressStyle}>{item.address}</Text>
+            <Text style={styles.addressStyle}>{item.streetAddress}</Text>
         </View>
     );
-};
-
-const getSections = () => {
-    const sections = [
-        {title: 'D', data: [{name:'Devin', address: 'HRX'}]},
-        {title: 'J', data: [{name:'Jackson', address: 'HRX'},{name:'James', address: 'HRX'},{name:'Jillian', address: 'HRX'},]},
-        {title: 'J', data: [{name:'Jackson', address: 'HRX'},{name:'James', address: 'HRX'},{name:'Jillian', address: 'HRX'},]},
-        {title: 'J', data: [{name:'Jackson', address: 'HRX'},{name:'James', address: 'HRX'},{name:'Jillian', address: 'HRX'},]},
-        {title: 'J', data: [{name:'Jackson', address: 'HRX'},{name:'James', address: 'HRX'},{name:'Jillian', address: 'HRX'},]},
-        {title: 'J', data: [{name:'Jackson', address: 'HRX'},{name:'James', address: 'HRX'},{name:'Jillian', address: 'HRX'},]},
-    ];
-    return sections;
 };
 
 const renderSectionHeader = ({ section }) => {
@@ -36,7 +24,7 @@ const renderSeparator = () => {
     );
 };
 
-const PatientListScreen = () => {
+const PatientListScreen = (props) => {
     return (
         <View style={styles.container}>
             <SearchBar
@@ -54,7 +42,7 @@ const PatientListScreen = () => {
                 placeholder='Search'
             />
             <SectionList
-                sections={getSections()}
+                sections={props.patientList}
                 renderItem={renderItem}
                 renderSectionHeader={renderSectionHeader}
                 ItemSeparatorComponent={renderSeparator}

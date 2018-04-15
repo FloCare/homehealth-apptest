@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { View } from 'react-native';
-import { Button } from 'react-native-elements';
+import React, {Component} from 'react';
+import {View} from 'react-native';
+import {Button} from 'react-native-elements';
 import styles from './styles';
-import { AddPatientForm } from '../AddPatientForm';
+import {AddPatientForm} from '../AddPatientForm';
 
 class AddPatientScreen extends Component {
     /*
