@@ -18,7 +18,7 @@ class AddPatientScreen extends Component {
                     value={value}
                 />
                 <Button
-                    styles={styles.buttonStyle}
+                    buttonStyle={styles.buttonStyle}
                     title='Save'
                     onPress={onSubmit}
                 />
