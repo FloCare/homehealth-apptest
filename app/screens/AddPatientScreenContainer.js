@@ -80,7 +80,8 @@ class AddPatientScreenContainer extends Component {
                 emergencyContact: null,
                 diagnosis: null,
                 notes: null
-            }
+            },
+            selectedItems: []
         });
     }
 
@@ -114,6 +115,18 @@ class AddPatientScreenContainer extends Component {
             });
             console.log(MyRealm.objects(Patient.schema.name));
             this.clearForm();
+
+            this.props.navigator.push({
+                screen: 'PatientList',
+                animated: true,
+                animationType: 'fade',
+                title: 'Patients',
+                backbuttonHidden: true,
+                passProps: {
+                    selectedPatient: 'Piyush',      // add the selected patient Object for hightlighting
+                    patientCount: 50                // add the patient Count for displaying in header
+                }
+            });
         }
     }
 
