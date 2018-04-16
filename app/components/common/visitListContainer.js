@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
-import {Button} from 'react-native-elements';
 
 import {VisitList} from '../visitList';
 import {MyRealm, Case, Patient, Visit, CreateAndSaveDummies} from '../../utils/data/schema';
@@ -12,8 +10,8 @@ import * as Utils from '../../utils/collectionUtils';
 class VisitListContainer extends Component {
     constructor(props) {
         super(props);
-        // this.visitResultObject = props.visitResultObject;
-        this.visitResultObject = MyRealm.objects(Visit.schema.name).sorted('isDone');
+        this.visitResultObject = this.props.visitResultObject;
+        // this.visitResultObject = MyRealm.objects(Visit.schema.name);//.sorted('isDone');
 
         this.handleVisitResultObjectChange = this.handleVisitResultObjectChange.bind(this);
         this.flipDoneField = this.flipDoneField.bind(this);
@@ -67,6 +65,15 @@ class VisitListContainer extends Component {
         }
     }
 
+    createFlatVisitItems() {
+        if (this.props.onlyDisplayOne) {
+            return [this.createFlatVisitItem(this.visitResultObject[0])];
+        }
+        return this.visitResultObject.map(
+            (visit) => this.createFlatVisitItem(visit)
+        );
+    }
+
     createFlatVisitItem(visit) {
         const case_ = this.caseByID.get(visit.caseID);
         const patient = this.patientByID.get(case_.patientID);
@@ -81,48 +88,16 @@ class VisitListContainer extends Component {
 
     render() {
         console.log(`render called at ${Date.now()}`);
+        console.log(`length ${this.visitResultObject.length}`);
         return (
-            <View>
-                <Button title={'hello'} onPress={() => { console.log(Date.now()); CreateAndSaveDummies(); }} />
-                <VisitList
-                        visitItems={this.visitResultObject
-                                    .map(
-                                        (visit) => this.createFlatVisitItem(visit)
-                                    )
-                        }
-                        onCheck={this.flipDoneField}
-                />
-            {/*<FlatList>*/}
-                {/*data={*/}
-                    {/*this.visitResultObject.map((visit)=>{visit, this.caseByID.get(visit.caseID), this.patientByID.get()})*/}
-            {/*}}*/}
-                {/*renderItem={({item, index}) =>*/}
-                {/*<VisitCard*/}
-                    {/*patientName={item.patientName} address={item.address}*/}
-                    {/*diagnosis={item.diagnosis} isDone={item.isDone}*/}
-                    {/*onCheck={() => { console.log(index); props.onCheck(index); }}*/}
-                {/*/>*/}
-            {/*}*/}
-            {/*</FlatList>*/}
-            </View>);
+            <VisitList
+                visitItems={
+                    this.createFlatVisitItems()
+                }
+                onCheck={this.flipDoneField}
+            />
+        );
     }
 }
 
-// class VisitCardContainer extends Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             isDone: this.props.visit.isDone
-//         };
-//     }
-//
-//     render() {
-//         return (
-//             <VisitCard
-//                 patientName={this.props.patient.name} address={'dummy for now'}
-//                 diagnosis={this.props.case.diagnosis} isDone={this.state.isDone}
-//                 onCheck={() => { console.log(index); this.props.onCheck(index); }}
-//             />
-//         )
-// }
 export {VisitListContainer};

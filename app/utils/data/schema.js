@@ -8,13 +8,13 @@ Patient.schema = {
         patientID: 'string',
         name: 'string',
         streetAddress: 'string?',
-        zipCode: 'string',
+        zipCode: 'string?',
         city: 'string?',
         diagnosis: 'string?',
         primaryContact: 'string',
         emergencyContact: 'string?',
         notes: 'string?',
-        midnightEpoch: 'int'
+        dateAdded: 'int'
     }
 };
 
@@ -74,7 +74,10 @@ Address.schema = {
 const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema]});
 
 //TODO remove this code, for debug only
-export function CreateAndSaveDummies() {
+export function CreateAndSaveDummies(createOnlyIfDBEmpty) {
+    if (createOnlyIfDBEmpty && MyRealm.objects(Visit.schema.name).length > 0) {
+        return;
+    }
     const timeNow = Date.now();
     const caseID = `${Math.random().toString()}_Case`;
     const patientID = `${Math.random().toString()}_Patient`;
@@ -82,7 +85,7 @@ export function CreateAndSaveDummies() {
     MyRealm.write(() => {
         MyRealm.create(Visit.schema.name, {visitID: `${Math.random().toString()}_visit`, caseID, midnightEpoch: 0});
         MyRealm.create(Case.schema.name, {caseID, patientID, diagnosis: ['random1', 'random2']});
-        MyRealm.create(Patient.schema.name, {patientID, name: 'aRoseByAnyOtherName_'+Math.round(Math.random() * 100), phoneNumber: 'number'});
+        MyRealm.create(Patient.schema.name, {patientID, name: `aRoseByAnyOtherName_${Math.round(Math.random() * 100)}`, primaryContact: 'number', dateAdded: Date.now()});
     });
     console.log(Date.now() - timeNow);
 }
