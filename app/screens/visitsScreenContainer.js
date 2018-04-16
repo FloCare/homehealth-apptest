@@ -24,10 +24,10 @@ class VisitsScreenContainer extends Component {
 
     constructor(props) {
         super(props);
-        // CreateAndSaveDummies();
-        // CreateAndSaveDummies();
-        // CreateAndSaveDummies();
-        // CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
         console.log(`visits count ${MyRealm.objects(Visit.schema.name).length}`);
         // this.state = {midnightEpoch: this.props.midnightEpoch};
         this.onCheckboxClick = this.onCheckboxClick.bind(this);

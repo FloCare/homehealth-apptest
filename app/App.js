@@ -5,10 +5,15 @@ RegisterScreens();
 
 Navigation.startTabBasedApp({
     tabs: [
+        // {
+        //     label: 'two',
+        //     icon: require('../resources/ic_fiber_pin_2x.png'),
+        //     screen: 'VisitsList'
+        // },
         {
             label: 'two',
             icon: require('../resources/ic_fiber_pin_2x.png'),
-            screen: 'VisitsList'
+            screen: 'Visit2'
         }
     ]
 });

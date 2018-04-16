@@ -3,6 +3,7 @@ import {View, FlatList, StyleSheet, Switch} from 'react-native';
 import React from 'react';
 
 function VisitCard({patientName, diagnosis, address, isDone, onCheck, onCall, onNavigate}) {
+    console.log(`card render ${patientName}called at ${Date.now()}`);
     return (
         <Card>
             <View style={{backgroundColor: '#ffffff'}}>
