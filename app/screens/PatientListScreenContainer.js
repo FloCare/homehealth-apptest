@@ -12,6 +12,7 @@ class PatientListScreenContainer extends Component {
         this.createSectionListFromPatientListData =
             this.createSectionListFromPatientListData.bind(this);
         this.onSearch = this.onSearch.bind(this);
+        this.onItemPressed = this.onItemPressed.bind(this);
     }
 
     componentDidMount() {
@@ -20,6 +21,19 @@ class PatientListScreenContainer extends Component {
 
     onSearch(query) {
         this.getSectionData(query);
+    }
+
+    onItemPressed(item) {
+        this.props.navigator.push({
+            screen: 'PatientDetails',
+            animated: true,
+            animationType: 'fade',
+            title: 'Patient Details',
+            backbuttonHidden: true,
+            passProps: {
+                patientDetail: item.item
+            }
+        });
     }
 
     getSectionData(query) {
@@ -64,6 +78,8 @@ class PatientListScreenContainer extends Component {
             <PatientListScreen
                 patientList={this.state.patientList}
                 onSearch={this.onSearch}
+                selectedPatient={this.props.selectedPatient}
+                onItemPressed={this.onItemPressed}
             />
         );
     }

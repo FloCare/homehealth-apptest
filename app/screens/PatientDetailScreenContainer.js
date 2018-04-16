@@ -15,6 +15,7 @@ class PatientDetailScreenContainer extends Component {
     }
 
     getPatientDetails() {
+        // Todo: Remove this hard coded query - This screen always comes on top of another screen
         const patientDetails = MyRealm.objects(Patient.schema.name).filtered('name = "Joe Burns"');
         if (patientDetails && patientDetails.length > 0) {
             this.setState({patientDetail: patientDetails[0]});
@@ -24,7 +25,7 @@ class PatientDetailScreenContainer extends Component {
     render() {
         return (
           <PatientDetailScreen
-              patientDetail={this.state.patientDetail}
+              patientDetail={this.props.patientDetail ? this.props.patientDetail : this.state.patientDetail}
           />
         );
     }

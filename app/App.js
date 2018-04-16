@@ -39,6 +39,7 @@ Navigation.startTabBasedApp({
             navigatorStyle: navigatorStyle
         },
         {
+            title: 'Patients',
             label: 'patientList',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: 'PatientList',
