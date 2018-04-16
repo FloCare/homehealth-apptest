@@ -11,23 +11,42 @@ class PatientListScreenContainer extends Component {
         this.getSectionData = this.getSectionData.bind(this);
         this.createSectionListFromPatientListData =
             this.createSectionListFromPatientListData.bind(this);
+        this.onSearch = this.onSearch.bind(this);
     }
 
     componentDidMount() {
-        this.getSectionData();
+        this.getSectionData(null);
     }
 
-    getSectionData() {
-        const patientList = MyRealm.objects(Patient.schema.name);
-        const sortedPatientList = patientList.sorted('name');
-        const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
-        this.setState({patientList: sectionedPatientList});
+    onSearch(query) {
+        this.getSectionData(query);
+    }
+
+    getSectionData(query) {
+        if (!query) {
+            const patientList = MyRealm.objects(Patient.schema.name);
+            const sortedPatientList = patientList.sorted('name');
+            const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
+            this.setState({patientList: sectionedPatientList});
+        } else {
+            // Todo: Can improve querying Logic:
+            // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
+            // Todo: Search on other fields ???
+            const queryStr = `name CONTAINS "${query.toString()}"`;
+            const patientList = MyRealm.objects(Patient.schema.name).filtered(queryStr);
+            const sortedPatientList = patientList.sorted('name');
+            const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
+            this.setState({patientList: sectionedPatientList});
+        }
     }
 
     createSectionListFromPatientListData(patientList) {
+        // Fix List Sectioning Logic
+        console.log(patientList);
         const sectionedPatientList = patientList.map((item) => {
             return {title: item.name[0], data: [item]};
         });
+        console.log(sectionedPatientList);
         return sectionedPatientList;
     }
 
@@ -35,6 +54,7 @@ class PatientListScreenContainer extends Component {
         return (
             <PatientListScreen
                 patientList={this.state.patientList}
+                onSearch={this.onSearch}
             />
         );
     }

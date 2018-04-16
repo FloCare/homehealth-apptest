@@ -31,13 +31,11 @@ const PatientListScreen = (props) => {
                 round
                 lightTheme
                 disabled
-                onChangeText={(text) => {
-                    console.log(text);
-                    //Update the sections in state here
+                onChangeText={(query) => {
+                    props.onSearch(query);
                 }}
                 onClear={() => {
-                    //TODO
-                    //reset the sections to default
+                    props.onSearch(null);
                 }}
                 placeholder='Search'
             />
