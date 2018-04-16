@@ -7,10 +7,14 @@ Patient.schema = {
     properties: {
         patientID: 'string',
         name: 'string',
-        emailID: 'string?',
-        phoneNumber: 'string',
-        addressID: 'string?',
-        emergencyContact: 'string?'
+        streetAddress: 'string?',
+        zipCode: 'string',
+        city: 'string?',
+        diagnosis: 'string?',
+        primaryContact: 'string',
+        emergencyContact: 'string?',
+        notes: 'string?',
+        midnightEpoch: 'int'
     }
 };
 
