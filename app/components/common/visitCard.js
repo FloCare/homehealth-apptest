@@ -5,6 +5,7 @@ import React from 'react';
 import componentStyles from "./styles";
 
 function VisitCard({patientName, diagnosis, address, isDone, onCheck, onCall, onNavigate}) {
+    console.log(`card render ${patientName}called at ${Date.now()}`);
     return (
         <Card containerStyle={componentStyles.cardContainerStyle}>
             <View style={{backgroundColor: '#ffffff'}}>

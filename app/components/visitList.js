@@ -3,6 +3,7 @@ import {FlatList} from 'react-native';
 import {VisitCard} from './common/visitCard';
 
 function VisitList(props) {
+    console.log(`list render called at ${Date.now()}`);
     return (
         <FlatList
             data={props.visitItems}
@@ -10,7 +11,7 @@ function VisitList(props) {
                 <VisitCard
                     patientName={item.patientName} address={item.address}
                     diagnosis={item.diagnosis} isDone={item.isDone}
-                    onCheck={() => { console.log(index); props.onCheck(index); }}
+                    onCheck={() => { console.log("checked: "+index); props.onCheck(index); }}
                 />
             }
         />

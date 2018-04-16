@@ -12,11 +12,16 @@ const navigatorStyle = {
 
 Navigation.startTabBasedApp({
     tabs: [
+        // {
+        //     label: 'two',
+        //     icon: require('../resources/ic_fiber_pin_2x.png'),
+        //     screen: 'VisitsList'
+        // },
         {
             title: 'Visits',
             label: 'two',
             icon: require('../resources/ic_fiber_pin_2x.png'),
-            screen: 'VisitsList',
+            screen: 'Visit2',
             navigatorStyle: navigatorStyle
         },
         {
