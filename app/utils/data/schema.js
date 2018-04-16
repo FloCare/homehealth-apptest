@@ -80,9 +80,15 @@ export function CreateAndSaveDummies() {
     const patientID = `${Math.random().toString()}_Patient`;
 
     MyRealm.write(() => {
-        MyRealm.create(Visit.schema.name, {visitID: `${Math.random().toString()}_visit`, caseID, midnightEpoch: 0});
+        MyRealm.create(Visit.schema.name, {visitID: Math.random().toString(), caseID, midnightEpoch: 0});
         MyRealm.create(Case.schema.name, {caseID, patientID, diagnosis: ['random1', 'random2']});
-        MyRealm.create(Patient.schema.name, {patientID, name: 'aRoseByAnyOtherName_'+Math.round(Math.random() * 100), phoneNumber: 'number'});
+        MyRealm.create(Patient.schema.name, {
+            patientID,
+            name: 'aRoseByAnyOtherName',
+            primaryContact: '9999911111',
+            zipCode: '123456',
+            midnightEpoch: 0
+        });
     });
     console.log(Date.now() - timeNow);
 }

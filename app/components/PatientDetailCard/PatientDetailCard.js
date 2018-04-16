@@ -9,9 +9,16 @@ const renderDiagnosis = (item) => {
     );
 };
 
-const PatientDetailCard = ({primaryContact, diagnosis, visits, notes}) => {
+const PatientDetailCard = (props) => {
+    const {patientDetail} = props;
+    const {name, streetAddress, primaryContact, emergencyContact, diagnosis, visits, notes} = patientDetail;
     return (
         <View style={styles.parentContainerStyle}>
+            <View>
+                <Text>
+                    {name}
+                </Text>
+            </View>
             <View>
                 <Text>
                     Address show here on Map
@@ -25,10 +32,32 @@ const PatientDetailCard = ({primaryContact, diagnosis, visits, notes}) => {
                     Primary Contact
                 </Text>
                 <Text>
-                    9964716595
+                    {primaryContact}
                 </Text>
                 <Button
                     title="Call"
+                    titleStyle={{
+                        fontWeight: '700'
+                    }}
+                    buttonStyle={styles.callButtonStyle}
+                    containerStyle={{
+                        marginTop: 20,
+                        color: 'rgba(92,216,10,1)'
+                    }}
+                />
+            </View>
+            <View>
+                <Image
+                    resizeMode="cover"
+                />
+                <Text h3>
+                    Emergency Contact
+                </Text>
+                <Text>
+                    {emergencyContact}
+                </Text>
+                <Button
+                    title="Use Emergency Contact"
                     titleStyle={{
                         fontWeight: '700'
                     }}
@@ -49,7 +78,6 @@ const PatientDetailCard = ({primaryContact, diagnosis, visits, notes}) => {
                 <FlatList
                     style={{
                         flexDirection: 'row',
-                        flexWrap: 'wrap',
                         marginTop: 10,
                         marginBottom: 10
                     }}
@@ -83,7 +111,7 @@ const PatientDetailCard = ({primaryContact, diagnosis, visits, notes}) => {
                     Notes
                 </Text>
                 <Text>
-                    Text inside notes
+                    {notes}
                 </Text>
             </View>
             <View style={styles.buttonContainerStyle}>

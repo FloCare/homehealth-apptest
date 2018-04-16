@@ -7,7 +7,7 @@ const PatientDetailScreen = (props) => {
     const {patientDetail} = props;
     return (
         <PatientDetailCard
-            data={patientDetail}
+            patientDetail={patientDetail}
         />
     );
 };

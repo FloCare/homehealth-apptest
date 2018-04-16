@@ -37,6 +37,12 @@ Navigation.startTabBasedApp({
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: 'PatientDetails',
             navigatorStyle: navigatorStyle
+        },
+        {
+            label: 'patientList',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: 'PatientList',
+            navigatorStyle: navigatorStyle
         }
     ]
 });
