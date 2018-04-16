@@ -41,13 +41,22 @@ class PatientListScreenContainer extends Component {
     }
 
     createSectionListFromPatientListData(patientList) {
-        // Fix List Sectioning Logic
-        console.log(patientList);
-        const sectionedPatientList = patientList.map((item) => {
-            return {title: item.name[0], data: [item]};
-        });
-        console.log(sectionedPatientList);
-        return sectionedPatientList;
+        const sections = [];
+        const sectionTitles = {};
+        // Todo: Don't use for..in syntax
+        for (const index in patientList) {
+            const patient = patientList[index];
+            const key = sectionTitles[patient.name[0]];
+
+            if (key !== undefined) {
+                sections[key].data.push(patient);
+            } else {
+                const ind = sections.length;
+                sectionTitles[patient.name[0]] = ind;
+                sections.push({title: patient.name[0], data: [patient]});
+            }
+        }
+        return sections;
     }
 
     render() {
