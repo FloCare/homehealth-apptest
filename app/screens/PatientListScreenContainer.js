@@ -46,7 +46,7 @@ class PatientListScreenContainer extends Component {
             // Todo: Can improve querying Logic:
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
-            const queryStr = `name CONTAINS "${query.toString()}"`;
+            const queryStr = `name CONTAINS[c] "${query.toString()}"`;
             const patientList = MyRealm.objects(Patient.schema.name).filtered(queryStr);
             const sortedPatientList = patientList.sorted('name');
             const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);

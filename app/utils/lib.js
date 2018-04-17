@@ -40,9 +40,9 @@ const zipCode = t.refinement(t.Number, (z) => {
 
     if (z !== null) {
         const s = z.toString();
-        if (s.length === 6) {
-            return true;
-        }
+        console.log('Zip code:', s);
+        const isValid = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(s);
+        return isValid;
     }
     return false;
 });
