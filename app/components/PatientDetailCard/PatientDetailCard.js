@@ -1,7 +1,10 @@
 import React from 'react';
 import {View, Image, FlatList} from 'react-native';
-import {Text, Button} from 'react-native-elements';
+import {Text, Button, Divider} from 'react-native-elements';
 import styles from './styles';
+import {Icon} from 'react-native-elements'
+import Badge from "react-native-elements/src/badge/badge";
+import componentStyles from "../common/styles";
 
 const renderDiagnosis = (item) => {
     return (
@@ -11,109 +14,107 @@ const renderDiagnosis = (item) => {
 
 const PatientDetailCard = (props) => {
     const {patientDetail} = props;
+    //Handle name with navigator props
     const {name, streetAddress, primaryContact, emergencyContact, diagnosis, visits, notes} = patientDetail;
     return (
         <View style={styles.parentContainerStyle}>
-            <View>
-                <Text>
-                    {name}
-                </Text>
-            </View>
+            {/*
+
             <View>
                 <Text>
                     Address show here on Map
                 </Text>
             </View>
-            <View>
-                <Image
-                    resizeMode="cover"
-                />
-                <Text h3>
-                    Primary Contact
-                </Text>
-                <Text>
-                    {primaryContact}
-                </Text>
+
+*/}
+            <View style={styles.containerStyle}>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <View style={{marginLeft: 14}}>
+                    <Text style={styles.headerStyle}>
+                        Primary Contact
+                    </Text>
+                    <Text style={{fontSize: 12, color: '#999999'}}>
+                        +1 786 908 3467
+                    </Text>
+                </View>
                 <Button
                     title="Call"
-                    titleStyle={{
-                        fontWeight: '700'
+                    textStyle={{
+                        fontSize: 18,
+                        color: "#45ceb1"
                     }}
                     buttonStyle={styles.callButtonStyle}
-                    containerStyle={{
-                        marginTop: 20,
-                        color: 'rgba(92,216,10,1)'
+                    containerViewStyle={{
+                        position: 'absolute',
+                        right: 0
                     }}
                 />
             </View>
-            <View>
-                <Image
-                    resizeMode="cover"
-                />
-                <Text h3>
-                    Emergency Contact
-                </Text>
-                <Text>
-                    {emergencyContact}
-                </Text>
-                <Button
-                    title="Use Emergency Contact"
-                    titleStyle={{
-                        fontWeight: '700'
-                    }}
-                    buttonStyle={styles.callButtonStyle}
-                    containerStyle={{
-                        marginTop: 20,
-                        color: 'rgba(92,216,10,1)'
-                    }}
-                />
+            <Divider style={styles.dividerStyle}/>
+            <View style={styles.containerStyle}>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <View style={{marginLeft: 14}}>
+                    <Text style={styles.headerStyle}>
+                        Diagnosis
+                    </Text>
+                    <FlatList
+                        horizontal
+                        style={componentStyles.listContainer}
+                        data={[
+                            '#COFG',
+                            '#ADHD',
+                            '#BLABLABLA',
+                            '#COFG',
+                            '#ADHD',
+                            '#BLABLABLA'
+                        ]}
+                        renderItem={({item}) =>
+                            <Badge
+                                containerStyle={componentStyles.badgeContainerStyle}
+                                textStyle={componentStyles.badgeTextStyle}
+                                value={item}/>
+                        }
+                    />
+                </View>
             </View>
-            <View>
-                <Image
-                    resizeMode="cover"
-                />
-                <Text>
-                    Diagnosis
-                </Text>
-                <FlatList
-                    style={{
-                        flexDirection: 'row',
-                        marginTop: 10,
-                        marginBottom: 10
-                    }}
-                    data={[
-                        {key: '#COFG'},
-                        {key: '#ADHD'},
-                        {key: '#BLABLABLA'}
-                    ]}
-                    renderItem={renderDiagnosis}
-                />
+            <Divider style={styles.dividerStyle}/>
+            <View style={styles.containerStyle}>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <View style={{marginLeft: 14}}>
+                    <Text style={styles.headerStyle}>
+                        Visits
+                    </Text>
+                    <FlatList
+                        showsHorizontalScrollIndicator={false}
+                        horizontal
+                        style={componentStyles.listContainer}
+                        data={[
+                            'Revent visit by Mirium (SN) On 03/22/2018, 3:30 PM - 4:45 PM',
+                            'Next Visit by You in X days. "Visit time".',
+                        ]}
+                        show
+                        renderItem={({item}) =>
+                            /*Use nested texts for spannable*/
+                            <Text style={styles.visitStyle}>
+                                {item}
+                            </Text>
+                        }
+                    />
+                </View>
             </View>
-            <View>
-                <Image
-                    resizeMode="cover"
-                />
-                <Text h3>
-                    Visits
-                </Text>
-                <Text>
-                    Last Visit by You
-                </Text>
-                <Text>
-                    Next Visit by You in X days. "Visit time".
-                </Text>
+            <Divider style={styles.dividerStyle}/>
+            <View style={styles.containerStyle}>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <View style={{marginLeft: 14}}>
+                    <Text style={styles.headerStyle}>
+                        Notes
+                    </Text>
+                    <Text style={styles.noteStyle}>
+                        Door Passcode- 9008
+                    </Text>
+                </View>
             </View>
-            <View>
-                <Image
-                    resizeMode='cover'
-                />
-                <Text h3>
-                    Notes
-                </Text>
-                <Text>
-                    {notes}
-                </Text>
-            </View>
+            <Divider style={styles.dividerStyle}/>
             <View style={styles.buttonContainerStyle}>
                 <Button
                     title="Add Visit"
@@ -121,7 +122,7 @@ const PatientDetailCard = (props) => {
                 />
                 <Button
                     title="Add Notes"
-                    buttonStyle={styles.footerButtonStyle }
+                    buttonStyle={styles.footerButtonStyle}
                 />
             </View>
         </View>
