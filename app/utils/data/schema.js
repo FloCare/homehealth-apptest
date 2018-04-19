@@ -57,6 +57,17 @@ Note.schema = {
     }
 };
 
+class Place extends Realm.Object {}
+Place.schema = {
+    name: 'Place',
+    primaryKey: 'placeID',
+    properties: {
+        placeID: 'string',
+        name: 'string',
+        addressID: 'string'
+    }
+};
+
 class Address extends Realm.Object {}
 Address.schema = {
     name: 'Address',
@@ -71,13 +82,10 @@ Address.schema = {
     }
 };
 
-const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema]});
+const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema, Place.schema, Address.schema]});
 
 //TODO remove this code, for debug only
-export function CreateAndSaveDummies(createOnlyIfDBEmpty) {
-    if (createOnlyIfDBEmpty && MyRealm.objects(Visit.schema.name).length > 0) {
-        return;
-    }
+export function CreateAndSaveDummies() {
     const timeNow = Date.now();
     const caseID = `${Math.random().toString()}_Case`;
     const patientID = `${Math.random().toString()}_Patient`;
@@ -85,9 +93,9 @@ export function CreateAndSaveDummies(createOnlyIfDBEmpty) {
     MyRealm.write(() => {
         MyRealm.create(Visit.schema.name, {visitID: `${Math.random().toString()}_visit`, caseID, midnightEpoch: 0});
         MyRealm.create(Case.schema.name, {caseID, patientID, diagnosis: ['random1', 'random2']});
-        MyRealm.create(Patient.schema.name, {patientID, name: `aRoseByAnyOtherName_${Math.round(Math.random() * 100)}`, primaryContact: 'number', dateAdded: Date.now()});
+        MyRealm.create(Patient.schema.name, {patientID, name: `Name_${Math.round(Math.random() * 100)}`, primaryContact: 'number', dateAdded: Date.now()});
     });
     console.log(Date.now() - timeNow);
 }
 
-export {MyRealm, Patient, Case, Visit, Note, Address};
+export {MyRealm, Patient, Case, Visit, Note, Place, Address};

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import {Button, Text} from 'react-native-elements';
-import {VisitListContainer} from '../common/visitListContainer';
+import {VisitListContainer} from '../common/VisitList/visitListContainer';
 
 export function VisitSummary(props) {
     return (
@@ -19,7 +19,7 @@ export function VisitSummary(props) {
             </Text>
             <View>
                 <Button title={'Map'} />
-                <Button title={'List'} />
+                <Button title={'List'} onPress={props.navigateToVisitsScreen} />
             </View>
             <View>
                 <Text> Next Visit </Text>
