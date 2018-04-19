@@ -1,5 +1,6 @@
 import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from './screens';
+import {screenNames} from './utils/constants';
 
 RegisterScreens();
 
@@ -28,21 +29,21 @@ Navigation.startTabBasedApp({
             title: 'Add new patient',
             label: 'add',
             icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: 'AddPatient',
+            screen: screenNames.addPatient,
             navigatorStyle: navigatorStyle
         },
         {
             title: 'Patient Details',
             label: 'details',
             icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: 'PatientDetails',
+            screen: screenNames.patientDetails,
             navigatorStyle: navigatorStyle
         },
         {
             title: 'Patients',
             label: 'patientList',
             icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: 'PatientList',
+            screen: screenNames.patientList,
             navigatorStyle: navigatorStyle
         }
     ]

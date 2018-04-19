@@ -47,4 +47,4 @@ const zipCode = t.refinement(t.Number, (z) => {
     return false;
 });
 
-export { EmailField, PhoneNumber, zipCode };
+export {EmailField, PhoneNumber, zipCode};

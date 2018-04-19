@@ -1,10 +1,13 @@
 import t from 'tcomb-form-native';
-import { PhoneNumber, zipCode } from '../../utils/lib';
-import stylesheet from "./formStyleSheet";
+import {PhoneNumber, zipCode} from '../../utils/lib';
+import Autocompletetextbox from './Autocompletetextbox';
+import DiagnosisMultiSelect from './DiagnosisMultiSelect';
+import stylesheet from './formStyleSheet';
 
 const AddPatientModel = t.struct({
     name: t.String,
-    streetAddress: t.maybe(t.String),
+    streetAddress: t.String,
+    apartmentNo: t.maybe(t.String),
     zip: zipCode,
     city: t.maybe(t.String),
     primaryContact: PhoneNumber,
@@ -20,7 +23,7 @@ const nameError = (value) => {
 };
 
 const options = {
-    stylesheet: stylesheet,
+    stylesheet,
     fields: {
         name: {
             label: 'Patient Name',
@@ -44,11 +47,17 @@ const options = {
         },
         diagnosis: {
             label: 'Diagnosis',
-            placeholder: '#ADHD'
+            placeholder: '#ADHD',
+            template: DiagnosisMultiSelect      // Todo: Improve this
         },
         streetAddress: {
             label: 'Street Address',
-            placeholder: '32, Private Drive'
+            placeholder: '32, Private Drive',
+            template: Autocompletetextbox       // Todo: Improve this
+        },
+        apartmentNo: {
+            label: 'Apartment No.',
+            placeholder: '#482'
         },
         city: {
             label: 'City, State',
