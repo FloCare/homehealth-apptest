@@ -1,17 +1,29 @@
 import {Navigation} from 'react-native-navigation';
-import {VisitsScreenContainer} from './visitsScreenContainer';
 import AddPatientScreenContainer from './AddPatientScreenContainer';
 import PatientDetailScreenContainer from './PatientDetailScreenContainer';
-import PatientListScreenContainer from './PatientListScreenContainer';
-import {VisitListContainer} from '../components/common/visitListContainer';
+import {CreateAndSaveDummies, MyRealm, Visit} from '../utils/data/schema';
+import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
+import {VisitsScreenContainer} from '../components/VisitScreen/visitsScreenContainer';
+
+import {CalendarPickerButton} from '../components/common/calendarPickerButton';
+// import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 
 const RegisterScreens = () => {
-    Navigation.registerComponent('VisitsList', () => VisitsScreenContainer);
+    if (MyRealm.objects(Visit.schema.name).length === 0) {
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+    }
+
     Navigation.registerComponent('AddPatient', () => AddPatientScreenContainer);
     Navigation.registerComponent('PatientDetails', () => PatientDetailScreenContainer);
-    Navigation.registerComponent('PatientList', () => PatientListScreenContainer);
-    Navigation.registerComponent('VisitsList', () => VisitsScreenContainer);
-    Navigation.registerComponent('Visit2', () => VisitListContainer);
+    Navigation.registerComponent('HomeScreen', () => HomeScreenContainer);
+    Navigation.registerComponent('VisitsScreen', () => VisitsScreenContainer);
+    // Navigation.registerComponent('AddVisitsScreen', () => AddVisitsScreenContainer);
+    Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
 };
 
 export {RegisterScreens};

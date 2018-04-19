@@ -5,14 +5,8 @@ function ArrayToMap(array, keyProperty) {
 }
 
 function filterResultObjectByListMembership(object, property, membershipList) {
-    console.log(`filter key: ${property}`);
-    membershipList.map(member => console.log(member));
-
     return object.filtered(membershipList
-                    .map((membershipItem) =>
-                                        // console.log("print somethign");
-                                        // console.log(`comparing ${property}, ${membershipItem}`);
-                                         `${property}=="${membershipItem}"`)
+                    .map((membershipItem) => `${property}=="${membershipItem}"`)
                     .join(' OR ')
         );
 }

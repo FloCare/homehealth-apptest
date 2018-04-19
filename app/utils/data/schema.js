@@ -8,13 +8,13 @@ Patient.schema = {
         patientID: 'string',
         name: 'string',
         streetAddress: 'string?',
-        zipCode: 'string',
+        zipCode: 'string?',
         city: 'string?',
         diagnosis: 'string?',
         primaryContact: 'string',
         emergencyContact: 'string?',
         notes: 'string?',
-        midnightEpoch: 'int'
+        dateAdded: 'int'
     }
 };
 
@@ -57,6 +57,17 @@ Note.schema = {
     }
 };
 
+class Place extends Realm.Object {}
+Place.schema = {
+    name: 'Place',
+    primaryKey: 'placeID',
+    properties: {
+        placeID: 'string',
+        name: 'string',
+        addressID: 'string'
+    }
+};
+
 class Address extends Realm.Object {}
 Address.schema = {
     name: 'Address',
@@ -71,7 +82,7 @@ Address.schema = {
     }
 };
 
-const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema]});
+const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema, Place.schema, Address.schema]});
 
 //TODO remove this code, for debug only
 export function CreateAndSaveDummies() {
@@ -80,17 +91,11 @@ export function CreateAndSaveDummies() {
     const patientID = `${Math.random().toString()}_Patient`;
 
     MyRealm.write(() => {
-        MyRealm.create(Visit.schema.name, {visitID: Math.random().toString(), caseID, midnightEpoch: 0});
+        MyRealm.create(Visit.schema.name, {visitID: `${Math.random().toString()}_visit`, caseID, midnightEpoch: 0});
         MyRealm.create(Case.schema.name, {caseID, patientID, diagnosis: ['random1', 'random2']});
-        MyRealm.create(Patient.schema.name, {
-            patientID,
-            name: 'aRoseByAnyOtherName',
-            primaryContact: '9999911111',
-            zipCode: '123456',
-            midnightEpoch: 0
-        });
+        MyRealm.create(Patient.schema.name, {patientID, name: `Name_${Math.round(Math.random() * 100)}`, primaryContact: 'number', dateAdded: Date.now()});
     });
     console.log(Date.now() - timeNow);
 }
 
-export {MyRealm, Patient, Case, Visit, Note, Address};
+export {MyRealm, Patient, Case, Visit, Note, Place, Address};
