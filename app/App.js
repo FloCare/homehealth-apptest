@@ -4,10 +4,10 @@ import {RegisterScreens} from './screens';
 RegisterScreens();
 
 const navigatorStyle = {
-        navBarBackgroundColor: '#45ceb1',
-        navBarTextColor: '#ffffff',
-        navBarButtonColor: '#666666',
-        tabBarBackgroundColor: '#45ceb1',
+    navBarBackgroundColor: '#45ceb1',
+    navBarTextColor: '#ffffff',
+    navBarButtonColor: '#666666',
+    tabBarBackgroundColor: '#45ceb1',
 };
 
 Navigation.startTabBasedApp({

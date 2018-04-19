@@ -6,7 +6,7 @@ import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer'
 import {VisitsScreenContainer} from '../components/VisitScreen/visitsScreenContainer';
 
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
-import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
+// import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 
 const RegisterScreens = () => {
     if (MyRealm.objects(Visit.schema.name).length === 0) {
