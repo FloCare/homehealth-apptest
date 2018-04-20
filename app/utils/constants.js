@@ -25,12 +25,15 @@ const diagnosisList = [
 ];
 
 const screenNames = {
+    //Top Level Screens
+    homeScreen: 'HomeScreen',
+    patientList: 'PatientList',
+
     addPatient: 'AddPatient',
     patientDetails: 'PatientDetails',
-    patientList: 'PatientList',
     addNote: 'AddNote',
-    homeScreen: 'HomeScreen',
-    visitsScreen: 'VisitsScreen',
+
+    visitListScreen: 'VisitListScreen',
 };
 
 export {diagnosisList, screenNames};
