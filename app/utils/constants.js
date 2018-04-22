@@ -3,23 +3,23 @@ const diagnosisList = [
         name: 'Diagnosis',
         id: 0,
         children: [{
-            name: 'ADHD',
-            id: 10,
+            name: 'A',
+            id: 1,
         }, {
-            name: 'BLA',
-            id: 17,
+            name: 'BALL',
+            id: 2,
         }, {
-            name: 'BLAH',
-            id: 13,
+            name: 'CAT',
+            id: 3,
         }, {
-            name: 'BLAHH',
-            id: 14,
+            name: 'DOG',
+            id: 4,
         }, {
-            name: 'BLAHHH',
-            id: 15,
+            name: 'EAT',
+            id: 5,
         }, {
-            name: 'BLAHHHH',
-            id: 16,
+            name: 'FAT',
+            id: 6,
         }]
     },
 ];

@@ -1,39 +1,9 @@
 import React from 'react';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import {View} from 'react-native';
-
-
-const items = [
-    {
-        name: 'Diagnosis',
-        id: 0,
-        children: [{
-            name: 'ADHD',
-            id: 10,
-        }, {
-            name: 'BLA',
-            id: 17,
-        }, {
-            name: 'BLAH',
-            id: 13,
-        }, {
-            name: 'BLAHH',
-            id: 14,
-        }, {
-            name: 'BLAHHH',
-            id: 15,
-        }, {
-            name: 'BLAHHHH',
-            id: 16,
-        }]
-    },
-];
+import {diagnosisList} from '../../utils/constants';
 
 function DiagnosisMultiSelect(locals) {
-    console.log('========================================');
-    console.log('INSIDE Diagnosis');
-    console.log('========================================');
-
     if (locals.hidden) {
         return null;
     }
@@ -41,14 +11,14 @@ function DiagnosisMultiSelect(locals) {
         <View>
             <View>
                 <SectionedMultiSelect
-                    items={items}
+                    items={diagnosisList}
                     uniqueKey='id'
                     subKey='children'
                     selectText='Diagnosis'
                     showDropDowns
                     readOnlyHeadings
-                    onSelectedItemsChange={() => { console.log('halsflasjfjalsf'); }}
-                    selectedItems={{}}
+                    onSelectedItemsChange={locals.config.onSelectedItemsChange}
+                    selectedItems={locals.config.selectedItems}
                 />
             </View>
         </View>

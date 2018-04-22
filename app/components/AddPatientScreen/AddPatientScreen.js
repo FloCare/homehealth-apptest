@@ -19,4 +19,4 @@ class AddPatientScreen extends Component {
     }
 }
 
-export { AddPatientScreen };
+export {AddPatientScreen};

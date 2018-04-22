@@ -10,7 +10,18 @@ class SectionedPatientList extends Component {
         this.renderSeparator = this.renderSeparator.bind(this);
     }
 
-    renderItem(item) {
+    renderItem(item, selectedPatient) {
+        if (item.patientID === selectedPatient) {
+            return (
+                <TouchableOpacity
+                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ff9999'}}
+                    onPress={({e}) => this.props.onItemPressed({item}, e)}
+                >
+                    <Text style={styles.nameStyle}>{item.name}</Text>
+                    <Text style={styles.addressStyle}>{item.streetAddress}</Text>
+                </TouchableOpacity>
+            );
+        }
         return (
             <TouchableOpacity
                 style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff'}}
@@ -35,10 +46,11 @@ class SectionedPatientList extends Component {
     }
 
     render() {
+        const {selectedPatient} = this.props;
         return (
             <SectionList
                 sections={this.props.patientList}
-                renderItem={({item}) => this.renderItem(item)}
+                renderItem={({item}) => this.renderItem(item, selectedPatient)}
                 renderSectionHeader={this.renderSectionHeader}
                 ItemSeparatorComponent={this.renderSeparator}
                 keyExtractor={(item, index) => index}

@@ -1,6 +1,6 @@
 import t from 'tcomb-form-native';
 import {PhoneNumber, zipCode} from '../../utils/lib';
-import Autocompletetextbox from './Autocompletetextbox';
+import AddressAutoComplete from './AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 
@@ -22,7 +22,7 @@ const nameError = (value) => {
     }
 };
 
-const options = {
+const formOptions = {
     stylesheet,
     fields: {
         name: {
@@ -35,25 +35,32 @@ const options = {
         zip: {
             label: 'Zip Code',
             error: 'Please enter a valid zipCode for the patient',
-            placeholder: '123456'
+            placeholder: '12345'
         },
         primaryContact: {
             label: 'Primary Contact',
-            placeholder: '9999988888',
+            placeholder: '541-754-3010',
         },
         emergencyContact: {
             label: 'Emergency Contact',
-            placeholder: '9999988888'
+            placeholder: '541-754-3010'
         },
         diagnosis: {
             label: 'Diagnosis',
             placeholder: '#ADHD',
-            template: DiagnosisMultiSelect      // Todo: Improve this
+            config: {
+                onSelectedItemsChange: null,
+                selectedItems: []
+            },
+            template: DiagnosisMultiSelect
         },
         streetAddress: {
             label: 'Street Address',
-            placeholder: '32, Private Drive',
-            template: Autocompletetextbox       // Todo: Improve this
+            error: 'Please enter a valid street address',
+            template: AddressAutoComplete,
+            config: {
+                onPress: null
+            }
         },
         apartmentNo: {
             label: 'Apartment No.',
@@ -66,13 +73,49 @@ const options = {
         notes: {
             label: 'Quick Information'
         }
-        /*birthDate: {
-         mode: 'date',
-         config: {
-         format: (date) => moment(date).format('YYYY-MM-DD'),
-         }
-         }*/
     }
 };
 
-export { AddPatientModel, options };
+
+class Options {
+    constructor() {
+        this._options = formOptions;
+    }
+
+    get Options() {
+        return this._options;
+    }
+
+    set Options(options) {
+        this._options = options;
+    }
+
+    get SelectedItems() {
+        return this._options.fields.diagnosis.config.selectedItems;
+    }
+
+    set SelectedItems(selectedItems) {
+        this._options.fields.diagnosis.config.selectedItems = selectedItems;
+    }
+
+    get OnPress() {
+        return this._options.fields.streetAddress.config.onPress;
+    }
+
+    set OnPress(onPress) {
+        this._options.fields.streetAddress.config.onPress = onPress;
+    }
+
+    get OnSelectedItemsChange() {
+        return this._options.fields.diagnosis.config.onSelectedItemsChange;
+    }
+
+    set OnSelectedItemsChange(onSelectedItemsChange) {
+        console.log('============================');
+        console.log('Setting onSelectedItems Change');
+        console.log('============================');
+        this._options.fields.diagnosis.config.onSelectedItemsChange = onSelectedItemsChange;
+    }
+}
+
+export {AddPatientModel, Options};

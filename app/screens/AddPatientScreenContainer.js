@@ -14,8 +14,8 @@ class AddPatientScreenContainer extends Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
-    onSubmit() {
-        // Todo: navigate away based on state (either to AddVisits, PatientList or PatientDetail
+    onSubmit(patientId) {
+        // Todo: navigate away based on state (either to AddVisits, PatientList or PatientDetail)
         // Todo: Pass data accordingly
         this.props.navigator.push({
             screen: this.state.navigateToScreen,
@@ -24,7 +24,7 @@ class AddPatientScreenContainer extends Component {
             title: 'Patients',
             backbuttonHidden: true,
             passProps: {
-                selectedPatient: 'Piyush',      // add the selected patient Object for hightlighting
+                selectedPatient: patientId,      // add the selected patient Object for hightlighting
                 patientCount: 50                // add the patient Count for displaying in header
             }
         });

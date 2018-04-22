@@ -1,5 +1,3 @@
-import {Result} from 'realm';
-
 function ArrayToMap(array, keyProperty) {
     return array.reduce((map, object) => map.set(object[keyProperty], object), new Map());
 }

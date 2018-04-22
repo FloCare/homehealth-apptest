@@ -18,13 +18,13 @@ Navigation.startTabBasedApp({
         //     icon: require('../resources/ic_fiber_pin_2x.png'),
         //     screen: 'VisitsList'
         // },
-        {
-            title: 'Visits',
-            label: 'two',
-            icon: require('../resources/ic_fiber_pin_2x.png'),
-            screen: 'Visit2',
-            navigatorStyle: navigatorStyle
-        },
+        // {
+        //     title: 'Visits',
+        //     label: 'two',
+        //     icon: require('../resources/ic_fiber_pin_2x.png'),
+        //     screen: 'Visit2',
+        //     navigatorStyle: navigatorStyle
+        // },
         {
             title: 'Add new patient',
             label: 'add',
@@ -44,6 +44,13 @@ Navigation.startTabBasedApp({
             label: 'patientList',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.patientList,
+            navigatorStyle: navigatorStyle
+        },
+        {
+            title: 'RealmTest',
+            label: 'realmTest',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: 'RealmTest',
             navigatorStyle: navigatorStyle
         }
     ]

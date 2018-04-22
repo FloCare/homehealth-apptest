@@ -2,6 +2,7 @@
     "extends": "rallycoding",
     "rules": {
         "object-curly-spacing": ["error", "never"],
-        "max-len": "off"
+        "max-len": "off",
+        "no-underscore-dangle": [2, { "allowAfterThis": true }]
     }
 }
