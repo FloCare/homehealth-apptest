@@ -1,29 +1,74 @@
 import React from 'react';
 import {View} from 'react-native';
-import {Button, Text} from 'react-native-elements';
+import {Avatar, Button, Icon, Text} from 'react-native-elements';
 import {VisitListContainer} from '../common/VisitList/visitListContainer';
 
 export function VisitSummary(props) {
     return (
-        <View style={{alignItems: 'center'}}>
-            <Text>
-                {'5 of 5 Visits Remaining'}
+        <View style={{
+            alignItems: 'center',
+            backgroundColor: '#45ceb1',
+            margin: 0,
+            marginTop: 60,
+            padding: 10
+        }}>
+            <Text style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: '#ffffff'
+            }}>
+                {'3 of 6 visits remaining'}
                 {/*{`${props.remainingVisitCount} of ${props.totalVisitCount} Visits Remaining`}*/}
             </Text>
-            <Text>
-                {'Total Remaining Miles: 10'}
+            <Text style={{
+                fontSize: 14,
+                color: '#ffffff'
+            }}>
+                {'Total Remaining Miles: 27'}
                 {/*{`Total Remaining Miles: ${props.remainingMiles}`}*/}
             </Text>
-            <Text>
-                Visit Views on
+            <Text style={{
+                fontSize: 12,
+                marginTop: 20,
+                color: '#ffffff'
+            }}>
+                View visits on
             </Text>
-            <View>
-                <Button title={'Map'} />
-                <Button title={'List'} onPress={props.navigateToVisitsScreen} />
+            <View style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignSelf: 'stretch',
+                margin: 10,
+                marginLeft: 100,
+                marginRight: 100
+            }}>
+                <Icon
+                    raised
+                    size={30}
+                    name='map'
+                    type='font-awesome'
+                    color='#45ceb1'
+                    onPress={() => console.log('hello')}/>
+                <Icon
+                    raised
+                    size={30}
+                    name='list'
+                    type='font-awesome'
+                    color='#45ceb1'
+                    onPress={props.navigateToVisitsScreen}/>
             </View>
-            <View>
-                <Text> Next Visit </Text>
-                <VisitListContainer visitResultObject={props.visitResultObject} onlyDisplayOne />
+            <View style={{
+                backgroundColor: 'blue',
+                flexWrap: 'wrap'
+            }}>
+                <Text style={{
+                    fontSize: 14,
+                    color: '#ffffff'
+                }}>
+                    Next Visit
+                </Text>
+                {/*prefer to use VisitCard rather than VisitListContainer*/}
+                <VisitListContainer visitResultObject={props.visitResultObject} onlyDisplayOne/>
             </View>
         </View>
     );
