@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
+import {screenNames} from '../utils/constants';
 
 class PatientDetailScreenContainer extends Component {
     static navigatorButtons = {
@@ -15,9 +16,12 @@ class PatientDetailScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            patientId: {},
+            navigateToScreen: screenNames.addNote,
             patientDetail: {}
         };
+        this.onPressAddNotes = this.onPressAddNotes.bind(this);
+        this.onPressAddVisit = this.onPressAddVisit.bind(this);
+        this.getPatientDetails = this.getPatientDetails.bind(this);
         // settings this up to listen on navigator events
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
@@ -32,6 +36,17 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddNotes() {
         console.log('Add Notes Button is Pressed. Navigate to the add notes screen ...');
+        this.props.navigator.push({
+            screen: this.state.navigateToScreen,
+            animated: true,
+            animationType: 'fade',
+            title: 'Add Notes',
+            backbuttonHidden: true,
+            passProps: {
+                patientId: this.state.patientDetail.patientID,
+                name: this.state.patientDetail.name
+            }
+        });
     }
 
     // this is the onPress handler for the navigation header 'Edit' button

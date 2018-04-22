@@ -34,7 +34,7 @@ Navigation.startTabBasedApp({
         },
         {
             title: 'Patient Details',
-            label: 'details',
+            label: 'patientDetails',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.patientDetails,
             navigatorStyle: navigatorStyle
@@ -44,6 +44,13 @@ Navigation.startTabBasedApp({
             label: 'patientList',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.patientList,
+            navigatorStyle: navigatorStyle
+        },
+        {
+            title: 'Add Notes',
+            label: 'addNote',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: screenNames.addNote,
             navigatorStyle: navigatorStyle
         },
         {

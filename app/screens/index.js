@@ -6,16 +6,17 @@ import PatientListScreenContainer from './PatientListScreenContainer';
 //import {VisitListContainer} from '../components/common/visitListContainer';
 import {screenNames} from '../utils/constants';
 import RealmTestContainer from './RealmTestContainer';
+import AddNoteScreenContainer from './AddNoteScreenContainer';
 
 const RegisterScreens = () => {
     //Navigation.registerComponent('VisitsList', () => VisitsScreenContainer);
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
+    Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);
     Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
     //Navigation.registerComponent('VisitsList', () => VisitsScreenContainer);
     //Navigation.registerComponent('Visit2', () => VisitListContainer);
     Navigation.registerComponent('RealmTest', () => RealmTestContainer);
-
 };
 
 export {RegisterScreens};
