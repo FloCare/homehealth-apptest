@@ -16,10 +16,13 @@ class AddPatientFormContainer extends Component {
                 apartmentNo: null,
                 zip: null,
                 city: null,
+                state: null,
                 primaryContact: null,
                 emergencyContact: null,
                 diagnosis: null,
-                notes: null
+                notes: null,
+                lat: null,
+                long: null
             },
             selectedItems: []
         };
@@ -29,10 +32,12 @@ class AddPatientFormContainer extends Component {
         this.onChange = this.onChange.bind(this);
         this.onAddressSelect = this.onAddressSelect.bind(this);
         this.onSelectedItemsChange = this.onSelectedItemsChange.bind(this);
+        this.onChangeAddressText = this.onChangeAddressText.bind(this);
 
         this.options = new Options();
         this.options.OnPress = this.onAddressSelect;
         this.options.OnSelectedItemsChange = this.onSelectedItemsChange;
+        this.options.OnChangeAddressText = this.onChangeAddressText;
     }
 
    onSelectedItemsChange(selectedItems) {
@@ -50,39 +55,62 @@ class AddPatientFormContainer extends Component {
     }
 
     onAddressSelect(data, details) {
-        // Todo: Save the data returned by Google APIs to state var: value
+        // Todo: Handle OFFLINE flow
 
-        console.log('LatLong Object: ', details.geometry.location);
-        const arrLen = details.address_components.length;
-        console.log('Address Components: ');
+        console.log('details:', details);
 
-        let streetAddress = 'Pram Niwas, HSR Layout';
-
+        const address = details.address_components;
         let zip = null;
-        if (details.address_components[arrLen-1]['types'][0] === 'postal_code') {
-            zip = details.address_components[arrLen-1].long_name;
-            console.log('Zip Code: ', zip);
-        } else {
-            console.log('Last component is not a postal address');
-        }
+        let city = null;
+        let state = null;
+        let country = null;
+        let lat = null;
+        let long = null;
+        // Todo: Build streetAddress from address components
+        const streetAddress = details.formatted_address;
+        const geometry = details.geometry;
 
-        let city = 'Honululu';
-        // Todo: Update city and state from API
+        address.forEach((component) => {
+            const types = component.types;
+            // Todo: Handle edge cases for city
+            if (types.indexOf('locality') > -1) {
+                city = component.long_name;
+            }
 
-        // Todo: Change this ???
-        this.setState({
-            value: Object.assign({}, this.state.value, {streetAddress, zip, city})
+            if (types.indexOf('administrative_area_level_1') > -1) {
+                state = component.short_name;
+            }
+
+            if (types.indexOf('postal_code') > -1) {
+                zip = component.long_name;
+            }
+
+            if (types.indexOf('country') > -1) {
+                country = component.long_name;
+            }
         });
 
-        console.log('====================');
-        console.log('state value:', this.state.value);
-        console.log('====================');
+        if (geometry) {
+            const location = geometry.location;
+            if (location) {
+                lat = location.lat;
+                long = location.lng;
+            }
+        }
+
+        const value = Object.assign({}, this.state.value, {streetAddress, city, state, zip, country, lat, long});
+        this.setState({value});
     }
 
     onChange(value, path) {
         this.addPatientForm.getComponent(path).validate();
         this.setState({value});
         console.log('value:', value, 'path:', path);
+    }
+
+    onChangeAddressText(value) {
+        const val = Object.assign({}, this.state.value, {streetAddress: value});
+        this.setState({value: val});
     }
 
     setForm(formElement) {
@@ -97,10 +125,13 @@ class AddPatientFormContainer extends Component {
                 streetAddress: null,
                 zip: null,
                 city: null,
+                state: null,
                 primaryContact: null,
                 emergencyContact: null,
                 diagnosis: null,
-                notes: null
+                notes: null,
+                lat: null,
+                long: null
             },
             selectedItems: []
         });
@@ -120,36 +151,35 @@ class AddPatientFormContainer extends Component {
             const patientId = Math.random().toString();
             const episodeId = Math.random().toString();
             const addressId = Math.random().toString();
-            const latLongID = Math.random().toString();
-            const hasLatLong = true;
 
             try {
                 floDB.write(() => {
                     // Add the patient
                     const patient = floDB.create(Patient.schema.name, {
                         patientID: patientId,
-                        name: value.name ? value.name : '',
-                        primaryContact: value.primaryContact ? value.primaryContact.toString() : '',
-                        emergencyContact: value.emergencyContact ? value.emergencyContact.toString() : '',
-                        notes: value.notes,
-                        timestamp: 0,               // Todo: Add a timestmap
+                        name: this.state.value.name ? this.state.value.name.toString() : '',
+                        primaryContact: this.state.value.primaryContact ? this.state.value.primaryContact.toString() : '',
+                        emergencyContact: this.state.value.emergencyContact ? this.state.value.emergencyContact.toString() : '',
+                        notes: this.state.value.notes ? this.state.value.notes.toString() : '',
+                        timestamp: 0,                                   // Todo: Add a timestmap
                     });
 
                     // Add the corresponding address
                     const address = patient.address = {
                         addressID: addressId,
-                        streetAddress: value.streetAddress ? value.streetAddress.toString() : '',
-                        zipCode: value.zip ? value.zip.toString() : '',
-                        city: value.city ? value.city.toString() : '',
-                        state: ''                                     // Todo: Add a state
+                        streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
+                        zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
+                        city: this.state.value.city ? this.state.value.city.toString() : '',
+                        state: this.state.value.state ? this.state.value.state.toString() : ''
                     };
 
                     // Add a latLong if present
-                    if (hasLatLong) {                                  // Todo: Add latLong from Google APIs
+                    if (this.state.value.lat && this.state.value.long) {
+                        const latLongID = Math.random().toString();
                         address.latLong = {
                             latLongID,
-                            lat: 1.0,
-                            long: 1.0
+                            lat: this.state.value.lat,
+                            long: this.state.value.long
                         };
                     }
 
@@ -164,7 +194,7 @@ class AddPatientFormContainer extends Component {
                 // Todo: Raise an error to the screen
             }
 
-            console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
+            // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
             this.clearForm();
 
             // Call Screen Container's onSubmit() hook

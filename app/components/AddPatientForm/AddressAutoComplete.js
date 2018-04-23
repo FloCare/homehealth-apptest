@@ -43,6 +43,7 @@ function Autocompletetextbox(locals) {
             </Text>
         ) : null;
 
+    // Todo: Apply Country Filter: US ???
     return (
         <View style={formGroupStyle}>
             {label}
@@ -55,6 +56,9 @@ function Autocompletetextbox(locals) {
                     fetchDetails
                     query={{
                         key: 'AIzaSyDiWZ3198smjFepUa0ZAoHePSnSxuhTzRU'
+                    }}
+                    textInputProps={{
+                        onChangeText: locals.config.onChangeAddressText
                     }}
                     styles={{
                         textInputContainer: {

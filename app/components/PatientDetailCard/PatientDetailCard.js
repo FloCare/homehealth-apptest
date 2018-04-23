@@ -54,7 +54,7 @@ const PatientDetailCard = (props) => {
 
             <Divider style={styles.dividerStyle} />
 
-            {emergencyContact &&
+            {emergencyContact !== '' && emergencyContact && 
             <View style={styles.containerStyle}>
                 <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
                 <View style={{marginLeft: 14}}>
