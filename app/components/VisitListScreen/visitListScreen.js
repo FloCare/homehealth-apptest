@@ -4,7 +4,7 @@ import React from 'react';
 import {VisitListContainer} from '../common/VisitList/visitListContainer';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
 
-function VisitScreen(props) {
+function VisitListScreen(props) {
     return (
         <View style={{flex: 1}}>
             {RenderIf(props.calendarObject, props.showCalendar)}
@@ -14,4 +14,4 @@ function VisitScreen(props) {
         );
 }
 
-export {VisitScreen};
+export {VisitListScreen};

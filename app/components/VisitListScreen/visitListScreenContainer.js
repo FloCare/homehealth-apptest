@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Calendar} from 'react-native-calendars';
-import {VisitScreen} from './visitsScreen';
+import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
 
-class VisitsScreenContainer extends Component {
+class VisitListScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -36,7 +36,7 @@ class VisitsScreenContainer extends Component {
         const obj = {}; obj[this.state.date.dateString] = {selected: true, selectedColor: 'blue'};
 
         return (
-            <VisitScreen
+            <VisitListScreen
                 calendarObject={<Calendar
                                     current={this.state.date.dateString}
                                     onDayPress={this.onDayPress}
@@ -50,4 +50,4 @@ class VisitsScreenContainer extends Component {
     }
 }
 
-export {VisitsScreenContainer};
+export {VisitListScreenContainer};
