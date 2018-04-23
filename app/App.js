@@ -1,5 +1,6 @@
 import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from './screens';
+import {screenNames} from './utils/constants';
 
 RegisterScreens();
 
@@ -25,18 +26,38 @@ Navigation.startTabBasedApp({
         //     navigatorStyle
         // },
         {
-            title: 'Add new patient',
-            label: 'add',
+            title: 'Home Screen',
+            label: 'home',
             icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: 'HomeScreen',
+            screen: screenNames.homeScreen,
+            navigatorStyle
+        },{
+            title: 'Visits Screen',
+            label: 'visits',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: screenNames.visitsScreen,
             navigatorStyle
         },
         {
-            title: 'Patient Details',
-            label: 'details',
+            title: 'Add new patient',
+            label: 'add',
             icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: 'PatientDetails',
+            screen: screenNames.addPatient,
+            navigatorStyle
+        },
+        {
+            title: 'Patients',
+            label: 'patientList',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: screenNames.patientList,
             navigatorStyle
         }
+        // {
+        //     title: 'RealmTest',
+        //     label: 'realmTest',
+        //     icon: require('../resources/ic_location_on_black_24dp.png'),
+        //     screen: 'RealmTest',
+        //     navigatorStyle
+        // }
     ]
 });

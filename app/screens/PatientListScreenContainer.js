@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {PatientListScreen} from '../components/PatientListScreen';
-import {MyRealm, Patient} from '../utils/data/schema';
+import {floDB, Patient} from '../utils/data/schema';
+import {screenNames} from '../utils/constants';
 
 class PatientListScreenContainer extends Component {
     constructor(props) {
@@ -25,20 +26,20 @@ class PatientListScreenContainer extends Component {
 
     onItemPressed(item) {
         this.props.navigator.push({
-            screen: 'PatientDetails',
+            screen: screenNames.patientDetails,
             animated: true,
             animationType: 'fade',
-            title: 'Patient Details',
+            title: item.item.name,
             backbuttonHidden: true,
             passProps: {
-                patientDetail: item.item
+                patientId: item.item.patientID
             }
         });
     }
 
     getSectionData(query) {
         if (!query) {
-            const patientList = MyRealm.objects(Patient.schema.name);
+            const patientList = floDB.objects(Patient.schema.name);
             const sortedPatientList = patientList.sorted('name');
             const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
@@ -46,8 +47,8 @@ class PatientListScreenContainer extends Component {
             // Todo: Can improve querying Logic:
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
-            const queryStr = `name CONTAINS "${query.toString()}"`;
-            const patientList = MyRealm.objects(Patient.schema.name).filtered(queryStr);
+            const queryStr = `name CONTAINS[c] "${query.toString()}"`;
+            const patientList = floDB.objects(Patient.schema.name).filtered(queryStr);
             const sortedPatientList = patientList.sorted('name');
             const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
@@ -74,11 +75,12 @@ class PatientListScreenContainer extends Component {
     }
 
     render() {
+        const {selectedPatient} = this.props;
         return (
             <PatientListScreen
                 patientList={this.state.patientList}
                 onSearch={this.onSearch}
-                selectedPatient={this.props.selectedPatient}
+                selectedPatient={selectedPatient}
                 onItemPressed={this.onItemPressed}
             />
         );

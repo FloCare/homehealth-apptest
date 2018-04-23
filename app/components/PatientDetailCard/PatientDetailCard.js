@@ -1,21 +1,20 @@
 import React from 'react';
-import {View, Image, FlatList} from 'react-native';
-import {Text, Button, Divider} from 'react-native-elements';
+import {View, FlatList, Linking} from 'react-native';
+import {Text, Button, Divider, Icon} from 'react-native-elements';
+import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
-import {Icon} from 'react-native-elements'
-import Badge from "react-native-elements/src/badge/badge";
-import componentStyles from "../common/styles";
-
-const renderDiagnosis = (item) => {
-    return (
-        <Text style={styles.itemStyle}>{item.key}</Text>
-    );
-};
+import componentStyles from '../common/styles';
 
 const PatientDetailCard = (props) => {
-    const {patientDetail} = props;
+    const {patientDetail, onPressAddVisit, onPressAddNotes} = props;
     //Handle name with navigator props
-    const {name, streetAddress, primaryContact, emergencyContact, diagnosis, visits, notes} = patientDetail;
+    const {
+        primaryContact,
+        emergencyContact,
+        diagnosis,
+        notes,
+        visits
+    } = patientDetail;
     return (
         <View style={styles.parentContainerStyle}>
             {/*
@@ -26,31 +25,64 @@ const PatientDetailCard = (props) => {
                 </Text>
             </View>
 
-*/}
+            */}
+
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Primary Contact
                     </Text>
                     <Text style={{fontSize: 12, color: '#999999'}}>
-                        +1 786 908 3467
+                        {primaryContact}
                     </Text>
                 </View>
                 <Button
                     title="Call"
                     textStyle={{
                         fontSize: 18,
-                        color: "#45ceb1"
+                        color: '#45ceb1'
                     }}
                     buttonStyle={styles.callButtonStyle}
                     containerViewStyle={{
                         position: 'absolute',
                         right: 0
                     }}
+                    onPress={() => Linking.openURL('tel:' + primaryContact).catch(err => console.error('An error occurred', err))}
                 />
             </View>
-            <Divider style={styles.dividerStyle}/>
+
+            <Divider style={styles.dividerStyle} />
+
+            {emergencyContact &&
+            <View style={styles.containerStyle}>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <View style={{marginLeft: 14}}>
+                    <Text style={styles.headerStyle}>
+                        Emergency Contact
+                    </Text>
+                    <Text style={{fontSize: 12, color: '#999999'}}>
+                        {emergencyContact}
+                    </Text>
+                </View>
+                <Button
+                    title="Call"
+                    textStyle={{
+                        fontSize: 18,
+                        color: '#45ceb1'
+                    }}
+                    buttonStyle={styles.callButtonStyle}
+                    containerViewStyle={{
+                        position: 'absolute',
+                        right: 0
+                    }}
+                    onPress={() => Linking.openURL('tel:' + primaryContact).catch(err => console.error('An error occurred', err))}
+                />
+            </View>
+            }
+
+            <Divider style={styles.dividerStyle} />
+
             <View style={styles.containerStyle}>
                 <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
                 <View style={{marginLeft: 14}}>
@@ -61,23 +93,24 @@ const PatientDetailCard = (props) => {
                         horizontal
                         style={componentStyles.listContainer}
                         data={[
-                            '#COFG',
-                            '#ADHD',
-                            '#BLABLABLA',
-                            '#COFG',
-                            '#ADHD',
-                            '#BLABLABLA'
+                            '#ABC',
+                            '#XYZ',
+                            '#PQR',
+                            '#MNO'
                         ]}
                         renderItem={({item}) =>
                             <Badge
                                 containerStyle={componentStyles.badgeContainerStyle}
                                 textStyle={componentStyles.badgeTextStyle}
-                                value={item}/>
+                                value={item}
+                            />
                         }
                     />
                 </View>
             </View>
-            <Divider style={styles.dividerStyle}/>
+
+            <Divider style={styles.dividerStyle} />
+
             <View style={styles.containerStyle}>
                 <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
                 <View style={{marginLeft: 14}}>
@@ -102,7 +135,9 @@ const PatientDetailCard = (props) => {
                     />
                 </View>
             </View>
-            <Divider style={styles.dividerStyle}/>
+
+            <Divider style={styles.dividerStyle} />
+
             <View style={styles.containerStyle}>
                 <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
                 <View style={{marginLeft: 14}}>
@@ -110,19 +145,23 @@ const PatientDetailCard = (props) => {
                         Notes
                     </Text>
                     <Text style={styles.noteStyle}>
-                        Door Passcode- 9008
+                        {notes}
                     </Text>
                 </View>
             </View>
-            <Divider style={styles.dividerStyle}/>
+
+            <Divider style={styles.dividerStyle} />
+
             <View style={styles.buttonContainerStyle}>
                 <Button
                     title="Add Visit"
                     buttonStyle={styles.footerButtonStyle}
+                    onPress={onPressAddVisit}
                 />
                 <Button
                     title="Add Notes"
                     buttonStyle={styles.footerButtonStyle}
+                    onPress={onPressAddNotes}
                 />
             </View>
         </View>

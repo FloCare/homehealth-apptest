@@ -1,21 +1,18 @@
 import React, {Component} from 'react';
-import {AddPatientScreen} from '../components/AddPatientScreen';
+import {AddNoteScreen} from '../components/AddNoteScreen';
 import {screenNames} from '../utils/constants';
 
-class AddPatientScreenContainer extends Component {
-    /*
-        Container Component - has states
-     */
+class AddNoteScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            navigateToScreen: screenNames.patientList,
+            navigateToScreen: screenNames.patientDetails,
         };
         this.onSubmit = this.onSubmit.bind(this);
     }
 
     onSubmit(patientId) {
-        // Todo: navigate away based on state (either to AddVisits, PatientList or PatientDetail)
+        // Todo: navigate away based on state
         // Todo: Pass data accordingly
         this.props.navigator.push({
             screen: this.state.navigateToScreen,
@@ -24,20 +21,21 @@ class AddPatientScreenContainer extends Component {
             title: 'Patients',
             backbuttonHidden: true,
             passProps: {
-                selectedPatient: patientId,      // add the selected patient Object for hightlighting
-                patientCount: 50                 // add the patient Count for displaying in header
+                patientId
             }
         });
     }
 
     render() {
+        const {patientId, name} = this.props;
         return (
-            // Add header (navigation module)
-            <AddPatientScreen
+            <AddNoteScreen
                 onSubmit={this.onSubmit}
+                patientId={patientId}
+                name={name}
             />
         );
     }
 }
 
-export default AddPatientScreenContainer;
+export default AddNoteScreenContainer;

@@ -39,7 +39,8 @@ const styles = {
     },
     headerStyle: {
         fontSize: 18,
-        color: '#222222'
+        color: '#222222',
+        marginBottom: 5
     },
     dividerStyle: {
         margin: 0,

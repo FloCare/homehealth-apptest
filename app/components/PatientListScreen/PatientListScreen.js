@@ -5,24 +5,25 @@ import styles from './styles';
 import {SectionedPatientList} from '../SectionedPatientList';
 
 const PatientListScreen = (props) => {
+    const {onSearch, patientList, selectedPatient, onItemPressed} = props;
     return (
-        <View style={styles.container}>
+        <View style={styles.container.container}>
             <SearchBar
                 round
                 lightTheme
                 disabled
                 onChangeText={(query) => {
-                    props.onSearch(query);
+                    onSearch(query);
                 }}
                 onClear={() => {
-                    props.onSearch(null);
+                    onSearch(null);
                 }}
                 placeholder='Search'
             />
             <SectionedPatientList
-                patientList={props.patientList}
-                selectedPatient={props.selectedPatient}
-                onItemPressed={props.onItemPressed}
+                patientList={patientList}
+                selectedPatient={selectedPatient}
+                onItemPressed={onItemPressed}
             />
         </View>
     );

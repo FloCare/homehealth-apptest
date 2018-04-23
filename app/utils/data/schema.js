@@ -1,4 +1,4 @@
-//TODO mark optional fields as such
+const Realm = require('realm');
 
 class Patient extends Realm.Object {}
 Patient.schema = {
@@ -7,53 +7,57 @@ Patient.schema = {
     properties: {
         patientID: 'string',
         name: 'string',
-        streetAddress: 'string?',
-        zipCode: 'string?',
-        city: 'string?',
-        diagnosis: 'string?',
+        address: 'Address',                                                      // optional by default
         primaryContact: 'string',
         emergencyContact: 'string?',
         notes: 'string?',
-        dateAdded: 'int'
+        episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
+        timestamp: 'int'
     }
 };
 
-class Case extends Realm.Object {}
-Case.schema = {
-    name: 'Case',
-    primaryKey: 'caseID',
+// Todo: Check if inverse relationship needed
+
+// Address can belong to a 'Patient' or a 'Place'
+class Address extends Realm.Object {}
+Address.schema = {
+    name: 'Address',
+    primaryKey: 'addressID',
     properties: {
-        caseID: 'string',
-        patientID: {type: 'string', indexed: true},
+        addressID: 'string',
+        apartmentNo: 'string?',
+        streetAddress: 'string?',
+        zipCode: 'string?',
+        city: 'string?',
+        state: 'string?',
+        country: {type: 'string?', default: 'USA'},
+        latLong: 'LatLong'                                                                 // optional by default
+    }
+};
+
+class LatLong extends Realm.Object {}
+LatLong.schema = {
+    name: 'LatLong',
+    primaryKey: 'latLongID',
+    properties: {
+        latLongID: 'string',
+        lat: 'int',
+        long: 'int',
+        address: {type: 'linkingObjects', objectType: 'Address', property: 'latLong'}       // set automatically
+    }
+};
+
+// 1 patient can have multiple episodes
+class Episode extends Realm.Object {}
+Episode.schema = {
+    name: 'Episode',
+    primaryKey: 'episodeID',
+    properties: {
+        episodeID: 'string',
+        patient: {type: 'linkingObjects', objectType: 'Patient', property: 'episodes'},     // set automatically
         diagnosis: 'string[]',
-        //TODO referring physician?
+        visits: {type: 'list', objectType: 'Visit', default: []},                           // cannot be optional
         isClosed: {type: 'bool', default: false}
-    }
-};
-
-class Visit extends Realm.Object {}
-Visit.schema = {
-    name: 'Visit',
-    primaryKey: 'visitID',
-    properties: {
-        visitID: 'string',
-        caseID: {type: 'string', indexed: true},
-        midnightEpoch: 'int',
-        timestamp: 'int?',
-        isDone: {type: 'bool', default: false}
-    }
-};
-
-//TODO change the way the schemas are defined to match the ones above
-class Note extends Realm.Object {}
-Note.schema = {
-    name: 'Note',
-    primaryKey: 'noteID',
-    properties: {
-        noteID: 'string',
-        // caseID:     'string',
-        // body:       'string',
-        // timestamp:  'int'
     }
 };
 
@@ -64,38 +68,91 @@ Place.schema = {
     properties: {
         placeID: 'string',
         name: 'string',
-        addressID: 'string'
+        address: 'Address'
     }
 };
 
-class Address extends Realm.Object {}
-Address.schema = {
-    name: 'Address',
-    primaryKey: 'addressID',
+class Visit extends Realm.Object {}
+Visit.schema = {
+    name: 'Visit',
+    primaryKey: 'visitID',
     properties: {
-        addressID: 'string',
-        lineOne: 'string',
-        lineTwo: 'string',
-        zip: 'string',
-        city: 'string',
-        state: 'string'
+        visitID: 'string',
+        episode: {type: 'linkingObjects', objectType: 'Episode', property: 'visits'},       // set automatically
+        midnightEpoch: 'int',
+        timestamp: 'int?',
+        isDone: {type: 'bool', default: false}
     }
 };
 
-const MyRealm = new Realm({schema: [Visit.schema, Case.schema, Patient.schema, Place.schema, Address.schema]});
+const floDB = new Realm({
+    schema: [
+        LatLong.schema,
+        Visit.schema,
+        Patient.schema,
+        Address.schema,
+        Episode.schema,
+        Place.schema
+    ],
+    deleteRealmIfMigrationNeeded: true
+});
+
 
 //TODO remove this code, for debug only
-export function CreateAndSaveDummies() {
+// Todo: Add try-catch for all write blocks
+function CreateAndSaveDummies() {
     const timeNow = Date.now();
-    const caseID = `${Math.random().toString()}_Case`;
-    const patientID = `${Math.random().toString()}_Patient`;
 
-    MyRealm.write(() => {
-        MyRealm.create(Visit.schema.name, {visitID: `${Math.random().toString()}_visit`, caseID, midnightEpoch: 0});
-        MyRealm.create(Case.schema.name, {caseID, patientID, diagnosis: ['random1', 'random2']});
-        MyRealm.create(Patient.schema.name, {patientID, name: `Name_${Math.round(Math.random() * 100)}`, primaryContact: 'number', dateAdded: Date.now()});
+    const latLongID = `${Math.random().toString()}_LatLong`;
+    const addressID = `${Math.random().toString()}_Address`;
+    const episodeID = `${Math.random().toString()}_Episode`;
+    const patientID = `${Math.random().toString()}_Patient`;
+    const visitID = `${Math.random().toString()}_Visit`;
+
+    console.log('==========================================');
+    console.log('Creating Realm objects');
+    console.log('==========================================');
+
+    floDB.write(() => {
+        // Create the patient
+        const patient = floDB.create(
+            Patient.schema.name, {
+                patientID,
+                name: `John_${Math.round(Math.random() * 100)}`,
+                primaryContact: `99647165${Math.round(Math.random() * 100)}`,
+                timestamp: 0
+            });
+        // Create the corresponding address
+        patient.address = {
+            addressID,
+            streetAddress: 'Eat street',
+            zipCode: '12345',
+            city: 'Bangalore',
+            state: 'KA',
+            country: 'India'
+        };
+        // Create a LatLong for that address
+        patient.address.latLong = {
+            latLongID,
+            lat: 1.0,
+            long: 1.0
+        };
+        // Create an Episode
+        patient.episodes.push({
+            episodeID,
+            diagnosis: ['A', 'B', 'C'],
+            isClosed: true
+        });
+        patient.episodes[0].visits.push({
+            visitID,
+            midnightEpoch: 0
+        });
     });
-    console.log(Date.now() - timeNow);
+
+    console.log('==========================================');
+    console.log('Done Creating Realm objects');
+    console.log('Total time taken for insertions:', Date.now() - timeNow);
+    console.log('==========================================');
 }
 
-export {MyRealm, Patient, Case, Visit, Note, Place, Address};
+export {floDB, Patient, Episode, Visit, Address, LatLong, CreateAndSaveDummies};
