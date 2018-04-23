@@ -36,7 +36,7 @@ Navigation.startTabBasedApp({
         //     title: 'Visits Screen',
         //     label: 'visits',
         //     icon: require('../resources/ic_location_on_black_24dp.png'),
-        //     screen: screenNames.visitsScreen,
+        //     screen: screenNames.visitListScreen,
         //     navigatorStyle
         // },
         // {

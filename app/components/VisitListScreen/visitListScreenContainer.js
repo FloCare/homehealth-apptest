@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Calendar} from 'react-native-calendars';
-import {VisitScreen} from './visitsScreen';
+import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
+import {screenNames} from '../../utils/constants';
 
-class VisitsScreenContainer extends Component {
+class VisitListScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,7 +12,9 @@ class VisitsScreenContainer extends Component {
             showCalendar: false
         };
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+
         this.onDayPress = this.onDayPress.bind(this);
+        this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
     }
 
     onNavigatorEvent(event) {
@@ -28,6 +31,18 @@ class VisitsScreenContainer extends Component {
         this.setState({date: day, showCalendar: false});
     }
 
+    navigateToAddVisitsScreen() {
+        this.props.navigator.push({
+            screen: screenNames.addVisitScreen,
+            passProps: {
+                date: this.state.date
+            },
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
+    }
+
     generateVisitResultObject(date) {
         return floDB.objects(Visit.schema.name).filtered('midnightEpoch==$0', 0).sorted('isDone');//date);//.sorted('isDone');
     }
@@ -36,7 +51,7 @@ class VisitsScreenContainer extends Component {
         const obj = {}; obj[this.state.date.dateString] = {selected: true, selectedColor: 'blue'};
 
         return (
-            <VisitScreen
+            <VisitListScreen
                 calendarObject={<Calendar
                                     current={this.state.date.dateString}
                                     onDayPress={this.onDayPress}
@@ -44,10 +59,10 @@ class VisitsScreenContainer extends Component {
                 />}
                 showCalendar={this.state.showCalendar}
                 visitResultObject={this.generateVisitResultObject(this.state.date)}
-                // addVisit={}
+                onAddVisitPress={this.navigateToAddVisitsScreen}
             />
         );
     }
 }
 
-export {VisitsScreenContainer};
+export {VisitListScreenContainer};

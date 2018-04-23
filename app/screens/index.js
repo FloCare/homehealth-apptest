@@ -6,9 +6,9 @@ import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
 import {CreateAndSaveDummies, floDB, Visit} from '../utils/data/schema';
 import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
-import {VisitsScreenContainer} from '../components/VisitScreen/visitsScreenContainer';
+import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
-// import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
+import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 
 const RegisterScreens = () => {
     if (floDB.objects(Visit.schema.name).length === 0) {
@@ -24,8 +24,8 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
-    Navigation.registerComponent(screenNames.visitsScreen, () => VisitsScreenContainer);
-    // Navigation.registerComponent('AddVisitsScreen', () => AddVisitsScreenContainer);
+    Navigation.registerComponent(screenNames.visitListScreen, () => VisitListScreenContainer);
+    Navigation.registerComponent(screenNames.addVisitScreen, () => AddVisitsScreenContainer);
     Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
 };
 

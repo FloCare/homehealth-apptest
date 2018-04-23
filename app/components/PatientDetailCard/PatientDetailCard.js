@@ -4,6 +4,7 @@ import {Text, Button, Divider, Icon} from 'react-native-elements';
 import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
 import componentStyles from '../common/styles';
+import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 
 const PatientDetailCard = (props) => {
     const {patientDetail, onPressAddVisit, onPressAddNotes} = props;
@@ -13,20 +14,19 @@ const PatientDetailCard = (props) => {
         emergencyContact,
         diagnosis,
         notes,
-        visits
+        visits,
+        patientLocation
     } = patientDetail;
     return (
         <View style={styles.parentContainerStyle}>
-            {/*
-
-            <View>
-                <Text>
-                    Address show here on Map
-                </Text>
-            </View>
-
-            */}
-
+            {/*TODO pass on correct information to map*/}
+            <PatientDetailMapComponent
+                patientCoordinates={{
+                    latitude: 37.78825,
+                    longitude: -122.4324
+                }}
+                patientAddress={'Placeholder address'}
+            />
             <View style={styles.containerStyle}>
                 <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
@@ -48,7 +48,7 @@ const PatientDetailCard = (props) => {
                         position: 'absolute',
                         right: 0
                     }}
-                    onPress={() => Linking.openURL('tel:' + primaryContact).catch(err => console.error('An error occurred', err))}
+                    onPress={() => Linking.openURL(`tel:${primaryContact}`).catch(err => console.error('An error occurred', err))}
                 />
             </View>
 
@@ -56,7 +56,7 @@ const PatientDetailCard = (props) => {
 
             {emergencyContact !== '' && emergencyContact && 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Emergency Contact
@@ -76,7 +76,7 @@ const PatientDetailCard = (props) => {
                         position: 'absolute',
                         right: 0
                     }}
-                    onPress={() => Linking.openURL('tel:' + primaryContact).catch(err => console.error('An error occurred', err))}
+                    onPress={() => Linking.openURL(`tel:${primaryContact}`).catch(err => console.error('An error occurred', err))}
                 />
             </View>
             }
@@ -84,7 +84,7 @@ const PatientDetailCard = (props) => {
             <Divider style={styles.dividerStyle} />
 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Diagnosis
@@ -112,7 +112,7 @@ const PatientDetailCard = (props) => {
             <Divider style={styles.dividerStyle} />
 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Visits
@@ -139,7 +139,7 @@ const PatientDetailCard = (props) => {
             <Divider style={styles.dividerStyle} />
 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle}/>
+                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Notes
