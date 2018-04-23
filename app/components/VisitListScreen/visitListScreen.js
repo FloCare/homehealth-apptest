@@ -9,7 +9,7 @@ function VisitListScreen(props) {
         <View style={{flex: 1}}>
             {RenderIf(props.calendarObject, props.showCalendar)}
             <VisitListContainer visitResultObject={props.visitResultObject} />
-            <Button large title='ADD VISIT' onPress={props.addVisit} />
+            <Button large title='ADD VISIT' onPress={props.onAddVisitPress} />
         </View>
         );
 }
