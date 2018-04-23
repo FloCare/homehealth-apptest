@@ -19,7 +19,9 @@ class AddPatientFormContainer extends Component {
                 primaryContact: null,
                 emergencyContact: null,
                 diagnosis: null,
-                notes: null
+                notes: null,
+                lat: null,
+                long: null
             },
             selectedItems: []
         };
@@ -50,33 +52,51 @@ class AddPatientFormContainer extends Component {
     }
 
     onAddressSelect(data, details) {
-        // Todo: Save the data returned by Google APIs to state var: value
+        // Todo: Handle OFFLINE flow
 
-        console.log('LatLong Object: ', details.geometry.location);
-        const arrLen = details.address_components.length;
-        console.log('Address Components: ');
+        console.log('details:', details);
 
-        let streetAddress = 'Pram Niwas, HSR Layout';
-
+        const address = details.address_components;
         let zip = null;
-        if (details.address_components[arrLen-1]['types'][0] === 'postal_code') {
-            zip = details.address_components[arrLen-1].long_name;
-            console.log('Zip Code: ', zip);
-        } else {
-            console.log('Last component is not a postal address');
-        }
+        let city = null;
+        let state = null;
+        let country = null;
+        let lat = null;
+        let long = null;
+        // Todo: Build streetAddress from address components
+        const streetAddress = details.formatted_address;
+        const geometry = details.geometry;
 
-        let city = 'Honululu';
-        // Todo: Update city and state from API
+        address.forEach((component) => {
+            const types = component.types;
+            // Todo: Handle edge cases for city
+            if (types.indexOf('locality') > -1) {
+                city = component.long_name;
+            }
 
-        // Todo: Change this ???
-        this.setState({
-            value: Object.assign({}, this.state.value, {streetAddress, zip, city})
+            if (types.indexOf('administrative_area_level_1') > -1) {
+                state = component.short_name;
+            }
+
+            if (types.indexOf('postal_code') > -1) {
+                zip = component.long_name;
+            }
+
+            if (types.indexOf('country') > -1) {
+                country = component.long_name;
+            }
         });
 
-        console.log('====================');
-        console.log('state value:', this.state.value);
-        console.log('====================');
+        if (geometry) {
+            const location = geometry.location;
+            if (location) {
+                lat = location.lat;
+                long = location.long;
+            }
+        }
+
+        const value = Object.assign({}, this.state.value, {streetAddress, city, state, zip, country, lat, long});
+        this.setState({value});
     }
 
     onChange(value, path) {
@@ -100,7 +120,9 @@ class AddPatientFormContainer extends Component {
                 primaryContact: null,
                 emergencyContact: null,
                 diagnosis: null,
-                notes: null
+                notes: null,
+                lat: null,
+                long: null
             },
             selectedItems: []
         });
