@@ -4,6 +4,15 @@ import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
 
 class PatientListScreenContainer extends Component {
+    static navigatorButtons = {
+        rightButtons: [
+            {
+                icon: require('../../resources/ic_location_on_black_24dp.png'), // for icon button, provide the local image asset name
+                id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+            }
+        ]
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -14,6 +23,8 @@ class PatientListScreenContainer extends Component {
             this.createSectionListFromPatientListData.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.onItemPressed = this.onItemPressed.bind(this);
+        this.navigateTo = this.navigateTo.bind(this);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
     componentDidMount() {
@@ -25,16 +36,23 @@ class PatientListScreenContainer extends Component {
     }
 
     onItemPressed(item) {
-        this.props.navigator.push({
-            screen: screenNames.patientDetails,
-            animated: true,
-            animationType: 'fade',
-            title: item.item.name,
-            backbuttonHidden: true,
-            passProps: {
-                patientId: item.item.patientID
-            }
+        this.navigateTo(
+            screenNames.patientDetails,
+            item.item.name, {
+            patientId: item.item.patientID
         });
+    }
+
+    onNavigatorEvent(event) {
+        if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+            if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
+                // Todo: Navigate to the AddPatient Screen
+                this.navigateTo(
+                    screenNames.addPatient,
+                    'New Patient'
+                );
+            }
+        }
     }
 
     getSectionData(query) {
@@ -53,6 +71,17 @@ class PatientListScreenContainer extends Component {
             const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
+    }
+
+    navigateTo(screen, title, props) {
+        this.props.navigator.push({
+            screen,
+            animated: true,
+            animationType: 'fade',
+            title,
+            backbuttonHidden: true,
+            passProps: props
+        });
     }
 
     createSectionListFromPatientListData(patientList) {
