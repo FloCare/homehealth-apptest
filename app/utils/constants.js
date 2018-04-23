@@ -28,7 +28,9 @@ const screenNames = {
     addPatient: 'AddPatient',
     patientDetails: 'PatientDetails',
     patientList: 'PatientList',
-    addNote: 'AddNote'
+    addNote: 'AddNote',
+    homeScreen: 'HomeScreen',
+    visitsScreen: 'VisitsScreen',
 };
 
 export {diagnosisList, screenNames};

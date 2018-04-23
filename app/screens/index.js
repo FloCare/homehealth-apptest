@@ -1,22 +1,33 @@
 import {Navigation} from 'react-native-navigation';
-//import {VisitsScreenContainer} from './visitsScreenContainer';
+import {screenNames} from '../utils/constants';
 import AddPatientScreenContainer from './AddPatientScreenContainer';
 import PatientDetailScreenContainer from './PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
-//import {VisitListContainer} from '../components/common/visitListContainer';
-import {screenNames} from '../utils/constants';
-import RealmTestContainer from './RealmTestContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
+import {CreateAndSaveDummies, MyRealm, Visit} from '../utils/data/schema';
+import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
+import {VisitsScreenContainer} from '../components/VisitScreen/visitsScreenContainer';
+import {CalendarPickerButton} from '../components/common/calendarPickerButton';
+// import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 
 const RegisterScreens = () => {
-    //Navigation.registerComponent('VisitsList', () => VisitsScreenContainer);
+    if (MyRealm.objects(Visit.schema.name).length === 0) {
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+    }
+
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
     Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);
     Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
-    //Navigation.registerComponent('VisitsList', () => VisitsScreenContainer);
-    //Navigation.registerComponent('Visit2', () => VisitListContainer);
-    Navigation.registerComponent('RealmTest', () => RealmTestContainer);
+    Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
+    Navigation.registerComponent(screenNames.visitsScreen, () => VisitsScreenContainer);
+    // Navigation.registerComponent('AddVisitsScreen', () => AddVisitsScreenContainer);
+    Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
 };
 
 export {RegisterScreens};

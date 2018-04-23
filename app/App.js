@@ -5,11 +5,11 @@ import {screenNames} from './utils/constants';
 RegisterScreens();
 
 const navigatorStyle = {
-        navBarBackgroundColor: '#45ceb1',
-        navBarTextColor: '#ffffff',
-        navBarButtonColor: '#666666',
-        tabBarBackgroundColor: '#45ceb1',
-}
+    navBarBackgroundColor: '#45ceb1',
+    navBarTextColor: '#ffffff',
+    navBarButtonColor: '#666666',
+    tabBarBackgroundColor: '#45ceb1',
+};
 
 Navigation.startTabBasedApp({
     tabs: [
@@ -23,42 +23,35 @@ Navigation.startTabBasedApp({
         //     label: 'two',
         //     icon: require('../resources/ic_fiber_pin_2x.png'),
         //     screen: 'Visit2',
-        //     navigatorStyle: navigatorStyle
+        //     navigatorStyle
         // },
         {
             title: 'Add new patient',
             label: 'add',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.addPatient,
-            navigatorStyle: navigatorStyle
-        },
-        {
-            title: 'Patient Details',
-            label: 'patientDetails',
-            icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: screenNames.patientDetails,
-            navigatorStyle: navigatorStyle
+            navigatorStyle
         },
         {
             title: 'Patients',
             label: 'patientList',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.patientList,
-            navigatorStyle: navigatorStyle
+            navigatorStyle
         },
         {
             title: 'Add Notes',
             label: 'addNote',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.addNote,
-            navigatorStyle: navigatorStyle
+            navigatorStyle
         },
         {
             title: 'RealmTest',
             label: 'realmTest',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: 'RealmTest',
-            navigatorStyle: navigatorStyle
+            navigatorStyle
         }
     ]
 });

@@ -85,7 +85,6 @@ Visit.schema = {
     }
 };
 
-
 const floDB = new Realm({
     schema: [
         LatLong.schema,
