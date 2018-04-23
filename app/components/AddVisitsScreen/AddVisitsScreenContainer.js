@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
 import {AddVisitsScreen} from './AddVisitsScreen';
-import {Address, MyRealm, Patient, Place} from '../../utils/data/schema';
+import {Address, floDB, Patient, Place, Visit} from '../../utils/data/schema';
 import {ArrayToMap} from '../../utils/collectionUtils';
 
 class AddVisitsScreenContainer extends Component {
@@ -10,18 +10,18 @@ class AddVisitsScreenContainer extends Component {
         this.state = {
             selectedItems: Map()
         };
-        this.placeResultObject = MyRealm.objects(Place.schema.name);
-        this.patientsResultObject = MyRealm.objects(Patient.schema.name);
-        this.addressByID = ArrayToMap(MyRealm.objects(Address.schema.name), 'addressID');
+        this.placeResultObject = floDB.objects(Place.schema.name);
+        this.patientsResultObject = floDB.objects(Patient.schema.name);
 
         this.onChangeText = this.onChangeText.bind(this);
         this.onItemToggle = this.onItemToggle.bind(this);
+        this.onDone = this.onDone.bind(this);
         this.onTagPress = this.onTagPress.bind(this);
     }
 
     onChangeText(text) {
-        this.placeResultObject = MyRealm.objects(Place.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
-        this.patientsResultObject = MyRealm.objects(Patient.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
+        this.placeResultObject = floDB.objects(Place.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
+        this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
 
         this.setState({filterText: text});
     }
@@ -44,14 +44,19 @@ class AddVisitsScreenContainer extends Component {
                 allItems.push(this.getFlatPlaceItem(nextPlace.value));
                 nextPlace = placeIterator.next();
             } else if (nextPatient.value.name.toLowerCase().localeCompare(nextPlace.value.name.toLowerCase()) < 0) {
-                    allItems.push(this.getFlatPatientItem(nextPatient.value));
-                    nextPatient = patientIterator.next();
-                } else {
-                    allItems.push(this.getFlatPlaceItem(nextPlace.value));
-                    nextPlace = placeIterator.next();
-                }
+                allItems.push(this.getFlatPatientItem(nextPatient.value));
+                nextPatient = patientIterator.next();
+            } else {
+                allItems.push(this.getFlatPlaceItem(nextPlace.value));
+                nextPlace = placeIterator.next();
+            }
         } while (!(nextPlace.done && nextPatient.done));
         return allItems;
+    }
+
+    getFlatAddress(addressObject) {
+        //TODO create address from object
+        return 'Placeholder Address, PlaceHoldington Street';
     }
 
     getFlatPatientItem(patient) {
@@ -61,7 +66,7 @@ class AddVisitsScreenContainer extends Component {
             type: 'patient',
             id: patient.patientID,
             name: patient.name,
-            address: this.addressByID.get(patient.addressID),
+            address: this.getFlatAddress(patient.address),
             isSelected: this.state.selectedItems.has(key)
         };
     }
@@ -89,12 +94,28 @@ class AddVisitsScreenContainer extends Component {
             (prevState) => {
                 if (prevState.selectedItems.has(item.key)) {
                     console.log(`adding one${item.key}`);
-                   return {selectedItems: prevState.selectedItems.delete(item.key)};
+                    return {selectedItems: prevState.selectedItems.delete(item.key)};
                 }
                 console.log('removing one');
                 return {selectedItems: prevState.selectedItems.set(item.key, item)};
             }
         );
+    }
+
+    onDone() {
+        //TODO write to DB
+        // floDB.write(()=>{
+        //     for (const selectedItem of this.state.selectedItems) {
+        //         floDB.create(Visit.schema.name, {
+        //             visitID: ,
+        //
+        //         })
+        //     }
+        // })
+        // if (this.props.onDone) {
+        //     this.props.onDone(this.state.selectedItems);
+        // }
+        this.props.navigator.pop();
     }
 
     render() {
@@ -105,7 +126,7 @@ class AddVisitsScreenContainer extends Component {
                 onItemToggle={this.onItemToggle}
                 selectedItems={Array.from(this.state.selectedItems.values())}
                 listItems={this.getFlatListWithAllItems()}
-                // listItems={[{type: 'patient', name: 'name', id: '12343', address: 'here, there, everywhere'}]}
+                onDone={this.onDone}
             />
         );
     }

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Calendar} from 'react-native-calendars';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
+import {screenNames} from '../../utils/constants';
 
 class VisitListScreenContainer extends Component {
     constructor(props) {
@@ -11,7 +12,9 @@ class VisitListScreenContainer extends Component {
             showCalendar: false
         };
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+
         this.onDayPress = this.onDayPress.bind(this);
+        this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
     }
 
     onNavigatorEvent(event) {
@@ -26,6 +29,18 @@ class VisitListScreenContainer extends Component {
     onDayPress(day) {
         console.log(`${day.timestamp} was pressed`);
         this.setState({date: day, showCalendar: false});
+    }
+
+    navigateToAddVisitsScreen() {
+        this.props.navigator.push({
+            screen: screenNames.addVisitScreen,
+            passProps: {
+                date: this.state.date
+            },
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
     }
 
     generateVisitResultObject(date) {
@@ -44,7 +59,7 @@ class VisitListScreenContainer extends Component {
                 />}
                 showCalendar={this.state.showCalendar}
                 visitResultObject={this.generateVisitResultObject(this.state.date)}
-                // addVisit={}
+                onAddVisitPress={this.navigateToAddVisitsScreen}
             />
         );
     }

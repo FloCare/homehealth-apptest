@@ -1,7 +1,10 @@
 import React from 'react';
 import {View, FlatList} from 'react-native';
-import {SearchBar, ListItem, List} from 'react-native-elements';
+import {SearchBar, ListItem, Button} from 'react-native-elements';
 import {Tag} from '../common/tag';
+
+//TODO improve efficiency
+//TODO mark the places already selected for visit as such
 
 function createListItemComponent(item, onItemToggle) {
     const avatar = item.type === 'patient' ? require('../../../resources/ic_fiber_pin_2x.png') : require('../../../resources/ic_location_on_black_24dp.png');
@@ -20,7 +23,7 @@ function createListItemComponent(item, onItemToggle) {
 }
 
 function AddVisitsScreen(props) {
-    console.log(`1111 ${props.listItems[0]}`);
+    //TODO theres inconsistencies in whether the button lable is in caps or not
     return (
         <View style={{flex: 1}}>
             <SearchBar onChangeText={props.onChangeText} />
@@ -34,6 +37,11 @@ function AddVisitsScreen(props) {
             {/*<List>*/}
                 {/*{props.listItems.map((item) => createListItemComponent(item, props.onItemToggle))}*/}
             {/*</List>*/}
+            <Button
+                large
+                title={'Done'}
+                onPress={props.onDone}
+            />
         </View>
     );
 }

@@ -155,4 +155,4 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {floDB, Patient, Episode, Visit, Address, LatLong, CreateAndSaveDummies};
+export {floDB, Patient, Episode, Visit, Place, Address, LatLong, CreateAndSaveDummies};
