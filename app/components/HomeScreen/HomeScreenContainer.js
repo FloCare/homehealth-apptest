@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {MyRealm, Visit} from '../../utils/data/schema';
+import {floDB, Visit} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 
 class HomeScreenContainer extends Component {
@@ -35,7 +35,7 @@ class HomeScreenContainer extends Component {
     }
 
     render() {
-        this.visitResultObject = MyRealm.objects(Visit.schema.name)
+        this.visitResultObject = floDB.objects(Visit.schema.name)
                                         .filtered('midnightEpoch==$0', this.state.date)
                                         .filtered('isDone==false');
         return (

@@ -7,7 +7,7 @@ class PatientDetailScreenContainer extends Component {
     static navigatorButtons = {
         rightButtons: [
             {
-                icon: require('/Users/pymd/flo/mtp/resources/ic_location_on_black_24dp.png'), // for icon button, provide the local image asset name
+                icon: require('../../resources/ic_location_on_black_24dp.png'), // for icon button, provide the local image asset name
                 id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
             }
         ]

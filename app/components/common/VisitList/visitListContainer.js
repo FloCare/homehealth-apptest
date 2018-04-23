@@ -1,50 +1,34 @@
 import React, {Component} from 'react';
 
 import {VisitList} from './visitList';
-import {MyRealm, Case, Patient} from '../../../utils/data/schema';
-import * as Utils from '../../../utils/collectionUtils';
+import {floDB} from '../../../utils/data/schema';
 
 class VisitListContainer extends Component {
     constructor(props) {
         super(props);
         this.visitResultObject = this.props.visitResultObject;
 
-        this.handleVisitResultObjectChange = this.handleVisitResultObjectChange.bind(this);
-        this.flipDoneField = this.flipDoneField.bind(this);
-        this.refreshDataMaps = this.refreshDataMaps.bind(this);
+        this.state = {flatItems: this.createFlatVisitItems()};
 
-        this.refreshDataMaps();
+        this.flipDoneField = this.flipDoneField.bind(this);
+        this.handleVisitResultObjectChange = this.handleVisitResultObjectChange.bind(this);
     }
 
     componentDidMount() {
-        MyRealm.addListener('change', this.handleVisitResultObjectChange);
+        floDB.addListener('change', this.handleVisitResultObjectChange);
     }
 
     componentWillUnmount() {
-        MyRealm.removeListener('change', this.handleVisitResultObjectChange);
-    }
-
-    refreshDataMaps() {
-        this.visitByID = Utils.ArrayToMap(this.visitResultObject, 'visitID');
-
-        const caseResultObject = Utils.filterResultObjectByListMembership(
-            MyRealm.objects(Case.schema.name), 'caseID', this.visitResultObject.map((visit) => visit.caseID));
-        this.caseByID = Utils.ArrayToMap(caseResultObject, 'caseID');
-        //TODO
-        // this.caseByID = new Map([...Utils.ArrayToMap(caseResultObject, 'caseID'), ...this.caseByID]);
-
-        const patientResultObject = Utils.filterResultObjectByListMembership(
-            MyRealm.objects(Patient.schema.name), 'patientID', caseResultObject.map(case_ => case_.patientID));
-        this.patientByID = Utils.ArrayToMap(patientResultObject, 'patientID');
+        floDB.removeListener('change', this.handleVisitResultObjectChange);
     }
 
     flipDoneField(visitID) {
-        MyRealm.write(() => { this.visitByID.get(visitID).isDone = !this.visitByID.get(visitID).isDone; });
+        const modifiedObject = this.visitResultObject.find(visit => visit.visitID === visitID);
+        floDB.write(() => { modifiedObject.isDone = !modifiedObject.isDone; });
     }
 
     handleVisitResultObjectChange() {
-        this.refreshDataMaps();
-        this.forceUpdate();
+        this.setState({flatItems: this.createFlatVisitItems()});
     }
 
     createFlatVisitItems() {
@@ -57,23 +41,23 @@ class VisitListContainer extends Component {
     }
 
     createFlatVisitItem(visit) {
-        const case_ = this.caseByID.get(visit.caseID);
-        const patient = this.patientByID.get(case_.patientID);
+        const episode = visit.episode[0]; //this.episodeByID.get(visit.episodeID);
+        const patient = episode.patient[0]; //this.patientByID.get(episode.patientID);
 
         return {
             key: visit.visitID,
             patientName: patient.name,
             address: 'dummy for now',
             isDone: visit.isDone,
-            diagnosis: case_.diagnosis
+            diagnosis: patient.diagnosis
         };
     }
 
     render() {
-        console.log(`render called at ${Date.now()}`);
+        // console.log(`render called at ${Date.now()}`);
         return (
             <VisitList
-                visitItems={this.createFlatVisitItems()}
+                visitItems={this.state.flatItems}
                 onCheck={this.flipDoneField}
             />
         );
