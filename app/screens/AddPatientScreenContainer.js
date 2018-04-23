@@ -25,7 +25,7 @@ class AddPatientScreenContainer extends Component {
             backbuttonHidden: true,
             passProps: {
                 selectedPatient: patientId,      // add the selected patient Object for hightlighting
-                patientCount: 50                // add the patient Count for displaying in header
+                patientCount: 50                 // add the patient Count for displaying in header
             }
         });
     }

@@ -118,8 +118,8 @@ function CreateAndSaveDummies() {
         const patient = floDB.create(
             Patient.schema.name, {
                 patientID,
-                name: 'John',
-                primaryContact: '9964716595',
+                name: `John_${Math.round(Math.random() * 100)}`,
+                primaryContact: `99647165${Math.round(Math.random() * 100)}`,
                 timestamp: 0
             });
         // Create the corresponding address

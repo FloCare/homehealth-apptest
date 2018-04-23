@@ -26,6 +26,19 @@ Navigation.startTabBasedApp({
         //     navigatorStyle
         // },
         {
+            title: 'Home Screen',
+            label: 'home',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: screenNames.homeScreen,
+            navigatorStyle
+        },{
+            title: 'Visits Screen',
+            label: 'visits',
+            icon: require('../resources/ic_location_on_black_24dp.png'),
+            screen: screenNames.visitsScreen,
+            navigatorStyle
+        },
+        {
             title: 'Add new patient',
             label: 'add',
             icon: require('../resources/ic_location_on_black_24dp.png'),
@@ -38,20 +51,13 @@ Navigation.startTabBasedApp({
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.patientList,
             navigatorStyle
-        },
-        {
-            title: 'Add Notes',
-            label: 'addNote',
-            icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: screenNames.addNote,
-            navigatorStyle
-        },
-        {
-            title: 'RealmTest',
-            label: 'realmTest',
-            icon: require('../resources/ic_location_on_black_24dp.png'),
-            screen: 'RealmTest',
-            navigatorStyle
         }
+        // {
+        //     title: 'RealmTest',
+        //     label: 'realmTest',
+        //     icon: require('../resources/ic_location_on_black_24dp.png'),
+        //     screen: 'RealmTest',
+        //     navigatorStyle
+        // }
     ]
 });

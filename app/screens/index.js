@@ -4,15 +4,14 @@ import AddPatientScreenContainer from './AddPatientScreenContainer';
 import PatientDetailScreenContainer from './PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
-import {CreateAndSaveDummies, MyRealm, Visit} from '../utils/data/schema';
+import {CreateAndSaveDummies, floDB, Visit} from '../utils/data/schema';
 import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
 import {VisitsScreenContainer} from '../components/VisitScreen/visitsScreenContainer';
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 // import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 
 const RegisterScreens = () => {
-    if (MyRealm.objects(Visit.schema.name).length === 0) {
-        CreateAndSaveDummies();
+    if (floDB.objects(Visit.schema.name).length === 0) {
         CreateAndSaveDummies();
         CreateAndSaveDummies();
         CreateAndSaveDummies();
