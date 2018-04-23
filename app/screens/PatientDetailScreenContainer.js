@@ -65,6 +65,10 @@ class PatientDetailScreenContainer extends Component {
         } else {
             const patientDetails = floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId);
             if (patientDetails && patientDetails.length > 0) {
+                // Todo: If latLong not present, fire geocode API
+                if (!(patientDetails[0].address.latLong)) {
+                    console.log('LATLONG NOT FOUND. Fire the GEOCODE APIs here.');
+                }
                 this.setState({patientDetail: patientDetails[0]});
             }
         }

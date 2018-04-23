@@ -39,7 +39,7 @@ class PatientListScreenContainer extends Component {
         this.navigateTo(
             screenNames.patientDetails,
             item.item.name, {
-            patientId: item.item.patientId
+            patientId: item.item.patientID
         });
     }
 
