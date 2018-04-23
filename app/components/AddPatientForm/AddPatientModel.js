@@ -59,7 +59,8 @@ const formOptions = {
             error: 'Please enter a valid street address',
             template: AddressAutoComplete,
             config: {
-                onPress: null
+                onPress: null,
+                onChangeAddressText: null
             }
         },
         apartmentNo: {
@@ -115,6 +116,14 @@ class Options {
         console.log('Setting onSelectedItems Change');
         console.log('============================');
         this._options.fields.diagnosis.config.onSelectedItemsChange = onSelectedItemsChange;
+    }
+
+    get OnChangeAddressText() {
+        return this._options.fields.streetAddress.config.onChangeAddressText;
+    }
+
+    set OnChangeAddressText(onChangeAddressText) {
+        this._options.fields.streetAddress.config.onChangeAddressText = onChangeAddressText;
     }
 }
 

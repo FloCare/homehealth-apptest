@@ -57,6 +57,9 @@ function Autocompletetextbox(locals) {
                     query={{
                         key: 'AIzaSyDiWZ3198smjFepUa0ZAoHePSnSxuhTzRU'
                     }}
+                    textInputProps={{
+                        onChangeText: locals.config.onChangeAddressText
+                    }}
                     styles={{
                         textInputContainer: {
                             backgroundColor: 'rgba(0,0,0,0)',
