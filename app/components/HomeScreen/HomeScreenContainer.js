@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {floDB, Visit} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
+import {screenNames} from '../../utils/constants';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class HomeScreenContainer extends Component {
 
     navigateToVisitsScreen() {
         this.props.navigator.push({
-            screen: 'VisitsScreen',
+            screen: screenNames.visitListScreen,
             passProps: {
                 date: this.state.date
             },

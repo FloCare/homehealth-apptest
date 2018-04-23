@@ -15,24 +15,24 @@ class PatientMapContainer extends Component {
     // state = {patientAddress: props.patientAddress, patientLocation: props.patientLocation};
 
     componentDidMount() {
-        this.getDirections('37.4, -122', `${this.state.patientLocation.latitude},${this.state.patientLocation.longitude}`);
+        // this.getDirections('37.4, -122', `${this.state.patientLocation.latitude},${this.state.patientLocation.longitude}`);
     }
 
-    async getDirections(startLoc, destinationLoc) {
-        try {
-            const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}`);
-            const respJson = await resp.json();
-            const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
-            const coords = points.map((point) => ({
-                    latitude: point[0],
-                    longitude: point[1]
-                }));
-            this.setState({polylineCoordinates: coords});
-            return coords;
-        } catch (error) {
-            return error;
-        }
-    }
+    // async getDirections(startLoc, destinationLoc) {
+    //     try {
+    //         const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}`);
+    //         const respJson = await resp.json();
+    //         const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
+    //         const coords = points.map((point) => ({
+    //                 latitude: point[0],
+    //                 longitude: point[1]
+    //             }));
+    //         this.setState({polylineCoordinates: coords});
+    //         return coords;
+    //     } catch (error) {
+    //         return error;
+    //     }
+    // }
 
     render() {
         return (

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Calendar} from 'react-native-calendars';
-import {VisitListScreen} from './visitsScreen';
+import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
 
 class VisitListScreenContainer extends Component {

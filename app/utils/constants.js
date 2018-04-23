@@ -33,6 +33,7 @@ const screenNames = {
     patientDetails: 'PatientDetails',
     addNote: 'AddNote',
 
+    addVisitScreen: 'AddVisitScreen',
     visitListScreen: 'VisitListScreen',
 };
 
