@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Calendar} from 'react-native-calendars';
 import {VisitScreen} from './visitsScreen';
-import {MyRealm, Visit} from '../../utils/data/schema';
+import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
 
 class VisitsScreenContainer extends Component {
     constructor(props) {
@@ -29,7 +29,7 @@ class VisitsScreenContainer extends Component {
     }
 
     generateVisitResultObject(date) {
-        return MyRealm.objects(Visit.schema.name).filtered('midnightEpoch==$0', 0).sorted('isDone');//date);//.sorted('isDone');
+        return floDB.objects(Visit.schema.name).filtered('midnightEpoch==$0', 0).sorted('isDone');//date);//.sorted('isDone');
     }
 
     render() {
