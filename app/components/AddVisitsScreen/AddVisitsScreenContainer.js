@@ -1,13 +1,17 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
 import {AddVisitsScreen} from './AddVisitsScreen';
+import {ListItem} from 'react-native-elements';
 import {Address, floDB, Patient, Place, Visit} from '../../utils/data/schema';
 import {ArrayToMap} from '../../utils/collectionUtils';
+import {visitType} from '../../utils/constants';
+import {generateUUID} from '../../utils/utils';
 
 class AddVisitsScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            date: props.date,
             selectedItems: Map()
         };
         this.placeResultObject = floDB.objects(Place.schema.name);
@@ -15,6 +19,7 @@ class AddVisitsScreenContainer extends Component {
 
         this.onChangeText = this.onChangeText.bind(this);
         this.onItemToggle = this.onItemToggle.bind(this);
+        this.createListItemComponent = this.createListItemComponent.bind(this);
         this.onDone = this.onDone.bind(this);
         this.onTagPress = this.onTagPress.bind(this);
     }
@@ -63,7 +68,7 @@ class AddVisitsScreenContainer extends Component {
         const key = `patient_${patient.patientID}`;
         return {
             key,
-            type: 'patient',
+            type: visitType.patient,
             id: patient.patientID,
             name: patient.name,
             address: this.getFlatAddress(patient.address),
@@ -76,7 +81,7 @@ class AddVisitsScreenContainer extends Component {
         const key = `place_${place.placeID}`;
         return {
             key,
-            type: 'place',
+            type: visitType.place,
             id: place.placeID,
             name: place.name,
             address: this.addressByID.get(place.addressID),
@@ -102,19 +107,42 @@ class AddVisitsScreenContainer extends Component {
         );
     }
 
+    createListItemComponent({item}) {
+        const avatar = item.type === 'patient' ? require('../../../resources/ic_fiber_pin_2x.png') : require('../../../resources/ic_location_on_black_24dp.png');
+        const rightIcon = item.isSelected ? {name: 'check'} : {name: 'ac-unit'};
+        console.log(item);
+        console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
+        return (
+            <ListItem
+                key={item.key}
+                title={item.name}
+                subtitle={item.address}
+                avatar={avatar}
+                rightIcon={rightIcon}
+                onPressRightIcon={() => this.onItemToggle(item)}
+            />
+        );
+    }
+
     onDone() {
-        //TODO write to DB
-        // floDB.write(()=>{
-        //     for (const selectedItem of this.state.selectedItems) {
-        //         floDB.create(Visit.schema.name, {
-        //             visitID: ,
-        //
-        //         })
-        //     }
-        // })
-        // if (this.props.onDone) {
-        //     this.props.onDone(this.state.selectedItems);
-        // }
+        //TODO improve efficiency by not having to query for patient object
+        floDB.write(() => {
+            for (const selectedItem of this.state.selectedItems.values()) {
+                if (selectedItem.type === visitType.patient) {
+                    //TODO what happens when patients have multiple cases
+                    const patient = this.patientsResultObject.filtered('patientID==$0', selectedItem.id)[0];
+                    //TODO add correct date
+                    patient.episodes[0].visits.push({visitID: generateUUID(), midnightEpoch: 0});
+                } else if (selectedItem.type === visitType.place) {
+                    const place = this.placeResultObject.filtered('placeID==$0', selectedItem.id)[0];
+                    //TODO insert visit correctly
+                    // place.visits.push({visitID: generateUUID(), midnightEpoch: 0});
+                }
+            }
+        });
+        if (this.props.onDone) {
+            this.props.onDone(this.state.selectedItems);
+        }
         this.props.navigator.pop();
     }
 
@@ -123,9 +151,11 @@ class AddVisitsScreenContainer extends Component {
             <AddVisitsScreen
                 onChangeText={this.onChangeText}
                 onTagPress={this.onTagPress}
-                onItemToggle={this.onItemToggle}
+                // onItemToggle={this.onItemToggle}
                 selectedItems={Array.from(this.state.selectedItems.values())}
+                //TODO is this costing us in terms of efficiency
                 listItems={this.getFlatListWithAllItems()}
+                renderItem={this.createListItemComponent}
                 onDone={this.onDone}
             />
         );

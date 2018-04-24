@@ -30,6 +30,7 @@ Navigation.startTabBasedApp({
             label: 'home',
             icon: require('../resources/ic_location_on_black_24dp.png'),
             screen: screenNames.homeScreen,
+            // screen: screenNames.homeScreen,
             navigatorStyle
         },
         // {
