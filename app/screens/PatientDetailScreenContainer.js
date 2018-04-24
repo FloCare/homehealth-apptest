@@ -34,6 +34,12 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddVisit() {
         console.log('Add Visit Button is Pressed. Navigate to the add visit screen ...');
+        this.props.navigator.push({
+            screen: screenNames.addVisitScreen,
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
     }
 
     onPressAddNotes() {
@@ -94,7 +100,6 @@ class PatientDetailScreenContainer extends Component {
             result.results[0].geometry &&
             result.results[0].geometry.location
         ) {
-            console.log('INSIDE PARSE RESPONSE');
             const loc = result.results[0].geometry.location;
             const lat = loc.lat;
             const long = loc.lng;
@@ -126,7 +131,7 @@ class PatientDetailScreenContainer extends Component {
             });
             this.setState({patientDetail: newState});
         } else {
-            console.log('ONE OF THE CONDITIONS FAILED');
+            console.log('Failed to parse Geocode Response from Google APIs');
             console.log(result.status);
             console.log(result.results[0].geometry.location);
         }

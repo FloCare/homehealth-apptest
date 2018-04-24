@@ -14,19 +14,24 @@ const PatientDetailCard = (props) => {
         emergencyContact,
         diagnosis,
         notes,
-        visits,
-        patientLocation
+        address
     } = patientDetail;
+
+    let latLong = null;
+    if (address) {
+        latLong = address.latLong;
+    }
     return (
         <View style={styles.parentContainerStyle}>
-            {/*TODO pass on correct information to map*/}
+            {latLong &&
             <PatientDetailMapComponent
                 patientCoordinates={{
-                    latitude: 37.78825,
-                    longitude: -122.4324
+                    latitude: latLong.lat,
+                    longitude: latLong.long
                 }}
-                patientAddress={'Placeholder address'}
+                patientAddress={address.streetAddress}
             />
+            }
             <View style={styles.containerStyle}>
                 <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
                 <View style={{marginLeft: 14}}>
