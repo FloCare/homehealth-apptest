@@ -33,9 +33,13 @@ class Address extends Realm.Object {
         };
     }
 
-    set coordinates({latitude, longitude}) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+    set coordinates(coordinates) {
+        this.latitude = coordinates.latitude;
+        this.longitude = coordinates.longitude;
+    }
+
+    hasCoordinates() {
+        return (this.latitude && this.longitude);
     }
 }
 

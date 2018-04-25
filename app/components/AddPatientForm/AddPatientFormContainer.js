@@ -183,12 +183,16 @@ class AddPatientFormContainer extends Component {
 
                     // Add a latLong if present
                     if (this.state.value.lat && this.state.value.long) {
-                        const latLongID = Math.random().toString();
-                        address.latLong = {
-                            latLongID,
-                            lat: this.state.value.lat,
-                            long: this.state.value.long
+                        address.coordinates = {
+                            latitude: this.state.value.lat,
+                            longitude: this.state.value.long
                         };
+                        // const latLongID = Math.random().toString();
+                        // address.latLong = {
+                        //     latLongID,
+                        //     lat: this.state.value.lat,
+                        //     long: this.state.value.long
+                        // };
                     }
 
                     // Add an Episode
