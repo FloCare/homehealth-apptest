@@ -16,9 +16,9 @@ class AddPatientForm extends Component {
                 <Form
                     ref={refName}
                     type={modelType}
-                    options={options.Options}
-                    onChange={onChange}
                     value={value}
+                    onChange={onChange}
+                    options={options.Options}
                 />
             </KeyboardAwareScrollView>
         );

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {View, Text, TextInput, FlatList} from 'react-native';
 import {floDB, Patient} from '../../utils/data/schema';
 import {AddNoteFormWithPatientTag} from './AddNoteFormWithPatientTag';
 import {AddNoteFormWithoutPatientTag} from './AddNoteFormWithoutPatientTag';

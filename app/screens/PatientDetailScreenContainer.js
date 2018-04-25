@@ -53,6 +53,9 @@ class PatientDetailScreenContainer extends Component {
             passProps: {
                 patientId: this.state.patientDetail.patientID,
                 name: this.state.patientDetail.name
+            },
+            navigatorStyle: {
+                tabBarHidden: true
             }
         });
     }

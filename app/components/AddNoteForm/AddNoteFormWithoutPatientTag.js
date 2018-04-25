@@ -50,7 +50,7 @@ const AddNoteFormWithoutPatientTag = (props) => {
                 ref={searchRef}
                 onChangeText={onChangeSearchText}
                 placeholder='Search a patient name'
-                clearIcon={{color: '#fffff', name: 'close'}}
+                clearIcon={{name: 'close'}}
                 onClear={setNoSearching}
             />
             {!searching && (name) &&

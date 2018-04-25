@@ -80,7 +80,10 @@ class PatientListScreenContainer extends Component {
             animationType: 'fade',
             title,
             backbuttonHidden: true,
-            passProps: props
+            passProps: props,
+            navigatorStyle: {
+                tabBarHidden: true
+            }
         });
     }
 

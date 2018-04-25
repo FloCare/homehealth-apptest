@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import {AddNoteScreen} from '../components/AddNoteScreen';
+import {View} from 'react-native';
+import AddStopFormContainer from '../AddStopForm';
+import styles from './styles';
 
 class AddNoteScreenContainer extends Component {
     constructor(props) {
@@ -13,15 +15,14 @@ class AddNoteScreenContainer extends Component {
     }
 
     render() {
-        const {patientId, name} = this.props;
         return (
-            <AddNoteScreen
-                onSubmit={this.onSubmit}
-                patientId={patientId}
-                name={name}
-            />
+            <View style={styles.containerStyle}>
+                <AddStopFormContainer
+                    onSubmit={this.onSubmit}
+                />
+            </View>
         );
     }
 }
 
-export default AddNoteScreenContainer;
+export {AddNoteScreenContainer};
