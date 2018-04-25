@@ -6,7 +6,8 @@ function HomeScreen(props) {
         //TODO insert other stuff thats got to be on the home screen too
         <VisitSummary
             visitResultObject={props.visitResultObject}
-            navigateToVisitsScreen={props.navigateToVisitsScreen}
+            navigateToVisitListScreen={props.navigateToVisitListScreen}
+            navigateToVisitMapScreen={props.navigateToVisitMapScreen}
         />
     );
 }

@@ -48,14 +48,14 @@ export function VisitSummary(props) {
                     name='map'
                     type='font-awesome'
                     color='#45ceb1'
-                    onPress={() => console.log('hello')}/>
+                    onPress={props.navigateToVisitMapScreen}/>
                 <Icon
                     raised
                     size={30}
                     name='list'
                     type='font-awesome'
                     color='#45ceb1'
-                    onPress={props.navigateToVisitsScreen}/>
+                    onPress={props.navigateToVisitListScreen}/>
             </View>
             <View style={{
                 backgroundColor: 'blue',

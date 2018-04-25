@@ -35,6 +35,7 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     visitListScreen: 'VisitListScreen',
+    visitMapScreen: 'VisitMapScreen',
 };
 
 const visitType = {

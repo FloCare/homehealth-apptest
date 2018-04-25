@@ -44,7 +44,7 @@ class VisitListScreenContainer extends Component {
     }
 
     generateVisitResultObject(date) {
-        return floDB.objects(Visit.schema.name).filtered('midnightEpoch==$0', 0).sorted('isDone');//date);//.sorted('isDone');
+        return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', 0).sorted('isDone');//date);//.sorted('isDone');
     }
 
     render() {
