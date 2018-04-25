@@ -5,6 +5,7 @@ import {floDB, Patient} from '../../utils/data/schema';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
+import {parsePhoneNumber} from '../../utils/lib';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -166,8 +167,8 @@ class AddPatientFormContainer extends Component {
                     const patient = floDB.create(Patient.schema.name, {
                         patientID: patientId,
                         name: this.state.value.name ? this.state.value.name.toString() : '',
-                        primaryContact: this.state.value.primaryContact ? this.state.value.primaryContact.toString() : '',
-                        emergencyContact: this.state.value.emergencyContact ? this.state.value.emergencyContact.toString() : '',
+                        primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString()) : '',
+                        emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString()) : '',
                         notes: this.state.value.notes ? this.state.value.notes.toString() : '',
                         timestamp: 0,                                   // Todo: Add a timestmap
                     });
@@ -204,6 +205,7 @@ class AddPatientFormContainer extends Component {
             } catch (err) {
                 console.log('Error on Patient and Episode creation: ', err);
                 // Todo: Raise an error to the screen
+                return;
             }
 
             // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));

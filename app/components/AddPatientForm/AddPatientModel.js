@@ -30,20 +30,23 @@ const formOptions = {
             error: nameError,
             placeholder: 'John Doe',
             returnKeyType: 'next',
-            autoCapitalize: 'words'
+            autoCapitalize: 'words',
         },
         zip: {
             label: 'Zip Code',
             error: 'Please enter a valid zipCode for the patient',
-            placeholder: '12345'
+            placeholder: '12345',
+            keyboardType: 'numeric'
         },
         primaryContact: {
             label: 'Primary Contact',
             placeholder: '541-754-3010',
+            keyboardType: 'numeric'
         },
         emergencyContact: {
             label: 'Emergency Contact',
-            placeholder: '541-754-3010'
+            placeholder: '541-754-3010',
+            keyboardType: 'numeric'
         },
         diagnosis: {
             label: 'Diagnosis',
@@ -66,7 +69,8 @@ const formOptions = {
         },
         apartmentNo: {
             label: 'Apartment No.',
-            placeholder: '#482'
+            placeholder: '#482',
+            keyboardType: 'numeric'
         },
         city: {
             label: 'City, State',
