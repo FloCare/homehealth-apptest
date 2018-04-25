@@ -50,9 +50,8 @@ function Autocompletetextbox(locals) {
             <View style={textboxViewStyle}>
                 <GooglePlacesAutocomplete
                     placeholder='32, Private Drive'
-                    minLength={2}
+                    minLength={1}
                     autoFocus={false}
-                    returnKeyType={'default'}
                     fetchDetails
                     query={{
                         key: 'AIzaSyDiWZ3198smjFepUa0ZAoHePSnSxuhTzRU'
@@ -87,6 +86,7 @@ function Autocompletetextbox(locals) {
                     }}
                     currentLocation={false}
                     onPress={locals.config.onPress}
+                    ref={locals.config.refName}
                 />
             </View>
             {help}

@@ -33,9 +33,9 @@ class AddNoteFormContainer extends Component {
     }
 
     onChangeSearchText(query) {
-        this.setState({searching: true});
         if (query && query.toString().length > 0) {
             console.log(query);
+            this.setState({searching: true});
             try {
                 // Todo: Revisit query logic
                 const queryStr = `name CONTAINS[c] "${query.toString()}"`;

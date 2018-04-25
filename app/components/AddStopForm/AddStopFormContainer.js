@@ -5,8 +5,7 @@ import t from 'tcomb-form-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {floDB, Place} from '../../utils/data/schema';
 import styles from './styles';
-import stylesheet from './formStyleSheet';
-import AddressAutoComplete from '../AddStopForm/';
+import {Options} from './AddStopFormModel';
 
 const Form = t.form.Form;
 
@@ -20,7 +19,6 @@ class AddStopFormContainer extends Component {
                 stopName: null
             },
             modelType: this.getType(),
-            options: this.getOptions()
         };
         this.onChangeAddressText = this.onChangeAddressText.bind(this);
         this.clearForm = this.clearForm.bind(this);
@@ -28,8 +26,13 @@ class AddStopFormContainer extends Component {
         this.setForm = this.setForm.bind(this);
         this.onChange = this.onChange.bind(this);
         this.getType = this.getType.bind(this);
-        this.getOptions = this.getOptions.bind(this);
         this.onAddressSelect = this.onAddressSelect.bind(this);
+        this.setAddressForm = this.setAddressForm.bind(this);
+
+        this.options = new Options();
+        this.options.OnPress = this.onAddressSelect;
+        this.options.OnChangeAddressText = this.onChangeAddressText;
+        this.options.RefName = this.setAddressForm;
     }
 
     onChange(value, path) {
@@ -39,10 +42,9 @@ class AddStopFormContainer extends Component {
         // Change type and options if address changed
         if (path.indexOf('address') > -1) {
             const type = this.getType(value.address);
-            const options = this.getOptions(value.address);
+            //const options = this.getOptions(value.address);
             this.setState({
-                modelType: type,
-                options
+                modelType: type
             });
         }
 
@@ -54,7 +56,11 @@ class AddStopFormContainer extends Component {
     onChangeAddressText(value) {
         console.log('Address Text Changed:', value);
         const val = Object.assign({}, this.state.value, {address: value});
-        this.setState({value: val});
+        const type = this.getType(value);
+        this.setState({
+            value: val,
+            modelType: type
+        });
     }
 
     onAddressSelect(data, details) {
@@ -65,6 +71,11 @@ class AddStopFormContainer extends Component {
     setForm(element) {
         this.addStopForm = element;
         return this.addStopForm;
+    }
+
+    setAddressForm(element) {
+        this.addressForm = element;
+        return this.addressForm;
     }
 
     getType(address) {
@@ -81,50 +92,6 @@ class AddStopFormContainer extends Component {
         }
     }
 
-    getOptions(address) {
-        if (address && address.length > 0) {
-            const formOptions = {
-                stylesheet,
-                fields: {
-                    address: {
-                        error: 'Please enter a valid address',
-                        placeholder: 'Search',
-                        template: AddressAutoComplete,
-                        config: {
-                            onChangeAddressText: this.onChangeAddressText,
-                            onPress: this.onAddressSelect
-                        }
-                    },
-                    remember: {
-                        label: 'Save for future'
-                    },
-                    stopname: {
-                        label: 'Give it a name',
-                        placeholder: 'Eg. Office',
-                        error: 'Please enter a valid stop name'
-                    }
-                }
-            };
-            return formOptions;
-        } else {
-            const formOptions = {
-                stylesheet,
-                fields: {
-                    address: {
-                        error: 'Please enter a valid address',
-                        placeholder: 'Search',
-                        template: AddressAutoComplete,
-                        config: {
-                            onChangeAddressText: this.onChangeAddressText,
-                            onPress: this.onAddressSelect
-                        }
-                    }
-                }
-            };
-            return formOptions;
-        }
-    }
-
     clearForm() {
         this.setState({
             value: {
@@ -132,23 +99,15 @@ class AddStopFormContainer extends Component {
                 remember: null,
                 stopName: null
             },
-            modelType: this.getType(),
-            options: this.getOptions()
+            modelType: this.getType()
         });
+        this.addressForm.setAddressText('');
     }
 
     handleSubmit(e, onSubmit) {
         const value = this.addStopForm.getValue();
 
-        console.log('====================================================');
-        console.log('INSIDE HANDLESUBMIT');
-        console.log('====================================================');
-        console.log('value = ', value);
-        console.log('====================================================');
-
         if (value && this.state.value.remember) {
-            console.log('HURRRAAAYYYYY!!!! !!! SUCCESSSS! !!!!!!!!');
-
             const placeId = Math.random().toString();
             const addressId = Math.random().toString();
 
@@ -181,15 +140,19 @@ class AddStopFormContainer extends Component {
         const {onSubmit} = this.props;
         return (
             <View style={styles.containerStyle}>
-                <KeyboardAwareScrollView style={styles.formScrollViewStyle}>
+                <KeyboardAwareScrollView
+                    style={styles.formScrollViewStyle}
+                    keyboardShouldPersistTaps='handled'
+                >
                     <Form
                         ref={this.setForm}
                         type={this.state.modelType}
                         value={this.state.value}
-                        options={this.state.options}
+                        options={this.options.Options}
                         onChange={this.onChange}
                     />
                     <Button
+                        disabled={!(this.state.value.address)}
                         buttonStyle={styles.buttonStyle}
                         title='Done'
                         onPress={(e) => this.handleSubmit(e, onSubmit)}

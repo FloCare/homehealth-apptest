@@ -9,6 +9,7 @@ import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer'
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
+import AddStopScreenContainer from './AddStopScreenContainer';
 
 const RegisterScreens = () => {
     if (floDB.objects(Visit.schema.name).length === 0) {
@@ -27,6 +28,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.visitListScreen, () => VisitListScreenContainer);
     Navigation.registerComponent(screenNames.addVisitScreen, () => AddVisitsScreenContainer);
     Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
+    Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
 };
 
 export {RegisterScreens};
