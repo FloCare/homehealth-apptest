@@ -39,7 +39,10 @@ class Address extends Realm.Object {
     }
 
     hasCoordinates() {
-        return (this.latitude && this.longitude);
+        return (
+            (this.latitude !== null) &&
+            (this.longitude !== null)
+        ) ? true : false;
     }
 }
 

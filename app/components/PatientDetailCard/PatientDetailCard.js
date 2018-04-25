@@ -19,9 +19,12 @@ const PatientDetailCard = (props) => {
 
     let coordinates = null;
     if (address) {
-        coordinates = address.coordinates;
+        if (address.coordinates &&
+            address.coordinates.latitude !== null &&
+            address.coordinates.longitude !== null) {
+            coordinates = address.coordinates;
+        }
     }
-    console.log(coordinates)
     return (
         <View style={styles.parentContainerStyle}>
             {coordinates &&
