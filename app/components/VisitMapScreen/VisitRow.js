@@ -8,7 +8,8 @@ function VisitRow(props) {
             <Text>A</Text>
             <View style={{flexDirection: 'row'}}>
                 <Icon name={'menu'} />
-                <Text>{props.text}</Text>
+                {/*<Text>{props.text}</Text>*/}
+                <Text>BCD</Text>
             </View>
         </View>
     );

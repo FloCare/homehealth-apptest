@@ -10,12 +10,35 @@ class HomeScreenContainer extends Component {
             date: 0
         };
         
-        this.navigateToVisitsScreen = this.navigateToVisitsScreen.bind(this);
+        this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
+        this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
     }
 
-    navigateToVisitsScreen() {
+    navigateToVisitListScreen() {
         this.props.navigator.push({
             screen: screenNames.visitListScreen,
+            passProps: {
+                date: this.state.date
+            },
+            navigatorStyle: {
+                tabBarHidden: true
+            },
+            navigatorButtons: {
+                rightButtons: [{
+                    id: 'calendar-picker-visits',
+                    title: 'pick',
+                    // component: 'CalendarPickerButton',
+                    // passProps: {
+                    //     currentDate: this.state.date
+                    // }
+                }]
+            }
+        });
+    }
+
+    navigateToVisitMapScreen() {
+        this.props.navigator.push({
+            screen: screenNames.visitMapScreen,
             passProps: {
                 date: this.state.date
             },
@@ -40,7 +63,11 @@ class HomeScreenContainer extends Component {
                                         .filtered('midnightEpoch==$0', this.state.date)
                                         .filtered('isDone==false');
         return (
-            <HomeScreen visitResultObject={this.visitResultObject} navigateToVisitsScreen={this.navigateToVisitsScreen} />
+            <HomeScreen
+                visitResultObject={this.visitResultObject}
+                navigateToVisitListScreen={this.navigateToVisitListScreen}
+                navigateToVisitMapScreen={this.navigateToVisitMapScreen}
+            />
         );
     }
 
