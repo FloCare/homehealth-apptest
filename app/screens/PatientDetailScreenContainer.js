@@ -71,12 +71,12 @@ class PatientDetailScreenContainer extends Component {
         if (!patientId) {
             this.setState({patientDetail: {}});
         } else {
-            const patientDetails = floDB.objects(Patient.schema.name).filtered(`patientID = "${patientId}"`);
-            this.setState({patientDetail: patientDetails[0]});
+            const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
+            this.setState({patientDetail: patientDetails});
 
-            if (patientDetails && patientDetails.length > 0) {
+            if (patientDetails) {
                 // If latLong not present, fire geocode API
-                if (!(patientDetails[0].address.latLong)) {
+                if (!(patientDetails.address.coordinates)) {
                     console.log('LAT LONG DONT EXIST FOR THIS USER.... TRYING TO FETCH IT');
 
                     fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${patientDetails[0].address.streetAddress}&key=AIzaSyDiWZ3198smjFepUa0ZAoHePSnSxuhTzRU`)
@@ -86,7 +86,7 @@ class PatientDetailScreenContainer extends Component {
                         .catch((error) =>
                             console.log('Error while fetching Geocoded address: ', error));
                 } else {
-                    const latLong = patientDetails[0].address.latLong;
+                    const latLong = patientDetails.address.coordinates;
                     console.log('LAT LONG EXISTS FOR THIS USER: ', latLong.lat, latLong.long);
                 }
             }
@@ -101,30 +101,30 @@ class PatientDetailScreenContainer extends Component {
             result.results[0].geometry.location
         ) {
             const loc = result.results[0].geometry.location;
-            const lat = loc.lat;
-            const long = loc.lng;
+            const latitude = loc.lat;
+            const longitude = loc.lng;
 
-            console.log('Fetched the lat long for this user: ', lat, long);
+            console.log('Fetched the lat long for this user: ', latitude, longitude);
 
             // Todo: Revisit this
             // Write to DB first
-            const patient = floDB.objects(Patient.schema.name).filtered(`patientID = "${this.state.patientDetail.patientID}"`);
+            const patient = floDB.objectForPrimaryKey(Patient);
             floDB.write(() => {
-                patient[0].address.latLong = {
-                    latLongID: Math.random().toString(),
-                    lat,
-                    long
+                patient.address.coordinates = {
+                    latitude,
+                    longitude
                 };
             });
 
+            //TODO pymd please change this to work with how coordinates are stored now
             // Then Set State
             const newState = update(this.state.patientDetail, {
                 address: {
                     $set: {
                         latLong: {
                             latLongID: Math.random().toString(),
-                            lat,
-                            long
+                            latitude,
+                            longitude
                         }
                     }
                 }
