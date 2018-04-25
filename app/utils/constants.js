@@ -36,6 +36,12 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     visitListScreen: 'VisitListScreen',
+    visitMapScreen: 'VisitMapScreen',
 };
 
-export {diagnosisList, screenNames};
+const visitType = {
+    patient: 'patient',
+    place: 'place'
+};
+
+export {diagnosisList, screenNames, visitType};

@@ -17,18 +17,16 @@ const PatientDetailCard = (props) => {
         address
     } = patientDetail;
 
-    let latLong = null;
+    let coordinates = null;
     if (address) {
-        latLong = address.latLong;
+        coordinates = address.coordinates;
     }
+    console.log(coordinates)
     return (
         <View style={styles.parentContainerStyle}>
-            {latLong &&
+            {coordinates &&
             <PatientDetailMapComponent
-                patientCoordinates={{
-                    latitude: latLong.lat,
-                    longitude: latLong.long
-                }}
+                patientCoordinates={coordinates}
                 patientAddress={address.streetAddress}
             />
             }

@@ -1,6 +1,10 @@
+import * as CollectionUtils from '../collectionUtils';
+
 const Realm = require('realm');
 
-class Patient extends Realm.Object {}
+class Patient extends Realm.Object {
+}
+
 Patient.schema = {
     name: 'Patient',
     primaryKey: 'patientID',
@@ -19,7 +23,22 @@ Patient.schema = {
 // Todo: Check if inverse relationship needed
 
 // Address can belong to a 'Patient' or a 'Place'
-class Address extends Realm.Object {}
+class Address extends Realm.Object {
+    get coordinates() {
+        console.log('asked for coordis');
+        return {
+            //TODO correct stuff here
+            latitude: this.latitude,
+            longitude: this.longitude
+        };
+    }
+
+    set coordinates({latitude, longitude}) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+}
+
 Address.schema = {
     name: 'Address',
     primaryKey: 'addressID',
@@ -31,24 +50,18 @@ Address.schema = {
         city: 'string?',
         state: 'string?',
         country: {type: 'string?', default: 'USA'},
-        latLong: 'LatLong'                                                                 // optional by default
-    }
-};
-
-class LatLong extends Realm.Object {}
-LatLong.schema = {
-    name: 'LatLong',
-    primaryKey: 'latLongID',
-    properties: {
-        latLongID: 'string',
-        lat: 'int',
-        long: 'int',
-        address: {type: 'linkingObjects', objectType: 'Address', property: 'latLong'}       // set automatically
+        latitude: 'double?',
+        longitude: 'double?'
     }
 };
 
 // 1 patient can have multiple episodes
-class Episode extends Realm.Object {}
+class Episode extends Realm.Object {
+    getPatient() {
+        return CollectionUtils.getFirstElement(this.patient);
+    }
+}
+
 Episode.schema = {
     name: 'Episode',
     primaryKey: 'episodeID',
@@ -61,7 +74,9 @@ Episode.schema = {
     }
 };
 
-class Place extends Realm.Object {}
+class Place extends Realm.Object {
+}
+
 Place.schema = {
     name: 'Place',
     primaryKey: 'placeID',
@@ -72,27 +87,64 @@ Place.schema = {
     }
 };
 
-class Visit extends Realm.Object {}
+class Visit extends Realm.Object {
+    getEpisode() {
+        return CollectionUtils.getFirstElement(this.episode);
+    }
+
+    getPatient() {
+        const episode = this.getEpisode();
+        if (episode) {
+            return episode.getPatient();
+        }
+        return undefined;
+    }
+
+    getAddress() {
+        //TODO get address for place visit obj
+        const patient = this.getPatient();
+        if (patient) {
+            return patient.address;
+        }
+    }
+}
+
 Visit.schema = {
     name: 'Visit',
     primaryKey: 'visitID',
     properties: {
         visitID: 'string',
         episode: {type: 'linkingObjects', objectType: 'Episode', property: 'visits'},       // set automatically
+        midnightEpochOfVisit: 'int',
+
+        isDone: {type: 'bool', default: false},
+        timeOfCompletion: 'int?',
+
+        isDeleted: {type: 'bool', default: false}
+    }
+};
+
+class VisitOrder extends Realm.Object {
+
+}
+
+VisitOrder.schema = {
+    name: 'VisitOrder',
+    primaryKey: 'midnightEpoch',
+    properties: {
         midnightEpoch: 'int',
-        timestamp: 'int?',
-        isDone: {type: 'bool', default: false}
+        visitIDList: 'string[]'
     }
 };
 
 const floDB = new Realm({
     schema: [
-        LatLong.schema,
-        Visit.schema,
-        Patient.schema,
-        Address.schema,
-        Episode.schema,
-        Place.schema
+        Visit,
+        Patient,
+        Address,
+        Episode,
+        Place,
+        VisitOrder
     ],
     deleteRealmIfMigrationNeeded: true
 });
@@ -103,7 +155,6 @@ const floDB = new Realm({
 function CreateAndSaveDummies() {
     const timeNow = Date.now();
 
-    const latLongID = `${Math.random().toString()}_LatLong`;
     const addressID = `${Math.random().toString()}_Address`;
     const episodeID = `${Math.random().toString()}_Episode`;
     const patientID = `${Math.random().toString()}_Patient`;
@@ -132,10 +183,9 @@ function CreateAndSaveDummies() {
             country: 'India'
         };
         // Create a LatLong for that address
-        patient.address.latLong = {
-            latLongID,
-            lat: 1.0,
-            long: 1.0
+        patient.address.coordinates = {
+            latitude: 37.4 + 0.05 * Math.random(),
+            longitude: -122 + 0.05 * Math.random()
         };
         // Create an Episode
         patient.episodes.push({
@@ -145,7 +195,7 @@ function CreateAndSaveDummies() {
         });
         patient.episodes[0].visits.push({
             visitID,
-            midnightEpoch: 0
+            midnightEpochOfVisit: 0
         });
     });
 
@@ -155,4 +205,4 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {floDB, Patient, Episode, Visit, Place, Address, LatLong, CreateAndSaveDummies};
+export {floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};

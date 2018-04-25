@@ -10,6 +10,7 @@ import {VisitListScreenContainer} from '../components/VisitListScreen/visitListS
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
+import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
 
 const RegisterScreens = () => {
     if (floDB.objects(Visit.schema.name).length === 0) {
@@ -26,6 +27,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
     Navigation.registerComponent(screenNames.visitListScreen, () => VisitListScreenContainer);
+    Navigation.registerComponent(screenNames.visitMapScreen, () => VisitMapScreenController);
     Navigation.registerComponent(screenNames.addVisitScreen, () => AddVisitsScreenContainer);
     Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
     Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);

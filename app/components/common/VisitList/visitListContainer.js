@@ -41,8 +41,8 @@ class VisitListContainer extends Component {
     }
 
     createFlatVisitItem(visit) {
-        const episode = visit.episode[0]; //this.episodeByID.get(visit.episodeID);
-        const patient = episode.patient[0]; //this.patientByID.get(episode.patientID);
+        const episode = visit.getEpisode();//episode[0]; //this.episodeByID.get(visit.episodeID);
+        const patient = episode.getPatient(); //this.patientByID.get(episode.patientID);
 
         return {
             key: visit.visitID,
