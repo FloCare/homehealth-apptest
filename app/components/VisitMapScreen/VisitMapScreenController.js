@@ -109,7 +109,20 @@ class VisitMapScreenController extends Component {
                 />
                 <ControlPanel
                     style={{flex: 1}}
-                    rowData={this.visitResultObject.map(visitObject => ({key: visitObject.visitID, data: visitObject.getAssociatedName()}))}
+                    rowData={[
+                        {
+                            key: 'hah4'
+                        },
+                        {
+                            key: 'hah3'
+                        },
+                        {
+                            key: 'hah2'
+                        },
+                        {
+                            key: 'hah1'
+                        },
+                    ]}
                     onChangeOrder={this.onChangeOrder}
                     onReleaseRow={this.onReleaseRow}
                 />

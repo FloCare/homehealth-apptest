@@ -107,14 +107,6 @@ class Visit extends Realm.Object {
             return patient.address;
         }
     }
-
-    getAssociatedName() {
-        //TODO places
-        const patient = this.getPatient();
-        if (patient) {
-            return patient.name;
-        }
-    }
 }
 
 Visit.schema = {
