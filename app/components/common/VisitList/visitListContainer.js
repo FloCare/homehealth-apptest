@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 
 import {VisitList} from './visitList';
-import {floDB} from '../../../utils/data/schema';
+import {floDB, Visit} from '../../../utils/data/schema';
 
 class VisitListContainer extends Component {
     constructor(props) {
+        console.log('constructor called');
         super(props);
-        this.visitResultObject = this.props.visitResultObject;
+        // this.visitResultObject = this.props.visitResultObject;
 
-        this.state = {flatItems: this.createFlatVisitItems()};
+        this.state = {flatItems: this.createFlatVisitItems(this.props.visitResultObject)};
 
         this.flipDoneField = this.flipDoneField.bind(this);
         this.handleVisitResultObjectChange = this.handleVisitResultObjectChange.bind(this);
@@ -16,6 +17,10 @@ class VisitListContainer extends Component {
 
     componentDidMount() {
         floDB.addListener('change', this.handleVisitResultObjectChange);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({flatItems: this.createFlatVisitItems(nextProps.visitResultObject)});
     }
 
     componentWillUnmount() {
@@ -28,14 +33,14 @@ class VisitListContainer extends Component {
     }
 
     handleVisitResultObjectChange() {
-        this.setState({flatItems: this.createFlatVisitItems()});
+        this.setState({flatItems: this.createFlatVisitItems(this.props.visitResultObject)});
     }
 
-    createFlatVisitItems() {
+    createFlatVisitItems(visitResultObject) {
         if (this.props.onlyDisplayOne) {
-            return [this.createFlatVisitItem(this.visitResultObject[0])];
+            return [this.createFlatVisitItem(visitResultObject[0])];
         }
-        return this.visitResultObject.map(
+        return visitResultObject.map(
             (visit) => this.createFlatVisitItem(visit)
         );
     }
@@ -54,7 +59,7 @@ class VisitListContainer extends Component {
     }
 
     render() {
-        // console.log(`render called at ${Date.now()}`);
+        console.log(`render called at ${Date.now()}, ${this.state.flatItems.length}`);
         return (
             <VisitList
                 visitItems={this.state.flatItems}

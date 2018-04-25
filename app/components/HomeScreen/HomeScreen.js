@@ -9,6 +9,10 @@ function HomeScreen(props) {
         <View style={{flex: 1}}>
             <CalendarStrip
                 style={{height: 100, paddingTop: 20, paddingBottom: 10}}
+                calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
+                // highlightDateNumberStyle={{fontWeight: '800'}}
+                onDateSelected={props.onDateSelected}
+                selectedDate={props.date}
             />
             <VisitSummary
                 visitResultObject={props.visitResultObject}

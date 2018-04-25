@@ -7,7 +7,7 @@ import {RenderIf} from '../../utils/data/syntacticHelpers';
 function VisitListScreen(props) {
     return (
         <View style={{flex: 1}}>
-            {RenderIf(props.calendarObject, props.showCalendar)}
+            {RenderIf(props.calendarComponent, props.showCalendar)}
             <VisitListContainer visitResultObject={props.visitResultObject} />
             <Button large title='ADD VISIT' onPress={props.onAddVisitPress} />
         </View>
