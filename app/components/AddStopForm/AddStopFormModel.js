@@ -1,8 +1,5 @@
-import t from 'tcomb-form-native';
-
-import AddressAutoComplete from './AddressAutoComplete';
+import AddressAutoComplete from '../common/AddressAutoComplete';
 import stylesheet from './formStyleSheet';
-
 
 const formOptions = {
     stylesheet,

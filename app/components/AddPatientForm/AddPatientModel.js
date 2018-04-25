@@ -1,6 +1,6 @@
 import t from 'tcomb-form-native';
 import {PhoneNumber, zipCode} from '../../utils/lib';
-import AddressAutoComplete from './AddressAutoComplete';
+import AddressAutoComplete from '../common/AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 
