@@ -9,7 +9,7 @@ export function VisitSummary(props) {
             alignItems: 'center',
             backgroundColor: '#45ceb1',
             margin: 0,
-            marginTop: 60,
+            // marginTop: 60,
             padding: 10
         }}>
             <Text style={{

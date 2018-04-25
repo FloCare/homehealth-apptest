@@ -1,3 +1,4 @@
+import moment from 'moment';
 import * as CollectionUtils from '../collectionUtils';
 
 const Realm = require('realm');
@@ -195,7 +196,7 @@ function CreateAndSaveDummies() {
         });
         patient.episodes[0].visits.push({
             visitID,
-            midnightEpochOfVisit: 0
+            midnightEpochOfVisit: moment().utc().startOf('day').valueOf()
         });
     });
 

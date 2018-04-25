@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Calendar} from 'react-native-calendars';
+import CalendarStrip from 'react-native-calendar-strip';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
 import {screenNames} from '../../utils/constants';
@@ -44,7 +44,7 @@ class VisitListScreenContainer extends Component {
     }
 
     generateVisitResultObject(date) {
-        return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', 0).sorted('isDone');//date);//.sorted('isDone');
+        return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', this.state.date.valueOf()).sorted('isDone');//date);//.sorted('isDone');
     }
 
     render() {
@@ -52,10 +52,12 @@ class VisitListScreenContainer extends Component {
 
         return (
             <VisitListScreen
-                calendarObject={<Calendar
-                                    current={this.state.date.dateString}
-                                    onDayPress={this.onDayPress}
-                                    markedDates={obj}
+                calendarComponent={<CalendarStrip
+                    style={{height: 100, paddingTop: 20, paddingBottom: 10}}
+                    calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
+                    // highlightDateNumberStyle={{fontWeight: '800'}}
+                    onDateSelected={this.onDayPress}
+                    selectedDate={this.state.date}
                 />}
                 showCalendar={this.state.showCalendar}
                 visitResultObject={this.generateVisitResultObject(this.state.date)}
