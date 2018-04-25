@@ -60,7 +60,7 @@ class HomeScreenContainer extends Component {
 
     render() {
         this.visitResultObject = floDB.objects(Visit.schema.name)
-                                        .filtered('midnightEpoch==$0', this.state.date)
+                                        .filtered('midnightEpochOfVisit==$0', this.state.date)
                                         .filtered('isDone==false');
         return (
             <HomeScreen

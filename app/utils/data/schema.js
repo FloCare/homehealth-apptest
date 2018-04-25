@@ -34,7 +34,6 @@ class Address extends Realm.Object {
     }
 
     set coordinates({latitude, longitude}) {
-        console.log(`called with ${latitude}, ${longitude}`);
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -116,9 +115,25 @@ Visit.schema = {
     properties: {
         visitID: 'string',
         episode: {type: 'linkingObjects', objectType: 'Episode', property: 'visits'},       // set automatically
+        midnightEpochOfVisit: 'int',
+
+        isDone: {type: 'bool', default: false},
+        timeOfCompletion: 'int?',
+
+        isDeleted: {type: 'bool', default: false}
+    }
+};
+
+class VisitOrder extends Realm.Object {
+
+}
+
+VisitOrder.schema = {
+    name: 'VisitOrder',
+    primaryKey: 'midnightEpoch',
+    properties: {
         midnightEpoch: 'int',
-        timestamp: 'int?',
-        isDone: {type: 'bool', default: false}
+        visitIDList: 'string[]'
     }
 };
 
@@ -128,7 +143,8 @@ const floDB = new Realm({
         Patient,
         Address,
         Episode,
-        Place
+        Place,
+        VisitOrder
     ],
     deleteRealmIfMigrationNeeded: true
 });
@@ -179,7 +195,7 @@ function CreateAndSaveDummies() {
         });
         patient.episodes[0].visits.push({
             visitID,
-            midnightEpoch: 0
+            midnightEpochOfVisit: 0
         });
     });
 
@@ -189,4 +205,4 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {floDB, Patient, Episode, Visit, Place, Address, CreateAndSaveDummies};
+export {floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};

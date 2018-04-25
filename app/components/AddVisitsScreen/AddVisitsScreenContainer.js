@@ -130,13 +130,13 @@ class AddVisitsScreenContainer extends Component {
             for (const selectedItem of this.state.selectedItems.values()) {
                 if (selectedItem.type === visitType.patient) {
                     //TODO what happens when patients have multiple cases
-                    const patient = this.patientsResultObject.filtered('patientID==$0', selectedItem.id)[0];
-                    //TODO add correct date
-                    patient.episodes[0].visits.push({visitID: generateUUID(), midnightEpoch: 0});
+                    const patient = floDB.objectForPrimaryKey(Patient, selectedItem.id);
+                    //TODO add correct date and to correct episode
+                    patient.episodes[0].visits.push({visitID: generateUUID(), midnightEpochOfVisit: 0});
                 } else if (selectedItem.type === visitType.place) {
-                    const place = this.placeResultObject.filtered('placeID==$0', selectedItem.id)[0];
+                    const place = floDB.objectForPrimaryKey(Place, selectedItem.id);
                     //TODO insert visit correctly
-                    // place.visits.push({visitID: generateUUID(), midnightEpoch: 0});
+                    // place.visits.push({visitID: generateUUID(), midnightEpochOfVisit: 0});
                 }
             }
         });

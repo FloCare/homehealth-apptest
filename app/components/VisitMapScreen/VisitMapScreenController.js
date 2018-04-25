@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Polyline from '@mapbox/polyline';
 import {VisitRow} from './VisitRow';
-import {floDB, Visit} from '../../utils/data/schema';
+import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 
 function ControlPanel(props) {
     return (
@@ -43,20 +43,26 @@ function MapPanel(props) {
 
 class VisitMapScreenController extends Component {
     constructor(props) {
+        //TODO date state
         super(props);
         this.visitResultObject = floDB.objects(Visit);
+        //TODO date
+        this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, 0);
         // this.visitResultObject = props.visitResultObject;
 
         this.state = {
             polylines: []
         };
         this.onChangeOrder = this.onChangeOrder.bind(this);
+        this.getAllPolylines = this.getAllPolylines.bind(this);
+        this.onReleaseRow = this.onReleaseRow.bind(this);
     }
 
     async getAllPolylines() {
         const newPolylines = [];
         //TODO safety checks
         for (let i = 0; i < this.visitResultObject.length - 1; i++) {
+            console.log('attempting polyline fetch');
             newPolylines.push(await this.getPolyBetweenTwoPoints(this.visitResultObject[i].getAddress().coordinates, this.visitResultObject[i + 1].getAddress().coordinates));
         }
         this.setState({polylines: newPolylines});
@@ -78,11 +84,15 @@ class VisitMapScreenController extends Component {
 
     onChangeOrder(nextOrder) {
         //write to visits their order number
-        for (const nextOrderElement of nextOrder) {
-            console.log(`:::${nextOrderElement}`);
-        }
+        // for (const nextOrderElement of nextOrder) {
+        //     console.log(`:::${nextOrderElement}`);
+        // }
         //forceupdate
         //asyn fetch all polylines and set state
+    }
+
+    onReleaseRow(key) {
+        this.getAllPolylines();
     }
 
     render() {
@@ -114,6 +124,7 @@ class VisitMapScreenController extends Component {
                         },
                     ]}
                     onChangeOrder={this.onChangeOrder}
+                    onReleaseRow={this.onReleaseRow}
                 />
             </View>
         );
