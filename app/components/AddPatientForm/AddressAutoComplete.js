@@ -87,6 +87,7 @@ function Autocompletetextbox(locals) {
                     }}
                     currentLocation={false}
                     onPress={locals.config.onPress}
+                    ref={locals.config.refName}
                 />
             </View>
             {help}

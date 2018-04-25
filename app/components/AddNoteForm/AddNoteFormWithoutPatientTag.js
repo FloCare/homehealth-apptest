@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, TextInput, FlatList} from 'react-native';
 import {Button, SearchBar, ListItem} from 'react-native-elements';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 //import styles from './`';
 
 // createListItemComponent = (item, onItemToggle) => {
@@ -45,7 +46,7 @@ const AddNoteFormWithoutPatientTag = (props) => {
     } = props;
 
     return (
-        <View style={{flex: 1}}>
+        <KeyboardAwareScrollView style={{flex: 1}} keyboardShouldPersistTaps='handled'>
             <SearchBar
                 ref={searchRef}
                 onChangeText={onChangeSearchText}
@@ -91,7 +92,7 @@ const AddNoteFormWithoutPatientTag = (props) => {
                     backgroundColor: '#45ceb1'
                 }}
             />
-        </View>
+        </KeyboardAwareScrollView>
     );
 };
 

@@ -60,7 +60,8 @@ const formOptions = {
             template: AddressAutoComplete,
             config: {
                 onPress: null,
-                onChangeAddressText: null
+                onChangeAddressText: null,
+                refName: null
             }
         },
         apartmentNo: {
@@ -124,6 +125,14 @@ class Options {
 
     set OnChangeAddressText(onChangeAddressText) {
         this._options.fields.streetAddress.config.onChangeAddressText = onChangeAddressText;
+    }
+
+    get RefName() {
+        return this._options.fields.streetAddress.config.refName;
+    }
+
+    set RefName(refName) {
+        this._options.fields.streetAddress.config.refName = refName;
     }
 }
 

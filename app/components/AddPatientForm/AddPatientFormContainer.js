@@ -29,6 +29,7 @@ class AddPatientFormContainer extends Component {
         this.clearForm = this.clearForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.setForm = this.setForm.bind(this);
+        this.setAddressFieldRef = this.setAddressFieldRef.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onAddressSelect = this.onAddressSelect.bind(this);
         this.onSelectedItemsChange = this.onSelectedItemsChange.bind(this);
@@ -38,6 +39,7 @@ class AddPatientFormContainer extends Component {
         this.options.OnPress = this.onAddressSelect;
         this.options.OnSelectedItemsChange = this.onSelectedItemsChange;
         this.options.OnChangeAddressText = this.onChangeAddressText;
+        this.options.RefName = this.setAddressFieldRef;
     }
 
    onSelectedItemsChange(selectedItems) {
@@ -118,6 +120,11 @@ class AddPatientFormContainer extends Component {
         return this.addPatientForm;
     }
 
+    setAddressFieldRef(element) {
+        this.addressField = element;
+        return this.addressField;
+    }
+
     clearForm() {
         this.setState({
             value: {
@@ -135,6 +142,7 @@ class AddPatientFormContainer extends Component {
             },
             selectedItems: []
         });
+        this.addressField.setAddressText('');
     }
 
     handleSubmit(e, onSubmit) {

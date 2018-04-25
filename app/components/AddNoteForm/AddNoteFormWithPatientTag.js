@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, TextInput} from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {Button} from 'react-native-elements';
 import styles from './styles';
 
@@ -7,7 +8,7 @@ import styles from './styles';
 const AddNoteFormWithPatientTag = (props) => {
     const {handleSubmit, name, onChangeText, value} = props;
     return (
-        <View>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps='handled'>
             <View><Text>{name}</Text></View>
             <TextInput
                 multiline
@@ -20,7 +21,7 @@ const AddNoteFormWithPatientTag = (props) => {
                 title='Save'
                 onPress={handleSubmit}
             />
-        </View>
+        </KeyboardAwareScrollView>
     );
 };
 

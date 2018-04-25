@@ -12,7 +12,10 @@ class AddPatientForm extends Component {
         console.log('SelectedItems: ', options.SelectedItems);
 
         return (
-            <KeyboardAwareScrollView style={styles.formScrollViewStyle}>
+            <KeyboardAwareScrollView
+                style={styles.formScrollViewStyle}
+                keyboardShouldPersistTaps='handled'
+            >
                 <Form
                     ref={refName}
                     type={modelType}
