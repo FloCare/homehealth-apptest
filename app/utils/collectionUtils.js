@@ -18,4 +18,19 @@ function isNonEmptyArray(object) {
     return object && object.length && object.length > 0;
 }
 
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement};
+const createSectionedListFromRealmObject = (realmObj) => {
+    const arr = Object.keys(realmObj).map((key) => realmObj[key]);
+    const sections = arr.reduce((m, obj) => {
+        const title = obj.name[0];
+        if (title in Object.keys(m)) {
+            m[title].push(obj);
+        } else {
+            m[title] = [obj];
+        }
+        return m;
+    }, {});
+    const sectionsArray = Object.keys(sections).map((key) => { return {title: key, data: sections[key]}; });
+    return sectionsArray;
+};
+
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListFromRealmObject};

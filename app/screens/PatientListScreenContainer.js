@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
+import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -19,8 +20,6 @@ class PatientListScreenContainer extends Component {
             patientList: []
         };
         this.getSectionData = this.getSectionData.bind(this);
-        this.createSectionListFromPatientListData =
-            this.createSectionListFromPatientListData.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.onItemPressed = this.onItemPressed.bind(this);
         this.navigateTo = this.navigateTo.bind(this);
@@ -59,7 +58,7 @@ class PatientListScreenContainer extends Component {
         if (!query) {
             const patientList = floDB.objects(Patient.schema.name);
             const sortedPatientList = patientList.sorted('name');
-            const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
+            const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
         } else {
             // Todo: Can improve querying Logic:
@@ -68,7 +67,7 @@ class PatientListScreenContainer extends Component {
             const queryStr = `name CONTAINS[c] "${query.toString()}"`;
             const patientList = floDB.objects(Patient.schema.name).filtered(queryStr);
             const sortedPatientList = patientList.sorted('name');
-            const sectionedPatientList = this.createSectionListFromPatientListData(sortedPatientList);
+            const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
     }
@@ -85,25 +84,6 @@ class PatientListScreenContainer extends Component {
                 tabBarHidden: true
             }
         });
-    }
-
-    createSectionListFromPatientListData(patientList) {
-        const sections = [];
-        const sectionTitles = {};
-        // Todo: Don't use for..in syntax
-        for (const index in patientList) {
-            const patient = patientList[index];
-            const key = sectionTitles[patient.name[0]];
-
-            if (key !== undefined) {
-                sections[key].data.push(patient);
-            } else {
-                const ind = sections.length;
-                sectionTitles[patient.name[0]] = ind;
-                sections.push({title: patient.name[0], data: [patient]});
-            }
-        }
-        return sections;
     }
 
     render() {
