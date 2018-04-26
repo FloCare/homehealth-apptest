@@ -8,8 +8,9 @@ class PatientDetailScreenContainer extends Component {
     static navigatorButtons = {
         rightButtons: [
             {
-                icon: require('../../resources/ic_location_on_black_24dp.png'), // for icon button, provide the local image asset name
+                icon: require('../../resources/editButton.png'),
                 id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                buttonColor: '#45ceb1'
             }
         ]
     };
@@ -43,7 +44,6 @@ class PatientDetailScreenContainer extends Component {
     }
 
     onPressAddNotes() {
-        console.log('Add Notes Button is Pressed. Navigate to the add notes screen ...');
         this.props.navigator.push({
             screen: this.state.navigateToScreen,
             animated: true,
