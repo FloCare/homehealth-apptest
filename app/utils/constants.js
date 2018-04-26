@@ -32,6 +32,8 @@ const screenNames = {
     addPatient: 'AddPatient',
     patientDetails: 'PatientDetails',
     addNote: 'AddNote',
+    addStop: 'AddStop',
+    stopList: 'StopList',
 
     addVisitScreen: 'AddVisitScreen',
     visitListScreen: 'VisitListScreen',

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, SectionList, TouchableOpacity} from 'react-native';
+import {Text, View, Image, SectionList, TouchableOpacity} from 'react-native';
 import styles from './styles';
 
 class SectionedPatientList extends Component {
@@ -17,19 +17,35 @@ class SectionedPatientList extends Component {
                     style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ff9999'}}
                     onPress={({e}) => this.props.onItemPressed({item}, e)}
                 >
-                    <Text style={styles.nameStyle}>{item.name}</Text>
-                    <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                        <View style={{flex: 1, flexDirection: 'column'}}>
+                            <Text style={styles.nameStyle}>{item.name}</Text>
+                            <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                        </View>
+                        <TouchableOpacity style={{marginVertical: 15}} onPress={() => {console.log('More button pressed')}}>
+                            <Image source={require('../../../resources/threeDotButton.png')} />
+                        </TouchableOpacity>
+                    </View>
                 </TouchableOpacity>
             );
         }
         return (
-            <TouchableOpacity
+            <View
                 style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff'}}
-                onPress={({e}) => this.props.onItemPressed({item}, e)}
             >
-                <Text style={styles.nameStyle}>{item.name}</Text>
-                <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
-            </TouchableOpacity>
+                <View style={{flex: 10, flexDirection: 'row'}}>
+                    <TouchableOpacity
+                        style={{flex: 9, flexDirection: 'column'}}
+                        onPress={({e}) => this.props.onItemPressed({item}, e)}
+                    >
+                        <Text style={styles.nameStyle}>{item.name}</Text>
+                        <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ flex: 1, marginVertical: 15}} onPress={() => {console.log('More button pressed')}}>
+                        <Image source={require('../../../resources/threeDotButton.png')} />
+                    </TouchableOpacity>
+                </View>
+            </View>
         );
     }
 

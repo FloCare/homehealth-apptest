@@ -9,42 +9,43 @@ const EmailField = t.refinement(t.String, (e) => {
     return reg.test(e);
 });
 
-const PhoneNumber = t.refinement(t.Number, (n) => {
+const phoneValidationRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
+const PhoneNumber = t.refinement(t.String, (n) => {
     // Todo Add a proper phone number validation function
 
     if (n !== null) {
-        const s = n.toString();
-        if (s.length === 10 &&
-            (s.startsWith(6) || s.startsWith(7) || s.startsWith(8) || s.startsWith(9))) {
+        if (phoneValidationRegex.test(n)) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 });
+
+const parsePhoneNumber = (number) => {
+    return number.replace(phoneValidationRegex, '($1) $2-$3');
+};
 
 PhoneNumber.getValidationErrorMessage = function (value) {
     if (!value) {
         return 'Required';
     }
     const s = value.toString();
-    if (!(s.startsWith(6) || s.startsWith(7) || s.startsWith(8) || s.startsWith(9))) {
-        return 'Mobile Number should start with 6/7/8/9';
+    if (s.length < 10) {
+        return 'Contact Number incomplete';
     }
-    if (s.length <= 10) {
-        return 'Too small my friend';
+    if (s.length > 10) {
+        return 'Contact Number too large';
     }
-}
+};
 
-const zipCode = t.refinement(t.Number, (z) => {
-   // Todo Add a proper zipCode validation function
-
+const zipCode = t.refinement(t.String, (z) => {
     if (z !== null) {
-        const s = z.toString();
-        console.log('Zip code:', s);
-        const isValid = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(s);
+        const isValid = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(z);
         return isValid;
     }
     return false;
 });
 
-export {EmailField, PhoneNumber, zipCode};
+export {EmailField, PhoneNumber, zipCode, parsePhoneNumber};

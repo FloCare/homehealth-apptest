@@ -1,6 +1,6 @@
 import t from 'tcomb-form-native';
 import {PhoneNumber, zipCode} from '../../utils/lib';
-import AddressAutoComplete from './AddressAutoComplete';
+import AddressAutoComplete from '../common/AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 
@@ -30,20 +30,23 @@ const formOptions = {
             error: nameError,
             placeholder: 'John Doe',
             returnKeyType: 'next',
-            autoCapitalize: 'words'
+            autoCapitalize: 'words',
         },
         zip: {
             label: 'Zip Code',
             error: 'Please enter a valid zipCode for the patient',
-            placeholder: '12345'
+            placeholder: '12345',
+            keyboardType: 'numeric'
         },
         primaryContact: {
             label: 'Primary Contact',
             placeholder: '541-754-3010',
+            keyboardType: 'numeric'
         },
         emergencyContact: {
             label: 'Emergency Contact',
-            placeholder: '541-754-3010'
+            placeholder: '541-754-3010',
+            keyboardType: 'numeric'
         },
         diagnosis: {
             label: 'Diagnosis',
@@ -60,12 +63,14 @@ const formOptions = {
             template: AddressAutoComplete,
             config: {
                 onPress: null,
-                onChangeAddressText: null
+                onChangeAddressText: null,
+                refName: null
             }
         },
         apartmentNo: {
             label: 'Apartment No.',
-            placeholder: '#482'
+            placeholder: '#482',
+            keyboardType: 'numeric'
         },
         city: {
             label: 'City, State',
@@ -124,6 +129,14 @@ class Options {
 
     set OnChangeAddressText(onChangeAddressText) {
         this._options.fields.streetAddress.config.onChangeAddressText = onChangeAddressText;
+    }
+
+    get RefName() {
+        return this._options.fields.streetAddress.config.refName;
+    }
+
+    set RefName(refName) {
+        this._options.fields.streetAddress.config.refName = refName;
     }
 }
 

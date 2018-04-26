@@ -9,6 +9,7 @@ import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer'
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
+import AddStopScreenContainer from './AddStopScreenContainer';
 import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
 
 const RegisterScreens = () => {
@@ -29,6 +30,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.visitMapScreen, () => VisitMapScreenController);
     Navigation.registerComponent(screenNames.addVisitScreen, () => AddVisitsScreenContainer);
     Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
+    Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
 };
 
 export {RegisterScreens};
