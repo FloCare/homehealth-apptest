@@ -1,70 +1,56 @@
 import React, {Component} from 'react';
-import SortableList from 'react-native-sortable-list';
 import {View} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Polyline from '@mapbox/polyline';
 import {VisitRow} from './VisitRow';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
+import {DragDropList} from '../common/DragDropList';
+import {MapMarker} from '../common/PatientMap/MapMarker';
+import {arrayToMap} from '../../utils/collectionUtils';
 
-function ControlPanel(props) {
-    return (
-        <View>
-            <SortableList
-                data={props.rowData}
-                renderRow={VisitRow}
-                onChangeOrder={props.onChangeOrder}
-                onReleaseRow={props.onReleaseRow}
-            />
-        </View>
-    );
-}
-
-function MapPanel(props) {
-    return (
-        <MapView
-            style={{flex: 1}}
-            initialRegion={Object.assign({latitudeDelta: 0.0922, longitudeDelta: 0.0421}, {
-                latitude: 37.4,
-                longitude: -122
-            })}
-        >
-            {props.markerCoordinates.map((markerCoordinate) => <Marker coordinate={markerCoordinate} />)}
-            {props.polylines.map((polylineCoordinate) => {
-                console.log('once');
-                return (<MapView.Polyline
-                    coordinates={polylineCoordinate}
-                    strokeWidth={3}
-                    strokeColor="blue"
-                />);
-            })}
-        </MapView>
-    );
-}
+//TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
 class VisitMapScreenController extends Component {
     constructor(props) {
-        //TODO date state
         super(props);
-        this.visitResultObject = floDB.objects(Visit);
-        //TODO date
-        this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, 0);
-        // this.visitResultObject = props.visitResultObject;
-
         this.state = {
-            polylines: []
-        };
+            date: props.date,
+            polylines: [],
+            visitResultObject: props.visitResultObject ?
+                                        props.visitResultObject :
+                                            floDB.objects(Visit).filtered('midnightEpochOfVisit==$0', props.date.valueOf()),
+
+            orderedVisitIDListObject: props.orderedVisitIdListObject ?
+                                        props.orderedVisitIdListObject :
+                                            floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf())
+
+    };
         this.onChangeOrder = this.onChangeOrder.bind(this);
         this.getAllPolylines = this.getAllPolylines.bind(this);
-        this.onReleaseRow = this.onReleaseRow.bind(this);
+
+        this.getAllPolylines();
     }
 
     async getAllPolylines() {
         const newPolylines = [];
         //TODO safety checks
-        for (let i = 0; i < this.visitResultObject.length - 1; i++) {
+        console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
+
+        const visitByID = arrayToMap(this.state.visitResultObject, 'visitID');
+        const orderedVisitIds = this.state.orderedVisitIDListObject.visitIDList;
+
+        for (let i = 0; i < orderedVisitIds.length - 1; i++) {
             console.log('attempting polyline fetch');
-            newPolylines.push(await this.getPolyBetweenTwoPoints(this.visitResultObject[i].getAddress().coordinates, this.visitResultObject[i + 1].getAddress().coordinates));
+            try {
+                const polyLineResponse = await this.getPolyBetweenTwoPoints(visitByID.get(orderedVisitIds[i]).getAddress().coordinates,
+                                                                            visitByID.get(orderedVisitIds[i + 1]).getAddress().coordinates);
+                newPolylines.push(polyLineResponse);
+            } catch (error) {
+                console.log(error);
+            }
         }
+        console.log('all done');
+
         this.setState({polylines: newPolylines});
     }
 
@@ -78,20 +64,16 @@ class VisitMapScreenController extends Component {
                 longitude: point[1]
             }));
         } catch (error) {
-            return error;
+            throw error;
         }
     }
 
     onChangeOrder(nextOrder) {
-        //write to visits their order number
-        // for (const nextOrderElement of nextOrder) {
-        //     console.log(`:::${nextOrderElement}`);
-        // }
-        //forceupdate
-        //asyn fetch all polylines and set state
-    }
-
-    onReleaseRow(key) {
+        console.log(this.state.orderedVisitIDListObject);
+        floDB.write(() => {
+            this.state.orderedVisitIDListObject.visitIDList = nextOrder.map((index) => this.state.orderedVisitIDListObject.visitIDList[index]);
+        });
+        console.log(this.state.orderedVisitIDListObject);
         this.getAllPolylines();
     }
 
@@ -99,36 +81,58 @@ class VisitMapScreenController extends Component {
         return (
             <View style={{flex: 1}}>
                 <MapPanel
-                    style={{flex: 1}}
-                    markerCoordinates={this.visitResultObject.map((visitObject) => {
-                        const x = visitObject.getAddress().coordinates;
-                        console.log(`r: ${x}, ${x.latitude}, ${x.longitude}`);
-                        return x;
-                    })}
+                    markerData={this.state.visitResultObject.map((visitObject) =>
+                         ({
+                            coordinates: visitObject.getAddress().coordinates,
+                            name: visitObject.getAssociatedName()
+                        })
+                    )}
                     polylines={this.state.polylines}
                 />
                 <ControlPanel
-                    style={{flex: 1}}
-                    rowData={[
-                        {
-                            key: 'hah4'
-                        },
-                        {
-                            key: 'hah3'
-                        },
-                        {
-                            key: 'hah2'
-                        },
-                        {
-                            key: 'hah1'
-                        },
-                    ]}
+                    visitResultObject={this.state.visitResultObject}
+                    orderedVisitIds={this.state.orderedVisitIDListObject.visitIDList}
                     onChangeOrder={this.onChangeOrder}
-                    onReleaseRow={this.onReleaseRow}
                 />
             </View>
         );
     }
+}
+
+function ControlPanel(props) {
+    return (
+        <View>
+            <DragDropList
+                orderedItemIDList={props.orderedVisitIds}
+                dataObjectList={props.visitResultObject}
+                dataObjectKey={'visitID'}
+                onChangeOrder={props.onChangeOrder}
+                renderRow={VisitRow}
+            />
+        </View>
+    );
+}
+
+function MapPanel(props) {
+    return (
+        <MapView
+            style={{flex: 1}}
+            initialRegion={Object.assign({latitudeDelta: 0.0922, longitudeDelta: 0.0421}, {
+                latitude: 37.3,
+                longitude: -122
+            })}
+        >
+            {props.markerData.map((markerData) => <Marker coordinate={markerData.coordinates}><MapMarker text={markerData.name} /></Marker>)}
+            {props.polylines.map((polylineCoordinate) =>
+                // console.log('once');
+                // console.log(polylineCoordinate);
+                (<MapView.Polyline
+                    coordinates={polylineCoordinate}
+                    strokeWidth={3}
+                    strokeColor="blue"
+                />))}
+        </MapView>
+    );
 }
 
 export {VisitMapScreenController};

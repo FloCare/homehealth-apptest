@@ -2,14 +2,13 @@ import React from 'react';
 import {View} from 'react-native';
 import {Icon, Text} from 'react-native-elements';
 
-function VisitRow(props) {
+function VisitRow({index, data}) {
     return (
         <View style={{flexDirection: 'row'}}>
-            <Text>A</Text>
+            <Text>{String.fromCharCode('A'.charCodeAt(0) + index)}</Text>
             <View style={{flexDirection: 'row'}}>
                 <Icon name={'menu'} />
-                {/*<Text>{props.text}</Text>*/}
-                <Text>BCD</Text>
+                <Text>{data.getAssociatedName()}</Text>
             </View>
         </View>
     );

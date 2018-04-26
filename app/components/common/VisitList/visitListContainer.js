@@ -7,7 +7,8 @@ class VisitListContainer extends Component {
     constructor(props) {
         console.log('constructor called');
         super(props);
-        // this.visitResultObject = this.props.visitResultObject;
+        //TODO fix this, shouldnt be needed
+        this.visitResultObject = this.props.visitResultObject;
 
         this.state = {flatItems: this.createFlatVisitItems(this.props.visitResultObject)};
 
