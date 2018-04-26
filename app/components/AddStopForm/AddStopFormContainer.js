@@ -64,8 +64,21 @@ class AddStopFormContainer extends Component {
     }
 
     onAddressSelect(data, details) {
-        // Todo
-        console.log('Address selected from dropdown');
+        // Todo: Build streetAddress from address components
+        const streetAddress = details.formatted_address;
+        // const geometry = details.geometry;
+        //
+        // if (geometry) {
+        //     const location = geometry.location;
+        //     if (location) {
+        //         lat = location.lat;
+        //         long = location.lng;
+        //     }
+        // }
+
+        // Todo: Save Lat long and other parts of the address
+        const value = Object.assign({}, this.state.value, {address: streetAddress});
+        this.setState({value});
     }
 
     setForm(element) {
