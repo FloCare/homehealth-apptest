@@ -1,3 +1,4 @@
+import moment from 'moment';
 import * as CollectionUtils from '../collectionUtils';
 
 const Realm = require('realm');
@@ -25,9 +26,7 @@ Patient.schema = {
 // Address can belong to a 'Patient' or a 'Place'
 class Address extends Realm.Object {
     get coordinates() {
-        console.log('asked for coordis');
         return {
-            //TODO correct stuff here
             latitude: this.latitude,
             longitude: this.longitude
         };
@@ -95,6 +94,10 @@ Place.schema = {
 };
 
 class Visit extends Realm.Object {
+    get key() {
+        return this.visitID;
+    }
+
     getEpisode() {
         return CollectionUtils.getFirstElement(this.episode);
     }
@@ -113,6 +116,14 @@ class Visit extends Realm.Object {
         if (patient) {
             return patient.address;
         }
+    }
+
+    getAssociatedName() {
+        const patient = this.getPatient();
+        if (patient) {
+            return patient.name;
+        }
+        //TODO places
     }
 }
 
@@ -153,7 +164,7 @@ const floDB = new Realm({
         Place,
         VisitOrder
     ],
-    deleteRealmIfMigrationNeeded: true
+    deleteRealmIfMigrationNeeded: true,
 });
 
 
@@ -170,6 +181,15 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
     console.log('Creating Realm objects');
     console.log('==========================================');
+
+    const midnightEpoch = moment().utc().startOf('day').valueOf();
+
+    let orderObject = floDB.objectForPrimaryKey(VisitOrder, midnightEpoch);
+    if (!orderObject) {
+        floDB.write(() => {
+            orderObject = floDB.create(VisitOrder, {midnightEpoch, visitIDList: []});
+        });
+    }
 
     floDB.write(() => {
         // Create the patient
@@ -191,7 +211,7 @@ function CreateAndSaveDummies() {
         };
         // Create a LatLong for that address
         patient.address.coordinates = {
-            latitude: 37.4 + 0.05 * Math.random(),
+            latitude: 37.3 + 0.05 * Math.random(),
             longitude: -122 + 0.05 * Math.random()
         };
         // Create an Episode
@@ -202,8 +222,9 @@ function CreateAndSaveDummies() {
         });
         patient.episodes[0].visits.push({
             visitID,
-            midnightEpochOfVisit: 0
+            midnightEpochOfVisit: midnightEpoch
         });
+        orderObject.visitIDList.push(visitID);
     });
 
     console.log('==========================================');
