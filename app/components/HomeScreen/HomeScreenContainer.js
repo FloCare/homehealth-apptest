@@ -69,8 +69,8 @@ class HomeScreenContainer extends Component {
 
     render() {
         this.visitResultObject = floDB.objects(Visit.schema.name)
-                                        .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf())
-                                        .filtered('isDone==false');
+            .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf())
+            .filtered('isDone==false');
         console.log(`vobject length${this.visitResultObject.length}`);
         return (
             <HomeScreen
@@ -82,7 +82,6 @@ class HomeScreenContainer extends Component {
             />
         );
     }
-
 }
 
 export {HomeScreenContainer};
