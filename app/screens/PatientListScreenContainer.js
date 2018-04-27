@@ -25,10 +25,12 @@ class PatientListScreenContainer extends Component {
         this.onItemPressed = this.onItemPressed.bind(this);
         this.navigateTo = this.navigateTo.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.handleListUpdate = this.handleListUpdate.bind(this);
     }
 
     componentDidMount() {
         this.getSectionData(null);
+        floDB.addListener('change', this.handleListUpdate);
     }
 
     onSearch(query) {
@@ -71,6 +73,14 @@ class PatientListScreenContainer extends Component {
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
+    }
+
+    componentWillUnMount() {
+        floDB.addListener('change', this.handleListUpdate);
+    }
+
+    handleListUpdate() {
+        this.getSectionData(null);
     }
 
     navigateTo(screen, title, props) {
