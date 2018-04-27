@@ -49,9 +49,11 @@ class VisitListScreenContainer extends Component {
 
     render() {
         const obj = {}; obj[this.state.date.dateString] = {selected: true, selectedColor: 'blue'};
-
+        console.log(this.props.onOrderChange);
+        console.log('order c hange fn');
         return (
             <VisitListScreen
+                date={this.state.date}
                 calendarComponent={<CalendarStrip
                     style={{height: 100, paddingTop: 20, paddingBottom: 10}}
                     calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
@@ -60,8 +62,9 @@ class VisitListScreenContainer extends Component {
                     selectedDate={this.state.date}
                 />}
                 showCalendar={this.state.showCalendar}
-                visitResultObject={this.generateVisitResultObject(this.state.date)}
+                // visitResultObject={this.generateVisitResultObject(this.state.date)}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
+                onOrderChange={this.props.onOrderChange}
             />
         );
     }

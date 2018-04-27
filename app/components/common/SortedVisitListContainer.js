@@ -18,24 +18,30 @@ class SortedVisitListContainer extends Component {
         return true;
     }
 
+    // refreshList() {
+    //     console.log('refreshing');
+    //     this.setState({orderedVisitList: this.state.orderedVisitIDListObject.visitList});
+    //     console.log('refreshing');
+    // }
+    //
+    // componentDidMount() {
+    //     console.log('mountign');
+    //     floDB.addListener('change', this.refreshList);
+    // }
+    //
+    // componentWillUnmount() {
+    //     console.log('unomunting');
+    //
+    //     floDB.removeListener('change', this.refreshList);
+    // }
+
     constructor(props) {
         super(props);
         this.orderIndexMovingCache = undefined;
         // this.orderIndexCache = undefined;
 
         this.state = this.getStateFromDate(props.date);
-        // const orderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
-        // this.state = {
-        //     date: props.date,
-        //     renderWithCallback: this.renderRow(),
-        //     orderedVisitListObject: orderObject,
-        //     orderedVisitList: props.singleEntry?orderObject.visitList.slice(0, 1):orderObject.visitList
-        // };
-        //
-        // if (props.singleEntry) {
-        //     console.log(`cut2${orderObject.visitList.slice(0, 1).length}`);
-        //     this.setState({orderedVisitList: orderObject.visitList.slice(0, 1)});
-        // }
+
         this.onOrderChange = this.onOrderChange.bind(this);
         this.onReleaseRow = this.onReleaseRow.bind(this);
         this.renderRow = this.renderRow.bind(this);
@@ -50,12 +56,13 @@ class SortedVisitListContainer extends Component {
             date,
             renderWithCallback: this.renderRow(),
             orderedVisitListObject: orderObject,
-            orderedVisitList: this.props.singleEntry ? orderObject.visitList.slice(0, 1) : orderObject.visitList
+            orderedVisitList: this.tweakVisitListOrder(orderObject.visitList)
+            // this.props.singleEntry ? orderObject.visitList.slice(0, 1) : orderObject.visitList
         });
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.date !== this.state.date) { this.setState(this.getStateFromDate(nextProps.date)); }
+        this.setState(this.getStateFromDate(nextProps.date));
     }
 
     updateNewVisitOrderToDb(order, valid) {
@@ -66,7 +73,11 @@ class SortedVisitListContainer extends Component {
         floDB.write(() => {
             this.state.orderedVisitListObject.visitList = order;
         });
-        this.setState({orderedVisitList: this.props.singleEntry ? order.slice(0, 1) : order});
+        this.setState({orderedVisitList: this.tweakVisitListOrder(order)});//this.props.singleEntry ? order.slice(0, 1) : order});
+
+        // if (this.props.onOrderChange) {
+        //     this.props.onOrderChange();
+        // }
     }
 
     onOrderChange(newOrder) {
@@ -80,40 +91,37 @@ class SortedVisitListContainer extends Component {
             // console.log('new list:')
             // console.log(newOrderedVisitList);
             if (SortedVisitListContainer.performValidityCheck(newOrderedVisitList)) {
-                newOrderedVisitList = this.tweakVisitListOrder(newOrderedVisitList);
-                console.log('here');
-                // this.setState({orderedVisitList: newOrderedVisitList});
-                console.log('here');
-                floDB.write(() => {
-                    this.state.orderedVisitListObject.orderedVisitList = newOrderedVisitList;
-                });
-                console.log('here');
+                this.updateNewVisitOrderToDb(newOrderedVisitList, true);
             } else {
-                //ensure rendering of old material
-                this.updateNewVisitOrderToDb(Array.from(this.state.orderedVisitList, false));
+                //TODO ensure rendering of old material, not working right now
+                this.updateNewVisitOrderToDb(Array.from(this.state.orderedVisitList), false);
                 console.log('failed validity check');
             }
         }
         this.orderIndexMovingCache = undefined;
-        if (this.props.onOrderChange) {
-            this.props.onOrderChange();
-        }
     }
 
 
     tweakVisitListOrder(visitList) {
+        let tweakedVisitList = visitList;
+        console.log('tweaks');
         if (this.props.isCompletedHidden) {
+            console.log('here');
             for (let i = 0; i < visitList.length; i++) {
+                console.log(`iter ${i}`);
                 if (visitList[i].isDone) {
-                    return visitList.slice(0, i);
+                    tweakedVisitList = visitList.slice(0, i);
+                    break;
                 }
             }
         }
-        // if (this.props.singleEntry) {
-        //     console.log('cut');
-        //     return visitList.slice(0, 1);
-        // }
-        return visitList;
+        tweakedVisitList = this.props.singleEntry ? tweakedVisitList.slice(0, 1) : tweakedVisitList;
+
+        if (this.props.onOrderChange) {
+            this.props.onOrderChange(tweakedVisitList);
+        }
+
+        return tweakedVisitList;
     }
 
     markVisitDone(visit) {

@@ -7,6 +7,8 @@ import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {DragDropList} from '../common/DragDropList';
 import {MapMarker} from '../common/PatientMap/MapMarker';
 import {arrayToMap} from '../../utils/collectionUtils';
+import {VisitCard} from '../common/visitCard';
+import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
@@ -16,6 +18,7 @@ class VisitMapScreenController extends Component {
         this.state = {
             date: props.date,
             polylines: [],
+            visitOrderObject: floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf()),
             visitResultObject: props.visitResultObject ?
                                         props.visitResultObject :
                                             floDB.objects(Visit).filtered('midnightEpochOfVisit==$0', props.date.valueOf()),
@@ -69,11 +72,12 @@ class VisitMapScreenController extends Component {
     }
 
     onChangeOrder(nextOrder) {
-        console.log(this.state.orderedVisitIDListObject);
-        floDB.write(() => {
-            this.state.orderedVisitIDListObject.visitIDList = nextOrder.map((index) => this.state.orderedVisitIDListObject.visitIDList[index]);
-        });
-        console.log(this.state.orderedVisitIDListObject);
+        // console.log(this.state.orderedVisitIDListObject);
+        // floDB.write(() => {
+        //     this.state.orderedVisitIDListObject.visitIDList = nextOrder.map((index) => this.state.orderedVisitIDListObject.visitIDList[index]);
+        // });
+        // console.log(this.state.orderedVisitIDListObject);
+
         this.getAllPolylines();
     }
 
@@ -81,15 +85,16 @@ class VisitMapScreenController extends Component {
         return (
             <View style={{flex: 1}}>
                 <MapPanel
-                    markerData={this.state.visitResultObject.map((visitObject) =>
+                    markerData={this.state.visitOrderObject.visitList.map((visit) =>
                          ({
-                            coordinates: visitObject.getAddress().coordinates,
-                            name: visitObject.getAssociatedName()
+                            coordinates: visit.getAddress().coordinates,
+                            name: visit.getAssociatedName()
                         })
                     )}
                     polylines={this.state.polylines}
                 />
                 <ControlPanel
+                    date={this.state.date}
                     visitResultObject={this.state.visitResultObject}
                     orderedVisitIds={this.state.orderedVisitIDListObject.visitIDList}
                     onChangeOrder={this.onChangeOrder}
@@ -102,12 +107,19 @@ class VisitMapScreenController extends Component {
 function ControlPanel(props) {
     return (
         <View>
-            <DragDropList
-                orderedItemIDList={props.orderedVisitIds}
-                dataObjectList={props.visitResultObject}
-                dataObjectKey={'visitID'}
-                onChangeOrder={props.onChangeOrder}
-                renderRow={VisitRow}
+            {/*<DragDropList*/}
+                {/*orderedItemIDList={props.orderedVisitIds}*/}
+                {/*dataObjectList={props.visitResultObject}*/}
+                {/*dataObjectKey={'visitID'}*/}
+                {/*onChangeOrder={props.onChangeOrder}*/}
+                {/*renderRow={VisitRow}*/}
+            {/*/>*/}
+
+            <SortedVisitListContainer
+                date={props.date}
+                renderWithCallback={VisitRow}
+                isCompletedHidden
+                onOrderChange={props.onOrderChange}
             />
         </View>
     );

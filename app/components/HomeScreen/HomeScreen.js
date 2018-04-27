@@ -24,7 +24,7 @@ function HomeScreen(props) {
                 singleEntry
                 sortEnabled={false}
                 renderWithCallback={VisitCard}
-
+                onOrderChange={props.onOrderChange}
             />
             <VisitSummary
                 date={props.date}

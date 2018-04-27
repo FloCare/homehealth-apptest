@@ -14,6 +14,7 @@ class HomeScreenContainer extends Component {
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);
+        this.onOrderChange = this.onOrderChange.bind(this);
     }
     
     onDateSelected(date) {
@@ -27,7 +28,8 @@ class HomeScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.visitListScreen,
             passProps: {
-                date: this.state.date
+                date: this.state.date,
+                onOrderChange: this.onOrderChange.bind(this)
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -49,7 +51,8 @@ class HomeScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.visitMapScreen,
             passProps: {
-                date: this.state.date
+                date: this.state.date,
+                onOrderChange: this.onOrderChange.bind(this)
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -67,6 +70,11 @@ class HomeScreenContainer extends Component {
         });
     }
 
+    onOrderChange() {
+        this.forceUpdate();
+        console.log('was called');
+    }
+
     render() {
         this.visitResultObject = floDB.objects(Visit.schema.name)
             .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf())
@@ -79,6 +87,7 @@ class HomeScreenContainer extends Component {
                 navigateToVisitListScreen={this.navigateToVisitListScreen}
                 date={this.state.date}
                 onDateSelected={this.onDateSelected}
+                onOrderChange={this.onOrderChange}
             />
         );
     }
