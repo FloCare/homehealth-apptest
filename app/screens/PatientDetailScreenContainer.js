@@ -18,11 +18,11 @@ class PatientDetailScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            navigateToScreen: screenNames.addNote,
             patientDetail: {}
         };
         this.onPressAddNotes = this.onPressAddNotes.bind(this);
         this.onPressAddVisit = this.onPressAddVisit.bind(this);
+        this.onPressEditInfo = this.onPressEditInfo.bind(this);
         this.getPatientDetails = this.getPatientDetails.bind(this);
         this.parseResponse = this.parseResponse.bind(this);
         // settings this up to listen on navigator events
@@ -45,11 +45,10 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddNotes() {
         this.props.navigator.push({
-            screen: this.state.navigateToScreen,
+            screen: screenNames.addNote,
             animated: true,
             animationType: 'fade',
             title: 'Add Notes',
-            backbuttonHidden: true,
             passProps: {
                 patientId: this.state.patientDetail.patientID,
                 name: this.state.patientDetail.name
@@ -60,12 +59,44 @@ class PatientDetailScreenContainer extends Component {
         });
     }
 
+    onPressEditInfo() {
+        this.props.navigator.push({
+            screen: screenNames.addPatient,
+            animated: true,
+            animationType: 'fade',
+            title: 'Edit Patient Information',
+            navigatorStyle: {
+                tabBarHidden: true
+            },
+            passProps: {
+                values: {
+                    patientID: this.state.patientDetail.patientID,
+                    name: this.state.patientDetail.name,
+                    addressID: this.state.patientDetail.address.addressID,
+                    streetAddress: this.state.patientDetail.address.streetAddress,
+                    apartmentNo: this.state.patientDetail.address.apartmentNo,
+                    zip: this.state.patientDetail.address.zipCode,
+                    city: this.state.patientDetail.address.city,
+                    state: this.state.patientDetail.address.state,
+                    primaryContact: this.state.patientDetail.primaryContact,
+                    emergencyContact: this.state.patientDetail.emergencyContact,
+                    //diagnosis: this.state.patientDetail.episodes[0].diagnosis,
+                    notes: this.state.patientDetail.notes,
+                    lat: this.state.patientDetail.address.lat,
+                    long: this.state.patientDetail.address.long,
+                },
+                edit: true
+            }
+        });
+    }
+
     // this is the onPress handler for the navigation header 'Edit' button
     onNavigatorEvent(event) {
         if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
             if (event.id === 'edit') {    // this is the same id field from the static navigatorButtons definition
                 // Todo: Open the edit patient information screen here
                 console.log('Edit Button is pressed ...');
+                this.onPressEditInfo();
             }
         }
     }

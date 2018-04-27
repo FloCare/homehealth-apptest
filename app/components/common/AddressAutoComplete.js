@@ -59,6 +59,7 @@ function Autocompletetextbox(locals) {
                     textInputProps={{
                         onChangeText: locals.config.onChangeAddressText
                     }}
+                    getDefaultValue={locals.config.getDefaultValue}
                     styles={{
                         textInputContainer: {
                             backgroundColor: 'rgba(0,0,0,0)',

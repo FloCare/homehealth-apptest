@@ -7,9 +7,9 @@ const Form = t.form.Form;
 
 class AddPatientForm extends Component {
     render() {
-        const {refName, onChange, value, modelType, options, selectedItems} = this.props;
-        options.SelectedItems = selectedItems;
-        console.log('SelectedItems: ', options.SelectedItems);
+        const {refName, onChange, value, modelType, options} = this.props;
+        //options.SelectedItems = selectedItems;
+        //console.log('SelectedItems: ', options.SelectedItems);
 
         return (
             <KeyboardAwareScrollView

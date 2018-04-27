@@ -8,11 +8,41 @@ class AddPatientScreen extends Component {
         Presentational component - has for a form and button as children
      */
     render() {
-        const {onSubmit} = this.props;
+        const {
+            onSubmit,
+            edit,
+            patientID,
+            addressID,
+            name,
+            streetAddress,
+            zip,
+            city,
+            state,
+            apartmentNo,
+            primaryContact,
+            emergencyContact,
+            notes,
+            lat,
+            long
+        } = this.props;
         return (
             <View style={styles.containerStyle}>
                 <AddPatientFormContainer
                     onSubmit={onSubmit}
+                    edit={edit}
+                    patientID={patientID}
+                    addressID={addressID}
+                    name={name}
+                    streetAddress={streetAddress}
+                    apartmentNo={apartmentNo}
+                    zip={zip}
+                    city={city}
+                    state={state}
+                    primaryContact={primaryContact}
+                    emergencyContact={emergencyContact}
+                    notes={notes}
+                    lat={lat}
+                    long={long}
                 />
             </View>
         );
