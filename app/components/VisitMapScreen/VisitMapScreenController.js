@@ -7,23 +7,19 @@ import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {DragDropList} from '../common/DragDropList';
 import {MapMarker} from '../common/PatientMap/MapMarker';
 import {arrayToMap} from '../../utils/collectionUtils';
+import {VisitCard} from '../common/visitCard';
+import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
 class VisitMapScreenController extends Component {
     constructor(props) {
         super(props);
+        this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
         this.state = {
             date: props.date,
+            visitOrderList: this.getUpdateOrderedVisitList(this.visitOrderObject.visitList),
             polylines: [],
-            visitResultObject: props.visitResultObject ?
-                                        props.visitResultObject :
-                                            floDB.objects(Visit).filtered('midnightEpochOfVisit==$0', props.date.valueOf()),
-
-            orderedVisitIDListObject: props.orderedVisitIdListObject ?
-                                        props.orderedVisitIdListObject :
-                                            floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf())
-
     };
         this.onChangeOrder = this.onChangeOrder.bind(this);
         this.getAllPolylines = this.getAllPolylines.bind(this);
@@ -34,16 +30,14 @@ class VisitMapScreenController extends Component {
     async getAllPolylines() {
         const newPolylines = [];
         //TODO safety checks
-        console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
+        // console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
 
-        const visitByID = arrayToMap(this.state.visitResultObject, 'visitID');
-        const orderedVisitIds = this.state.orderedVisitIDListObject.visitIDList;
-
-        for (let i = 0; i < orderedVisitIds.length - 1; i++) {
+        const visitOrderList = this.state.visitOrderList;
+        for (let i = 0; i < visitOrderList.length - 1; i++) {
             console.log('attempting polyline fetch');
             try {
-                const polyLineResponse = await this.getPolyBetweenTwoPoints(visitByID.get(orderedVisitIds[i]).getAddress().coordinates,
-                                                                            visitByID.get(orderedVisitIds[i + 1]).getAddress().coordinates);
+                const polyLineResponse = await this.getPolyBetweenTwoPoints(visitOrderList[i].getAddress().coordinates,
+                                                                                visitOrderList[i + 1].getAddress().coordinates);
                 newPolylines.push(polyLineResponse);
             } catch (error) {
                 console.log(error);
@@ -68,30 +62,35 @@ class VisitMapScreenController extends Component {
         }
     }
 
+    getUpdateOrderedVisitList(visitList) {
+        for (let i = 0; i < visitList.length; i++) {
+            if (visitList[i].isDone) {
+                return visitList.slice(0, i);
+            }
+        }
+        return visitList;
+    }
+
     onChangeOrder(nextOrder) {
-        console.log(this.state.orderedVisitIDListObject);
-        floDB.write(() => {
-            this.state.orderedVisitIDListObject.visitIDList = nextOrder.map((index) => this.state.orderedVisitIDListObject.visitIDList[index]);
-        });
-        console.log(this.state.orderedVisitIDListObject);
+        this.setState({visitOrderList: this.getUpdateOrderedVisitList(nextOrder)});
         this.getAllPolylines();
+        this.props.onOrderChange(nextOrder);
     }
 
     render() {
         return (
             <View style={{flex: 1}}>
                 <MapPanel
-                    markerData={this.state.visitResultObject.map((visitObject) =>
+                    markerData={this.state.visitOrderList.map((visit) =>
                          ({
-                            coordinates: visitObject.getAddress().coordinates,
-                            name: visitObject.getAssociatedName()
+                            coordinates: visit.getAddress().coordinates,
+                            name: visit.getAssociatedName()
                         })
                     )}
                     polylines={this.state.polylines}
                 />
                 <ControlPanel
-                    visitResultObject={this.state.visitResultObject}
-                    orderedVisitIds={this.state.orderedVisitIDListObject.visitIDList}
+                    date={this.state.date}
                     onChangeOrder={this.onChangeOrder}
                 />
             </View>
@@ -102,12 +101,19 @@ class VisitMapScreenController extends Component {
 function ControlPanel(props) {
     return (
         <View>
-            <DragDropList
-                orderedItemIDList={props.orderedVisitIds}
-                dataObjectList={props.visitResultObject}
-                dataObjectKey={'visitID'}
-                onChangeOrder={props.onChangeOrder}
-                renderRow={VisitRow}
+            {/*<DragDropList*/}
+                {/*orderedItemIDList={props.orderedVisitIds}*/}
+                {/*dataObjectList={props.visitResultObject}*/}
+                {/*dataObjectKey={'visitID'}*/}
+                {/*onChangeOrder={props.onChangeOrder}*/}
+                {/*renderRow={VisitRow}*/}
+            {/*/>*/}
+
+            <SortedVisitListContainer
+                date={props.date}
+                renderWithCallback={VisitRow}
+                isCompletedHidden
+                onOrderChange={props.onChangeOrder}
             />
         </View>
     );

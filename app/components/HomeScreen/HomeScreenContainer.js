@@ -16,9 +16,21 @@ class HomeScreenContainer extends Component {
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);
+        this.onOrderChange = this.onOrderChange.bind(this);
+
         this.navigateToAddNote = this.navigateToAddNote.bind(this);
         this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
         this.navigateToAddVisit = this.navigateToAddVisit.bind(this);
+
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    }
+
+    onNavigatorEvent(event) {
+        if (event.type === 'DeepLink') {
+            if (event.link === 'date') {
+                this.setState({date: event.payload});
+            }
+        }
     }
     
     onDateSelected(date) {
@@ -28,18 +40,24 @@ class HomeScreenContainer extends Component {
         console.log(date.format());
     }
 
+    onOrderChange() {
+        this.forceUpdate();
+        console.log('was called');
+    }
+
     navigateToVisitListScreen() {
         this.props.navigator.push({
             screen: screenNames.visitListScreen,
             passProps: {
-                date: this.state.date
+                date: this.state.date,
+                onOrderChange: this.onOrderChange.bind(this)
             },
             navigatorStyle: {
                 tabBarHidden: true
             },
             navigatorButtons: {
                 rightButtons: [{
-                    id: 'calendar-picker-visits',
+                    id: 'calendar-picker',
                     title: 'pick',
                     // component: 'CalendarPickerButton',
                     // passProps: {
@@ -54,14 +72,15 @@ class HomeScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.visitMapScreen,
             passProps: {
-                date: this.state.date
+                date: this.state.date,
+                onOrderChange: this.onOrderChange.bind(this)
             },
             navigatorStyle: {
                 tabBarHidden: true
             },
             navigatorButtons: {
                 rightButtons: [{
-                    id: 'calendar-picker-visits',
+                    id: 'calendar-picker',
                     title: 'pick',
                     // component: 'CalendarPickerButton',
                     // passProps: {
@@ -101,20 +120,20 @@ class HomeScreenContainer extends Component {
             }
         });
     }
-
+    
     render() {
-        this.visitResultObject = floDB.objects(Visit.schema.name)
-            .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf())
-            .filtered('isDone==false');
-        console.log(`vobject length${this.visitResultObject.length}`);
+        const visitResultObject = floDB.objects(Visit.schema.name)
+            .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf());
         return (
             <View style={{flex: 1}}>
                 <HomeScreen
-                    visitResultObject={this.visitResultObject}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}
                     date={this.state.date}
+                    totalVisitsCount={visitResultObject.length}
+                    remainingVisitsCount={visitResultObject.filtered('isDone==false').length}
                     onDateSelected={this.onDateSelected}
+                    onOrderChange={this.onOrderChange}
                 />
                 <Fab
                     onPressAddNote={this.navigateToAddNote}

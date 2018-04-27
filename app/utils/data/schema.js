@@ -38,10 +38,10 @@ class Address extends Realm.Object {
     }
 
     hasCoordinates() {
-        return (
+        return !!((
             (this.latitude !== null) &&
             (this.longitude !== null)
-        ) ? true : false;
+        ));
     }
 }
 
@@ -102,6 +102,13 @@ class Visit extends Realm.Object {
         return CollectionUtils.getFirstElement(this.episode);
     }
 
+    getDiagnosis() {
+        if (this.getPatient()) {
+            return this.getPatient().diagnosis;
+        }
+        return undefined;
+    }
+
     getPatient() {
         const episode = this.getEpisode();
         if (episode) {
@@ -143,7 +150,6 @@ Visit.schema = {
 };
 
 class VisitOrder extends Realm.Object {
-
 }
 
 VisitOrder.schema = {
@@ -151,7 +157,7 @@ VisitOrder.schema = {
     primaryKey: 'midnightEpoch',
     properties: {
         midnightEpoch: 'int',
-        visitIDList: 'string[]'
+        visitList: 'Visit[]'
     }
 };
 
@@ -165,6 +171,7 @@ const floDB = new Realm({
         VisitOrder
     ],
     deleteRealmIfMigrationNeeded: true,
+    inMemory: true
 });
 
 
@@ -224,7 +231,6 @@ function CreateAndSaveDummies() {
             visitID,
             midnightEpochOfVisit: midnightEpoch
         });
-        orderObject.visitIDList.push(visitID);
     });
 
     console.log('==========================================');

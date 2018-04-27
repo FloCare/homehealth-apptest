@@ -4,65 +4,69 @@ import {View, FlatList} from 'react-native';
 import {CustomCheckBox} from './CustomCheckBox';
 import componentStyles from './styles';
 import {Tag} from './tag';
+import {Visit} from '../../utils/data/schema';
 
-class VisitCard extends React.PureComponent {
-
-    onSelectionToggle = () => {
-        this.props.onCheck(this.props.id);
-    }
-
-    render() {
-        console.log(`card render ${this.props.patientName}called at ${Date.now()}`);
-        return (
-            <Card containerStyle={componentStyles.cardContainerStyle}>
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{flex: 1}}>
-                        <Text style={componentStyles.nameStyle}>{this.props.patientName}</Text>
-                        <Text style={componentStyles.addressStyle}>{this.props.address}</Text>
+function VisitCard({isDoneToggle}) {
+    //
+    // render() {
+    //     console.log(`card render ${this.props.patientName}called at ${Date.now()}`);
+        return (({data}) => {
+            const visit = data;
+            const onSelectionToggle = () => {
+                if (isDoneToggle) { isDoneToggle(visit); }
+            };
+            // console.log(visit);
+            // console.log('rerendered visitcard');
+            return (
+                <Card containerStyle={componentStyles.cardContainerStyle}>
+                    <View style={{flexDirection: 'row'}}>
+                        <View style={{flex: 1}}>
+                            <Text style={componentStyles.nameStyle}>{visit.getAssociatedName()}</Text>
+                            <Text style={componentStyles.addressStyle}>{'dummy'}</Text>
+                        </View>
+                        <CustomCheckBox
+                            checked={visit.isDone}
+                            onPress={onSelectionToggle}
+                        />
                     </View>
-                    <CustomCheckBox
-                        checked={this.props.isDone}
-                        onPress={this.onSelectionToggle}
+                    <FlatList
+                        horizontal
+                        style={componentStyles.listContainer}
+                        data={visit.getDiagnosis()}
+                        renderItem={({item}) =>
+                            <Tag text={item} />
+                        }
+                        keyExtractor={(item) => item}
                     />
-                </View>
-                <FlatList
-                    horizontal
-                    style={componentStyles.listContainer}
-                    data={this.props.diagnosis}
-                    renderItem={({item}) =>
-                        <Tag text={item} />
-                    }
-                    keyExtractor={(item) => item}
-                />
-                <Divider style={{marginBottom: 4, height: 1.5, backgroundColor: '#dddddd'}} />
-                <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-around', margin: 0, padding: 0}}>
-                    <Button
-                        icon={{
-                            name: 'phone',
-                            size: 18,
-                            color: '#45ceb1'
-                        }}
-                        onPress={this.props.onCall}
-                        title='CALL'
-                        textStyle={{fontSize: 14, color: '#222222'}}
-                        buttonStyle={{backgroundColor: 'transparent'}}
-                    />
-                    <Divider style={{width: 1.5, height: '60%', marginTop: 8, backgroundColor: '#dddddd'}} />
-                    <Button
-                        icon={{
-                            name: 'phone',
-                            size: 18,
-                            color: '#45ceb1'
-                        }}
-                        onPress={this.props.onNavigate}
-                        title='NAVIGATE'
-                        textStyle={{fontSize: 14, color: '#222222'}}
-                        buttonStyle={{backgroundColor: 'transparent'}}
-                    />
-                </View>
-            </Card>
-        );
-    }
+                    <Divider style={{marginBottom: 4, height: 1.5, backgroundColor: '#dddddd'}} />
+                    <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-around', margin: 0, padding: 0}}>
+                        <Button
+                            icon={{
+                                name: 'phone',
+                                size: 18,
+                                color: '#45ceb1'
+                            }}
+                            // onPress={this.props.onCall}
+                            title='CALL'
+                            textStyle={{fontSize: 14, color: '#222222'}}
+                            buttonStyle={{backgroundColor: 'transparent'}}
+                        />
+                        <Divider style={{width: 1.5, height: '60%', marginTop: 8, backgroundColor: '#dddddd'}} />
+                        <Button
+                            icon={{
+                                name: 'phone',
+                                size: 18,
+                                color: '#45ceb1'
+                            }}
+                            // onPress={this.props.onNavigate}
+                            title='NAVIGATE'
+                            textStyle={{fontSize: 14, color: '#222222'}}
+                            buttonStyle={{backgroundColor: 'transparent'}}
+                        />
+                    </View>
+                </Card>
+            );
+        });
 }
 
 export {VisitCard};

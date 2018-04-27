@@ -1,7 +1,12 @@
 import React from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
-import {View} from 'react-native';
+import {Text, View} from 'react-native';
 import {VisitSummary} from './VisitSummary';
+import {VisitCard} from '../common/visitCard';
+import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
+import {Visit} from '../../utils/data/schema';
+import SortableList from 'react-native-sortable-list';
+import {Button} from 'react-native-elements';
 
 function HomeScreen(props) {
     return (
@@ -14,11 +19,24 @@ function HomeScreen(props) {
                 onDateSelected={props.onDateSelected}
                 selectedDate={props.date}
             />
+            <SortedVisitListContainer
+                date={props.date}
+                singleEntry
+                sortEnabled={false}
+                renderWithCallback={VisitCard}
+                onOrderChange={props.onOrderChange}
+            />
             <VisitSummary
-                visitResultObject={props.visitResultObject}
+                date={props.date}
+                totalVisitsCount={props.totalVisitsCount}
+                remainingVisitsCount={props.remainingVisitsCount}
                 navigateToVisitListScreen={props.navigateToVisitListScreen}
                 navigateToVisitMapScreen={props.navigateToVisitMapScreen}
             />
+            {/*<SortableList*/}
+                {/*data={[2, 3, 4, 5, 6, 7]}*/}
+                {/*renderRow={(item) => { console.log(`rerendered ${item}`); return <Text>{'hello'} </Text>; }}*/}
+            {/*/>*/}
         </View>
     );
 }

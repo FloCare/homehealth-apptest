@@ -9,22 +9,22 @@ class VisitListScreenContainer extends Component {
         super(props);
         this.state = {
             date: props.date,
-            showCalendar: false
+            // showCalendar: false
         };
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.onDayPress = this.onDayPress.bind(this);
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
+        this.onOrderChange = this.onOrderChange.bind(this);
     }
 
-    onNavigatorEvent(event) {
-        console.log('here');
-        if (event.type === 'NavBarButtonPress') {
-            if (event.id === 'calendar-picker-visits') {
-                this.setState((prevState) => ({showCalendar: !prevState.showCalendar}));
-            }
-        }
-    }
+    // onNavigatorEvent(event) {
+    //     if (event.type === 'NavBarButtonPress') {
+    //         if (event.id === 'calendar-picker') {
+    //             this.setState((prevState) => ({showCalendar: !prevState.showCalendar}));
+    //         }
+    //     }
+    // }
 
     onDayPress(day) {
         console.log(`${day.timestamp} was pressed`);
@@ -35,12 +35,18 @@ class VisitListScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
             passProps: {
-                date: this.state.date
+                date: this.state.date,
+                onDone: this.onOrderChange
             },
             navigatorStyle: {
                 tabBarHidden: true
             }
         });
+    }
+
+    onOrderChange(newOrder) {
+        this.forceUpdate();
+        this.props.onOrderChange(newOrder);
     }
 
     generateVisitResultObject(date) {
@@ -49,19 +55,22 @@ class VisitListScreenContainer extends Component {
 
     render() {
         const obj = {}; obj[this.state.date.dateString] = {selected: true, selectedColor: 'blue'};
-
+        console.log(this.props.onOrderChange);
+        console.log('order c hange fn');
         return (
             <VisitListScreen
-                calendarComponent={<CalendarStrip
-                    style={{height: 100, paddingTop: 20, paddingBottom: 10}}
-                    calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
-                    // highlightDateNumberStyle={{fontWeight: '800'}}
-                    onDateSelected={this.onDayPress}
-                    selectedDate={this.state.date}
-                />}
-                showCalendar={this.state.showCalendar}
-                visitResultObject={this.generateVisitResultObject(this.state.date)}
+                date={this.state.date}
+                // calendarComponent={<CalendarStrip
+                //     style={{height: 100, paddingTop: 20, paddingBottom: 10}}
+                //     calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
+                //     // highlightDateNumberStyle={{fontWeight: '800'}}
+                //     onDateSelected={this.onDayPress}
+                //     selectedDate={this.state.date}
+                // />}
+                // showCalendar={this.state.showCalendar}
+                // visitResultObject={this.generateVisitResultObject(this.state.date)}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
+                onOrderChange={this.onOrderChange}
             />
         );
     }
