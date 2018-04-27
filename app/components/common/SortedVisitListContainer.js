@@ -62,7 +62,26 @@ class SortedVisitListContainer extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState(this.getStateFromDate(nextProps.date));
+        const nextState = this.getStateFromDate(nextProps.date);
+        const currenctOrderedVisitList = this.state.orderedVisitList;
+        if (nextState.orderedVisitList.length !== currenctOrderedVisitList.length) {
+            this.setState(nextState);
+            this.forceUpdate();
+            return;
+        }
+
+        for (let i = 0; i < currenctOrderedVisitList.length; i++) {
+            if (currenctOrderedVisitList[i].visitID !== nextState.orderedVisitList[i].visitID
+                    || currenctOrderedVisitList[i].isDone !== nextState.orderedVisitList[i].isDone) {
+                this.setState(nextState);
+                this.forceUpdate();
+                return;
+            }
+        }
+    }
+
+    shouldComponentUpdate() {
+        return false;
     }
 
     updateNewVisitOrderToDb(order, valid) {
@@ -78,6 +97,7 @@ class SortedVisitListContainer extends Component {
         if (this.props.onOrderChange) {
             this.props.onOrderChange(order);
         }
+        this.forceUpdate();
     }
 
     onOrderChange(newOrder) {

@@ -28,6 +28,8 @@ function HomeScreen(props) {
             />
             <VisitSummary
                 date={props.date}
+                totalVisitsCount={props.totalVisitsCount}
+                remainingVisitsCount={props.remainingVisitsCount}
                 navigateToVisitListScreen={props.navigateToVisitListScreen}
                 navigateToVisitMapScreen={props.navigateToVisitMapScreen}
             />

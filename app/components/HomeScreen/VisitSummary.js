@@ -24,7 +24,7 @@ export function VisitSummary(props) {
                     color: '#ffffff'
                 }}
             >
-                {'3 of 6 visits remaining'}
+                {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
                 {/*{`${props.remainingVisitCount} of ${props.totalVisitCount} Visits Remaining`}*/}
             </Text>
             <Text
