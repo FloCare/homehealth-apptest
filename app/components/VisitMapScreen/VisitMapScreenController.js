@@ -15,18 +15,11 @@ import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 class VisitMapScreenController extends Component {
     constructor(props) {
         super(props);
+        this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
         this.state = {
             date: props.date,
+            visitOrderList: this.getUpdateOrderedVisitList(this.visitOrderObject.visitList),
             polylines: [],
-            visitOrderObject: floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf()),
-            visitResultObject: props.visitResultObject ?
-                                        props.visitResultObject :
-                                            floDB.objects(Visit).filtered('midnightEpochOfVisit==$0', props.date.valueOf()),
-
-            orderedVisitIDListObject: props.orderedVisitIdListObject ?
-                                        props.orderedVisitIdListObject :
-                                            floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf())
-
     };
         this.onChangeOrder = this.onChangeOrder.bind(this);
         this.getAllPolylines = this.getAllPolylines.bind(this);
@@ -37,16 +30,14 @@ class VisitMapScreenController extends Component {
     async getAllPolylines() {
         const newPolylines = [];
         //TODO safety checks
-        console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
+        // console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
 
-        const visitByID = arrayToMap(this.state.visitResultObject, 'visitID');
-        const orderedVisitIds = this.state.orderedVisitIDListObject.visitIDList;
-
-        for (let i = 0; i < orderedVisitIds.length - 1; i++) {
+        const visitOrderList = this.state.visitOrderList;
+        for (let i = 0; i < visitOrderList.length - 1; i++) {
             console.log('attempting polyline fetch');
             try {
-                const polyLineResponse = await this.getPolyBetweenTwoPoints(visitByID.get(orderedVisitIds[i]).getAddress().coordinates,
-                                                                            visitByID.get(orderedVisitIds[i + 1]).getAddress().coordinates);
+                const polyLineResponse = await this.getPolyBetweenTwoPoints(visitOrderList[i].getAddress().coordinates,
+                                                                                visitOrderList[i + 1].getAddress().coordinates);
                 newPolylines.push(polyLineResponse);
             } catch (error) {
                 console.log(error);
@@ -71,21 +62,26 @@ class VisitMapScreenController extends Component {
         }
     }
 
-    onChangeOrder(nextOrder) {
-        // console.log(this.state.orderedVisitIDListObject);
-        // floDB.write(() => {
-        //     this.state.orderedVisitIDListObject.visitIDList = nextOrder.map((index) => this.state.orderedVisitIDListObject.visitIDList[index]);
-        // });
-        // console.log(this.state.orderedVisitIDListObject);
+    getUpdateOrderedVisitList(visitList) {
+        for (let i = 0; i < visitList.length; i++) {
+            if (visitList[i].isDone) {
+                return visitList.slice(0, i);
+            }
+        }
+        return visitList;
+    }
 
+    onChangeOrder(nextOrder) {
+        this.setState({visitOrderList: this.getUpdateOrderedVisitList(nextOrder)});
         this.getAllPolylines();
+        this.props.onOrderChange(nextOrder);
     }
 
     render() {
         return (
             <View style={{flex: 1}}>
                 <MapPanel
-                    markerData={this.state.visitOrderObject.visitList.map((visit) =>
+                    markerData={this.state.visitOrderList.map((visit) =>
                          ({
                             coordinates: visit.getAddress().coordinates,
                             name: visit.getAssociatedName()
@@ -95,8 +91,6 @@ class VisitMapScreenController extends Component {
                 />
                 <ControlPanel
                     date={this.state.date}
-                    visitResultObject={this.state.visitResultObject}
-                    orderedVisitIds={this.state.orderedVisitIDListObject.visitIDList}
                     onChangeOrder={this.onChangeOrder}
                 />
             </View>
@@ -119,7 +113,7 @@ function ControlPanel(props) {
                 date={props.date}
                 renderWithCallback={VisitRow}
                 isCompletedHidden
-                onOrderChange={props.onOrderChange}
+                onOrderChange={props.onChangeOrder}
             />
         </View>
     );

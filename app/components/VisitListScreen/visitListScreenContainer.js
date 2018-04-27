@@ -15,6 +15,7 @@ class VisitListScreenContainer extends Component {
 
         this.onDayPress = this.onDayPress.bind(this);
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
+        this.onOrderChange = this.onOrderChange.bind(this);
     }
 
     onNavigatorEvent(event) {
@@ -35,12 +36,18 @@ class VisitListScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
             passProps: {
-                date: this.state.date
+                date: this.state.date,
+                onDone: this.onOrderChange
             },
             navigatorStyle: {
                 tabBarHidden: true
             }
         });
+    }
+
+    onOrderChange(newOrder) {
+        this.forceUpdate();
+        this.props.onOrderChange(newOrder);
     }
 
     generateVisitResultObject(date) {
@@ -64,7 +71,7 @@ class VisitListScreenContainer extends Component {
                 showCalendar={this.state.showCalendar}
                 // visitResultObject={this.generateVisitResultObject(this.state.date)}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
-                onOrderChange={this.props.onOrderChange}
+                onOrderChange={this.onOrderChange}
             />
         );
     }

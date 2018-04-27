@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
-import {AddVisitsScreen} from './AddVisitsScreen';
 import {ListItem} from 'react-native-elements';
-import {Address, floDB, Patient, Place, Visit} from '../../utils/data/schema';
-import {ArrayToMap} from '../../utils/collectionUtils';
+import {AddVisitsScreen} from './AddVisitsScreen';
+import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
+import {arrayToMap} from '../../utils/collectionUtils';
 import {visitType} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
 
@@ -132,7 +132,7 @@ class AddVisitsScreenContainer extends Component {
                     //TODO what happens when patients have multiple cases
                     const patient = floDB.objectForPrimaryKey(Patient, selectedItem.id);
                     //TODO add correct date and to correct episode
-                    patient.episodes[0].visits.push({visitID: generateUUID(), midnightEpochOfVisit: 0});
+                    patient.episodes[0].visits.push({visitID: generateUUID(), midnightEpochOfVisit: this.state.date.valueOf()});
                 } else if (selectedItem.type === visitType.place) {
                     const place = floDB.objectForPrimaryKey(Place, selectedItem.id);
                     //TODO insert visit correctly
@@ -140,6 +140,29 @@ class AddVisitsScreenContainer extends Component {
                 }
             }
         });
+
+        const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
+        const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
+        const visitListByID = arrayToMap(visitOrderObject.visitList, 'visitID');
+
+        for (let i = 0; i < visitOrderObject.visitList.length; i++) {
+            if (visitOrderObject.visitList[i].isDone) {
+                const newVisitOrder = [];
+                newVisitOrder.push(...visitOrderObject.visitList.slice(0, i));
+                for (let j = 0; j < allVisits.length; j++) {
+                    if (!visitListByID.has(allVisits[j].visitID)) {
+                        newVisitOrder.push(allVisits[j]);
+                    }
+                }
+                newVisitOrder.push(...visitOrderObject.visitList.slice(i, visitOrderObject.visitList.length));
+
+                floDB.write(() => {
+                    visitOrderObject.visitList = newVisitOrder;
+                });
+                break;
+            }
+        }
+
         if (this.props.onDone) {
             this.props.onDone(this.state.selectedItems);
         }

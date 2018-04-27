@@ -75,9 +75,9 @@ class SortedVisitListContainer extends Component {
         });
         this.setState({orderedVisitList: this.tweakVisitListOrder(order)});//this.props.singleEntry ? order.slice(0, 1) : order});
 
-        // if (this.props.onOrderChange) {
-        //     this.props.onOrderChange();
-        // }
+        if (this.props.onOrderChange) {
+            this.props.onOrderChange(order);
+        }
     }
 
     onOrderChange(newOrder) {
@@ -87,7 +87,7 @@ class SortedVisitListContainer extends Component {
     onReleaseRow() {
         console.log('release row called');
         if (this.orderIndexMovingCache) {
-            let newOrderedVisitList = this.orderIndexMovingCache.map((index) => this.state.orderedVisitList[index]);
+            const newOrderedVisitList = this.orderIndexMovingCache.map((index) => this.state.orderedVisitList[index]);
             // console.log('new list:')
             // console.log(newOrderedVisitList);
             if (SortedVisitListContainer.performValidityCheck(newOrderedVisitList)) {
@@ -117,9 +117,9 @@ class SortedVisitListContainer extends Component {
         }
         tweakedVisitList = this.props.singleEntry ? tweakedVisitList.slice(0, 1) : tweakedVisitList;
 
-        if (this.props.onOrderChange) {
-            this.props.onOrderChange(tweakedVisitList);
-        }
+        // if (this.props.onOrderChange) {
+        //     this.props.onOrderChange(tweakedVisitList);
+        // }
 
         return tweakedVisitList;
     }
@@ -190,7 +190,7 @@ class SortedVisitListContainer extends Component {
     }
 
     render() {
-        console.log('whole container rendered');
+        console.log(`sortedVisitList container rendered, length ${this.state.orderedVisitList.length}`);
         return (
             <SortableList
                 data={this.state.orderedVisitList}
