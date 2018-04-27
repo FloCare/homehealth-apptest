@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
+import {View} from 'react-native';
 import moment from 'moment';
 import {floDB, Visit} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames} from '../../utils/constants';
+import Fab from '../common/Fab';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -15,6 +17,11 @@ class HomeScreenContainer extends Component {
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
+
+        this.navigateToAddNote = this.navigateToAddNote.bind(this);
+        this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
+        this.navigateToAddVisit = this.navigateToAddVisit.bind(this);
+
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
@@ -31,6 +38,11 @@ class HomeScreenContainer extends Component {
             this.setState({date});
         }
         console.log(date.format());
+    }
+
+    onOrderChange() {
+        this.forceUpdate();
+        console.log('was called');
     }
 
     navigateToVisitListScreen() {
@@ -79,24 +91,56 @@ class HomeScreenContainer extends Component {
         });
     }
 
-    onOrderChange() {
-        this.forceUpdate();
-        console.log('was called');
+    navigateToAddNote() {
+        this.props.navigator.push({
+            screen: screenNames.addNote,
+            title: 'Add Note',
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
     }
 
+    navigateToAddPatient() {
+        this.props.navigator.push({
+            screen: screenNames.addPatient,
+            title: 'Add Patient',
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
+    }
+
+    navigateToAddVisit() {
+        this.props.navigator.push({
+            screen: screenNames.addVisitScreen,
+            title: 'Add Visit',
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
+    }
+    
     render() {
         const visitResultObject = floDB.objects(Visit.schema.name)
             .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf());
         return (
-            <HomeScreen
-                navigateToVisitMapScreen={this.navigateToVisitMapScreen}
-                navigateToVisitListScreen={this.navigateToVisitListScreen}
-                date={this.state.date}
-                totalVisitsCount={visitResultObject.length}
-                remainingVisitsCount={visitResultObject.filtered('isDone==false').length}
-                onDateSelected={this.onDateSelected}
-                onOrderChange={this.onOrderChange}
-            />
+            <View style={{flex: 1}}>
+                <HomeScreen
+                    navigateToVisitMapScreen={this.navigateToVisitMapScreen}
+                    navigateToVisitListScreen={this.navigateToVisitListScreen}
+                    date={this.state.date}
+                    totalVisitsCount={visitResultObject.length}
+                    remainingVisitsCount={visitResultObject.filtered('isDone==false').length}
+                    onDateSelected={this.onDateSelected}
+                    onOrderChange={this.onOrderChange}
+                />
+                <Fab
+                    onPressAddNote={this.navigateToAddNote}
+                    onPressAddVisit={this.navigateToAddVisit}
+                    onPressAddPatient={this.navigateToAddPatient}
+                />
+            </View>
         );
     }
 }
