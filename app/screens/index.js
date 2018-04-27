@@ -4,13 +4,14 @@ import AddPatientScreenContainer from './AddPatientScreenContainer';
 import PatientDetailScreenContainer from './PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
-import {CreateAndSaveDummies, floDB, Visit} from '../utils/data/schema';
+import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
 import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
+import moment from 'moment/moment';
 
 const RegisterScreens = () => {
     if (floDB.objects(Visit.schema.name).length === 0) {
@@ -19,6 +20,11 @@ const RegisterScreens = () => {
         CreateAndSaveDummies();
         CreateAndSaveDummies();
         CreateAndSaveDummies();
+
+        const visitOrder = floDB.objectForPrimaryKey(VisitOrder, moment().utc().startOf('day').valueOf());
+        floDB.write(() => {
+            visitOrder.visitList = floDB.objects(Visit);
+        });
     }
 
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
