@@ -12,7 +12,7 @@ const AddPatientModel = t.struct({
     city: t.maybe(t.String),
     primaryContact: PhoneNumber,
     emergencyContact: t.maybe(PhoneNumber),
-    diagnosis: t.maybe(t.String),
+    //diagnosis: t.maybe(t.String),
     notes: t.maybe(t.String)
 });
 
@@ -34,7 +34,7 @@ const formOptions = {
         },
         zip: {
             label: 'Zip Code',
-            error: 'Please enter a valid zipCode for the patient',
+            error: 'Please enter a valid zipCode',
             placeholder: '12345',
             keyboardType: 'numeric'
         },
@@ -48,15 +48,16 @@ const formOptions = {
             placeholder: '541-754-3010',
             keyboardType: 'numeric'
         },
-        diagnosis: {
-            label: 'Diagnosis',
-            placeholder: '#ADHD',
-            config: {
-                onSelectedItemsChange: null,
-                selectedItems: []
-            },
-            template: DiagnosisMultiSelect
-        },
+        // diagnosis: {
+        //     label: 'Diagnosis',
+        //     placeholder: '#ADHD',
+        //     error: 'Please enter a valid diagnosis for the patient',
+        //     config: {
+        //         onSelectedItemsChange: null,
+        //         selectedItems: []
+        //     },
+        //     template: DiagnosisMultiSelect
+        // },
         streetAddress: {
             label: 'Street Address',
             error: 'Please enter a valid street address',
@@ -64,19 +65,23 @@ const formOptions = {
             config: {
                 onPress: null,
                 onChangeAddressText: null,
-                refName: null
+                refName: null,
+                getDefaultValue: null,
             }
         },
         apartmentNo: {
             label: 'Apartment No.',
             placeholder: '#482',
-            keyboardType: 'numeric'
+            keyboardType: 'numeric',
+            error: 'Please enter a valid apartment No'
         },
         city: {
             label: 'City, State',
+            error: 'Please enter a valid city name',
             placeholder: 'Los Angeles, CA'
         },
         notes: {
+            error: 'Please enter a valid note',
             label: 'Quick Information'
         }
     }
@@ -96,13 +101,13 @@ class Options {
         this._options = options;
     }
 
-    get SelectedItems() {
-        return this._options.fields.diagnosis.config.selectedItems;
-    }
-
-    set SelectedItems(selectedItems) {
-        this._options.fields.diagnosis.config.selectedItems = selectedItems;
-    }
+    // get SelectedItems() {
+    //     return this._options.fields.diagnosis.config.selectedItems;
+    // }
+    //
+    // set SelectedItems(selectedItems) {
+    //     this._options.fields.diagnosis.config.selectedItems = selectedItems;
+    // }
 
     get OnPress() {
         return this._options.fields.streetAddress.config.onPress;
@@ -112,16 +117,16 @@ class Options {
         this._options.fields.streetAddress.config.onPress = onPress;
     }
 
-    get OnSelectedItemsChange() {
-        return this._options.fields.diagnosis.config.onSelectedItemsChange;
-    }
-
-    set OnSelectedItemsChange(onSelectedItemsChange) {
-        console.log('============================');
-        console.log('Setting onSelectedItems Change');
-        console.log('============================');
-        this._options.fields.diagnosis.config.onSelectedItemsChange = onSelectedItemsChange;
-    }
+    // get OnSelectedItemsChange() {
+    //     return this._options.fields.diagnosis.config.onSelectedItemsChange;
+    // }
+    //
+    // set OnSelectedItemsChange(onSelectedItemsChange) {
+    //     console.log('============================');
+    //     console.log('Setting onSelectedItems Change');
+    //     console.log('============================');
+    //     this._options.fields.diagnosis.config.onSelectedItemsChange = onSelectedItemsChange;
+    // }
 
     get OnChangeAddressText() {
         return this._options.fields.streetAddress.config.onChangeAddressText;
@@ -137,6 +142,14 @@ class Options {
 
     set RefName(refName) {
         this._options.fields.streetAddress.config.refName = refName;
+    }
+
+    get GetDefaultValue() {
+        return this._options.fields.streetAddress.config.getDefaultValue;
+    }
+
+    set GetDefaultValue(getDefaultValue) {
+        this._options.fields.streetAddress.config.getDefaultValue = getDefaultValue;
     }
 }
 

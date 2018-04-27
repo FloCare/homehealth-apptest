@@ -31,12 +31,36 @@ class AddPatientScreenContainer extends Component {
     }
 
     render() {
-        return (
-            // Add header (navigation module)
-            <AddPatientScreen
-                onSubmit={this.onSubmit}
-            />
-        );
+        const {edit, values} = this.props;
+        if (values) {
+            return (
+                // Add header (navigation module)
+                <AddPatientScreen
+                    onSubmit={this.onSubmit}
+                    edit={edit}
+                    patientID={values.patientID}
+                    addressID={values.addressID}
+                    name={values.name}
+                    streetAddress={values.streetAddress}
+                    apartmentNo={values.apartmentNo}
+                    zip={values.zip}
+                    city={values.city}
+                    state={values.state}
+                    primaryContact={values.primaryContact}
+                    emergencyContact={values.emergencyContact}
+                    notes={values.notes}
+                    lat={values.lat}
+                    long={values.long}
+                />
+            );
+        } else {
+            return (
+                <AddPatientScreen
+                    onSubmit={this.onSubmit}
+                    edit={edit}
+                />
+            );
+        }
     }
 }
 
