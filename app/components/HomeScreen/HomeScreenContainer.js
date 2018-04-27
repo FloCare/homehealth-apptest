@@ -75,6 +75,7 @@ class HomeScreenContainer extends Component {
     navigateToAddNote() {
         this.props.navigator.push({
             screen: screenNames.addNote,
+            title: 'Add Note',
             navigatorStyle: {
                 tabBarHidden: true
             }
@@ -84,6 +85,7 @@ class HomeScreenContainer extends Component {
     navigateToAddPatient() {
         this.props.navigator.push({
             screen: screenNames.addPatient,
+            title: 'Add Patient',
             navigatorStyle: {
                 tabBarHidden: true
             }
@@ -93,6 +95,7 @@ class HomeScreenContainer extends Component {
     navigateToAddVisit() {
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
+            title: 'Add Visit',
             navigatorStyle: {
                 tabBarHidden: true
             }

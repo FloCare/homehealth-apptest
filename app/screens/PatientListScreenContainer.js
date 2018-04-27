@@ -18,7 +18,7 @@ class PatientListScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            patientList: []
+            patientList: [],
         };
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
@@ -49,7 +49,7 @@ class PatientListScreenContainer extends Component {
                 // Todo: Navigate to the AddPatient Screen
                 this.navigateTo(
                     screenNames.addPatient,
-                    'New Patient'
+                    'Add Patient'
                 );
             }
         }
@@ -88,12 +88,11 @@ class PatientListScreenContainer extends Component {
     }
 
     render() {
-        const {selectedPatient} = this.props;
         return (
             <PatientListScreen
                 patientList={this.state.patientList}
                 onSearch={this.onSearch}
-                selectedPatient={selectedPatient}
+                selectedPatient={this.props.selectedPatient}
                 onItemPressed={this.onItemPressed}
             />
         );

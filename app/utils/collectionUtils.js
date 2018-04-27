@@ -30,7 +30,7 @@ const createSectionedListFromRealmObject = (realmObj) => {
     const arr = Object.keys(realmObj).map((key) => realmObj[key]);
     const sections = arr.reduce((m, obj) => {
         const title = obj.name[0];
-        if (title in Object.keys(m)) {
+        if ((Object.keys(m)).indexOf(title) > -1) {
             m[title].push(obj);
         } else {
             m[title] = [obj];
