@@ -15,6 +15,7 @@ class AddPatientScreenContainer extends Component {
             this.props.navigator.pop();
         } else {
             this.props.navigator.pop();
+            // Todo: If the user came from 'Add Visit', don't switch tabs
             this.props.navigator.switchToTab({
                 tabIndex: 1,
                 title: 'Patients',

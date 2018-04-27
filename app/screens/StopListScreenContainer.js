@@ -11,11 +11,12 @@ class StopListScreenContainer extends Component {
         };
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
+        this.handleListUpdate = this.handleListUpdate.bind(this);
     }
 
     componentDidMount() {
         this.getSectionData(null);
-        // Todo attach query listeners
+        floDB.addListener('change', this.handleListUpdate);
     }
 
     onSearch(query) {
@@ -39,6 +40,14 @@ class StopListScreenContainer extends Component {
             const sectionedStopList = createSectionedListFromRealmObject(sortedStopList);
             this.setState({stopList: sectionedStopList});
         }
+    }
+
+    componentWillUnMount() {
+        floDB.addListener('change', this.handleListUpdate);
+    }
+
+    handleListUpdate() {
+        this.getSectionData(null);
     }
 
     render() {
