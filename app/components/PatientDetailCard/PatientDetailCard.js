@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, FlatList, Linking} from 'react-native';
-import {Text, Button, Divider, Icon} from 'react-native-elements';
+import {View, FlatList, Linking, Image} from 'react-native';
+import {Text, Button, Divider} from 'react-native-elements';
 import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
 import componentStyles from '../common/styles';
@@ -34,7 +34,7 @@ const PatientDetailCard = (props) => {
             />
             }
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                <Image source={require('../../../resources/elliotLugo.png')} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Primary Contact
@@ -62,7 +62,7 @@ const PatientDetailCard = (props) => {
 
             {emergencyContact !== '' && emergencyContact && 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                <Image source={require('../../../resources/elliotLugo.png')} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Emergency Contact
@@ -90,7 +90,7 @@ const PatientDetailCard = (props) => {
             <Divider style={styles.dividerStyle} />
 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                <Image source={require('../../../resources/diagnosis.png')} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Diagnosis
@@ -118,7 +118,7 @@ const PatientDetailCard = (props) => {
             <Divider style={styles.dividerStyle} />
 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                <Image source={require('../../../resources/visits.png')} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Visits
@@ -145,7 +145,7 @@ const PatientDetailCard = (props) => {
             <Divider style={styles.dividerStyle} />
 
             <View style={styles.containerStyle}>
-                <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                <Image source={require('../../../resources/notes.png')} />
                 <View style={{marginLeft: 14}}>
                     <Text style={styles.headerStyle}>
                         Notes
