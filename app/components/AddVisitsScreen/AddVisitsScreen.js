@@ -2,6 +2,7 @@ import React from 'react';
 import {View, FlatList} from 'react-native';
 import {SearchBar, ListItem, Button} from 'react-native-elements';
 import {Tag} from '../common/tag';
+import {CustomButton} from "../common/CustomButton";
 
 //TODO improve efficiency
 //TODO mark the places already selected for visit as such
@@ -26,8 +27,11 @@ function AddVisitsScreen(props) {
     //TODO theres inconsistencies in whether the button lable is in caps or not
     return (
         <View style={{flex: 1}}>
-            <SearchBar onChangeText={props.onChangeText} />
-            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <SearchBar
+                lightTheme
+                placeholder='search patients or stops'
+                onChangeText={props.onChangeText} />
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', margin: 16}}>
                 {props.selectedItems.map((item) => <Tag text={item.name} onPress={() => props.onTagPress(item)} />)}
             </View>
             <FlatList
@@ -37,8 +41,7 @@ function AddVisitsScreen(props) {
             {/*<List>*/}
                 {/*{props.listItems.map((item) => _createListItemComponent(item, props.onItemToggle))}*/}
             {/*</List>*/}
-            <Button
-                large
+            <CustomButton
                 title={'Done'}
                 onPress={props.onDone}
             />

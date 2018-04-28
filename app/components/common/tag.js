@@ -8,7 +8,7 @@ function removeButton(onPress) {
     if (onPress) {
         return (
             <TouchableHighlight onPress={onPress}>
-                <Icon name='rowing' />
+                <Icon name='close' />
             </TouchableHighlight>
         );
     } 
@@ -18,10 +18,10 @@ function removeButton(onPress) {
 function Tag(props) {
     return (
         <Badge
-            containerStyle={componentStyles.badgeContainerStyle}
+            containerStyle={[componentStyles.badgeContainerStyle, {margin: 4}]}
             children={
                 <View style={{flexDirection: 'row'}}>
-                    <Text style={componentStyles.badgeTextStyle}> {props.text} </Text>
+                    <Text style={[componentStyles.badgeTextStyle, {margin: 4}]}> {props.text} </Text>
                     {removeButton(props.onPress)}
                 </View>
             }
