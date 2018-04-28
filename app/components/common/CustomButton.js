@@ -1,12 +1,11 @@
 import React from 'react';
 import {Button} from "react-native-elements";
 
-const CustomButton = ({ title, onPress }) => {
+const CustomButton = ({ ...props }) => {
 	return (
 		<Button
 			buttonStyle={styles.buttonStyle}
-			title={title}
-			onPress={onPress}
+            {...props}
 		/>
 	);
 };
