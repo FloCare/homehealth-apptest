@@ -164,14 +164,16 @@ class AddPatientFormContainer extends Component {
         console.log('value = ', value);
         console.log('====================================================');
        if (value) {
+            let patientId = null;
             if (this.edit) {
                 // update the changed fields in the database
                 console.log('Updating fields in the db');
+                patientId = this.state.value.patientID;
 
                 try {
                     floDB.write(() => {
                         // find the patient to update
-                        const patient = floDB.objectForPrimaryKey(Patient.schema.name, this.state.value.patientID);
+                        const patient = floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
                         // Edit the corresponding address info
                         patient.address = {
@@ -207,14 +209,10 @@ class AddPatientFormContainer extends Component {
                     return;
                 }
 
-
                 // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
-                this.clearForm();
-
-                // Todo: Have to pop from the navigator stack
             } else {
                 // Todo: Add proper ID generators
-                const patientId = Math.random().toString();
+                patientId = Math.random().toString();
                 const episodeId = Math.random().toString();
                 const addressId = Math.random().toString();
 
@@ -260,11 +258,10 @@ class AddPatientFormContainer extends Component {
                     return;
                 }
                 // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
-                this.clearForm();
-
-                // Call Screen Container's onSubmit() hook
-                onSubmit(patientId);
             }
+           this.clearForm();
+           // Call Screen Container's onSubmit() hook
+           onSubmit(patientId);
         }
     }
 

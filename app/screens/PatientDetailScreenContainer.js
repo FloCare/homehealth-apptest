@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import update from 'immutability-helper';
+import moment from 'moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
@@ -18,7 +19,8 @@ class PatientDetailScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            patientDetail: {}
+            patientDetail: {},
+            visits: []
         };
         this.onPressAddNotes = this.onPressAddNotes.bind(this);
         this.onPressAddVisit = this.onPressAddVisit.bind(this);
@@ -27,6 +29,8 @@ class PatientDetailScreenContainer extends Component {
         this.parseResponse = this.parseResponse.bind(this);
         // settings this up to listen on navigator events
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.setMarkerRef = this.setMarkerRef.bind(this);
+        this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
     }
 
     componentDidMount() {
@@ -101,15 +105,28 @@ class PatientDetailScreenContainer extends Component {
         }
     }
 
+    onRegionChangeComplete() {
+        console.log('Calling callout on map');
+        this.marker.showCallout();
+    }
+
     getPatientDetails(patientId) {
         if (!patientId) {
-            this.setState({patientDetail: {}});
+            this.setState({patientDetail: {}, visits: []});
         } else {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
             this.setState({patientDetail: patientDetails});
+            const episode = patientDetails.episodes[0];
+            const visits = episode.visits.filtered(
+                'midnightEpochOfVisit==$0',
+                moment().utc().startOf('day').valueOf()).sorted('isDone');
+            console.log('The visits fetched are : ', visits);
+            this.setState({visits});
+
+            // Todo: Also fetch the visit details for that episode
+            // Todo: fetch next visit and last visit
 
             if (patientDetails) {
-                console.log('Patient Details are:', patientDetails);
                 // If latLong not present, fire geocode API
                 if (!(patientDetails.address.hasCoordinates())) {
                     console.log('LAT LONG DONT EXIST FOR THIS USER.... TRYING TO FETCH IT');
@@ -126,6 +143,10 @@ class PatientDetailScreenContainer extends Component {
                 }
             }
         }
+    }
+
+    setMarkerRef(element) {
+        this.marker = element;
     }
 
     parseResponse(result, patientId) {
@@ -179,8 +200,11 @@ class PatientDetailScreenContainer extends Component {
         return (
           <PatientDetailScreen
               patientDetail={this.state.patientDetail}
+              visits={this.state.visits}
               onPressAddVisit={this.onPressAddVisit}
               onPressAddNotes={this.onPressAddNotes}
+              showCallout={this.onRegionChangeComplete}
+              setMarkerRef={this.setMarkerRef}
           />
         );
     }
