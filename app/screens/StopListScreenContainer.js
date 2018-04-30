@@ -47,6 +47,7 @@ class StopListScreenContainer extends Component {
     }
 
     handleListUpdate() {
+        // Todo: Don't query again
         this.getSectionData(null);
     }
 
