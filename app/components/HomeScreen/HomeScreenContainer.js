@@ -31,6 +31,12 @@ class HomeScreenContainer extends Component {
                 this.setState({date: event.payload});
             }
         }
+        if (event.type === 'NavBarButtonPress') {
+            if (event.id === 'list-view') {
+                this.props.navigator.pop();
+                this.navigateToVisitListScreen();
+            }
+        }
     }
     
     onDateSelected(date) {
@@ -58,11 +64,7 @@ class HomeScreenContainer extends Component {
             navigatorButtons: {
                 rightButtons: [{
                     id: 'calendar-picker',
-                    title: 'pick',
-                    // component: 'CalendarPickerButton',
-                    // passProps: {
-                    //     currentDate: this.state.date
-                    // }
+                    icon: require('../../../resources/calendar.png'),
                 }]
             }
         });
@@ -81,11 +83,11 @@ class HomeScreenContainer extends Component {
             navigatorButtons: {
                 rightButtons: [{
                     id: 'calendar-picker',
-                    title: 'pick',
-                    // component: 'CalendarPickerButton',
-                    // passProps: {
-                    //     currentDate: this.state.date
-                    // }
+                    icon: require('../../../resources/calendar.png'),
+                },
+                {
+                    id: 'list-view',
+                    icon: require('../../../resources/listView.png')
                 }]
             }
         });

@@ -1,12 +1,9 @@
 import React from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 import {VisitSummary} from './VisitSummary';
-import {VisitCard} from '../common/visitCard';
-import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {Visit} from '../../utils/data/schema';
-import SortableList from 'react-native-sortable-list';
-import {Button} from 'react-native-elements';
+import moment from 'moment';
 
 function HomeScreen(props) {
     return (
@@ -18,14 +15,28 @@ function HomeScreen(props) {
                 // highlightDateNumberStyle={{fontWeight: '800'}}
                 onDateSelected={props.onDateSelected}
                 selectedDate={props.date}
+                styleWeekend={false}
+                calendarHeaderFormat='MMMM'
+                customDatesStyles={[
+                    {
+                        startDate: props.date.valueOf(),
+                        dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 0},
+                        dateNameStyle: {color: 'white'},
+                        dateNumberStyle: {color: 'white'},
+                    },
+                    {
+                        startDate: moment().utc().startOf('day').valueOf(),
+                        dateContainerStyle: {borderColor: '#45ceb1', borderRadius: 0},
+                    }
+                ]}
             />
-            <SortedVisitListContainer
-                date={props.date}
-                singleEntry
-                sortEnabled={false}
-                renderWithCallback={VisitCard}
-                onOrderChange={props.onOrderChange}
-            />
+            {/*<SortedVisitListContainer*/}
+                {/*date={props.date}*/}
+                {/*singleEntry*/}
+                {/*sortEnabled={false}*/}
+                {/*renderWithCallback={VisitCard}*/}
+                {/*onOrderChange={props.onOrderChange}*/}
+            {/*/>*/}
             <VisitSummary
                 date={props.date}
                 totalVisitsCount={props.totalVisitsCount}
@@ -33,6 +44,7 @@ function HomeScreen(props) {
                 navigateToVisitListScreen={props.navigateToVisitListScreen}
                 navigateToVisitMapScreen={props.navigateToVisitMapScreen}
             />
+            <View style={{height: 100}} />
             {/*<SortableList*/}
                 {/*data={[2, 3, 4, 5, 6, 7]}*/}
                 {/*renderRow={(item) => { console.log(`rerendered ${item}`); return <Text>{'hello'} </Text>; }}*/}

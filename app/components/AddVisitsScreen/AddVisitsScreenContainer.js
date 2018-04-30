@@ -32,6 +32,25 @@ class AddVisitsScreenContainer extends Component {
         this.setState({filterText: text});
     }
 
+
+    onTagPress(item) {
+        this.onItemToggle(item);
+    }
+
+    onItemToggle(item) {
+        console.log('touchregistered');
+        this.setState(
+            (prevState) => {
+                if (prevState.selectedItems.has(item.key)) {
+                    console.log(`adding one${item.key}`);
+                    return {selectedItems: prevState.selectedItems.delete(item.key)};
+                }
+                console.log('removing one');
+                return {selectedItems: prevState.selectedItems.set(item.key, item)};
+            }
+        );
+    }
+
     getFlatListWithAllItems() {
         const placeIterator = this.placeResultObject.values();
         const patientIterator = this.patientsResultObject.values();
@@ -77,7 +96,6 @@ class AddVisitsScreenContainer extends Component {
         };
     }
 
-
     getFlatPlaceItem(place) {
         const key = `place_${place.placeID}`;
         return {
@@ -88,24 +106,6 @@ class AddVisitsScreenContainer extends Component {
             address: this.addressByID.get(place.addressID),
             isSelected: this.state.selectedItems.has(key)
         };
-    }
-
-    onTagPress(item) {
-        this.onItemToggle(item);
-    }
-
-    onItemToggle(item) {
-        console.log('touchregistered');
-        this.setState(
-            (prevState) => {
-                if (prevState.selectedItems.has(item.key)) {
-                    console.log(`adding one${item.key}`);
-                    return {selectedItems: prevState.selectedItems.delete(item.key)};
-                }
-                console.log('removing one');
-                return {selectedItems: prevState.selectedItems.set(item.key, item)};
-            }
-        );
     }
 
     createListItemComponent({item}) {

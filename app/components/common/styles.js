@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export default StyleSheet.create({
+export const styles = StyleSheet.create({
     // container: {
     //     flex: 1,
     //     margin: 0,
@@ -40,14 +40,14 @@ export default StyleSheet.create({
     },
     badgeContainerStyle: {
         backgroundColor: '#f5f5f5',
-        borderColor: "#cccccc",
+        borderColor: '#cccccc',
         marginRight: 8,
         borderWidth: 0.5
     },
     badgeTextStyle: {
         color: '#525252',
         fontSize: 12,
-        fontWeight: "300"
+        fontWeight: '300'
     },
     listContainer: {
         marginTop: 10,
@@ -58,15 +58,20 @@ export default StyleSheet.create({
     },
     cardContainerStyle: {
         borderRadius: 4,
-        paddingBottom: 0,
-        backgroundColor: "#ffffff",
-        shadowColor: "rgba(0, 0, 0, 0.11)",
+        // paddingBottom: 0,
+        margin: 10,
+        marginLeft: 15,
+        marginRight: 15,
+        marginBottom: undefined,
+        backgroundColor: '#ffffff',
+        shadowColor: 'rgba(0, 0, 0, 0.11)',
         shadowOffset: {
             width: 0,
             height: 0
         },
         shadowRadius: 11,
-        shadowOpacity: 1
+        shadowOpacity: 1,
+        elevation: 4
     },
     // containerStyle: {
     //     flex: 1,
@@ -100,3 +105,18 @@ export default StyleSheet.create({
     //     right: 0,
     // }
 });
+
+export const colors = {
+    primaryColor: '#45ceb1'
+};
+
+export const navigatorStyles = {
+    navigatorStyle: {
+        tabBarHidden: true,
+        navBarBackgroundColor: '#45ceb1',
+        navBarTextColor: '#ffffff',
+        navBarButtonColor: '#666666',
+        //todo not working
+        tabBarBackgroundColor: '#f8f8f8',
+    }
+};

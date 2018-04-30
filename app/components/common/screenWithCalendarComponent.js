@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Animated, View} from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
+import moment from 'moment/moment';
 
 function ScreenWithCalendarComponent(BaseScreenComponent) {
     return (
@@ -49,9 +50,23 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                             {RenderIf(
                                 <CalendarStrip
                                     style={{height: 75}}
+                                    styleWeekend={false}
+                                    calendarHeaderFormat='MMMM'
                                     calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
                                     onDateSelected={this.broadcastDeepLinkForDateChange}
                                     selectedDate={this.state.date}
+                                    customDatesStyles={[
+                                        {
+                                            startDate: this.props.date.valueOf(),
+                                            dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 0},
+                                            dateNameStyle: {color: 'white'},
+                                            dateNumberStyle: {color: 'white'},
+                                        },
+                                        {
+                                            startDate: moment().utc().startOf('day').valueOf(),
+                                            dateContainerStyle: {borderColor: '#45ceb1', borderRadius: 0},
+                                        }
+                                    ]}
                                 />,
                                 this.state.shown)}
                             <BaseScreenComponent {...this.props} />

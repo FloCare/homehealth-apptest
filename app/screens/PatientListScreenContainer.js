@@ -3,6 +3,7 @@ import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
+import {styles} from '../components/common/styles';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -14,6 +15,8 @@ class PatientListScreenContainer extends Component {
             }
         ]
     };
+
+    static NavigatorStyle = styles.navigatorStyle;
 
     constructor(props) {
         super(props);

@@ -213,9 +213,11 @@ class SortedVisitListContainer extends Component {
         console.log(`sortedVisitList container rendered, length ${this.state.orderedVisitList.length}`);
         return (
             <SortableList
+                style={this.props.style}
                 data={this.state.orderedVisitList}
                 renderRow={this.state.renderWithCallback}
-                // order={this.orderIndexCache}
+                scrollEnabled={this.props.scrollEnabled}
+                sortingEnabled={this.props.sortingEnabled}
                 onChangeOrder={this.onOrderChange}
                 onReleaseRow={this.onReleaseRow}
                 sortingEnabled={this.props.sortEnabled}

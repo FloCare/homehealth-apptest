@@ -1,7 +1,7 @@
 import React from 'react';
 import {Badge, Icon, Text} from 'react-native-elements';
 import {TouchableHighlight, View} from 'react-native';
-import componentStyles from './styles';
+import {styles} from './styles';
 
 
 function removeButton(onPress) {
@@ -18,10 +18,10 @@ function removeButton(onPress) {
 function Tag(props) {
     return (
         <Badge
-            containerStyle={[componentStyles.badgeContainerStyle, {margin: 4}]}
+            containerStyle={[styles.badgeContainerStyle, {margin: 4}]}
             children={
                 <View style={{flexDirection: 'row'}}>
-                    <Text style={[componentStyles.badgeTextStyle, {margin: 4}]}> {props.text} </Text>
+                    <Text style={[styles.badgeTextStyle, {margin: 4}]}> {props.text} </Text>
                     {removeButton(props.onPress)}
                 </View>
             }
