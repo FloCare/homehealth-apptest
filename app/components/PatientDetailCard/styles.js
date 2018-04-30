@@ -63,14 +63,13 @@ const styles = {
     },
     buttonContainerStyle: {
         position: 'absolute',
+        alignSelf: 'center',
         bottom: 4,
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-around'
     },
     footerButtonStyle: {
-        width: 180,
-        height: 40,
         borderRadius: 3,
         backgroundColor: "#45ceb1"
     }

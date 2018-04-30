@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
+import {View} from "react-native";
 import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
@@ -108,8 +109,8 @@ class AddVisitsScreenContainer extends Component {
     }
 
     createListItemComponent({item}) {
-        const avatar = item.type === 'patient' ? require('../../../resources/ic_fiber_pin_2x.png') : require('../../../resources/ic_location_on_black_24dp.png');
-        const rightIcon = item.isSelected ? {name: 'check'} : {name: 'ac-unit'};
+        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/ic_location_on_black_24dp.png');
+        const rightIcon = item.isSelected ? {name: 'check', color: '#45ceb1'} : <View/>;
         console.log(item);
         console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
         return (
@@ -119,7 +120,10 @@ class AddVisitsScreenContainer extends Component {
                 subtitle={item.address}
                 avatar={avatar}
                 rightIcon={rightIcon}
-                onPressRightIcon={() => this.onItemToggle(item)}
+                titleStyle={{fontSize: 17, color: '#222222'}}
+                subtitleStyle={{fontSize: 12, color: '#666666', fontWeight: 'normal'}}
+                avatarOverlayContainerStyle={{backgroundColor: 'transparent'}}
+                onPress={() => this.onItemToggle(item)}
             />
         );
     }
