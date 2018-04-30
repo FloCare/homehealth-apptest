@@ -70,7 +70,6 @@ class PatientListScreenContainer extends Component {
             const sortedPatientList = patientList.sorted('name');
             const patientCount = sortedPatientList.length;
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
-            console.log('PatientCount is =', patientCount);
             this.setState({
                 patientList: sectionedPatientList,
                 patientCount
