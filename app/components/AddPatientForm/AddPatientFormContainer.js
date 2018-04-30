@@ -169,13 +169,12 @@ class AddPatientFormContainer extends Component {
                 console.log('Updating fields in the db');
 
                 try {
-                    // Todo Write UPDATE QUERIES HERE INSTEAD OF ADDs
-
                     floDB.write(() => {
+                        // find the patient to update
                         const patient = floDB.objectForPrimaryKey(Patient.schema.name, this.state.value.patientID);
 
                         // Edit the corresponding address info
-                        const address = patient.address = {
+                        patient.address = {
                             addressID: this.state.value.addressID,
                             streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
                             apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
@@ -186,7 +185,7 @@ class AddPatientFormContainer extends Component {
 
                         // Edit the latLong info
                         if (this.state.value.lat && this.state.value.long) {
-                            address.coordinates = {
+                            patient.address.coordinates = {
                                 latitude: this.state.value.lat,
                                 longitude: this.state.value.long
                             };
@@ -232,7 +231,7 @@ class AddPatientFormContainer extends Component {
                         });
 
                         // Add the corresponding address
-                        const address = patient.address = {
+                        patient.address = {
                             addressID: addressId,
                             streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
                             apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
@@ -243,16 +242,10 @@ class AddPatientFormContainer extends Component {
 
                         // Add a latLong if present
                         if (this.state.value.lat && this.state.value.long) {
-                            address.coordinates = {
+                            patient.address.coordinates = {
                                 latitude: this.state.value.lat,
                                 longitude: this.state.value.long
                             };
-                            // const latLongID = Math.random().toString();
-                            // address.latLong = {
-                            //     latLongID,
-                            //     lat: this.state.value.lat,
-                            //     long: this.state.value.long
-                            // };
                         }
 
                         // Add an Episode
