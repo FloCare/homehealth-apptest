@@ -4,31 +4,54 @@ import {View} from 'react-native';
 import moment from 'moment';
 import {VisitSummary} from './VisitSummary';
 import {Button, Text} from 'react-native-elements';
+import EmptyStateButton from "../common/EmptyStateButton";
 
 function getComponentToDisplayBasedOnVisitCount(props) {
     if (props.remainingVisitsCount === 0) {
         return (
-            <View>
-                <Text>
-                    No Day's Summary
-                </Text>
-                <Text>
+            <View
+                style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Text
+                    style={{
+                        fontWeight: '300',
+                        fontSize: 20
+                    }}
+                >No Day's Summary</Text>
+                <Text style={{
+                    textAlign: 'center',
+                    padding: 0,
+                    margin: 20,
+                    marginTop: 5,
+                }}>
                     By adding patients and visits you'll be able to see a summary of the visits for the day
                 </Text>
-                <Button large title={'Add Visits'} onPress={props.onPressAddVisit} />
+                <EmptyStateButton
+                    onPress={props.onPressAddVisit}
+                >
+                    Add Visits
+                </EmptyStateButton>
             </View>
+
         );
     }
 
     return (
-        <VisitSummary
-            date={props.date}
-            totalVisitsCount={props.totalVisitsCount}
-            remainingVisitsCount={props.remainingVisitsCount}
-            navigateToVisitListScreen={props.navigateToVisitListScreen}
-            navigateToVisitMapScreen={props.navigateToVisitMapScreen}
-            onOrderChange={props.onOrderChange}
-        />
+        <View style={{paddingBottom: 100, flex: 1}}>
+            <VisitSummary
+                date={props.date}
+                totalVisitsCount={props.totalVisitsCount}
+                remainingVisitsCount={props.remainingVisitsCount}
+                navigateToVisitListScreen={props.navigateToVisitListScreen}
+                navigateToVisitMapScreen={props.navigateToVisitMapScreen}
+                onOrderChange={props.onOrderChange}
+            />
+        </View>
     );
 }
 
@@ -59,7 +82,6 @@ function HomeScreen(props) {
                 ]}
             />
             {getComponentToDisplayBasedOnVisitCount(props)}
-            <View style={{height: 100}} />
         </View>
     );
 }
