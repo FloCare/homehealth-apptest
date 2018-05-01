@@ -85,10 +85,11 @@ class HomeScreenContainer extends Component {
                     id: 'calendar-picker',
                     icon: require('../../../resources/calendar.png'),
                 },
-                {
-                    id: 'list-view',
-                    icon: require('../../../resources/listView.png')
-                }]
+                // {
+                //     id: 'list-view',
+                //     icon: require('../../../resources/listView.png')
+                // }
+                ]
             }
         });
     }
