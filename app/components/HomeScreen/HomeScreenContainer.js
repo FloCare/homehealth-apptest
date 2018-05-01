@@ -120,6 +120,19 @@ class HomeScreenContainer extends Component {
             navigatorStyle: {
                 tabBarHidden: true
             },
+            navigatorButtons: {
+                rightButtons: [
+                    {
+                        id: 'calendar-picker',
+                        icon: require('../../../resources/calendar.png'),
+                    },
+                    {
+                        id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                        icon: require('../../../resources/addButton.png'), // for icon button, provide the local image asset name
+                        buttonColor: 'white'
+                    }
+                ]
+            },
             passProps: {
                 date: this.state.date,
                 onDone: this.onOrderChange
@@ -140,6 +153,7 @@ class HomeScreenContainer extends Component {
                     remainingVisitsCount={visitResultObject.filtered('isDone==false').length}
                     onDateSelected={this.onDateSelected}
                     onOrderChange={this.onOrderChange}
+                    onPressAddVisit={this.navigateToAddVisit}
                 />
                 <Fab
                     onPressAddNote={this.navigateToAddNote}

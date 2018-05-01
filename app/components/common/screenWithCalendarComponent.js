@@ -19,10 +19,13 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 this.broadcastDeepLinkForDateChange = this.broadcastDeepLinkForDateChange.bind(this);
             }
 
+            //TODO unpredictable
             onNavigatorEvent(event) {
+                console.log('state changed');
                 if (event.type === 'NavBarButtonPress') {
                     if (event.id === 'calendar-picker') {
                         this.setState((prevState) => ({shown: !prevState.shown}));
+                        console.log('state changed');
                         // Animated.timing(
                         //     this.state.calendarStripHeight,
                         //     {
@@ -69,7 +72,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                                     ]}
                                 />,
                                 this.state.shown)}
-                            <BaseScreenComponent {...this.props} />
+                            <BaseScreenComponent {...this.props} onNavigatorEvent={this.onNavigatorEvent.bind(this)} />
                         </View>
                 );
             }
