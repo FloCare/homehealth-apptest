@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, FlatList, Linking, ScrollView, Image, Dimensions} from 'react-native';
 import {Text, Button, Divider, Icon} from 'react-native-elements';
+import moment from 'moment';
 import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
@@ -8,7 +9,7 @@ import {styles as componentStyles} from '../common/styles';
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 
 const PatientDetailCard = (props) => {
-    const {patientDetail, visits, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
+    const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
     //Handle name with navigator props
     const {
         primaryContact,
@@ -25,6 +26,21 @@ const PatientDetailCard = (props) => {
             address.coordinates.longitude !== null) {
             coordinates = address.coordinates;
         }
+    }
+
+    let lastVisitTimestamp = null;
+    let nextVisitTimestamp = null;
+    const visitSectionData = [];
+    if (lastVisit) {
+        lastVisitTimestamp = moment.utc(lastVisit.midnightEpochOfVisit).local();
+        visitSectionData.push(`Last visited by You On "${lastVisitTimestamp.format('YYYY-MMM-DD')}"`);
+    }
+    if (nextVisit) {
+        nextVisitTimestamp = moment.utc(nextVisit.midnightEpochOfVisit).local();
+        visitSectionData.push(`Next visit scheduled On "${nextVisitTimestamp.format('YYYY-MMM-DD')}"`);
+    }
+    if (visitSectionData.length === 0) {
+        visitSectionData.push('No visits scheduled for You.');
     }
 
     return (
@@ -89,7 +105,7 @@ const PatientDetailCard = (props) => {
                             position: 'absolute',
                             right: 0
                         }}
-                        onPress={() => Linking.openURL(`tel:${primaryContact}`).catch(err => console.error('An error occurred', err))}
+                        onPress={() => Linking.openURL(`tel:${emergencyContact}`).catch(err => console.error('An error occurred', err))}
                     />
                 </View>
                 }
@@ -135,10 +151,7 @@ const PatientDetailCard = (props) => {
                             showsHorizontalScrollIndicator={false}
                             horizontal
                             style={componentStyles.listContainer}
-                            data={[
-                                'Revent visit by Mirium (SN) On 03/22/2018, 3:30 PM - 4:45 PM',
-                                'Next Visit by You in X days. "Visit time".',
-                            ]}
+                            data={visitSectionData}
                             show
                             renderItem={({item}) =>
                                 /*Use nested texts for spannable*/
