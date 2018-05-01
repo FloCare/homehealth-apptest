@@ -48,16 +48,36 @@ class VisitMapScreenController extends Component {
         this.setState({polylines: newPolylines});
     }
 
-    async getPolyBetweenTwoPoints(startLoc, destinationLoc) {
+
+
+    async getDirectionsDataBetweenPoints(startLoc, destinationLoc) {
         try {
             const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc.latitude},${startLoc.longitude}&destination=${destinationLoc.latitude},${destinationLoc.longitude}`);
-            const respJson = await resp.json();
-            const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
-            return points.map((point) => ({
-                latitude: point[0],
-                longitude: point[1]
-            }));
+            return await resp.json();
         } catch (error) {
+            console.log('directions api call threw error');
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async extractInformationFromDirectionApiResponse(respJson) {
+        const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
+        const geoData = {};
+        geoData.polyline = points.map((point) => ({
+            latitude: point[0],
+            longitude: point[1]
+        }));
+        geoData.bounds = respJson.routes[0].bounds;
+        return geoData;
+    }
+
+    async getProcessedGeoDataBetweenTwoPoints(startLoc, destinationLoc) {
+        try {
+            const respJson = this.getDirectionsDataBetweenPoints(startLoc, destinationLoc);
+            return await this.extractInformationFromDirectionApiResponse(respJson);
+        } catch (error) {
+            console.log('error log: getProcessedGeoDataBetweenTwoPoints');
             throw error;
         }
     }
@@ -101,14 +121,6 @@ class VisitMapScreenController extends Component {
 function ControlPanel(props) {
     return (
         <View style={{backgroundColor: '#45ceb1', paddingTop: 10, paddingBottom: 10}}>
-            {/*<DragDropList*/}
-                {/*orderedItemIDList={props.orderedVisitIds}*/}
-                {/*dataObjectList={props.visitResultObject}*/}
-                {/*dataObjectKey={'visitID'}*/}
-                {/*onChangeOrder={props.onChangeOrder}*/}
-                {/*renderRow={VisitRow}*/}
-            {/*/>*/}
-
             <SortedVisitListContainer
                 date={props.date}
                 renderWithCallback={VisitRow}

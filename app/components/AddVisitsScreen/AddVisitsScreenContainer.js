@@ -5,7 +5,7 @@ import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
-import {visitType} from '../../utils/constants';
+import {screenNames, visitType} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
 
 class AddVisitsScreenContainer extends Component {
@@ -23,6 +23,38 @@ class AddVisitsScreenContainer extends Component {
         this.createListItemComponent = this.createListItemComponent.bind(this);
         this.onDone = this.onDone.bind(this);
         this.onTagPress = this.onTagPress.bind(this);
+        this.handleListUpdate = this.handleListUpdate.bind(this);
+
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    }
+
+    componentDidMount() {
+        floDB.addListener('change', this.handleListUpdate);
+    }
+
+    componentWillUnMount() {
+        floDB.addListener('change', this.handleListUpdate);
+    }
+
+    handleListUpdate() {
+        this.forceUpdate();
+    }
+
+    onNavigatorEvent(event) {
+        if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+            if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
+                // Todo: Navigate to the AddPatient Screen
+                this.props.navigator.push({
+                        screen: screenNames.addPatient,
+                        title: 'Add Patient',
+                        navigatorStyle: {
+                            tabBarHidden: true
+                        }
+                    }
+                );
+            }
+        }
+        if (this.props.onNavigatorEvent) { this.props.onNavigatorEvent(event); }
     }
 
     onChangeText(text) {
@@ -109,8 +141,8 @@ class AddVisitsScreenContainer extends Component {
     }
 
     createListItemComponent({item}) {
-        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/ic_location_on_black_24dp.png');
-        const rightIcon = item.isSelected ? {name: 'check', color: '#45ceb1'} : <View/>;
+        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/location.png');
+        const rightIcon = item.isSelected ? {name: 'check', color: '#45ceb1'} : <View />;
         console.log(item);
         console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
         return (
@@ -119,6 +151,7 @@ class AddVisitsScreenContainer extends Component {
                 title={item.name}
                 subtitle={item.address}
                 avatar={avatar}
+                avatarStyle={{resizeMode: 'contain'}}
                 rightIcon={rightIcon}
                 titleStyle={{fontSize: 17, color: '#222222'}}
                 subtitleStyle={{fontSize: 12, color: '#666666', fontWeight: 'normal'}}
@@ -146,7 +179,12 @@ class AddVisitsScreenContainer extends Component {
         });
 
         const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
-        const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
+        let visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
+        if (!visitOrderObject) {
+            floDB.write(() => {
+                visitOrderObject = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
+            });
+        }
         const visitListByID = arrayToMap(visitOrderObject.visitList, 'visitID');
 
         let indexOfFirstDoneVisit;
