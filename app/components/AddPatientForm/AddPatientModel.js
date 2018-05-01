@@ -82,7 +82,7 @@ const formOptions = {
         },
         notes: {
             error: 'Please enter a valid note',
-            label: 'Quick Information'
+            label: 'Notes'
         }
     }
 };

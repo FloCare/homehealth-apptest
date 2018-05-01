@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import update from 'immutability-helper';
-import moment from 'moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
@@ -20,7 +19,8 @@ class PatientDetailScreenContainer extends Component {
         super(props);
         this.state = {
             patientDetail: {},
-            visits: []
+            lastVisit: null,
+            nextVisit: null,
         };
         this.onPressAddNotes = this.onPressAddNotes.bind(this);
         this.onPressAddVisit = this.onPressAddVisit.bind(this);
@@ -112,19 +112,24 @@ class PatientDetailScreenContainer extends Component {
 
     getPatientDetails(patientId) {
         if (!patientId) {
-            this.setState({patientDetail: {}, visits: []});
+            this.setState({patientDetail: {}, lastVisit: null, nextVisit: null});
         } else {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
             this.setState({patientDetail: patientDetails});
             const episode = patientDetails.episodes[0];
-            const visits = episode.visits.filtered(
-                'midnightEpochOfVisit==$0',
-                moment().utc().startOf('day').valueOf()).sorted('isDone');
-            console.log('The visits fetched are : ', visits);
-            this.setState({visits});
+            // const visits = episode.visits.filtered(
+            //     'midnightEpochOfVisit==$0',
+            //     moment().utc().startOf('day').valueOf()).sorted('isDone');
+            // const visits = episode.visits.sorted([['midnightEpochOfVisit', true], ['miles', false])
 
-            // Todo: Also fetch the visit details for that episode
-            // Todo: fetch next visit and last visit
+            const completedVisits = episode.visits.filtered('isDone = true').sorted('midnightEpochOfVisit');
+            const newVisits = episode.visits.filtered('isDone = false').sorted('midnightEpochOfVisit', false);
+            if (completedVisits.length > 0) {
+                this.setState({lastVisit: completedVisits[0]});
+            }
+            if (newVisits && newVisits.length > 0) {
+                this.setState({nextVisit: newVisits[0]});
+            }
 
             if (patientDetails) {
                 // If latLong not present, fire geocode API
@@ -200,7 +205,8 @@ class PatientDetailScreenContainer extends Component {
         return (
           <PatientDetailScreen
               patientDetail={this.state.patientDetail}
-              visits={this.state.visits}
+              nextVisit={this.state.nextVisit}
+              lastVisit={this.state.lastVisit}
               onPressAddVisit={this.onPressAddVisit}
               onPressAddNotes={this.onPressAddNotes}
               showCallout={this.onRegionChangeComplete}
