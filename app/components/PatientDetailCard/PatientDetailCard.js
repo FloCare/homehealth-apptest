@@ -187,7 +187,8 @@ const PatientDetailCard = (props) => {
                     title="Add Visit"
                     buttonStyle={styles.footerButtonStyle}
                     containerViewStyle={{width: '45%'}}
-                    onPress={onPressAddVisit}
+                    //onPress={onPressAddVisit}
+                    onPress={() => console.log('Add visit pressed')}
                 />
                 <Button
                     title="Add Notes"
