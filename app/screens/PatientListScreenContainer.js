@@ -22,11 +22,13 @@ class PatientListScreenContainer extends Component {
         super(props);
         this.state = {
             patientList: [],
+            patientCount: 0,      // not always a count of patientList
         };
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.onItemPressed = this.onItemPressed.bind(this);
         this.navigateTo = this.navigateTo.bind(this);
+        this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.handleListUpdate = this.handleListUpdate.bind(this);
     }
@@ -49,9 +51,14 @@ class PatientListScreenContainer extends Component {
     }
 
     onNavigatorEvent(event) {
+        if (event.id === 'willAppear') {
+            let title = `Patients (${this.state.patientCount})`;
+            this.props.navigator.setTitle({
+                title 
+            });
+        }
         if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
             if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
-                // Todo: Navigate to the AddPatient Screen
                 this.navigateTo(
                     screenNames.addPatient,
                     'Add Patient'
@@ -64,8 +71,12 @@ class PatientListScreenContainer extends Component {
         if (!query) {
             const patientList = floDB.objects(Patient.schema.name);
             const sortedPatientList = patientList.sorted('name');
+            const patientCount = sortedPatientList.length;
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
-            this.setState({patientList: sectionedPatientList});
+            this.setState({
+                patientList: sectionedPatientList,
+                patientCount
+            });
         } else {
             // Todo: Can improve querying Logic:
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
@@ -83,6 +94,7 @@ class PatientListScreenContainer extends Component {
     }
 
     handleListUpdate() {
+        // Todo: Don't query again
         this.getSectionData(null);
     }
 
@@ -100,13 +112,22 @@ class PatientListScreenContainer extends Component {
         });
     }
 
+    navigateToAddPatient() {
+        this.navigateTo(
+            screenNames.addPatient,
+            'Add Patient'
+        );
+    }
+
     render() {
         return (
             <PatientListScreen
                 patientList={this.state.patientList}
+                patientCount={this.state.patientCount}
                 onSearch={this.onSearch}
                 selectedPatient={this.props.selectedPatient}
                 onItemPressed={this.onItemPressed}
+                onPressAddPatient={this.navigateToAddPatient}
             />
         );
     }

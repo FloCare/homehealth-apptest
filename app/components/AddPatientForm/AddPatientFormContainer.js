@@ -164,18 +164,19 @@ class AddPatientFormContainer extends Component {
         console.log('value = ', value);
         console.log('====================================================');
        if (value) {
+            let patientId = null;
             if (this.edit) {
                 // update the changed fields in the database
                 console.log('Updating fields in the db');
+                patientId = this.state.value.patientID;
 
                 try {
-                    // Todo Write UPDATE QUERIES HERE INSTEAD OF ADDs
-
                     floDB.write(() => {
-                        const patient = floDB.objectForPrimaryKey(Patient.schema.name, this.state.value.patientID);
+                        // find the patient to update
+                        const patient = floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
                         // Edit the corresponding address info
-                        const address = patient.address = {
+                        patient.address = {
                             addressID: this.state.value.addressID,
                             streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
                             apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
@@ -186,7 +187,7 @@ class AddPatientFormContainer extends Component {
 
                         // Edit the latLong info
                         if (this.state.value.lat && this.state.value.long) {
-                            address.coordinates = {
+                            patient.address.coordinates = {
                                 latitude: this.state.value.lat,
                                 longitude: this.state.value.long
                             };
@@ -208,14 +209,10 @@ class AddPatientFormContainer extends Component {
                     return;
                 }
 
-
                 // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
-                this.clearForm();
-
-                // Todo: Have to pop from the navigator stack
             } else {
                 // Todo: Add proper ID generators
-                const patientId = Math.random().toString();
+                patientId = Math.random().toString();
                 const episodeId = Math.random().toString();
                 const addressId = Math.random().toString();
 
@@ -232,7 +229,7 @@ class AddPatientFormContainer extends Component {
                         });
 
                         // Add the corresponding address
-                        const address = patient.address = {
+                        patient.address = {
                             addressID: addressId,
                             streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
                             apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
@@ -243,16 +240,10 @@ class AddPatientFormContainer extends Component {
 
                         // Add a latLong if present
                         if (this.state.value.lat && this.state.value.long) {
-                            address.coordinates = {
+                            patient.address.coordinates = {
                                 latitude: this.state.value.lat,
                                 longitude: this.state.value.long
                             };
-                            // const latLongID = Math.random().toString();
-                            // address.latLong = {
-                            //     latLongID,
-                            //     lat: this.state.value.lat,
-                            //     long: this.state.value.long
-                            // };
                         }
 
                         // Add an Episode
@@ -267,11 +258,10 @@ class AddPatientFormContainer extends Component {
                     return;
                 }
                 // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
-                this.clearForm();
-
-                // Call Screen Container's onSubmit() hook
-                onSubmit(patientId);
             }
+           this.clearForm();
+           // Call Screen Container's onSubmit() hook
+           onSubmit(patientId);
         }
     }
 

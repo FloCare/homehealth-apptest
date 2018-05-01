@@ -59,19 +59,20 @@ const styles = {
     },
     noteStyle: {
         fontSize: 12,
-        color: "#525252"
+        color: '#525252'
     },
     buttonContainerStyle: {
         position: 'absolute',
-        alignSelf: 'center',
-        bottom: 4,
+        bottom: 1,
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-around'
     },
     footerButtonStyle: {
+        width: 210,
+        height: 40,
         borderRadius: 3,
-        backgroundColor: "#45ceb1"
+        backgroundColor: '#45ceb1'
     }
 };
 
