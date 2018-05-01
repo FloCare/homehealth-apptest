@@ -46,17 +46,19 @@ const AddNoteFormWithoutPatientTag = (props) => {
     } = props;
 
     return (
-        <KeyboardAwareScrollView style={{flex: 1}} keyboardShouldPersistTaps='handled'>
+        <View style={{flex: 1}}>
             <SearchBar
                 ref={searchRef}
                 onChangeText={onChangeSearchText}
                 placeholder='Search a patient name'
                 clearIcon={{name: 'close'}}
                 onClear={setNoSearching}
+                round
+                lightTheme
             />
             {!searching && (name) &&
-            <View style={{flex: 1, backgroundColor: '#a2a2a2', borderWidth: 3, borderColor: '#000'}}>
-                <Text style={{flex: 1, textAlign: 'center', textAlignVertical: 'center', fontWeight: 'bold', fontSize: 14}}>{name}</Text>
+            <View style={{backgroundColor: '#e1e8ee', borderWidth: 1, borderColor: '#a2a2a2', height: 50}}>
+                <Text style={{flex: 1, textAlign: 'left', textAlignVertical: 'center', fontWeight: '200', fontSize: 25}}>{name}</Text>
             </View>
             }
             {searching &&
@@ -65,24 +67,26 @@ const AddNoteFormWithoutPatientTag = (props) => {
                 renderItem={({item}) => renderItem(item, onItemSelect)}
             />
             }
-            {!searching &&
-                <View
-                    style={{
-                        borderColor: '#000',
-                        borderWidth: 3,
-                        backgroundColor: '#a2a2a2'
-                    }}
-                >
-                    <TextInput
-                        style={{textAlignVertical: 'top'}}
-                        placeholder='Please type your notes here ...'
-                        multiline
-                        numberOfLines={20}
-                        onChangeText={onChangeText}
-                        value={value}
-                    />
-                </View>
-            }
+            <KeyboardAwareScrollView style={{flex: 1}} keyboardShouldPersistTaps='handled'>
+                {!searching && name &&
+                    <View
+                        style={{
+                            borderColor: '#a2a2a2',
+                            borderBottomWidth: 1,
+                            backgroundColor: '#e1e8ee'
+                        }}
+                    >
+                        <TextInput
+                            style={{textAlignVertical: 'top'}}
+                            placeholder='Please type your notes here ...'
+                            multiline
+                            numberOfLines={20}
+                            onChangeText={onChangeText}
+                            value={value}
+                        />
+                    </View>
+                }
+            </KeyboardAwareScrollView>
             <Button
                 disabled={searching || (!name)}
                 large
@@ -92,7 +96,7 @@ const AddNoteFormWithoutPatientTag = (props) => {
                     backgroundColor: '#45ceb1'
                 }}
             />
-        </KeyboardAwareScrollView>
+        </View>
     );
 };
 
