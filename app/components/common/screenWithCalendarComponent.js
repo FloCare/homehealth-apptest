@@ -12,6 +12,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
                 this.state = {
+                    date: props.date,
                     shown: false,
                     // calendarStripHeight: new Animated.Value(0)
                 };
@@ -42,7 +43,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                     link: 'date',
                     payload: date
                 });
-                this.setState({shown: false});
+                this.setState({shown: false, date});
             }
 
             render() {

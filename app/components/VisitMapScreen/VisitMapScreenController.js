@@ -30,6 +30,15 @@ class VisitMapScreenController extends Component {
         this.getAllPolylines();
     }
 
+    componentWillReceiveProps(nextProps) {
+        console.log('component received props');
+        const orderedVisits = floDB.objectForPrimaryKey(VisitOrder, nextProps.date.valueOf());
+        if (!orderedVisits || orderedVisits.visitList.length === 0) {
+            console.log('component did 0');
+            this.props.navigator.pop();
+        } else this.setState({date: nextProps.date});
+    }
+
     getInitialViewport(visitOrderList) {
         const coordinates = [];
         for (const visit of visitOrderList) {
@@ -53,8 +62,8 @@ class VisitMapScreenController extends Component {
                     visitOrderList[i + 1].getAddress().coordinates);
 
                 newPolylines.push(geoDataObject.polyline);
-                boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.long]);
-                boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.long]);
+                boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
+                boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.lng]);
             } catch (error) {
                 console.log(error);
                 noErrorFlag = false;
@@ -67,6 +76,7 @@ class VisitMapScreenController extends Component {
     }
 
     getViewPortFromBounds(boundsCoordinates) {
+        console.log(boundsCoordinates);
         const multipoint = {
             type: 'MultiPoint',
             coordinates: boundsCoordinates
