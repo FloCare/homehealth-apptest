@@ -3,7 +3,6 @@ const styles = {
         flex: 1
     },
     callButtonStyle: {
-        width: 72,
         height: 40,
         borderRadius: 21,
         backgroundColor: 'transparent',
@@ -58,20 +57,22 @@ const styles = {
         borderColor: '#cccccc'
     },
     noteStyle: {
+        paddingRight: 20,
         fontSize: 12,
+        flex: 1,
+        lineHeight: 18,
         color: '#525252'
     },
     buttonContainerStyle: {
-        position: 'absolute',
-        bottom: 1,
-        flex: 1,
+        margin: 2,
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
+        width: '100%'
     },
     footerButtonStyle: {
-        width: 210,
-        height: 40,
         borderRadius: 3,
+        padding: 8,
+        width: '100%',
         backgroundColor: '#45ceb1'
     }
 };
