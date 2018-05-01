@@ -18,10 +18,10 @@ function removeButton(onPress) {
 function Tag(props) {
     return (
         <Badge
-            containerStyle={[styles.badgeContainerStyle, {margin: 4, padding: 2}]}
+            containerStyle={[styles.badgeContainerStyle, {margin: 4, padding: 2}, props.badgeContainerStyle]}
             children={
                 <View style={{flexDirection: 'row'}}>
-                    <Text style={[styles.badgeTextStyle, {margin: 4}]}> {props.text} </Text>
+                    <Text style={[styles.badgeTextStyle, {margin: 4}, props.badgeTextStyle]}> {props.text} </Text>
                     {removeButton(props.onPress)}
                 </View>
             }

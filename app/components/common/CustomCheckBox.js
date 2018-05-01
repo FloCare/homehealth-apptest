@@ -1,20 +1,20 @@
 import React from 'react';
 import {CheckBox} from 'react-native-elements';
 
-const CustomCheckBox = ({checked, onPress}) => (
-        <CheckBox
-            checked={checked}
-            checkedColor="#45ceb1"
-            uncheckedColor="#45ceb1"
-            containerStyle={styles.checkBoxContainerStyle}
-            textStyle={styles.checkBoxStyle}
-            size={24}
-            onPress={onPress}
-        />
-    );
+const CustomCheckBox = (props) => (
+    <CheckBox
+        checked={props.checked}
+        checkedColor="#45ceb1"
+        uncheckedColor="#525252"
+        containerStyle={[styles.checkBoxContainerStyle, props.checkBoxContainerStyle]}
+        textStyle={[styles.textStyle, props.textStyle]}
+        size={24}
+        onPress={props.onPress}
+    />
+);
 
 const styles = {
-    checkBoxStyle: {
+    textStyle: {
         fontSize: 12,
         fontWeight: 'normal',
         color: '#999999'
