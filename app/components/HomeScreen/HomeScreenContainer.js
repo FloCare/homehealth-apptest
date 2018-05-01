@@ -119,6 +119,10 @@ class HomeScreenContainer extends Component {
             title: 'Add Visit',
             navigatorStyle: {
                 tabBarHidden: true
+            },
+            passProps: {
+                date: this.state.date,
+                onDone: this.onOrderChange
             }
         });
     }

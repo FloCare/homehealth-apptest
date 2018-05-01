@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
-import {View} from "react-native";
+import {View} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
@@ -149,23 +149,24 @@ class AddVisitsScreenContainer extends Component {
         const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
         const visitListByID = arrayToMap(visitOrderObject.visitList, 'visitID');
 
-        for (let i = 0; i < visitOrderObject.visitList.length; i++) {
-            if (visitOrderObject.visitList[i].isDone) {
-                const newVisitOrder = [];
-                newVisitOrder.push(...visitOrderObject.visitList.slice(0, i));
-                for (let j = 0; j < allVisits.length; j++) {
-                    if (!visitListByID.has(allVisits[j].visitID)) {
-                        newVisitOrder.push(allVisits[j]);
-                    }
-                }
-                newVisitOrder.push(...visitOrderObject.visitList.slice(i, visitOrderObject.visitList.length));
+        let indexOfFirstDoneVisit;
+        for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObject.visitList.length && !visitOrderObject.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {
+            
+        }
 
-                floDB.write(() => {
-                    visitOrderObject.visitList = newVisitOrder;
-                });
-                break;
+        const newVisitOrder = [];
+        newVisitOrder.push(...visitOrderObject.visitList.slice(0, indexOfFirstDoneVisit));
+        for (let j = 0; j < allVisits.length; j++) {
+            if (!visitListByID.has(allVisits[j].visitID)) {
+                newVisitOrder.push(allVisits[j]);
             }
         }
+        newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
+
+        console.log(`old visit lenght ${visitOrderObject.visitList.length}, new length ${newVisitOrder.length}`);
+        floDB.write(() => {
+            visitOrderObject.visitList = newVisitOrder;
+        });
 
         if (this.props.onDone) {
             this.props.onDone(this.state.selectedItems);

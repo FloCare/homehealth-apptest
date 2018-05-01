@@ -1,11 +1,11 @@
 import React from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
 import {View} from 'react-native';
-import {VisitSummary} from './VisitSummary';
-import {Visit} from '../../utils/data/schema';
 import moment from 'moment';
+import {VisitSummary} from './VisitSummary';
 
 function HomeScreen(props) {
+    // console.log('home screen rerendered');
     return (
         //TODO insert other stuff thats got to be on the home screen too
         <View style={{flex: 1}}>
@@ -43,6 +43,7 @@ function HomeScreen(props) {
                 remainingVisitsCount={props.remainingVisitsCount}
                 navigateToVisitListScreen={props.navigateToVisitListScreen}
                 navigateToVisitMapScreen={props.navigateToVisitMapScreen}
+                onOrderChange={props.onOrderChange}
             />
             <View style={{height: 100}} />
             {/*<SortableList*/}

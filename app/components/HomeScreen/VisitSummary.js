@@ -96,6 +96,7 @@ export function VisitSummary(props) {
                     scrollEnabled={false}
                     sortingEnabled={false}
                     renderWithCallback={VisitCard}
+                    onOrderChange={props.onOrderChange}
                 />
         </View>
     );

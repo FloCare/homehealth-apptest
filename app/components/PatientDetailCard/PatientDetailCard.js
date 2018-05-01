@@ -3,7 +3,8 @@ import {View, FlatList, Linking, Image} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
-import componentStyles from '../common/styles';
+import {styles as componentStyles} from '../common/styles';
+
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 
 const PatientDetailCard = (props) => {
