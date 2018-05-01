@@ -75,7 +75,7 @@ export function VisitSummary(props) {
             <View
                 style={{
                     flex: 1,
-                    leftPadding: 100,
+                    paddingLeft: 100,
                     width: Dimensions.get('screen').width
                 }}
             >
