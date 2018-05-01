@@ -2,11 +2,12 @@ import React from 'react';
 import {PatientDetailCard} from '../PatientDetailCard';
 
 const PatientDetailScreen = (props) => {
-    const {patientDetail, visits, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
+    const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
     return (
         <PatientDetailCard
             patientDetail={patientDetail}
-            visits={visits}
+            nextVisit={nextVisit}
+            lastVisit={lastVisit}
             onPressAddVisit={onPressAddVisit}
             onPressAddNotes={onPressAddNotes}
             showCallout={showCallout}

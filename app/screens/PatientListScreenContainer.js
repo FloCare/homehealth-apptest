@@ -90,7 +90,7 @@ class PatientListScreenContainer extends Component {
     }
 
     componentWillUnMount() {
-        floDB.addListener('change', this.handleListUpdate);
+        floDB.removeListener('change', this.handleListUpdate);
     }
 
     handleListUpdate() {
