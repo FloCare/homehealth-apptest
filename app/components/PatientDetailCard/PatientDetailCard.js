@@ -3,7 +3,8 @@ import {View, FlatList, Linking, ScrollView, Image, Dimensions} from 'react-nati
 import {Text, Button, Divider, Icon} from 'react-native-elements';
 import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
-import componentStyles from '../common/styles';
+import {styles as componentStyles} from '../common/styles';
+
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 
 const PatientDetailCard = (props) => {
@@ -41,6 +42,7 @@ const PatientDetailCard = (props) => {
                 mapWidth={width}
             />
             }
+
             <ScrollView style={{flex: 8}}>
                 <View style={styles.containerStyle}>
                     <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
@@ -99,9 +101,7 @@ const PatientDetailCard = (props) => {
                 <Divider style={styles.dividerStyle} />
 
                 <View style={styles.containerStyle}>
-                    <Image
-                        source={require('../../../resources/diagnosis.png')}
-                    />
+                    <Image source={require('../../../resources/diagnosis.png')} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Diagnosis
@@ -130,9 +130,7 @@ const PatientDetailCard = (props) => {
                 <Divider style={styles.dividerStyle} />
 
                 <View style={styles.containerStyle}>
-                    <Image
-                        source={require('../../../resources/visits.png')}
-                    />
+                    <Image source={require('../../../resources/visits.png')} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Visits

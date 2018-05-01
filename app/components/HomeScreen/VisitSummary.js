@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, Dimensions} from 'react-native';
 import {Avatar, Button, Icon, Text} from 'react-native-elements';
 import {VisitListContainer} from '../common/VisitList/visitListContainer';
 import {VisitCard} from '../common/visitCard';
@@ -25,17 +25,16 @@ export function VisitSummary(props) {
                 }}
             >
                 {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
-                {/*{`${props.remainingVisitCount} of ${props.totalVisitCount} Visits Remaining`}*/}
             </Text>
-            <Text
-                style={{
-                    fontSize: 14,
-                    color: '#ffffff'
-                }}
-            >
-                {'Total Remaining Miles: 27'}
-                {/*{`Total Remaining Miles: ${props.remainingMiles}`}*/}
-            </Text>
+            {/*<Text*/}
+                {/*style={{*/}
+                    {/*fontSize: 14,*/}
+                    {/*color: '#ffffff'*/}
+                {/*}}*/}
+            {/*>*/}
+                {/*{'Total Remaining Miles: 27'}*/}
+                {/*/!*{`Total Remaining Miles: ${props.remainingMiles}`}*!/*/}
+            {/*</Text>*/}
             <Text
                 style={{
                     fontSize: 12,
@@ -66,6 +65,7 @@ export function VisitSummary(props) {
                 <Icon
                     raised
                     size={30}
+                    containerStyle={{marginLeft: 50}}
                     name='list'
                     type='font-awesome'
                     color='#45ceb1'
@@ -75,26 +75,29 @@ export function VisitSummary(props) {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: 'blue',
-                    // flexWrap: 'wrap'
+                    leftPadding: 100,
+                    width: Dimensions.get('screen').width
                 }}
             >
                 <Text
                     style={{
                         fontSize: 14,
-                        color: '#ffffff'
+                        color: '#ffffff',
                     }}
                 >
                     Next Visit
                 </Text>
                 {/*prefer to use VisitCard rather than VisitListContainer*/}
+            </View>
                 <SortedVisitListContainer
-                    // style={{flex: 1}}
+                    style={{width: Dimensions.get('screen').width * 0.95}}
                     date={props.date}
                     singleEntry
+                    scrollEnabled={false}
+                    sortingEnabled={false}
                     renderWithCallback={VisitCard}
+                    onOrderChange={props.onOrderChange}
                 />
-            </View>
         </View>
     );
 }

@@ -18,6 +18,7 @@ const Fab = (props) => {
             buttonColor='#45ceb1'
             size={50}
             useNativeFeedback={false}
+            bgColor={'rgba(255,255,255,0.8)'}
         >
             <ActionButton.Item buttonColor='#45ceb1' title="Add Note" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>
                 <Icon name="md-paper" style={styles.actionButtonIcon} />

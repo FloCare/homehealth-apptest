@@ -1,15 +1,17 @@
 import {Navigation} from 'react-native-navigation';
+import {StyleSheet} from 'react-native';
 import {RegisterScreens} from './screens';
 import {screenNames} from './utils/constants';
+import {styles} from './components/common/styles';
 
 RegisterScreens();
 
-const navigatorStyle = {
-    navBarBackgroundColor: '#45ceb1',
-    navBarTextColor: '#ffffff',
-    navBarButtonColor: '#666666',
-    tabBarBackgroundColor: '#45ceb1',
-};
+// const navigatorStyle = {
+//     navBarBackgroundColor: '#45ceb1',
+//     navBarTextColor: '#ffffff',
+//     navBarButtonColor: '#666666',
+//     tabBarBackgroundColor: '#45ceb1',
+// };
 
 Navigation.startTabBasedApp({
     tabs: [
@@ -27,10 +29,10 @@ Navigation.startTabBasedApp({
         // },
         {
             title: 'Home Screen',
-            label: 'home',
-            icon: require('../resources/ic_location_on_black_24dp.png'),
+            label: 'Today',
+            icon: require('../resources/calendar.png'),
             screen: screenNames.homeScreen,
-            navigatorStyle: Object.assign({}, navigatorStyle, {navBarHidden: true})
+            navigatorStyle: {navBarHidden: true}
         },
         // {
         //     title: 'Visits Screen',
@@ -48,10 +50,9 @@ Navigation.startTabBasedApp({
         // },
         {
             title: 'Patients',
-            label: 'patientList',
-            icon: require('../resources/ic_location_on_black_24dp.png'),
+            label: 'Patients',
+            icon: require('../resources/person_ic.png'),
             screen: screenNames.patientList,
-            navigatorStyle
         }
         // {
         //     title: 'RealmTest',
@@ -60,5 +61,13 @@ Navigation.startTabBasedApp({
         //     screen: 'RealmTest',
         //     navigatorStyle
         // }
-    ]
+    ],
+    appStyle: {
+        navBarBackgroundColor: '#45ceb1',
+        navBarTextColor: '#ffffff',
+        navBarButtonColor: 'white',
+        tabBarBackgroundColor: '#f8f8f8',
+        tabBarTranslucent: false,
+        tabBarSelectedButtonColor: '#45ceb1'
+    }
 });

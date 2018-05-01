@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
+import {View} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
@@ -29,6 +30,25 @@ class AddVisitsScreenContainer extends Component {
         this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
 
         this.setState({filterText: text});
+    }
+
+
+    onTagPress(item) {
+        this.onItemToggle(item);
+    }
+
+    onItemToggle(item) {
+        console.log('touchregistered');
+        this.setState(
+            (prevState) => {
+                if (prevState.selectedItems.has(item.key)) {
+                    console.log(`adding one${item.key}`);
+                    return {selectedItems: prevState.selectedItems.delete(item.key)};
+                }
+                console.log('removing one');
+                return {selectedItems: prevState.selectedItems.set(item.key, item)};
+            }
+        );
     }
 
     getFlatListWithAllItems() {
@@ -76,7 +96,6 @@ class AddVisitsScreenContainer extends Component {
         };
     }
 
-
     getFlatPlaceItem(place) {
         const key = `place_${place.placeID}`;
         return {
@@ -89,27 +108,9 @@ class AddVisitsScreenContainer extends Component {
         };
     }
 
-    onTagPress(item) {
-        this.onItemToggle(item);
-    }
-
-    onItemToggle(item) {
-        console.log('touchregistered');
-        this.setState(
-            (prevState) => {
-                if (prevState.selectedItems.has(item.key)) {
-                    console.log(`adding one${item.key}`);
-                    return {selectedItems: prevState.selectedItems.delete(item.key)};
-                }
-                console.log('removing one');
-                return {selectedItems: prevState.selectedItems.set(item.key, item)};
-            }
-        );
-    }
-
     createListItemComponent({item}) {
-        const avatar = item.type === 'patient' ? require('../../../resources/ic_fiber_pin_2x.png') : require('../../../resources/ic_location_on_black_24dp.png');
-        const rightIcon = item.isSelected ? {name: 'check'} : {name: 'ac-unit'};
+        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/ic_location_on_black_24dp.png');
+        const rightIcon = item.isSelected ? {name: 'check', color: '#45ceb1'} : <View/>;
         console.log(item);
         console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
         return (
@@ -119,7 +120,10 @@ class AddVisitsScreenContainer extends Component {
                 subtitle={item.address}
                 avatar={avatar}
                 rightIcon={rightIcon}
-                onPressRightIcon={() => this.onItemToggle(item)}
+                titleStyle={{fontSize: 17, color: '#222222'}}
+                subtitleStyle={{fontSize: 12, color: '#666666', fontWeight: 'normal'}}
+                avatarOverlayContainerStyle={{backgroundColor: 'transparent'}}
+                onPress={() => this.onItemToggle(item)}
             />
         );
     }
@@ -145,23 +149,24 @@ class AddVisitsScreenContainer extends Component {
         const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
         const visitListByID = arrayToMap(visitOrderObject.visitList, 'visitID');
 
-        for (let i = 0; i < visitOrderObject.visitList.length; i++) {
-            if (visitOrderObject.visitList[i].isDone) {
-                const newVisitOrder = [];
-                newVisitOrder.push(...visitOrderObject.visitList.slice(0, i));
-                for (let j = 0; j < allVisits.length; j++) {
-                    if (!visitListByID.has(allVisits[j].visitID)) {
-                        newVisitOrder.push(allVisits[j]);
-                    }
-                }
-                newVisitOrder.push(...visitOrderObject.visitList.slice(i, visitOrderObject.visitList.length));
+        let indexOfFirstDoneVisit;
+        for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObject.visitList.length && !visitOrderObject.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {
+            
+        }
 
-                floDB.write(() => {
-                    visitOrderObject.visitList = newVisitOrder;
-                });
-                break;
+        const newVisitOrder = [];
+        newVisitOrder.push(...visitOrderObject.visitList.slice(0, indexOfFirstDoneVisit));
+        for (let j = 0; j < allVisits.length; j++) {
+            if (!visitListByID.has(allVisits[j].visitID)) {
+                newVisitOrder.push(allVisits[j]);
             }
         }
+        newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
+
+        console.log(`old visit lenght ${visitOrderObject.visitList.length}, new length ${newVisitOrder.length}`);
+        floDB.write(() => {
+            visitOrderObject.visitList = newVisitOrder;
+        });
 
         if (this.props.onDone) {
             this.props.onDone(this.state.selectedItems);

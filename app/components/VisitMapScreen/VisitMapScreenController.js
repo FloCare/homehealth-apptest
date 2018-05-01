@@ -100,7 +100,7 @@ class VisitMapScreenController extends Component {
 
 function ControlPanel(props) {
     return (
-        <View>
+        <View style={{backgroundColor: '#45ceb1', paddingTop: 10, paddingBottom: 10}}>
             {/*<DragDropList*/}
                 {/*orderedItemIDList={props.orderedVisitIds}*/}
                 {/*dataObjectList={props.visitResultObject}*/}
