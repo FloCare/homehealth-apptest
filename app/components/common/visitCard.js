@@ -6,26 +6,9 @@ import {styles} from './styles';
 import {Tag} from './tag';
 import {Visit} from '../../utils/data/schema';
 import {diagnosisList} from "../../utils/constants";
+import {Diagnosis} from "./Diagnosis";
 
 function VisitCard({isDoneToggle}) {
-    this.getTags = function (visit) {
-        if (visit.getDiagnosis() && visit.getDiagnosis().length > 0) {
-            return (
-                <View style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                }}>
-                    {visit.getDiagnosis().map((item) =>
-                        <Tag text={item}
-                             badgeContainerStyle={{padding: 0, marginLeft: 0}}
-                             badgeTextStyle={{margin: 0, marginRight: 2, marginLeft: 2}} />)}
-                </View>
-            );
-        }
-        return (
-            <View style={{height: 16}}/>
-        )
-    }
     //
     // render() {
     //     console.log(`card render ${this.props.patientName}called at ${Date.now()}`);
@@ -51,7 +34,7 @@ function VisitCard({isDoneToggle}) {
                         onPress={onSelectionToggle}
                     />
                 </View>
-                {this.getTags(visit)}
+                <Diagnosis diagnosis={visit.getDiagnosis()}/>
                 <Divider style={{marginBottom: 4, marginRight: 15, height: 1.5, backgroundColor: '#dddddd'}}/>
                 <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-around', margin: 0, padding: 0}}>
                     <TouchableHighlight
