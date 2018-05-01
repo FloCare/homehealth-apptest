@@ -1,14 +1,14 @@
 import React from 'react';
 import {Badge, Icon, Text} from 'react-native-elements';
-import {TouchableHighlight, View} from 'react-native';
+import {Image, TouchableHighlight, View} from 'react-native';
 import {styles} from './styles';
 
-
+//TODO: underlayColor not working
 function removeButton(onPress) {
     if (onPress) {
         return (
-            <TouchableHighlight onPress={onPress}>
-                <Icon name='close' />
+            <TouchableHighlight style={{alignSelf: 'center', underlayColor: 'white'}} onPress={onPress}>
+                <Image source={require('../../../resources/close.png')} />
             </TouchableHighlight>
         );
     } 
@@ -18,7 +18,7 @@ function removeButton(onPress) {
 function Tag(props) {
     return (
         <Badge
-            containerStyle={[styles.badgeContainerStyle, {margin: 4}]}
+            containerStyle={[styles.badgeContainerStyle, {margin: 4, padding: 2}]}
             children={
                 <View style={{flexDirection: 'row'}}>
                     <Text style={[styles.badgeTextStyle, {margin: 4}]}> {props.text} </Text>

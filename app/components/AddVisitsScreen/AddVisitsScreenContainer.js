@@ -141,7 +141,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     createListItemComponent({item}) {
-        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/ic_location_on_black_24dp.png');
+        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/location.png');
         const rightIcon = item.isSelected ? {name: 'check', color: '#45ceb1'} : <View />;
         console.log(item);
         console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
@@ -151,6 +151,7 @@ class AddVisitsScreenContainer extends Component {
                 title={item.name}
                 subtitle={item.address}
                 avatar={avatar}
+                avatarStyle={{resizeMode: 'contain'}}
                 rightIcon={rightIcon}
                 titleStyle={{fontSize: 17, color: '#222222'}}
                 subtitleStyle={{fontSize: 12, color: '#666666', fontWeight: 'normal'}}

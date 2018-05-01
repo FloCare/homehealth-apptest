@@ -26,22 +26,48 @@ import {CustomButton} from '../common/CustomButton';
 function getComponentToDisplayBasedOnProps(props) {
     if (props.listItems.length === 0) {
         return (
-            <View style={{flex: 1}}>
-                <Text>
+            <View style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <Text style={{textAlign: 'center'}}>
                     Please use the Add button above to add new patients
                 </Text>
             </View>
         );
-    } return (
+    }
+
+    this.getTags = function () {
+        if (props.selectedItems.length > 0) {
+            return (
+                <View style={{borderBottomWidth: 1, borderColor: "#aaaaaa", paddingBottom: 4}}>
+                    <View style={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        marginLeft: 16,
+                        marginRight: 16,
+                        marginTop: 4
+                    }}>
+                        {props.selectedItems.map((item) => <Tag text={item.name}
+                                                                onPress={() => props.onTagPress(item)}/>)}
+                    </View>
+                </View>
+            );
+        }
+        return (
+            <View/>
+        )
+    }
+
+    return (
         <View style={{flex: 1}}>
             <SearchBar
                 lightTheme
                 placeholder='search patients or stops'
                 onChangeText={props.onChangeText}
             />
-            <View style={{flexDirection: 'row', flexWrap: 'wrap', margin: 16}}>
-                {props.selectedItems.map((item) => <Tag text={item.name} onPress={() => props.onTagPress(item)} />)}
-            </View>
+            {this.getTags()}
             <FlatList
                 data={props.listItems}
                 renderItem={props.renderItem}
@@ -56,12 +82,12 @@ function AddVisitsScreen(props) {
         <View style={{flex: 1}}>
             {getComponentToDisplayBasedOnProps(props)}
             <Button
-            large
-            title='Done'
-            onPress={props.onDone}
-            containerViewStyle={{flexDirection: 'row', marginLeft: 0, marginRight: 0}}
-            buttonStyle={{flex: 1}}
-            backgroundColor={'#45ceb1'}
+                large
+                title='Done'
+                onPress={props.onDone}
+                containerViewStyle={{flexDirection: 'row', marginLeft: 0, marginRight: 0}}
+                buttonStyle={{flex: 1}}
+                backgroundColor={'#45ceb1'}
             />
         </View>
     );
