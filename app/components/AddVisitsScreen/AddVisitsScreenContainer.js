@@ -46,7 +46,10 @@ class AddVisitsScreenContainer extends Component {
                 // Todo: Navigate to the AddPatient Screen
                 this.props.navigator.push({
                         screen: screenNames.addPatient,
-                        title: 'Add Patient'
+                        title: 'Add Patient',
+                        navigatorStyle: {
+                            tabBarHidden: true
+                        }
                     }
                 );
             }

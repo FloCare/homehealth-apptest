@@ -278,6 +278,7 @@ class AddPatientFormContainer extends Component {
                     //selectedItems={this.state.selectedItems}
                 />
                 <Button
+                    containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
                     title='Save'
                     onPress={(e) => this.handleSubmit(e, onSubmit)}
