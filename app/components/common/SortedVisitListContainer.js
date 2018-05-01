@@ -62,26 +62,31 @@ class SortedVisitListContainer extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        //TODO avoid this many rerenders
+        // console.log('component received props bruv');
         const nextState = this.getStateFromDate(nextProps.date);
-        const currenctOrderedVisitList = this.state.orderedVisitList;
-        if (nextState.orderedVisitList.length !== currenctOrderedVisitList.length) {
+        // const currenctOrderedVisitList = this.state.orderedVisitList;
+        // console.log(`${nextState.orderedVisitList.length},${currenctOrderedVisitList.length}`);
+        // if (nextState.orderedVisitList.length !== currenctOrderedVisitList.length) {
+        //     console.log('length changed');
             this.setState(nextState);
             this.forceUpdate();
-            return;
-        }
-
-        for (let i = 0; i < currenctOrderedVisitList.length; i++) {
-            if (currenctOrderedVisitList[i].visitID !== nextState.orderedVisitList[i].visitID
-                    || currenctOrderedVisitList[i].isDone !== nextState.orderedVisitList[i].isDone) {
-                this.setState(nextState);
-                this.forceUpdate();
-                return;
-            }
-        }
+        //     return;
+        // }
+        //
+        // for (let i = 0; i < currenctOrderedVisitList.length; i++) {
+        //     if (currenctOrderedVisitList[i].visitID !== nextState.orderedVisitList[i].visitID
+        //             || currenctOrderedVisitList[i].isDone !== nextState.orderedVisitList[i].isDone) {
+        //         console.log('order different');
+        //         this.setState(nextState);
+        //         this.forceUpdate();
+        //         return;
+        //     }
+        // }
     }
 
     shouldComponentUpdate() {
-        return false;
+        // return false;
     }
 
     updateNewVisitOrderToDb(order, valid) {
@@ -213,9 +218,11 @@ class SortedVisitListContainer extends Component {
         console.log(`sortedVisitList container rendered, length ${this.state.orderedVisitList.length}`);
         return (
             <SortableList
+                style={this.props.style}
                 data={this.state.orderedVisitList}
                 renderRow={this.state.renderWithCallback}
-                // order={this.orderIndexCache}
+                scrollEnabled={this.props.scrollEnabled}
+                sortingEnabled={this.props.sortingEnabled}
                 onChangeOrder={this.onOrderChange}
                 onReleaseRow={this.onReleaseRow}
                 sortingEnabled={this.props.sortEnabled}

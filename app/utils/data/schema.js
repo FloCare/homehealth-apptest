@@ -37,6 +37,10 @@ class Address extends Realm.Object {
         this.longitude = coordinates.longitude;
     }
 
+    getCommaSeperatedCoordinates() {
+        return `${this.latitude},${this.longitude}`;
+    }
+
     hasCoordinates() {
         return !!((
             (this.latitude !== null) &&

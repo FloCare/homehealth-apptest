@@ -45,6 +45,7 @@ class VisitListScreenContainer extends Component {
     }
 
     onOrderChange(newOrder) {
+        // console.log('visitListScreen congainer callback');
         this.forceUpdate();
         this.props.onOrderChange(newOrder);
     }
