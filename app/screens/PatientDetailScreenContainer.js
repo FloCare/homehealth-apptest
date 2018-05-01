@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import update from 'immutability-helper';
+import moment from 'moment/moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
@@ -39,8 +40,12 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddVisit() {
         console.log('Add Visit Button is Pressed. Navigate to the add visit screen ...');
-        this.props.navigator.push({
-            screen: screenNames.addVisitScreen,
+        this.props.navigator.showModal({
+            screen: screenNames.addVisitsForPatientScreen,
+            title: 'Add Visit',
+            passProps: {
+                patientId: this.state.patientDetail.patientID
+            },
             navigatorStyle: {
                 tabBarHidden: true
             }
