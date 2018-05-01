@@ -1,5 +1,4 @@
 import React from 'react';
-import {Dimensions} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import {MapMarker} from '../common/PatientMap/MapMarker';
 
@@ -18,7 +17,7 @@ export function PatientDetailMapComponent(props) {
                 title={props.patientAddress}
                 ref={props.setMarkerRef}
             >
-                <MapMarker/>
+                <MapMarker />
             </Marker>
         </MapView>);
 }
