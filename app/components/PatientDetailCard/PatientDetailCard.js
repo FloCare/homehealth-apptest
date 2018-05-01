@@ -7,6 +7,7 @@ import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
 
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
+import {Diagnosis} from "../common/Diagnosis";
 
 const PatientDetailCard = (props) => {
     const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
@@ -43,6 +44,21 @@ const PatientDetailCard = (props) => {
         visitSectionData.push('No visits scheduled for You.');
     }
 
+    this.getVisitsView = function (visitSectionData) {
+        if (visitSectionData && visitSectionData.length > 0) {
+            return (
+                <View style={componentStyles.listContainer}>
+                    {visitSectionData.map((item) =>
+                        <Text style={styles.visitStyle}>
+                            {item}
+                        </Text>)}
+                </View>
+            );
+        }
+        return (
+            <View style={{height: 16}}/>
+        )
+    }
     return (
         <View style={styles.parentContainerStyle}>
             {coordinates &&
@@ -118,24 +134,7 @@ const PatientDetailCard = (props) => {
                         <Text style={styles.headerStyle}>
                             Diagnosis
                         </Text>
-                        <FlatList
-                            showsHorizontalScrollIndicator={false}
-                            horizontal
-                            style={componentStyles.listContainer}
-                            data={[
-                                '#CHF',
-                                '#COPD',
-                                '#THR',
-                                '#UTI',
-                            ]}
-                            renderItem={({item}) =>
-                                <Badge
-                                    containerStyle={componentStyles.badgeContainerStyle}
-                                    textStyle={componentStyles.badgeTextStyle}
-                                    value={item}
-                                />
-                            }
-                        />
+                        <Diagnosis diagnosis/>
                     </View>
                 </View>
 
@@ -147,19 +146,7 @@ const PatientDetailCard = (props) => {
                         <Text style={styles.headerStyle}>
                             Visits
                         </Text>
-                        <FlatList
-                            showsHorizontalScrollIndicator={false}
-                            horizontal
-                            style={componentStyles.listContainer}
-                            data={visitSectionData}
-                            show
-                            renderItem={({item}) =>
-                                /*Use nested texts for spannable*/
-                                <Text style={styles.visitStyle}>
-                                    {item}
-                                </Text>
-                            }
-                        />
+                        {this.getVisitsView(visitSectionData)}
                     </View>
                 </View>
 

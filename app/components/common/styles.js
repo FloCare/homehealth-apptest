@@ -50,8 +50,8 @@ export const styles = StyleSheet.create({
         fontWeight: '300'
     },
     listContainer: {
-        marginTop: 10,
-        marginBottom: 10,
+        marginTop: 0,
+        marginBottom: 0,
         marginRight: 50,
         flexDirection: 'row',
         flexWrap: 'wrap'
