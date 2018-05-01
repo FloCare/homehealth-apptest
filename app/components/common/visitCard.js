@@ -23,7 +23,7 @@ function VisitCard({isDoneToggle}) {
         // console.log(visit);
         // console.log('rerendered visitcard');
         return (
-            <Card containerStyle={[styles.cardContainerStyle, {marginRight: 0, paddingRight: 0}]}>
+            <Card containerStyle={[styles.cardContainerStyle]}>
                 <View style={{flexDirection: 'row'}}>
                     <View style={{flex: 1}}>
                         <Text style={styles.nameStyle}>{visit.getAssociatedName()}</Text>
