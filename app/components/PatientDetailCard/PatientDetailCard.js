@@ -28,9 +28,6 @@ const PatientDetailCard = (props) => {
         }
     }
 
-    const {width, height} = Dimensions.get('window');
-    const mapHeight = height / 4;
-
     let lastVisitTimestamp = null;
     let nextVisitTimestamp = null;
     const visitSectionData = [];
@@ -54,8 +51,6 @@ const PatientDetailCard = (props) => {
                 patientAddress={address.streetAddress}
                 onRegionChangeComplete={showCallout}
                 setMarkerRef={setMarkerRef}
-                mapHeight={mapHeight}
-                mapWidth={width}
             />
             }
 
@@ -78,6 +73,7 @@ const PatientDetailCard = (props) => {
                         }}
                         buttonStyle={styles.callButtonStyle}
                         containerViewStyle={{
+                            width: '20%',
                             position: 'absolute',
                             right: 0
                         }}
@@ -116,7 +112,7 @@ const PatientDetailCard = (props) => {
 
                 <Divider style={styles.dividerStyle} />
 
-                <View style={styles.containerStyle}>
+                <View style={[styles.containerStyle, {opacity: 0.3}]}>
                     <Image source={require('../../../resources/diagnosis.png')} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
@@ -190,11 +186,13 @@ const PatientDetailCard = (props) => {
                 <Button
                     title="Add Visit"
                     buttonStyle={styles.footerButtonStyle}
+                    containerViewStyle={{width: '45%'}}
                     onPress={onPressAddVisit}
                 />
                 <Button
                     title="Add Notes"
                     buttonStyle={styles.footerButtonStyle}
+                    containerViewStyle={{width: '45%'}}
                     onPress={onPressAddNotes}
                 />
             </View>

@@ -8,16 +8,17 @@ export function PatientDetailMapComponent(props) {
         <MapView
             initialRegion={Object.assign({latitudeDelta: 0.0421, longitudeDelta: 0.0922}, props.patientCoordinates)}
             style={{
-                width: props.mapWidth,
-                height: props.mapHeight
+                width: '100%',
+                height: '20%'
             }}
             onRegionChangeComplete={props.onRegionChangeComplete}
         >
             <Marker
                 coordinate={props.patientCoordinates}
-                title='Address'
-                description={props.patientAddress}
+                title={props.patientAddress}
                 ref={props.setMarkerRef}
-            />
+            >
+                <MapMarker/>
+            </Marker>
         </MapView>);
 }
