@@ -27,13 +27,13 @@ export function VisitSummary(props) {
                 {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
             </Text>
             {/*<Text*/}
-                {/*style={{*/}
-                    {/*fontSize: 14,*/}
-                    {/*color: '#ffffff'*/}
-                {/*}}*/}
+            {/*style={{*/}
+            {/*fontSize: 14,*/}
+            {/*color: '#ffffff'*/}
+            {/*}}*/}
             {/*>*/}
-                {/*{'Total Remaining Miles: 27'}*/}
-                {/*/!*{`Total Remaining Miles: ${props.remainingMiles}`}*!/*/}
+            {/*{'Total Remaining Miles: 27'}*/}
+            {/*/!*{`Total Remaining Miles: ${props.remainingMiles}`}*!/*/}
             {/*</Text>*/}
             <Text
                 style={{
@@ -74,9 +74,10 @@ export function VisitSummary(props) {
             </View>
             <View
                 style={{
-                    flex: 1,
-                    paddingLeft: 100,
-                    width: Dimensions.get('screen').width
+                    paddingBottom: 16,
+                    width: Dimensions.get('screen').width,
+                    justifyItems: 'center',
+                    alignItems: 'center',
                 }}
             >
                 <Text
@@ -89,15 +90,15 @@ export function VisitSummary(props) {
                 </Text>
                 {/*prefer to use VisitCard rather than VisitListContainer*/}
             </View>
-                <SortedVisitListContainer
-                    style={{width: Dimensions.get('screen').width * 0.95}}
-                    date={props.date}
-                    singleEntry
-                    scrollEnabled={false}
-                    sortingEnabled={false}
-                    renderWithCallback={VisitCard}
-                    onOrderChange={props.onOrderChange}
-                />
+            <SortedVisitListContainer
+                style={{width: Dimensions.get('screen').width * 0.95}}
+                date={props.date}
+                singleEntry
+                scrollEnabled={false}
+                sortingEnabled={false}
+                renderWithCallback={VisitCard}
+                onOrderChange={props.onOrderChange}
+            />
         </View>
     );
 }
