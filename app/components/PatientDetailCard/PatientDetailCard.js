@@ -174,7 +174,7 @@ const PatientDetailCard = (props) => {
                             Notes
                         </Text>
                         <Text style={styles.noteStyle}>
-                            {notes}
+                            {notes || 'You have not added any note for this patient.'}
                         </Text>
                     </View>
                 </View>
