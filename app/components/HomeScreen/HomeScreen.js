@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import moment from 'moment';
 import {VisitSummary} from './VisitSummary';
 import {Button, Text} from 'react-native-elements';
-import EmptyStateButton from "../common/EmptyStateButton";
+import EmptyStateButton from '../common/EmptyStateButton';
 
 function getComponentToDisplayBasedOnVisitCount(props) {
     if (props.remainingVisitsCount === 0) {
@@ -77,7 +77,8 @@ function HomeScreen(props) {
                     },
                     {
                         startDate: moment().utc().startOf('day').valueOf(),
-                        dateContainerStyle: {borderColor: '#45ceb1', borderRadius: 0},
+                        dateNameStyle: {color: '#45ceb1'},
+                        dateNumberStyle: {color: '#45ceb1'},
                     }
                 ]}
             />

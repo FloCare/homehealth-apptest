@@ -68,7 +68,8 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                                         },
                                         {
                                             startDate: moment().utc().startOf('day').valueOf(),
-                                            dateContainerStyle: {borderColor: '#45ceb1', borderRadius: 0},
+                                            dateNameStyle: {color: '#45ceb1'},
+                                            dateNumberStyle: {color: '#45ceb1'},
                                         }
                                     ]}
                                 />,
