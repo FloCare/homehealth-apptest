@@ -23,10 +23,12 @@ class PatientListScreenContainer extends Component {
         this.state = {
             patientList: [],
             patientCount: 0,      // not always a count of patientList
+            selectedPatient: props.selectedPatient,
         };
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.onItemPressed = this.onItemPressed.bind(this);
+        this.onPatientAdded = this.onPatientAdded.bind(this);
         this.navigateTo = this.navigateTo.bind(this);
         this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
@@ -57,14 +59,18 @@ class PatientListScreenContainer extends Component {
                 title 
             });
         }
+        if (event.id === 'willDisappear') {
+            this.setState({selectedPatient: null});
+        }
         if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
             if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
-                this.navigateTo(
-                    screenNames.addPatient,
-                    'Add Patient'
-                );
+                this.navigateToAddPatient();
             }
         }
+    }
+
+    onPatientAdded(patientId) {
+        this.setState({selectedPatient: patientId});
     }
 
     getSectionData(query) {
@@ -113,10 +119,11 @@ class PatientListScreenContainer extends Component {
     }
 
     navigateToAddPatient() {
-        this.navigateTo(
-            screenNames.addPatient,
-            'Add Patient'
-        );
+        const prop = {
+            onPatientAdded: this.onPatientAdded,
+        };
+        const title = 'Add Patient';
+        this.navigateTo(screenNames.addPatient, title, prop);
     }
 
     render() {
@@ -125,7 +132,7 @@ class PatientListScreenContainer extends Component {
                 patientList={this.state.patientList}
                 patientCount={this.state.patientCount}
                 onSearch={this.onSearch}
-                selectedPatient={this.props.selectedPatient}
+                selectedPatient={this.state.selectedPatient}
                 onItemPressed={this.onItemPressed}
                 onPressAddPatient={this.navigateToAddPatient}
             />

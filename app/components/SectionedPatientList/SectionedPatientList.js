@@ -14,7 +14,7 @@ class SectionedPatientList extends Component {
         if (item.patientID === selectedPatient) {
             return (
                 <View
-                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff'}}
+                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#45ceb1'}}
                 >
                     <View style={{flex: 10, flexDirection: 'row'}}>
                         <TouchableOpacity

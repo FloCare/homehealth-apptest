@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {View, Alert} from 'react-native';
 import moment from 'moment';
 import {floDB, Visit} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
@@ -17,6 +17,7 @@ class HomeScreenContainer extends Component {
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
+        this.onPatientAdded = this.onPatientAdded.bind(this);
 
         this.navigateToAddNote = this.navigateToAddNote.bind(this);
         this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
@@ -49,6 +50,13 @@ class HomeScreenContainer extends Component {
     onOrderChange() {
         this.forceUpdate();
         console.log('was called');
+    }
+
+    onPatientAdded() {
+        Alert.alert(
+            'Patient Added',
+            'Please navigate to the patient lists to view the patient.',
+        );
     }
 
     navigateToVisitListScreen() {
@@ -110,6 +118,9 @@ class HomeScreenContainer extends Component {
             title: 'Add Patient',
             navigatorStyle: {
                 tabBarHidden: true
+            },
+            passProps: {
+                onPatientAdded: this.onPatientAdded
             }
         });
     }

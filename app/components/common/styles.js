@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
         marginBottom: 0,
         marginRight: 50,
         flexDirection: 'row',
-        flexWrap: 'wrap'
+        flexWrap: 'nowrap',
     },
     cardContainerStyle: {
         borderRadius: 4,
