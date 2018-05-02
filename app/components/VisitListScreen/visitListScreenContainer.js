@@ -63,6 +63,7 @@ class VisitListScreenContainer extends Component {
         console.log('order c hange fn');
         return (
             <VisitListScreen
+                navigator={this.props.navigator}
                 date={this.state.date}
                 // calendarComponent={<CalendarStrip
                 //     style={{height: 100, paddingTop: 20, paddingBottom: 10}}

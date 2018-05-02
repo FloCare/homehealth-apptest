@@ -211,7 +211,7 @@ class SortedVisitListContainer extends Component {
     }
 
     renderRow() {
-        return this.props.renderWithCallback({isDoneToggle: this.isDoneToggle.bind(this)});
+        return this.props.renderWithCallback({isDoneToggle: this.isDoneToggle.bind(this), navigator: this.props.navigator});
     }
 
     render() {

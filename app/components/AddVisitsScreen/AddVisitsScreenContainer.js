@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
-import {View} from 'react-native';
+import {Platform, View, ActionSheetIOS} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
@@ -8,7 +8,43 @@ import {arrayToMap} from '../../utils/collectionUtils';
 import {screenNames, visitType} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
 
+const newStop = 'Create new Stop';
+const newPatient = 'Create new Patient';
+
+const newPatientNavigatorArg = {
+    screen: screenNames.addPatient,
+    title: 'Add Patient',
+    navigatorStyle: {
+        tabBarHidden: true
+    }
+};
+
 class AddVisitsScreenContainer extends Component {
+    static navigatorButtons = {
+        rightButtons: [
+            ...Platform.select({
+                ios: [{
+                    id: 'ios-plus',
+                    systemItem: 'add'
+                }],
+                android: [
+                    {
+                        id: 'new-patient',
+                        title: newPatient,
+                        showAsAction: 'never'
+                    }, {
+                        id: 'new-stop',
+                        title: newStop,
+                        showAsAction: 'never'
+                    }]
+            }),
+            {
+                id: 'calendar-picker',
+                icon: require('../../../resources/calendar.png'),
+            }
+        ]
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -41,20 +77,34 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onNavigatorEvent(event) {
-        if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
-                // Todo: Navigate to the AddPatient Screen
-                this.props.navigator.push({
-                        screen: screenNames.addPatient,
-                        title: 'Add Patient',
-                        navigatorStyle: {
-                            tabBarHidden: true
-                        }
+        if (event.type === 'NavBarButtonPress') {
+            if (event.id === 'new-stop') {
+                //TODO go to add new stop screen
+            } else if (event.id === 'new-patient') {
+                this.props.navigator.push(newPatientNavigatorArg);
+            } else if (event.id === 'ios-plus') {
+                const options = [newPatient, newStop, 'Cancel'];
+
+                ActionSheetIOS.showActionSheetWithOptions({
+                    options,
+                    cancelButtonIndex: options.length - 1
+                }, (buttonIndex) => {
+                    switch (buttonIndex) {
+                        case 0:
+                            this.props.navigator.push(newPatientNavigatorArg);
+                            break;
+                        case 1:
+                            //TODO go to add new stop
+                            break;
+                        default:
+                            break;
                     }
-                );
+                });
             }
         }
-        if (this.props.onNavigatorEvent) { this.props.onNavigatorEvent(event); }
+        if (this.props.onNavigatorEvent) {
+            this.props.onNavigatorEvent(event);
+        }
     }
 
     onChangeText(text) {
@@ -189,7 +239,7 @@ class AddVisitsScreenContainer extends Component {
 
         let indexOfFirstDoneVisit;
         for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObject.visitList.length && !visitOrderObject.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {
-            
+
         }
 
         const newVisitOrder = [];

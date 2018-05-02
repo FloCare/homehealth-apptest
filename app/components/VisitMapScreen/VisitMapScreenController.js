@@ -4,11 +4,8 @@ import MapView, {Marker} from 'react-native-maps';
 import Polyline from '@mapbox/polyline';
 import geoJsonBounds from 'geojson-bounds';
 import {VisitRow} from './VisitRow';
-import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
-import {DragDropList} from '../common/DragDropList';
+import {floDB, VisitOrder} from '../../utils/data/schema';
 import {MapMarker} from '../common/PatientMap/MapMarker';
-import {arrayToMap} from '../../utils/collectionUtils';
-import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
