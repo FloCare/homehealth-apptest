@@ -45,6 +45,7 @@ const AddNoteFormWithPatientTag = (props) => {
                 buttonStyle={styles.buttonStyle}
                 title='Save'
                 onPress={handleSubmit}
+                large
             />
         </View>
     );
