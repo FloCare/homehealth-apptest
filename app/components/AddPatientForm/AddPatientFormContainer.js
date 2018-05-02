@@ -282,6 +282,7 @@ class AddPatientFormContainer extends Component {
                     buttonStyle={styles.buttonStyle}
                     title='Save'
                     onPress={(e) => this.handleSubmit(e, onSubmit)}
+                    large
                 />
             </View>
         );

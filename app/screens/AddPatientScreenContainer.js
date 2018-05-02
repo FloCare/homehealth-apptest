@@ -7,22 +7,42 @@ class AddPatientScreenContainer extends Component {
      */
     constructor(props) {
         super(props);
+        this.state = {
+            nextScreen: props.nextScreen || null
+        };
         this.onSubmit = this.onSubmit.bind(this);
     }
 
     onSubmit(patientId) {
         if (this.props.edit) {
             this.props.navigator.pop();
+        } else if (this.state.nextScreen) {
+            if (this.props.onPatientAdded) {
+                this.props.onPatientAdded(patientId);
+            }
+            this.props.navigator.push({
+                screen: this.state.nextScreen,
+                passProps: {
+                    selectedPatient: patientId,
+                }
+            });
+        } else if (this.props.onPatientAdded) {
+            this.props.onPatientAdded(patientId);
+            this.props.navigator.pop();
         } else {
             this.props.navigator.pop();
-            // Todo: If the user came from 'Add Visit', don't switch tabs
+
+            // console.log('Switching the TAB');
             // this.props.navigator.switchToTab({
             //     tabIndex: 1,
+            // });
+            // console.log('Resetting screen navigation');
+            // this.props.navigator.resetTo({
+            //     screen: this.state.nextScreen,
             //     title: 'Patients',
             //     passProps: {
-            //         selectedPatient: patientId,
-            //         patientCount: 50                    // Todo: Fix this
-            //     }
+            //         selectedPatient: patientId
+            //     },
             // });
         }
     }

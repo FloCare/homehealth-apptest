@@ -7,6 +7,8 @@ const CustomCheckBox = (props) => (
         checkedColor="#45ceb1"
         uncheckedColor="#525252"
         containerStyle={[styles.checkBoxContainerStyle, props.checkBoxContainerStyle]}
+        title={'Done'}
+        iconRight
         textStyle={[styles.textStyle, props.textStyle]}
         size={24}
         onPress={props.onPress}

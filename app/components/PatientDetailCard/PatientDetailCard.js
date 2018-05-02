@@ -1,13 +1,40 @@
 import React from 'react';
-import {View, FlatList, Linking, ScrollView, Image, Dimensions} from 'react-native';
+import {View, Linking, ScrollView, Image} from 'react-native';
 import {Text, Button, Divider, Icon} from 'react-native-elements';
 import moment from 'moment';
-import Badge from 'react-native-elements/src/badge/badge';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
 
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
-import {Diagnosis} from "../common/Diagnosis";
+import {Diagnosis} from '../common/Diagnosis';
+
+const getVisitsView = function (visitSectionData) {
+    if (visitSectionData && visitSectionData.length > 0) {
+        if (visitSectionData.length > 1) {
+            return (
+                <View style={componentStyles.listContainer}>
+                    <Text style={{...styles.visitStyle, opacity: 0.7}}>
+                        {visitSectionData[0]}
+                    </Text>
+                    <Text style={styles.visitStyle}>
+                        {visitSectionData[1]}
+                    </Text>
+                </View>
+            );
+        } else {
+            return (
+                <View style={componentStyles.listContainer}>
+                    <Text style={{...styles.visitStyle, width: '70%'}}>
+                        {visitSectionData[0]}
+                    </Text>
+                </View>
+            );
+        }
+    }
+    return (
+        <View style={{height: 16}} />
+    );
+};
 
 const PatientDetailCard = (props) => {
     const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
@@ -44,21 +71,6 @@ const PatientDetailCard = (props) => {
         visitSectionData.push('No visits scheduled for You.');
     }
 
-    this.getVisitsView = function (visitSectionData) {
-        if (visitSectionData && visitSectionData.length > 0) {
-            return (
-                <View style={componentStyles.listContainer}>
-                    {visitSectionData.map((item) =>
-                        <Text style={styles.visitStyle}>
-                            {item}
-                        </Text>)}
-                </View>
-            );
-        }
-        return (
-            <View style={{height: 16}}/>
-        )
-    }
     return (
         <View style={styles.parentContainerStyle}>
             {coordinates &&
@@ -134,7 +146,7 @@ const PatientDetailCard = (props) => {
                         <Text style={styles.headerStyle}>
                             Diagnosis
                         </Text>
-                        <Diagnosis diagnosis/>
+                        <Diagnosis diagnosis />
                     </View>
                 </View>
 
@@ -146,7 +158,7 @@ const PatientDetailCard = (props) => {
                         <Text style={styles.headerStyle}>
                             Visits
                         </Text>
-                        {this.getVisitsView(visitSectionData)}
+                        {getVisitsView(visitSectionData)}
                     </View>
                 </View>
 
@@ -175,7 +187,7 @@ const PatientDetailCard = (props) => {
                     buttonStyle={styles.footerButtonStyle}
                     containerViewStyle={{width: '45%'}}
                     //onPress={onPressAddVisit}
-                    onPress={() => console.log('Add visit pressed')}
+                    onPress={onPressAddVisit}
                 />
                 <Button
                     title="Add Notes"
