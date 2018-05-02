@@ -15,7 +15,6 @@ class AddStopFormContainer extends Component {
         this.state = {
             value: {
                 address: null,
-                remember: true,
                 stopName: null
             },
             modelType: this.getType(),
@@ -95,7 +94,6 @@ class AddStopFormContainer extends Component {
         if (address && address.length > 0) {
             return t.struct({
                 address: t.String,
-                remember: t.Boolean,
                 stopName: t.String
             });
         } else {
@@ -109,7 +107,6 @@ class AddStopFormContainer extends Component {
         this.setState({
             value: {
                 address: null,
-                remember: null,
                 stopName: null
             },
             modelType: this.getType()
@@ -120,7 +117,8 @@ class AddStopFormContainer extends Component {
     handleSubmit(e, onSubmit) {
         const value = this.addStopForm.getValue();
 
-        if (value && this.state.value.remember) {
+        // Todo Doesn't make sense for the remember me currently, hence removing it
+        if (value) {
             const placeId = Math.random().toString();
             const addressId = Math.random().toString();
 
@@ -164,13 +162,15 @@ class AddStopFormContainer extends Component {
                         options={this.options.Options}
                         onChange={this.onChange}
                     />
-                    <Button
-                        disabled={!(this.state.value.address)}
-                        buttonStyle={styles.buttonStyle}
-                        title='Done'
-                        onPress={(e) => this.handleSubmit(e, onSubmit)}
-                    />
                 </KeyboardAwareScrollView>
+                <Button
+                    large
+                    disabled={!(this.state.value.address)}
+                    containerViewStyle={{marginLeft: 0, marginRight: 0}}
+                    buttonStyle={styles.buttonStyle}
+                    title='Done'
+                    onPress={(e) => this.handleSubmit(e, onSubmit)}
+                />
             </View>
         );
     }
