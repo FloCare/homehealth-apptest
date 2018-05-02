@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
 import {VisitListScreen} from './visitListScreen';
-import {floDB, Visit, Patient, Episode} from '../../utils/data/schema';
+import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
 import {screenNames} from '../../utils/constants';
 
 class VisitListScreenContainer extends Component {
@@ -13,7 +13,6 @@ class VisitListScreenContainer extends Component {
         };
         // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
-        this.onDayPress = this.onDayPress.bind(this);
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
     }
@@ -26,9 +25,13 @@ class VisitListScreenContainer extends Component {
     //     }
     // }
 
-    onDayPress(day) {
-        console.log(`${day.timestamp} was pressed`);
-        this.setState({date: day, showCalendar: false});
+    componentWillReceiveProps(nextProps) {
+        console.log('component received props');
+        const orderedVisits = floDB.objectForPrimaryKey(VisitOrder, nextProps.date.valueOf());
+        if (!orderedVisits || orderedVisits.visitList.length === 0) {
+            console.log('component did 0');
+            this.props.navigator.pop();
+        } else this.setState({date: nextProps.date});
     }
 
     navigateToAddVisitsScreen() {

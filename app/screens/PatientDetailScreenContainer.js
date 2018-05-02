@@ -11,7 +11,7 @@ class PatientDetailScreenContainer extends Component {
             {
                 icon: require('../../resources/editButton.png'),
                 id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                buttonColor: '#45ceb1'
+                buttonColor: '#fffff'
             }
         ]
     };

@@ -12,6 +12,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
                 this.state = {
+                    date: props.date,
                     shown: false,
                     // calendarStripHeight: new Animated.Value(0)
                 };
@@ -42,7 +43,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                     link: 'date',
                     payload: date
                 });
-                this.setState({shown: false});
+                this.setState({shown: false, date});
             }
 
             render() {
@@ -60,7 +61,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                                     selectedDate={this.state.date}
                                     customDatesStyles={[
                                         {
-                                            startDate: this.props.date.valueOf(),
+                                            startDate: this.state.date.valueOf(),
                                             dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 0},
                                             dateNameStyle: {color: 'white'},
                                             dateNumberStyle: {color: 'white'},
@@ -72,7 +73,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                                     ]}
                                 />,
                                 this.state.shown)}
-                            <BaseScreenComponent {...this.props} onNavigatorEvent={this.onNavigatorEvent.bind(this)} />
+                            <BaseScreenComponent {...this.props} date={this.state.date} onNavigatorEvent={this.onNavigatorEvent.bind(this)} />
                         </View>
                 );
             }

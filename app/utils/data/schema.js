@@ -231,10 +231,10 @@ function CreateAndSaveDummies() {
             diagnosis: ['A', 'B', 'C'],
             isClosed: true
         });
-        patient.episodes[0].visits.push({
-            visitID,
-            midnightEpochOfVisit: midnightEpoch
-        });
+        // patient.episodes[0].visits.push({
+        //     visitID,
+        //     midnightEpochOfVisit: midnightEpoch
+        // });
     });
 
     console.log('==========================================');

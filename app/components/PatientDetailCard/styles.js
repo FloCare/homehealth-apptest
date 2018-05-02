@@ -33,6 +33,7 @@ const styles = {
         width: 150,
         lineHeight: 16,
         letterSpacing: -0.26,
+        marginBottom: 10,
         textAlign: "left",
         color: "#999999"
     },

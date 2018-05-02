@@ -9,6 +9,7 @@
   "dependencies": {
     "@mapbox/polyline": "^1.0.0",
     "firebase": "^4.12.1",
+    "geojson-bounds": "^1.0.1",
     "immutability-helper": "^2.6.6",
     "immutable": "^3.8.2",
     "lodash": "^4.17.5",

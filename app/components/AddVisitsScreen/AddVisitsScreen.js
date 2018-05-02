@@ -41,17 +41,18 @@ function getComponentToDisplayBasedOnProps(props) {
     this.getTags = function () {
         if (props.selectedItems.length > 0) {
             return (
-                <View style={{borderBottomWidth: 1, borderColor: "#aaaaaa", paddingBottom: 4}}>
-                    <View style={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        marginLeft: 16,
-                        marginRight: 16,
-                        marginTop: 4
-                    }}>
-                        {props.selectedItems.map((item) => <Tag text={item.name}
-                                                                onPress={() => props.onTagPress(item)}/>)}
-                    </View>
+                <View style={{
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    marginLeft: 16,
+                    marginRight: 16,
+                    marginTop: 4,
+                    borderBottomWidth: 1,
+                    borderColor: "#aaaaaa",
+                    paddingBottom: 4
+                }}>
+                    {props.selectedItems.map((item) => <Tag text={item.name}
+                                                            onPress={() => props.onTagPress(item)}/>)}
                 </View>
             );
         }

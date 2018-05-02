@@ -14,11 +14,13 @@ const styles = StyleSheet.create({
 const Fab = (props) => {
     const {onPressAddNote, onPressAddVisit, onPressAddPatient} = props;
     return (
+        //TODO work shadow out
         <ActionButton
             buttonColor='#45ceb1'
             size={50}
             useNativeFeedback={false}
             bgColor={'rgba(255,255,255,0.8)'}
+            hideShadow
         >
             <ActionButton.Item buttonColor='#45ceb1' title="Add Note" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>
                 <Icon name="md-paper" style={styles.actionButtonIcon} />
