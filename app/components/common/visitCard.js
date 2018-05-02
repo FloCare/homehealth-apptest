@@ -33,7 +33,7 @@ function VisitCard({isDoneToggle, navigator}) {
         // console.log('rerendered visitcard');
         return (
             //TODO suboptimal
-            <TouchableWithoutFeedback onPress={() => pushPatientDetailScreen(navigator, visit.getPatient())}>
+            //<TouchableWithoutFeedback onPress={() => pushPatientDetailScreen(navigator, visit.getPatient())}>
                 <Card containerStyle={[styles.cardContainerStyle]}>
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flex: 1}}>
@@ -81,7 +81,7 @@ function VisitCard({isDoneToggle, navigator}) {
                         </TouchableHighlight>
                     </View>
                 </Card>
-            </TouchableWithoutFeedback>
+          //  </TouchableWithoutFeedback>
         );
     });
 }
