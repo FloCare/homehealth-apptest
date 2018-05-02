@@ -14,9 +14,6 @@ const formOptions = {
                 refName: null
             }
         },
-        remember: {
-            label: 'Save for future'
-        },
         stopname: {
             label: 'Give it a name',
             placeholder: 'Eg. Office',
