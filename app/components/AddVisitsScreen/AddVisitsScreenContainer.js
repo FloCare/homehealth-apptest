@@ -170,8 +170,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     getFlatAddress(addressObject) {
-        //TODO create address from object
-        return 'Placeholder Address, PlaceHoldington Street';
+        return addressObject.streetAddress;
     }
 
     getFlatPatientItem(patient) {
