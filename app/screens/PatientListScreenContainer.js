@@ -120,7 +120,7 @@ class PatientListScreenContainer extends Component {
 
     navigateToAddPatient() {
         const prop = {
-                onPatientAdded: this.onPatientAdded,
+            onPatientAdded: this.onPatientAdded,
         };
         const title = 'Add Patient';
         this.navigateTo(screenNames.addPatient, title, prop);

@@ -31,10 +31,12 @@ class PatientDetailScreenContainer extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.setMarkerRef = this.setMarkerRef.bind(this);
         this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
+        this.handleDBUpdate = this.handleDBUpdate.bind(this);
     }
 
     componentDidMount() {
         this.getPatientDetails(this.props.patientId);
+        floDB.addListener('change', this.handleDBUpdate);
     }
 
     onPressAddVisit() {
@@ -96,10 +98,14 @@ class PatientDetailScreenContainer extends Component {
 
     // this is the onPress handler for the navigation header 'Edit' button
     onNavigatorEvent(event) {
-        if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+        if (event.id === 'willAppear') {
+            let title = `${this.state.patientDetail.name}`;
+            this.props.navigator.setTitle({
+                title
+            });
+        }
+        if (event.type === 'NavBarButtonPress') {
             if (event.id === 'edit') {    // this is the same id field from the static navigatorButtons definition
-                // Todo: Open the edit patient information screen here
-                console.log('Edit Button is pressed ...');
                 this.onPressEditInfo();
             }
         }
@@ -152,6 +158,15 @@ class PatientDetailScreenContainer extends Component {
 
     setMarkerRef(element) {
         this.marker = element;
+    }
+
+    componentWillUnMount() {
+        floDB.removeListener('change', this.handleListUpdate);
+    }
+
+    handleDBUpdate() {
+        console.log('inside handleDB update listener, patinet Id:', this.props.patientId);
+        this.getPatientDetails(this.props.patientId);
     }
 
     parseResponse(result, patientId) {
