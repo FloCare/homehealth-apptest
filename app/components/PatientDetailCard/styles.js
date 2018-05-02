@@ -30,12 +30,12 @@ const styles = {
     },
     visitStyle: {
         fontSize: 12,
-        width: 150,
+        width: '50%',
         lineHeight: 16,
         letterSpacing: -0.26,
         marginBottom: 10,
-        textAlign: "left",
-        color: "#999999"
+        textAlign: 'left',
+        color: '#999999',
     },
     headerStyle: {
         fontSize: 18,
