@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Dimensions, Image, TouchableHighlight} from 'react-native';
 import {Avatar, Button, Icon, Text} from 'react-native-elements';
-import {VisitListContainer} from '../common/VisitList/visitListContainer';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
@@ -85,6 +84,7 @@ export function VisitSummary(props) {
                 {/*prefer to use VisitCard rather than VisitListContainer*/}
             </View>
             <SortedVisitListContainer
+                navigator={props.navigator}
                 style={{width: Dimensions.get('screen').width * 0.95}}
                 date={props.date}
                 singleEntry

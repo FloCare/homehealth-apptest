@@ -10,6 +10,7 @@ function VisitListScreen(props) {
             {/*{RenderIf(props.calendarComponent, props.showCalendar)}*/}
             {/*<VisitListContainer visitResultObject={props.visitResultObject} />*/}
             <SortedVisitListContainer
+                navigator={props.navigator}
                 style={{flex: 1, marginTop: 10}}
                 date={props.date}
                 renderWithCallback={VisitCard}
