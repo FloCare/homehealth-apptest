@@ -8,7 +8,6 @@ import AddNoteScreenContainer from './AddNoteScreenContainer';
 import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
-import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
 import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
@@ -36,7 +35,6 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.visitListScreen, () => ScreenWithCalendarComponent(VisitListScreenContainer));
     Navigation.registerComponent(screenNames.visitMapScreen, () => ScreenWithCalendarComponent(VisitMapScreenController));
     Navigation.registerComponent(screenNames.addVisitScreen, () => ScreenWithCalendarComponent(AddVisitsScreenContainer));
-    Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
     Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
 };
 
