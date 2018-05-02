@@ -40,6 +40,7 @@ class PatientDetailScreenContainer extends Component {
     onPressAddVisit() {
         console.log('Add Visit Button is Pressed. Navigate to the add visit screen ...');
         this.props.navigator.push({
+            //TODO cant really push this screen without passing it the date
             screen: screenNames.addVisitScreen,
             navigatorStyle: {
                 tabBarHidden: true

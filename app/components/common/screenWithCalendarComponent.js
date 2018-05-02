@@ -6,6 +6,7 @@ import {CalendarStripStyled} from './CalendarStripStyled';
 function ScreenWithCalendarComponent(BaseScreenComponent) {
     return (
         class CompositeClass extends Component {
+            static navigatorButtons = BaseScreenComponent.navigatorButtons;
             constructor(props) {
                 super(props);
                 this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
