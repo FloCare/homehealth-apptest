@@ -1,17 +1,18 @@
 import React from 'react';
-import {View, Dimensions} from 'react-native';
+import {View, Dimensions, Image, TouchableHighlight} from 'react-native';
 import {Avatar, Button, Icon, Text} from 'react-native-elements';
 import {VisitListContainer} from '../common/VisitList/visitListContainer';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 export function VisitSummary(props) {
+    const primaryColor = '#45ceb1';
     return (
         <View
             style={{
                 flex: 1,
                 alignItems: 'center',
-                backgroundColor: '#45ceb1',
+                backgroundColor: primaryColor,
                 margin: 0,
                 // marginTop: 60,
                 padding: 10
@@ -54,23 +55,18 @@ export function VisitSummary(props) {
                     marginRight: 100
                 }}
             >
-                <Icon
-                    raised
-                    size={30}
-                    name='map'
-                    type='font-awesome'
-                    color='#45ceb1'
-                    onPress={props.navigateToVisitMapScreen}
-                />
-                <Icon
-                    raised
-                    size={30}
-                    containerStyle={{marginLeft: 50}}
-                    name='list'
-                    type='font-awesome'
-                    color='#45ceb1'
-                    onPress={props.navigateToVisitListScreen}
-                />
+                <TouchableHighlight onPress={props.navigateToVisitMapScreen} underlayColor={primaryColor}>
+                    <Image
+                        source={require('../../../resources/map.png')}
+                    />
+                </TouchableHighlight>
+
+
+                <TouchableHighlight onPress={props.navigateToVisitListScreen} underlayColor={primaryColor}>
+                    <Image
+                        source={require('../../../resources/list.png')}
+                    />
+                </TouchableHighlight>
             </View>
             <View
                 style={{
