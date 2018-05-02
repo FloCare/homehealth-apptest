@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import {Animated, View} from 'react-native';
-import CalendarStrip from 'react-native-calendar-strip';
+import {View} from 'react-native';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
-import moment from 'moment/moment';
+import {CalendarStripStyled} from './CalendarStripStyled';
 
 function ScreenWithCalendarComponent(BaseScreenComponent) {
     return (
@@ -50,32 +49,25 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 // console.log(this.state.calendarStripHeight);
                 // console.log(this.state);
                 return (
-                        <View style={{flex: 1}}>
-                            {RenderIf(
-                                <CalendarStrip
-                                    style={{height: 75}}
-                                    styleWeekend={false}
-                                    calendarHeaderFormat='MMMM'
-                                    calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
+                    <View style={{flex: 1}}>
+                        {RenderIf(
+                            <View style={{flex: 1}}>
+                                <CalendarStripStyled
+                                    padding={10}
+                                    date={this.state.date}
+                                    noRounding
                                     onDateSelected={this.broadcastDeepLinkForDateChange}
-                                    selectedDate={this.state.date}
-                                    customDatesStyles={[
-                                        {
-                                            startDate: this.state.date.valueOf(),
-                                            dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 0},
-                                            dateNameStyle: {color: 'white'},
-                                            dateNumberStyle: {color: 'white'},
-                                        },
-                                        {
-                                            startDate: moment().utc().startOf('day').valueOf(),
-                                            dateNameStyle: {color: '#45ceb1'},
-                                            dateNumberStyle: {color: '#45ceb1'},
-                                        }
-                                    ]}
-                                />,
-                                this.state.shown)}
-                            <BaseScreenComponent {...this.props} date={this.state.date} onNavigatorEvent={this.onNavigatorEvent.bind(this)} />
+                                />
+                            </View>,
+                            this.state.shown)}
+                        <View style={{flex: 4}}>
+                            <BaseScreenComponent
+                                {...this.props}
+                                date={this.state.date}
+                                onNavigatorEvent={this.onNavigatorEvent.bind(this)}
+                            />
                         </View>
+                    </View>
                 );
             }
         }

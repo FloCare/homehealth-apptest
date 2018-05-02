@@ -15,7 +15,8 @@ export function VisitSummary(props) {
                 backgroundColor: primaryColor,
                 margin: 0,
                 // marginTop: 60,
-                padding: 10
+                paddingTop: 10,
+                paddingBottom: 30
             }}
         >
             <Text
@@ -39,7 +40,6 @@ export function VisitSummary(props) {
             <Text
                 style={{
                     fontSize: 12,
-                    marginTop: 20,
                     color: '#ffffff'
                 }}
             >
@@ -50,7 +50,6 @@ export function VisitSummary(props) {
                     flexDirection: 'row',
                     justifyContent: 'space-around',
                     alignSelf: 'stretch',
-                    margin: 10,
                     marginLeft: 100,
                     marginRight: 100
                 }}
@@ -70,7 +69,6 @@ export function VisitSummary(props) {
             </View>
             <View
                 style={{
-                    paddingBottom: 16,
                     width: Dimensions.get('screen').width,
                     justifyItems: 'center',
                     alignItems: 'center',
