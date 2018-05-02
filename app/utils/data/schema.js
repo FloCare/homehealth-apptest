@@ -175,7 +175,6 @@ const floDB = new Realm({
         VisitOrder
     ],
     deleteRealmIfMigrationNeeded: true,
-    inMemory: true
 });
 
 

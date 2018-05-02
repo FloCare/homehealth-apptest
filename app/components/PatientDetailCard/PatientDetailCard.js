@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Linking, ScrollView, Image} from 'react-native';
+import {View, Linking, ScrollView, Image, TouchableOpacity} from 'react-native';
 import {Text, Button, Divider, Icon} from 'react-native-elements';
 import moment from 'moment';
 import styles from './styles';
@@ -164,38 +164,28 @@ const PatientDetailCard = (props) => {
 
                 <Divider style={styles.dividerStyle} />
 
-                <View style={styles.containerStyle}>
-                    <Image
-                        source={require('../../../resources/notes.png')}
-                    />
-                    <View style={{marginLeft: 14}}>
-                        <Text style={styles.headerStyle}>
-                            Notes
-                        </Text>
-                        <Text style={styles.noteStyle}>
-                            {notes || 'You have not added any note for this patient.'}
-                        </Text>
+                <TouchableOpacity onPress={onPressAddNotes}>
+                    <View style={styles.containerStyle}>
+                        <Image
+                            source={require('../../../resources/notes.png')}
+                        />
+                        <View style={{marginLeft: 14}}>
+                            <Text style={styles.headerStyle}>
+                                Notes
+                            </Text>
+                            <Text style={styles.noteStyle}>
+                                {notes || 'You have not added any note for this patient.'}
+                            </Text>
+                        </View>
                     </View>
-                </View>
+                </TouchableOpacity>
+
+                <Divider style={styles.dividerStyle} />
             </ScrollView>
 
             <Divider style={styles.dividerStyle} />
 
-            <View style={styles.buttonContainerStyle}>
-                <Button
-                    title="Add Visit"
-                    buttonStyle={styles.footerButtonStyle}
-                    containerViewStyle={{width: '45%'}}
-                    //onPress={onPressAddVisit}
-                    onPress={onPressAddVisit}
-                />
-                <Button
-                    title="Add Notes"
-                    buttonStyle={styles.footerButtonStyle}
-                    containerViewStyle={{width: '45%'}}
-                    onPress={onPressAddNotes}
-                />
-            </View>
+
         </View>
     );
 };
