@@ -185,6 +185,14 @@ const PatientDetailCard = (props) => {
 
             <Divider style={styles.dividerStyle} />
 
+            <View style={styles.buttonContainerStyle}>
+                <Button
+                    title="Add Visit"
+                    buttonStyle={styles.footerButtonStyle}
+                    //onPress={onPressAddVisit}
+                    onPress={onPressAddVisit}
+                />
+            </View>
 
         </View>
     );
