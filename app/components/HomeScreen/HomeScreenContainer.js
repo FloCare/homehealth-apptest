@@ -5,6 +5,7 @@ import {floDB, Visit} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames} from '../../utils/constants';
 import Fab from '../common/Fab';
+import {addListener} from '../../utils/utils';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -26,6 +27,7 @@ class HomeScreenContainer extends Component {
 
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+        addListener(this.onOrderChange);
     }
 
     onNavigatorEvent(event) {

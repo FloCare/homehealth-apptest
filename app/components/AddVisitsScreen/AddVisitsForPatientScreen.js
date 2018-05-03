@@ -5,6 +5,7 @@ import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
 import {floDB, Patient, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
+import {makeCallbacks} from "../../utils/utils";
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -75,6 +76,8 @@ class AddVisitsForPatientScreen extends Component {
         } catch (e) {
             console.log('Error during Adding Visit: ', e);
         }
+        //TODO implement redux and remove this hack
+        makeCallbacks();
         this.props.navigator.dismissLightBox();
     }
 
