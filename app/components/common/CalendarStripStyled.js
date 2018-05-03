@@ -5,7 +5,7 @@ import moment from 'moment/moment';
 function CalendarStripStyled(props) {
     const selectedDateRadius = 40;
     const radius = {
-        radius: undefined,
+        borderRadius: undefined,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
         borderTopLeftRadius: props.noRounding ? 0 : selectedDateRadius,
@@ -21,6 +21,7 @@ function CalendarStripStyled(props) {
             dateNameStyle={{fontSize: 12, color: '#cccccc'}}
             onDateSelected={props.onDateSelected}
             selectedDate={props.date}
+            startingDate={props.date}
             styleWeekend={false}
             calendarHeaderFormat='MMMM'
             customDatesStyles={[
