@@ -75,6 +75,11 @@ const styles = {
         padding: 8,
         width: '100%',
         backgroundColor: '#45ceb1'
+    },
+    buttonStyle: {
+        backgroundColor: '#45ceb1',
+        marginLeft: 0,
+        marginRight: 0
     }
 };
 
