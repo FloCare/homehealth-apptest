@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Image, TouchableHighlight} from 'react-native';
 import {Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -75,34 +75,39 @@ class AddVisitsForPatientScreen extends Component {
         } catch (e) {
             console.log('Error during Adding Visit: ', e);
         }
-        this.props.navigator.dismissModal();
+        this.props.navigator.dismissLightBox();
     }
 
     render() {
         return (
             <View
                 style={{
-                    height: '60%',
+                    height: '55%',
                     width: '90%',
-                    borderColor: 'black',
-                    borderWidth: 2,
-                    backgroundColor: '#eeeeee'
+                    backgroundColor: '#eeeeee',
+                    borderRadius: 10,
+                    marginLeft: '5%',
+                    marginRight: '5%',
+                    marginTop: '15%',
                 }}
             >
-                <View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 10}}>
                     <Text
                         style={{
                             fontWeight: 'bold',
-                            fontSize: 25
+                            fontSize: 15,
                         }}
                     >
                         Add Visit
                     </Text>
+                    <TouchableHighlight onPress={() => this.props.navigator.dismissLightBox()}>
+                        <Image source={require('../../../resources/close.png')} />
+                    </TouchableHighlight>
                 </View>
                 <Divider
                     style={{
                         margin: 0,
-                        height: 2,
+                        height: 1,
                         backgroundColor: '#bbbbbb'
                     }}
                 />
@@ -111,32 +116,33 @@ class AddVisitsForPatientScreen extends Component {
                         style={{height: 75}}
                         styleWeekend={false}
                         calendarHeaderFormat='MMMM'
-                        calendarHeaderStyle={{fontWeight: '200', fontSize: 20}}
+                        calendarHeaderStyle={{fontWeight: '100', fontSize: 12, alignSelf: 'flex-start', padding: 10}}
                         onDateSelected={this.onDateSelected}
                         selectedDate={this.state.date}
                         customDatesStyles={[
                             {
                                 startDate: this.state.date.valueOf(),
-                                dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 0},
+                                dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 10},
                                 dateNameStyle: {color: 'white'},
                                 dateNumberStyle: {color: 'white'},
-                            },
-                            {
-                                startDate: moment().utc().startOf('day').valueOf(),
-                                dateContainerStyle: {borderColor: '#45ceb1', borderRadius: 0},
                             }
                         ]}
                     />
                 </View>
                 <Button
-                    title="SAVE"
-                    large
+                    title="Done"
                     containerViewStyle={{
                         width: '100%',
                         position: 'absolute',
                         bottom: 0,
                         marginLeft: 0,
                         marginRight: 0
+                    }}
+                    buttonStyle={{
+                        backgroundColor: '#45ceb1',
+                        borderRadius: 10,
+                        borderTopLeftRadius: 0,
+                        borderTopRightRadius: 0
                     }}
                     onPress={this.onSubmit}
                 />

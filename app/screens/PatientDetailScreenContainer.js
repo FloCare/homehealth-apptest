@@ -41,16 +41,16 @@ class PatientDetailScreenContainer extends Component {
     }
 
     onPressAddVisit() {
-        console.log('Add Visit Button is Pressed. Navigate to the add visit screen ...');
-        this.props.navigator.showModal({
+        this.props.navigator.showLightBox({
             screen: screenNames.addVisitsForPatientScreen,
-            title: 'Add Visit',
+            style: {
+                backgroundBlur: 'dark',
+                backgroundColor: '#00000070',
+                tapBackgroundToDismiss: true
+            },
             passProps: {
                 patientId: this.state.patientDetail.patientID
             },
-            navigatorStyle: {
-                tabBarHidden: true
-            }
         });
     }
 
