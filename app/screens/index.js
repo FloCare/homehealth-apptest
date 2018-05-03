@@ -14,18 +14,18 @@ import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScr
 import {ScreenWithCalendarComponent} from '../components/common/screenWithCalendarComponent';
 
 const RegisterScreens = () => {
-    if (floDB.objects(Visit.schema.name).length === 0) {
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-
-        const visitOrder = floDB.objectForPrimaryKey(VisitOrder, moment().utc().startOf('day').valueOf());
-        floDB.write(() => {
-            visitOrder.visitList = floDB.objects(Visit);
-        });
-    }
+    // if (floDB.objects(Visit.schema.name).length === 0) {
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //
+    //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, moment().utc().startOf('day').valueOf());
+    //     floDB.write(() => {
+    //         visitOrder.visitList = floDB.objects(Visit);
+    //     });
+    // }
 
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
     Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);

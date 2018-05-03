@@ -185,6 +185,7 @@ const floDB = new Realm({
         Place,
         VisitOrder
     ],
+    // Todo: Remove this setting for production
     deleteRealmIfMigrationNeeded: true,
 });
 

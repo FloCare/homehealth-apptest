@@ -15,6 +15,12 @@ class AddStopFormContainer extends Component {
         this.state = {
             value: {
                 address: null,
+                lat: null,
+                long: null,
+                zip: null,
+                city: null,
+                state: null,
+                country: null,
                 stopName: null
             },
             modelType: this.getType(),
@@ -63,20 +69,48 @@ class AddStopFormContainer extends Component {
     }
 
     onAddressSelect(data, details) {
-        // Todo: Build streetAddress from address components
-        const streetAddress = details.formatted_address;
-        // const geometry = details.geometry;
-        //
-        // if (geometry) {
-        //     const location = geometry.location;
-        //     if (location) {
-        //         lat = location.lat;
-        //         long = location.lng;
-        //     }
-        // }
+        // Todo: Move this to a generic function
+        const address = details.address_components;
 
-        // Todo: Save Lat long and other parts of the address
-        const value = Object.assign({}, this.state.value, {address: streetAddress});
+        let zip = null;
+        let city = null;
+        let state = null;
+        let country = null;
+        let lat = null;
+        let long = null;
+
+        const streetAddress = details.formatted_address;
+        const geometry = details.geometry;
+
+        address.forEach((component) => {
+            const types = component.types;
+            // Todo: Handle edge cases for city
+            if (types.indexOf('locality') > -1) {
+                city = component.long_name;
+            }
+
+            if (types.indexOf('administrative_area_level_1') > -1) {
+                state = component.short_name;
+            }
+
+            if (types.indexOf('postal_code') > -1) {
+                zip = component.long_name;
+            }
+
+            if (types.indexOf('country') > -1) {
+                country = component.long_name;
+            }
+        });
+
+        if (geometry) {
+            const location = geometry.location;
+            if (location) {
+                lat = location.lat;
+                long = location.lng;
+            }
+        }
+
+        const value = Object.assign({}, this.state.value, {address: streetAddress, zip, city, state, country, lat, long});
         this.setState({value});
     }
 
@@ -107,6 +141,12 @@ class AddStopFormContainer extends Component {
         this.setState({
             value: {
                 address: null,
+                lat: null,
+                long: null,
+                zip: null,
+                city: null,
+                state: null,
+                country: null,
                 stopName: null
             },
             modelType: this.getType()
@@ -131,8 +171,20 @@ class AddStopFormContainer extends Component {
 
                     stop.address = {
                         addressID: addressId,
-                        streetAddress: this.state.value.address
+                        streetAddress: this.state.value.address,
+                        zipCode: this.state.value.zip,
+                        city: this.state.value.city,
+                        state: this.state.value.state,
+                        country: this.state.value.country,
                     };
+
+                    // Add a latLong if present
+                    if (this.state.value.lat && this.state.value.long) {
+                        stop.address.coordinates = {
+                            latitude: this.state.value.lat,
+                            longitude: this.state.value.long
+                        };
+                    }
                 });
                 console.log('Save to DB successful');
             } catch (err) {
