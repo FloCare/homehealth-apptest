@@ -1,13 +1,16 @@
 import React from 'react';
 import {View, Dimensions, Image, TouchableHighlight} from 'react-native';
-import {Avatar, Button, Icon, Text} from 'react-native-elements';
+import {Text} from 'react-native-elements';
+import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 export function VisitSummary(props) {
     const primaryColor = '#45ceb1';
+    const secondary = '#34da92';
     return (
-        <View
+        <LinearGradient
+            colors={[primaryColor, secondary]}
             style={{
                 flex: 1,
                 alignItems: 'center',
@@ -93,6 +96,6 @@ export function VisitSummary(props) {
                 renderWithCallback={VisitCard}
                 onOrderChange={props.onOrderChange}
             />
-        </View>
+        </LinearGradient>
     );
 }

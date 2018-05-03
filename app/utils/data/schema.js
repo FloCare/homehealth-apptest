@@ -128,10 +128,11 @@ class Visit extends Realm.Object {
             return patient.address;
         }
         const place = CollectionUtils.getFirstElement(this.place);
+        console.log(place);
         if (place) {
             return place.address;
         }
-        throw new Error('Visit belongs to neither place nor patient');
+        console.error('Visit belongs to neither place nor patient');
     }
 
     getAssociatedName() {
