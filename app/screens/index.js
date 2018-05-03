@@ -12,6 +12,8 @@ import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsS
 import AddStopScreenContainer from './AddStopScreenContainer';
 import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
 import {ScreenWithCalendarComponent} from '../components/common/screenWithCalendarComponent';
+import StopListScreenContainer from './StopListScreenContainer';
+import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -36,6 +38,8 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.visitMapScreen, () => ScreenWithCalendarComponent(VisitMapScreenController));
     Navigation.registerComponent(screenNames.addVisitScreen, () => ScreenWithCalendarComponent(AddVisitsScreenContainer));
     Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
+    Navigation.registerComponent(screenNames.stopList, () => StopListScreenContainer);
+    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => AddVisitsForPatientScreen);
 };
 
 export {RegisterScreens};

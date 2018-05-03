@@ -23,7 +23,8 @@ class HomeScreenContainer extends Component {
         this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
         this.navigateToAddVisit = this.navigateToAddVisit.bind(this);
 
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     }
 
     onNavigatorEvent(event) {
@@ -36,6 +37,10 @@ class HomeScreenContainer extends Component {
             if (event.id === 'list-view') {
                 this.props.navigator.pop();
                 this.navigateToVisitListScreen();
+            }
+            if (event.id === 'map-view') {
+                this.props.navigator.pop();
+                this.navigateToVisitMapScreen();
             }
         }
     }
@@ -64,16 +69,11 @@ class HomeScreenContainer extends Component {
             screen: screenNames.visitListScreen,
             passProps: {
                 date: this.state.date,
-                onOrderChange: this.onOrderChange.bind(this)
+                onOrderChange: this.onOrderChange.bind(this),
+                onNavigationEvent: this.onNavigatorEvent
             },
             navigatorStyle: {
                 tabBarHidden: true
-            },
-            navigatorButtons: {
-                rightButtons: [{
-                    id: 'calendar-picker',
-                    icon: require('../../../resources/calendar.png'),
-                }]
             }
         });
     }
@@ -83,21 +83,11 @@ class HomeScreenContainer extends Component {
             screen: screenNames.visitMapScreen,
             passProps: {
                 date: this.state.date,
-                onOrderChange: this.onOrderChange.bind(this)
+                onOrderChange: this.onOrderChange.bind(this),
+                onNavigationEvent: this.onNavigatorEvent
             },
             navigatorStyle: {
                 tabBarHidden: true
-            },
-            navigatorButtons: {
-                rightButtons: [{
-                    id: 'calendar-picker',
-                    icon: require('../../../resources/calendar.png'),
-                },
-                // {
-                //     id: 'list-view',
-                //     icon: require('../../../resources/listView.png')
-                // }
-                ]
             }
         });
     }

@@ -36,6 +36,10 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                         // ).start();
                     }
                 }
+
+                if (this.props.onNavigationEvent) {
+                    this.props.onNavigationEvent(event);
+                }
             }
 
             broadcastDeepLinkForDateChange(date) {
