@@ -5,7 +5,7 @@ import moment from 'moment/moment';
 function CalendarStripStyled(props) {
     const selectedDateRadius = 40;
     const radius = {
-        radius: undefined,
+        borderRadius: undefined,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
         borderTopLeftRadius: props.noRounding ? 0 : selectedDateRadius,

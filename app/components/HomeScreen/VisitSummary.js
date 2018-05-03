@@ -72,7 +72,7 @@ export function VisitSummary(props) {
             <View
                 style={{
                     width: Dimensions.get('screen').width,
-                    justifyItems: 'center',
+                    justifyContent: 'center',
                     alignItems: 'center',
                 }}
             >
