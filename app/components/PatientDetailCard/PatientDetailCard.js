@@ -85,7 +85,7 @@ const PatientDetailCard = (props) => {
 
             <ScrollView style={{flex: 8}}>
                 <View style={styles.containerStyle}>
-                    <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                    <Image source={require('../../../resources/elliotLugo.png')} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Primary Contact
@@ -118,7 +118,7 @@ const PatientDetailCard = (props) => {
 
                 {emergencyContact !== '' && emergencyContact &&
                 <View style={styles.containerStyle}>
-                    <Icon name="phone" size={22} color="#999999" containerStyle={styles.iconStyle} />
+                    <Image source={require('../../../resources/elliotLugo.png')} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Emergency Contact

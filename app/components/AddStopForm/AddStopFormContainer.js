@@ -21,7 +21,8 @@ class AddStopFormContainer extends Component {
                 city: null,
                 state: null,
                 country: null,
-                stopName: null
+                stopName: null,
+                primaryContact: null,
             },
             modelType: this.getType(),
         };
@@ -128,6 +129,7 @@ class AddStopFormContainer extends Component {
         if (address && address.length > 0) {
             return t.struct({
                 address: t.String,
+                primaryContact: t.maybe(t.String),
                 stopName: t.String
             });
         } else {
@@ -147,7 +149,8 @@ class AddStopFormContainer extends Component {
                 city: null,
                 state: null,
                 country: null,
-                stopName: null
+                stopName: null,
+                primaryContact: null
             },
             modelType: this.getType()
         });
@@ -166,7 +169,8 @@ class AddStopFormContainer extends Component {
                 floDB.write(() => {
                     const stop = floDB.create(Place.schema.name, {
                         placeID: placeId,
-                        name: this.state.value.stopName
+                        name: this.state.value.stopName,
+                        primaryContact: this.state.value.primaryContact
                     });
 
                     stop.address = {

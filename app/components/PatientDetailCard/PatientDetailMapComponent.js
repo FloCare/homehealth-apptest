@@ -8,7 +8,7 @@ export function PatientDetailMapComponent(props) {
             initialRegion={Object.assign({latitudeDelta: 0.0421, longitudeDelta: 0.0922}, props.patientCoordinates)}
             style={{
                 width: '100%',
-                height: '20%'
+                height: '25%'
             }}
             onRegionChangeComplete={props.onRegionChangeComplete}
         >

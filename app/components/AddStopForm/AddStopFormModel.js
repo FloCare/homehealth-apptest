@@ -14,6 +14,10 @@ const formOptions = {
                 refName: null
             }
         },
+        primaryContact: {
+            label: 'Contact No',
+            placeholder: 'Optional'
+        },
         stopname: {
             label: 'Give it a name',
             placeholder: 'Eg. Office',
