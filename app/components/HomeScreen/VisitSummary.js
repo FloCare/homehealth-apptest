@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Dimensions, Image, TouchableHighlight} from 'react-native';
+import {View, Dimensions, Image, TouchableHighlight, TouchableWithoutFeedback} from 'react-native';
 import {Text} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
@@ -50,20 +50,21 @@ export function VisitSummary(props) {
                         // alignSelf: 'stretch',
                     }}
                 >
-                    <TouchableHighlight onPress={props.navigateToVisitMapScreen} underlayColor={primaryColor}>
+                    <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
+                        {/*// underlayColor={primaryColor}>*/}
                         <Image
                             style={{resizeMode: 'contain'}}
                             source={require('../../../resources/map.png')}
                         />
-                    </TouchableHighlight>
+                    </TouchableWithoutFeedback>
 
 
-                    <TouchableHighlight onPress={props.navigateToVisitListScreen} underlayColor={primaryColor}>
+                    <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
                         <Image
                             style={{resizeMode: 'contain'}}
                             source={require('../../../resources/list.png')}
                         />
-                    </TouchableHighlight>
+                    </TouchableWithoutFeedback>
                 </View>
             </View>
             <View
