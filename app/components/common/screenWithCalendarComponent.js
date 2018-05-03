@@ -25,6 +25,14 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 console.log('state changed');
                 if (event.type === 'NavBarButtonPress') {
                     if (event.id === 'calendar-picker') {
+                        this.props.navigator.setButtons({
+                            ...BaseScreenComponent.navigatorButtons,
+                            rightButtons: BaseScreenComponent.navigatorButtons.rightButtons.map(
+                                                button => {
+                                                    if (!(button.id === 'calendar-picker')) return button;
+                                                    return {...button, buttonColor: this.state.shown === false ? 'rgba(255,255,255,0.9)' : 'white'};
+                                                })
+                        });
                         this.setState((prevState) => ({shown: !prevState.shown}));
                         console.log('state changed');
                         // Animated.timing(

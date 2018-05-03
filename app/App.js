@@ -1,8 +1,6 @@
 import {Navigation} from 'react-native-navigation';
-import {StyleSheet} from 'react-native';
 import {RegisterScreens} from './screens';
 import {screenNames} from './utils/constants';
-import {styles} from './components/common/styles';
 
 RegisterScreens();
 

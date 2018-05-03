@@ -8,9 +8,8 @@ class VisitListScreenContainer extends Component {
     static navigatorButtons = {
         rightButtons: [
             {
-                icon: require('../../../resources/mapView.png'),
                 id: 'map-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                buttonColor: '#fffff'
+                icon: require('../../../resources/mapView.png'),
             },
             {
                 id: 'calendar-picker',

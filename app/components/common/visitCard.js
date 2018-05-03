@@ -24,6 +24,8 @@ function VisitCard({isDoneToggle, navigator}) {
     //     console.log(`card render ${this.props.patientName}called at ${Date.now()}`);
     return (({data}) => {
         const visit = data;
+        const phoneNumber = visit.getAssociatedNumber();
+
         const onSelectionToggle = () => {
             if (isDoneToggle) {
                 isDoneToggle(visit);
@@ -52,18 +54,18 @@ function VisitCard({isDoneToggle, navigator}) {
                         style={{flexDirection: 'row', flex: 1, justifyContent: 'space-around', margin: 0, padding: 0}}
                     >
                         <TouchableHighlight
+                            activeOpacity={0.5}
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
                                 //TODO not working on iOS
-                                const phoneNumber = visit.getAssociatedNumber();
                                 if (phoneNumber) {
                                     console.warn('calling');
                                     RNImmediatePhoneCall.immediatePhoneCall(visit.getAssociatedNumber(phoneNumber));
                                 }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: phoneNumber ? 1 : 0.5}}>
                                 <Image source={require('../../../resources/call.png')} />
                                 <Text
                                     style={{fontSize: 14, color: '#222222'}}
@@ -72,6 +74,7 @@ function VisitCard({isDoneToggle, navigator}) {
                         </TouchableHighlight>
                         <Divider style={{width: 1.5, height: '60%', marginTop: 8, backgroundColor: '#dddddd'}} />
                         <TouchableHighlight
+                            activeOpacity={0.5}
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
