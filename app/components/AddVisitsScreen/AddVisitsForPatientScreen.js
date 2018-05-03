@@ -125,6 +125,11 @@ class AddVisitsForPatientScreen extends Component {
                                 dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 10},
                                 dateNameStyle: {color: 'white'},
                                 dateNumberStyle: {color: 'white'},
+                            },
+                            {
+                                startDate: moment().utc().startOf('day').valueOf(),
+                                dateNameStyle: {color: '#45ceb1'},
+                                dateNumberStyle: {color: '#45ceb1'},
                             }
                         ]}
                     />
