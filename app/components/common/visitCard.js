@@ -1,6 +1,7 @@
 import React from 'react';
 import {Card, Divider, Text} from 'react-native-elements';
 import {View, TouchableHighlight, Image, Linking, TouchableWithoutFeedback} from 'react-native';
+import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {Diagnosis} from './Diagnosis';
@@ -54,8 +55,13 @@ function VisitCard({isDoneToggle, navigator}) {
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
-                                console.log('hello');
-                            }}//this.props.onCall}
+                                //TODO not working on iOS
+                                const phoneNumber = visit.getAssociatedNumber();
+                                if (phoneNumber) {
+                                    console.warn('calling');
+                                    RNImmediatePhoneCall.immediatePhoneCall(visit.getAssociatedNumber(phoneNumber));
+                                }
+                            }}
                         >
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
                                 <Image source={require('../../../resources/call.png')} />

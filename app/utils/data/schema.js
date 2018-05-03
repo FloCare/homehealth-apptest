@@ -94,6 +94,7 @@ Place.schema = {
         placeID: 'string',
         name: 'string',
         address: 'Address',
+        primaryContact: 'string?',
         visits: {type: 'Visit[]', default: []}
     }
 };
@@ -123,26 +124,25 @@ class Visit extends Realm.Object {
     }
 
     getAddress() {
-        const patient = this.getPatient();
-        if (patient) {
-            return patient.address;
-        }
-        const place = CollectionUtils.getFirstElement(this.place);
-        console.log(place);
-        if (place) {
-            return place.address;
-        }
-        console.error('Visit belongs to neither place nor patient');
+        return this.getFromOwner(patient => patient.address, place => place.address);
     }
 
     getAssociatedName() {
+        return this.getFromOwner(patient => patient.name, place => place.name);
+    }
+
+    getAssociatedNumber() {
+        return this.getFromOwner(patient => patient.primaryContact, place => place.primaryContact);
+    }
+
+    getFromOwner(patientHandler, placeHandler) {
         const patient = this.getPatient();
         if (patient) {
-            return patient.name;
+            return patientHandler(patient);
         }
         const place = CollectionUtils.getFirstElement(this.place);
         if (place) {
-            return place.name;
+            return placeHandler(place);
         }
         throw new Error('Visit belongs to neither place nor patient');
     }

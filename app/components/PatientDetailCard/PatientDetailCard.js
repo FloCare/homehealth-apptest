@@ -7,6 +7,7 @@ import {styles as componentStyles} from '../common/styles';
 
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
+import RNImmediatePhoneCall from "react-native-immediate-phone-call";
 
 const getVisitsView = function (visitSectionData) {
     if (visitSectionData && visitSectionData.length > 0) {
@@ -105,7 +106,11 @@ const PatientDetailCard = (props) => {
                             position: 'absolute',
                             right: 0
                         }}
-                        onPress={() => Linking.openURL(`tel:${primaryContact}`).catch(err => console.error('An error occurred', err))}
+                        onPress={() => {
+                            if (primaryContact) {
+                                RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
+                            }
+                        }}
                     />
                 </View>
 
