@@ -11,6 +11,20 @@ import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
 class VisitMapScreenController extends Component {
+    static navigatorButtons = {
+        rightButtons: [
+            {
+                icon: require('../../../resources/listView.png'),
+                id: 'list-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                buttonColor: '#fffff'
+            },
+            {
+                id: 'calendar-picker',
+                icon: require('../../../resources/calendar.png'),
+            }
+        ]
+    };
+
     constructor(props) {
         super(props);
         this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
@@ -24,7 +38,15 @@ class VisitMapScreenController extends Component {
         this.onChangeOrder = this.onChangeOrder.bind(this);
         this.getAllPolylines = this.getAllPolylines.bind(this);
 
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+
         this.getAllPolylines();
+    }
+
+    onNavigatorEvent(event) {
+        if (this.props.onNavigatorEvent) {
+            this.props.onNavigatorEvent(event);
+        }
     }
 
     componentWillReceiveProps(nextProps) {

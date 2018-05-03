@@ -5,25 +5,31 @@ import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schem
 import {screenNames} from '../../utils/constants';
 
 class VisitListScreenContainer extends Component {
+    static navigatorButtons = {
+        rightButtons: [
+            {
+                icon: require('../../../resources/mapView.png'),
+                id: 'map-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                buttonColor: '#fffff'
+            },
+            {
+                id: 'calendar-picker',
+                icon: require('../../../resources/calendar.png'),
+            }
+        ]
+    };
+
     constructor(props) {
         super(props);
         this.state = {
             date: props.date,
             // showCalendar: false
         };
-        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
     }
-
-    // onNavigatorEvent(event) {
-    //     if (event.type === 'NavBarButtonPress') {
-    //         if (event.id === 'calendar-picker') {
-    //             this.setState((prevState) => ({showCalendar: !prevState.showCalendar}));
-    //         }
-    //     }
-    // }
 
     componentWillReceiveProps(nextProps) {
         console.log('component received props');
@@ -45,6 +51,12 @@ class VisitListScreenContainer extends Component {
                 tabBarHidden: true
             }
         });
+    }
+
+    onNavigatorEvent(event) {
+        if (this.props.onNavigatorEvent) {
+            this.props.onNavigatorEvent(event);
+        }
     }
 
     onOrderChange(newOrder) {
