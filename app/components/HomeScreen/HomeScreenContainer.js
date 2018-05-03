@@ -22,6 +22,7 @@ class HomeScreenContainer extends Component {
         this.navigateToAddNote = this.navigateToAddNote.bind(this);
         this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
         this.navigateToAddVisit = this.navigateToAddVisit.bind(this);
+        this.navigateToAddVisitFAB = this.navigateToAddVisitFAB.bind(this);
 
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
@@ -128,7 +129,21 @@ class HomeScreenContainer extends Component {
             }
         });
     }
-    
+
+    navigateToAddVisitFAB() {
+        this.props.navigator.push({
+            screen: screenNames.addVisitScreen,
+            title: 'Add Visit',
+            navigatorStyle: {
+                tabBarHidden: true
+            },
+            passProps: {
+                date: this.state.date,
+                onDone: () => { this.onOrderChange(); this.props.navigator.pop(); this.navigateToVisitListScreen(); }
+            }
+        });
+    }
+
     render() {
         const visitResultObject = floDB.objects(Visit.schema.name)
             .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf());
@@ -147,7 +162,7 @@ class HomeScreenContainer extends Component {
                 />
                 <Fab
                     onPressAddNote={this.navigateToAddNote}
-                    onPressAddVisit={this.navigateToAddVisit}
+                    onPressAddVisit={this.navigateToAddVisitFAB}
                     onPressAddPatient={this.navigateToAddPatient}
                 />
             </View>
