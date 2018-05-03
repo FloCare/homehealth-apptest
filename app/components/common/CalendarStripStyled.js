@@ -21,6 +21,7 @@ function CalendarStripStyled(props) {
             dateNameStyle={{fontSize: 12, color: '#cccccc'}}
             onDateSelected={props.onDateSelected}
             selectedDate={props.date}
+            startingDate={props.date}
             styleWeekend={false}
             calendarHeaderFormat='MMMM'
             customDatesStyles={[
