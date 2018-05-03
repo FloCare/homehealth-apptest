@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import update from 'immutability-helper';
+import moment from 'moment/moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
@@ -40,13 +41,16 @@ class PatientDetailScreenContainer extends Component {
     }
 
     onPressAddVisit() {
-        console.log('Add Visit Button is Pressed. Navigate to the add visit screen ...');
-        this.props.navigator.push({
-            //TODO cant really push this screen without passing it the date
-            screen: screenNames.addVisitScreen,
-            navigatorStyle: {
-                tabBarHidden: true
-            }
+        this.props.navigator.showLightBox({
+            screen: screenNames.addVisitsForPatientScreen,
+            style: {
+                backgroundBlur: 'dark',
+                backgroundColor: '#00000070',
+                tapBackgroundToDismiss: true
+            },
+            passProps: {
+                patientId: this.state.patientDetail.patientID
+            },
         });
     }
 

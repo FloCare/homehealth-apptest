@@ -36,6 +36,7 @@ const screenNames = {
     stopList: 'StopList',
 
     addVisitScreen: 'AddVisitScreen',
+    addVisitsForPatientScreen: 'AddVisitsForPatientScreen',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
 };

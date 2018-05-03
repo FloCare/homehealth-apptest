@@ -190,7 +190,13 @@ const PatientDetailCard = (props) => {
 
             <Divider style={styles.dividerStyle} />
 
-
+            <Button
+                containerViewStyle={{marginLeft: 0, marginRight: 0}}
+                buttonStyle={styles.buttonStyle}
+                title='Add Visit'
+                onPress={onPressAddVisit}
+                large
+            />
         </View>
     );
 };
