@@ -39,7 +39,13 @@ class VisitMapScreenController extends Component {
     getInitialViewport(visitOrderList) {
         const coordinates = [];
         for (const visit of visitOrderList) {
-            coordinates.push([visit.getAddress().latitude, visit.getAddress().longitude]);
+            const address = visit.getAddress();
+            if (!address || !address.latitude || !address.latitude) {
+                //TODO what to do in this case?
+                console.log(visit);
+                console.error(`visit:${visit} doesn't have an associated address or address coordinates`);
+            }
+            coordinates.push([address.latitude, address.longitude]);
         }
         return this.getViewPortFromBounds(coordinates);
     }

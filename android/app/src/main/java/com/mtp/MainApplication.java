@@ -3,6 +3,8 @@ package com.mtp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.github.wumke.RNImmediatePhoneCall.RNImmediatePhoneCallPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactNativeHost;
@@ -28,7 +30,9 @@ public class MainApplication extends NavigationApplication {
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
             new RealmReactPackage(),
-            new MapsPackage()
+            new MapsPackage(),
+            new LinearGradientPackage(),
+            new RNImmediatePhoneCallPackage()
     );
   }
 

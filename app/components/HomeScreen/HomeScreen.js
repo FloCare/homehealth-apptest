@@ -64,7 +64,7 @@ function HomeScreen(props) {
         //TODO insert other stuff thats got to be on the home screen too
         <View style={{flex: 1}}>
             <CalendarStripStyled
-                paddingTop={40}
+                paddingTop={20}
                 date={props.date}
                 noRounding={props.remainingVisitsCount === 0}
                 onDateSelected={props.onDateSelected}

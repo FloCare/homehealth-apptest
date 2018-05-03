@@ -1,75 +1,77 @@
 import React from 'react';
-import {View, Dimensions, Image, TouchableHighlight} from 'react-native';
-import {Avatar, Button, Icon, Text} from 'react-native-elements';
+import {View, Dimensions, Image, TouchableHighlight, TouchableWithoutFeedback} from 'react-native';
+import {Text} from 'react-native-elements';
+import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 export function VisitSummary(props) {
     const primaryColor = '#45ceb1';
+    const secondary = '#34da92';
     return (
-        <View
+        <LinearGradient
+            colors={[primaryColor, secondary]}
             style={{
                 flex: 1,
                 alignItems: 'center',
                 backgroundColor: primaryColor,
                 margin: 0,
                 // marginTop: 60,
-                paddingTop: 10,
-                paddingBottom: 30
+                // paddingTop: 10,
+                // paddingBottom: 30
             }}
         >
-            <Text
-                style={{
-                    fontSize: 24,
-                    fontWeight: 'bold',
-                    color: '#ffffff'
-                }}
-            >
-                {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
-            </Text>
-            {/*<Text*/}
-            {/*style={{*/}
-            {/*fontSize: 14,*/}
-            {/*color: '#ffffff'*/}
-            {/*}}*/}
-            {/*>*/}
-            {/*{'Total Remaining Miles: 27'}*/}
-            {/*/!*{`Total Remaining Miles: ${props.remainingMiles}`}*!/*/}
-            {/*</Text>*/}
-            <Text
-                style={{
-                    fontSize: 12,
-                    color: '#ffffff'
-                }}
-            >
-                View visits on
-            </Text>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
-                    alignSelf: 'stretch',
-                    marginLeft: 100,
-                    marginRight: 100
-                }}
-            >
-                <TouchableHighlight onPress={props.navigateToVisitMapScreen} underlayColor={primaryColor}>
-                    <Image
-                        source={require('../../../resources/map.png')}
-                    />
-                </TouchableHighlight>
+            <View style={{flex: 1, justifyContent: 'center'}}>
+                <Text
+                    style={{
+                        fontSize: 24,
+                        fontWeight: 'bold',
+                        color: '#ffffff'
+                    }}
+                >
+                    {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
+                </Text>
+            </View>
+            <View style={{flex: 2}}>
+                <Text
+                    style={{
+                        alignSelf: 'center',
+                        fontSize: 12,
+                        color: '#ffffff'
+                    }}
+                >
+                    View visits on
+                </Text>
+                <View
+                    style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        justifyContent: 'space-around',
+                        // alignSelf: 'stretch',
+                    }}
+                >
+                    <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
+                        {/*// underlayColor={primaryColor}>*/}
+                        <Image
+                            style={{resizeMode: 'contain'}}
+                            source={require('../../../resources/map.png')}
+                        />
+                    </TouchableWithoutFeedback>
 
 
-                <TouchableHighlight onPress={props.navigateToVisitListScreen} underlayColor={primaryColor}>
-                    <Image
-                        source={require('../../../resources/list.png')}
-                    />
-                </TouchableHighlight>
+                    <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
+                        <Image
+                            style={{resizeMode: 'contain'}}
+                            source={require('../../../resources/list.png')}
+                        />
+                    </TouchableWithoutFeedback>
+                </View>
             </View>
             <View
                 style={{
+                    flex: 4,
                     width: Dimensions.get('screen').width,
-                    justifyItems: 'center',
+                    justifyContent: 'center',
                     alignItems: 'center',
                 }}
             >
@@ -82,17 +84,17 @@ export function VisitSummary(props) {
                     Next Visit
                 </Text>
                 {/*prefer to use VisitCard rather than VisitListContainer*/}
+                <SortedVisitListContainer
+                    navigator={props.navigator}
+                    style={{width: Dimensions.get('screen').width * 0.95}}
+                    date={props.date}
+                    singleEntry
+                    scrollEnabled={false}
+                    sortingEnabled={false}
+                    renderWithCallback={VisitCard}
+                    onOrderChange={props.onOrderChange}
+                />
             </View>
-            <SortedVisitListContainer
-                navigator={props.navigator}
-                style={{width: Dimensions.get('screen').width * 0.95}}
-                date={props.date}
-                singleEntry
-                scrollEnabled={false}
-                sortingEnabled={false}
-                renderWithCallback={VisitCard}
-                onOrderChange={props.onOrderChange}
-            />
-        </View>
+        </LinearGradient>
     );
 }
