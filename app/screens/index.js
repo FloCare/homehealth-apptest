@@ -8,7 +8,6 @@ import AddNoteScreenContainer from './AddNoteScreenContainer';
 import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
-import {CalendarPickerButton} from '../components/common/calendarPickerButton';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
 import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
@@ -17,18 +16,18 @@ import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 
 const RegisterScreens = () => {
-    if (floDB.objects(Visit.schema.name).length === 0) {
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-        CreateAndSaveDummies();
-
-        const visitOrder = floDB.objectForPrimaryKey(VisitOrder, moment().utc().startOf('day').valueOf());
-        floDB.write(() => {
-            visitOrder.visitList = floDB.objects(Visit);
-        });
-    }
+    // if (floDB.objects(Visit.schema.name).length === 0) {
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //
+    //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, moment().utc().startOf('day').valueOf());
+    //     floDB.write(() => {
+    //         visitOrder.visitList = floDB.objects(Visit);
+    //     });
+    // }
 
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
     Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);
@@ -38,7 +37,6 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.visitListScreen, () => ScreenWithCalendarComponent(VisitListScreenContainer));
     Navigation.registerComponent(screenNames.visitMapScreen, () => ScreenWithCalendarComponent(VisitMapScreenController));
     Navigation.registerComponent(screenNames.addVisitScreen, () => ScreenWithCalendarComponent(AddVisitsScreenContainer));
-    Navigation.registerComponent('CalendarPickerButton', () => CalendarPickerButton);
     Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
     Navigation.registerComponent(screenNames.stopList, () => StopListScreenContainer);
     Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => AddVisitsForPatientScreen);

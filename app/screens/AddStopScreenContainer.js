@@ -10,6 +10,9 @@ class AddStopScreenContainer extends Component {
     onSubmit() {
         console.log('Navigating away from Stops screen');
         this.props.navigator.pop();
+        if (this.props.onStopAdd) {
+            this.props.onStopAdd();
+        }
     }
 
     render() {

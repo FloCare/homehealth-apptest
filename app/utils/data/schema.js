@@ -93,7 +93,8 @@ Place.schema = {
     properties: {
         placeID: 'string',
         name: 'string',
-        address: 'Address'
+        address: 'Address',
+        visits: {type: 'Visit[]', default: []}
     }
 };
 
@@ -122,11 +123,15 @@ class Visit extends Realm.Object {
     }
 
     getAddress() {
-        //TODO get address for place visit obj
         const patient = this.getPatient();
         if (patient) {
             return patient.address;
         }
+        const place = CollectionUtils.getFirstElement(this.place);
+        if (place) {
+            return place.address;
+        }
+        throw new Error('Visit belongs to neither place nor patient');
     }
 
     getAssociatedName() {
@@ -134,7 +139,11 @@ class Visit extends Realm.Object {
         if (patient) {
             return patient.name;
         }
-        //TODO places
+        const place = CollectionUtils.getFirstElement(this.place);
+        if (place) {
+            return place.name;
+        }
+        throw new Error('Visit belongs to neither place nor patient');
     }
 }
 
@@ -144,6 +153,7 @@ Visit.schema = {
     properties: {
         visitID: 'string',
         episode: {type: 'linkingObjects', objectType: 'Episode', property: 'visits'},       // set automatically
+        place: {type: 'linkingObjects', objectType: 'Place', property: 'visits'},
         midnightEpochOfVisit: 'int',
 
         isDone: {type: 'bool', default: false},
@@ -175,7 +185,6 @@ const floDB = new Realm({
         VisitOrder
     ],
     deleteRealmIfMigrationNeeded: true,
-    inMemory: true
 });
 
 

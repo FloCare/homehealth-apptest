@@ -11,6 +11,14 @@ import {generateUUID} from '../../utils/utils';
 const newStop = 'Create new Stop';
 const newPatient = 'Create new Patient';
 
+const newStopNavigatorArg = {
+    screen: screenNames.addStop,
+    title: 'Add Stop',
+    navigatorStyle: {
+        tabBarHidden: true
+    }
+};
+
 const newPatientNavigatorArg = {
     screen: screenNames.addPatient,
     title: 'Add Patient',
@@ -51,8 +59,8 @@ class AddVisitsScreenContainer extends Component {
             date: props.date,
             selectedItems: Map()
         };
-        this.placeResultObject = floDB.objects(Place.schema.name);
-        this.patientsResultObject = floDB.objects(Patient.schema.name);
+        this.placeResultObject = floDB.objects(Place.schema.name).sorted('name');
+        this.patientsResultObject = floDB.objects(Patient.schema.name).sorted('name');
 
         this.onChangeText = this.onChangeText.bind(this);
         this.onItemToggle = this.onItemToggle.bind(this);
@@ -79,7 +87,7 @@ class AddVisitsScreenContainer extends Component {
     onNavigatorEvent(event) {
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'new-stop') {
-                //TODO go to add new stop screen
+                this.props.navigator.push(newStopNavigatorArg);
             } else if (event.id === 'new-patient') {
                 this.props.navigator.push(newPatientNavigatorArg);
             } else if (event.id === 'ios-plus') {
@@ -94,7 +102,7 @@ class AddVisitsScreenContainer extends Component {
                             this.props.navigator.push(newPatientNavigatorArg);
                             break;
                         case 1:
-                            //TODO go to add new stop
+                            this.props.navigator.push(newStopNavigatorArg);
                             break;
                         default:
                             break;
@@ -162,8 +170,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     getFlatAddress(addressObject) {
-        //TODO create address from object
-        return 'Placeholder Address, PlaceHoldington Street';
+        return addressObject.streetAddress;
     }
 
     getFlatPatientItem(patient) {
@@ -185,7 +192,7 @@ class AddVisitsScreenContainer extends Component {
             type: visitType.place,
             id: place.placeID,
             name: place.name,
-            address: this.addressByID.get(place.addressID),
+            address: this.getFlatAddress(place.address),
             isSelected: this.state.selectedItems.has(key)
         };
     }
@@ -218,12 +225,16 @@ class AddVisitsScreenContainer extends Component {
                 if (selectedItem.type === visitType.patient) {
                     //TODO what happens when patients have multiple cases
                     const patient = floDB.objectForPrimaryKey(Patient, selectedItem.id);
-                    //TODO add correct date and to correct episode
-                    patient.episodes[0].visits.push({visitID: generateUUID(), midnightEpochOfVisit: this.state.date.valueOf()});
+                    patient.episodes[0].visits.push({
+                        visitID: generateUUID(),
+                        midnightEpochOfVisit: this.state.date.valueOf()
+                    });
                 } else if (selectedItem.type === visitType.place) {
                     const place = floDB.objectForPrimaryKey(Place, selectedItem.id);
-                    //TODO insert visit correctly
-                    // place.visits.push({visitID: generateUUID(), midnightEpochOfVisit: 0});
+                    place.visits.push({
+                        visitID: generateUUID(),
+                        midnightEpochOfVisit: this.state.date.valueOf()
+                    });
                 }
             }
         });
