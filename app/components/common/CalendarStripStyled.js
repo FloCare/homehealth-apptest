@@ -19,6 +19,8 @@ function CalendarStripStyled(props) {
             calendarHeaderStyle={{fontSize: 24, alignSelf: 'flex-start'}}
             datesStripStyle={{alignItems: 'flex-end'}}
             dateNumberStyle={{fontSize: 18, fontWeight: undefined}}
+            iconContainer={{flex: 1, opacity: 0.2}}
+            calendarDatesStyle={{flex: 9}}
             dateNameStyle={{fontSize: 12, color: '#cccccc'}}
             onDateSelected={props.onDateSelected}
             selectedDate={props.date}
