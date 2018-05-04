@@ -128,21 +128,22 @@ class SortedVisitListContainer extends Component {
 
 
     tweakVisitListOrder(visitList) {
-        let tweakedVisitList = visitList;
+        //TODO make this process cleaner
+        let tweakedVisitList = [];
         console.log('tweaks');
         if (this.props.hideIncompleteAddress) {
-            for (let i = 0; i < tweakedVisitList.length; i++) {
-                if (!visitList[i].getAddress().coordinates) {
+            for (let i = 0; i < visitList.length; i++) {
+                if (visitList[i].getAddress().coordinates) {
                     //TODO review this
-                    tweakedVisitList = Array.from(visitList).splice(i, 1);
+                    tweakedVisitList.push(visitList[i]);
                     break;
                 }
             }
-        }
+        } else tweakedVisitList.push(...visitList);
         if (this.props.isCompletedHidden) {
             console.log('here');
             for (let i = 0; i < tweakedVisitList.length; i++) {
-                if (visitList[i].isDone) {
+                if (tweakedVisitList[i].isDone) {
                     tweakedVisitList = tweakedVisitList.slice(0, i);
                     break;
                 }
