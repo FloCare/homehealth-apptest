@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Linking, ScrollView, Image, TouchableOpacity} from 'react-native';
+import {View, Linking, ScrollView, Image} from 'react-native';
 import {Text, Button, Divider, Icon} from 'react-native-elements';
 import moment from 'moment';
 import ViewMoreText from 'react-native-view-more-text';
