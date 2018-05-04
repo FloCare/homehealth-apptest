@@ -80,6 +80,10 @@ class AddVisitsScreenContainer extends Component {
         floDB.addListener('change', this.handleListUpdate);
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({date: nextProps.date});
+    }
+
     handleListUpdate() {
         this.forceUpdate();
     }
@@ -278,6 +282,7 @@ class AddVisitsScreenContainer extends Component {
             <AddVisitsScreen
                 onChangeText={this.onChangeText}
                 onTagPress={this.onTagPress}
+                onPressAddPatient={(() => this.props.navigator.push(newPatientNavigatorArg))}
                 // onItemToggle={this.onItemToggle}
                 selectedItems={Array.from(this.state.selectedItems.values())}
                 //TODO is this costing us in terms of efficiency
