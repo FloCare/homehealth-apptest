@@ -20,7 +20,7 @@ class VisitMapScreenController extends Component {
             },
             {
                 id: 'calendar-picker',
-                icon: require('../../../resources/calendar.png'),
+                icon: require('../../../resources/calenderSelected.png'),
             }
         ]
     };

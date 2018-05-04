@@ -25,12 +25,13 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 console.log('state changed');
                 if (event.type === 'NavBarButtonPress') {
                     if (event.id === 'calendar-picker') {
+                        this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown});
                         this.props.navigator.setButtons({
                             ...BaseScreenComponent.navigatorButtons,
                             rightButtons: BaseScreenComponent.navigatorButtons.rightButtons.map(
                                                 button => {
                                                     if (!(button.id === 'calendar-picker')) return button;
-                                                    return {...button, buttonColor: this.state.shown === false ? 'rgba(255,255,255,0.9)' : 'white'};
+                                                    return {...button, buttonColor: this.state.shown === false ? 'rgba(255,255,255,0.6)' : 'white'};
                                                 })
                         });
                         this.setState((prevState) => ({shown: !prevState.shown}));
@@ -66,6 +67,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                         {RenderIf(
                             <View style={{flex: 1}}>
                                 <CalendarStripStyled
+                                    style={{elevation: 10}}
                                     padding={10}
                                     date={this.state.date}
                                     noRounding
@@ -73,7 +75,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                                 />
                             </View>,
                             this.state.shown)}
-                        <View style={{flex: 4}}>
+                        <View style={{flex: 6}}>
                             <BaseScreenComponent
                                 {...this.props}
                                 date={this.state.date}
