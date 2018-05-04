@@ -28,6 +28,7 @@
     "react-native-sectioned-multi-select": "^0.4.5",
     "react-native-sortable-list": "0.0.22",
     "react-native-vector-icons": "^4.6.0",
+    "react-native-view-more-text": "^1.4.4",
     "realm": "^2.3.4",
     "tcomb-form-native": "^0.6.11",
     "uuid": "^3.2.1"

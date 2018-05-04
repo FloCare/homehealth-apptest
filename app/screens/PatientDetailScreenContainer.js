@@ -58,7 +58,7 @@ class PatientDetailScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.addNote,
             animated: true,
-            animationType: 'fade',
+            animationType: 'slide-horizontal',
             title: 'Add Notes',
             passProps: {
                 patientId: this.state.patientDetail.patientID,
