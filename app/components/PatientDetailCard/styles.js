@@ -6,16 +6,16 @@ const styles = {
         height: 40,
         borderRadius: 21,
         backgroundColor: 'transparent',
-        shadowColor: "rgba(0, 0, 0, 0.1)",
+        shadowColor: 'rgba(0, 0, 0, 0.1)',
         shadowOffset: {
             width: 0,
             height: 0
         },
         shadowRadius: 12,
         shadowOpacity: 1,
-        borderStyle: "solid",
+        borderStyle: 'solid',
         borderWidth: 1,
-        borderColor: "#45ceb1"
+        borderColor: '#45ceb1'
     },
     containerStyle: {
         margin: 14,
@@ -59,6 +59,7 @@ const styles = {
     },
     noteStyle: {
         paddingRight: 20,
+        paddingBottom: 10,
         fontSize: 12,
         flex: 1,
         lineHeight: 18,

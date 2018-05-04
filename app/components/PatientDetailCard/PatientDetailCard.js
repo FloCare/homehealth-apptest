@@ -2,12 +2,25 @@ import React from 'react';
 import {View, Linking, ScrollView, Image, TouchableOpacity} from 'react-native';
 import {Text, Button, Divider, Icon} from 'react-native-elements';
 import moment from 'moment';
+import ViewMoreText from 'react-native-view-more-text';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
 
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import RNImmediatePhoneCall from "react-native-immediate-phone-call";
+
+const renderViewMore = (e, onPressAddNotes) => {
+    return (
+        <Text style={{color: '#45ceb1'}} onPress={onPressAddNotes}>EDIT NOTES</Text>
+    );
+};
+
+const renderViewLess = (onPress) => {
+    return (
+        <Text style={{color: '#45ceb1'}} onPress={onPress}>View less</Text>
+    );
+};
 
 const getVisitsView = function (visitSectionData) {
     if (visitSectionData && visitSectionData.length > 0) {
@@ -83,7 +96,7 @@ const PatientDetailCard = (props) => {
             />
             }
 
-            <ScrollView style={{flex: 8}}>
+            <ScrollView>
                 <View style={styles.containerStyle}>
                     <Image source={require('../../../resources/elliotLugo.png')} />
                     <View style={{marginLeft: 14}}>
@@ -143,7 +156,9 @@ const PatientDetailCard = (props) => {
                 </View>
                 }
 
+                {emergencyContact !== '' && emergencyContact &&
                 <Divider style={styles.dividerStyle} />
+                }
 
                 <View style={[styles.containerStyle, {opacity: 0.3}]}>
                     <Image source={require('../../../resources/diagnosis.png')} />
@@ -169,21 +184,24 @@ const PatientDetailCard = (props) => {
 
                 <Divider style={styles.dividerStyle} />
 
-                <TouchableOpacity onPress={onPressAddNotes}>
-                    <View style={styles.containerStyle}>
-                        <Image
-                            source={require('../../../resources/notes.png')}
-                        />
-                        <View style={{marginLeft: 14}}>
-                            <Text style={styles.headerStyle}>
-                                Notes
-                            </Text>
-                            <Text style={styles.noteStyle}>
-                                {notes || 'You have not added any note for this patient.'}
-                            </Text>
-                        </View>
+                <View style={styles.containerStyle}>
+                    <Image
+                        source={require('../../../resources/notes.png')}
+                    />
+                    <View style={{marginLeft: 14, marginRight: 16}}>
+                        <Text style={styles.headerStyle}>
+                            Notes
+                        </Text>
+                        <ViewMoreText
+                            textStyle={styles.noteStyle}
+                            numberOfLines={2}
+                            renderViewMore={(e) => renderViewMore(e, onPressAddNotes)}
+                            renderViewLess={renderViewLess}
+                        >
+                            {notes || 'You have not added any note for this patient.'}
+                        </ViewMoreText>
                     </View>
-                </TouchableOpacity>
+                </View>
 
                 <Divider style={styles.dividerStyle} />
             </ScrollView>
