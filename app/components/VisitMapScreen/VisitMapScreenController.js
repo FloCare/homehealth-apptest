@@ -28,7 +28,7 @@ class VisitMapScreenController extends Component {
     constructor(props) {
         super(props);
         this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
-        const visitOrderList = this.getUpdateOrderedVisitList(this.visitOrderObject.visitList);
+        const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(this.visitOrderObject.visitList);
         this.state = {
             date: props.date,
             visitOrderList,
@@ -152,17 +152,16 @@ class VisitMapScreenController extends Component {
         }
     }
 
-    getUpdateOrderedVisitList(visitList) {
+    static getUpdateOrderedVisitList(visitList) {
+        const updatedList = [];
         for (let i = 0; i < visitList.length; i++) {
-            if (visitList[i].isDone) {
-                return visitList.slice(0, i);
-            }
+            if (visitList[i].getAddress().coordinates && !visitList[i].isDone) updatedList.push(visitList[i]);
         }
-        return visitList;
+        return updatedList;
     }
 
     onChangeOrder(nextOrder) {
-        this.setState({visitOrderList: this.getUpdateOrderedVisitList(nextOrder)});
+        this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder)});
         this.getAllPolylines();
         this.props.onOrderChange(nextOrder);
     }
@@ -194,6 +193,7 @@ function ControlPanel(props) {
         <View style={{backgroundColor: '#45ceb1', paddingTop: 10, paddingBottom: 10}}>
             <SortedVisitListContainer
                 date={props.date}
+                hideIncompleteAddress
                 renderWithCallback={VisitRow}
                 isCompletedHidden
                 onOrderChange={props.onChangeOrder}

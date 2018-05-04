@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import {View, Alert} from 'react-native';
 import moment from 'moment';
-import {floDB, Visit} from '../../utils/data/schema';
+import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames} from '../../utils/constants';
 import Fab from '../common/Fab';
 import {addListener} from '../../utils/utils';
+import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -47,7 +48,7 @@ class HomeScreenContainer extends Component {
             }
         }
     }
-    
+
     onDateSelected(date) {
         if (!date.isSame(this.state.date, 'day')) {
             this.setState({date});
@@ -82,17 +83,25 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToVisitMapScreen() {
-        this.props.navigator.push({
-            screen: screenNames.visitMapScreen,
-            passProps: {
-                date: this.state.date,
-                onOrderChange: this.onOrderChange.bind(this),
-                onNavigationEvent: this.onNavigatorEvent
-            },
-            navigatorStyle: {
-                tabBarHidden: true
+        const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
+        if (visitOrderObject.visitList) {
+            const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList);
+            if (visitOrderList.length > 0) {
+                this.props.navigator.push({
+                    screen: screenNames.visitMapScreen,
+                    passProps: {
+                        date: this.state.date,
+                        onOrderChange: this.onOrderChange.bind(this),
+                        onNavigationEvent: this.onNavigatorEvent
+                    },
+                    navigatorStyle: {
+                        tabBarHidden: true
+                    }
+                });
+            } else {
+                //TODO display an error message here
             }
-        });
+        }
     }
 
     navigateToAddNote() {
@@ -141,7 +150,11 @@ class HomeScreenContainer extends Component {
             },
             passProps: {
                 date: this.state.date,
-                onDone: () => { this.onOrderChange(); this.props.navigator.pop(); this.navigateToVisitListScreen(); }
+                onDone: () => {
+                    this.onOrderChange();
+                    this.props.navigator.pop();
+                    this.navigateToVisitListScreen();
+                }
             }
         });
     }
