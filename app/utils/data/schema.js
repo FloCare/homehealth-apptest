@@ -26,6 +26,7 @@ Patient.schema = {
 // Address can belong to a 'Patient' or a 'Place'
 class Address extends Realm.Object {
     get coordinates() {
+        if (!(this.latitude && this.longitude)) { return null; }
         return {
             latitude: this.latitude,
             longitude: this.longitude

@@ -25,6 +25,7 @@ function VisitCard({isDoneToggle, navigator}) {
     return (({data}) => {
         const visit = data;
         const phoneNumber = visit.getAssociatedNumber();
+        const coordinates = visit.getAddress().coordinates;
 
         const onSelectionToggle = () => {
             if (isDoneToggle) {
@@ -60,7 +61,6 @@ function VisitCard({isDoneToggle, navigator}) {
                             onPress={() => {
                                 //TODO not working on iOS
                                 if (phoneNumber) {
-                                    console.warn('calling');
                                     RNImmediatePhoneCall.immediatePhoneCall(visit.getAssociatedNumber(phoneNumber));
                                 }
                             }}
@@ -78,10 +78,10 @@ function VisitCard({isDoneToggle, navigator}) {
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
-                                Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${visit.getAddress().getCommaSeperatedCoordinates()}`).catch(err => console.error('An error occurred', err));
+                                if (coordinates !== null) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${visit.getAddress().getCommaSeperatedCoordinates()}`).catch(err => console.error('An error occurred', err)); }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: coordinates ? 1 : 0.5}}>
                                 <Image source={require('../../../resources/navigate.png')} />
                                 <Text
                                     style={{fontSize: 14, color: '#222222'}}

@@ -9,7 +9,11 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
             static navigatorButtons = BaseScreenComponent.navigatorButtons;
             constructor(props) {
                 super(props);
-                this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+                this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
+                this.getNavigatorButtons = this.getNavigatorButtons.bind(this);
+
+                this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+                this.props.navigator.setTitle({title: props.date.format('MMMM Do')});
 
                 this.state = {
                     date: props.date,
@@ -25,14 +29,8 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 console.log('state changed');
                 if (event.type === 'NavBarButtonPress') {
                     if (event.id === 'calendar-picker') {
-                        this.props.navigator.setButtons({
-                            ...BaseScreenComponent.navigatorButtons,
-                            rightButtons: BaseScreenComponent.navigatorButtons.rightButtons.map(
-                                                button => {
-                                                    if (!(button.id === 'calendar-picker')) return button;
-                                                    return {...button, buttonColor: this.state.shown === false ? 'rgba(255,255,255,0.9)' : 'white'};
-                                                })
-                        });
+                        this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown});
+                        this.props.navigator.setButtons(this.getNavigatorButtons());
                         this.setState((prevState) => ({shown: !prevState.shown}));
                         console.log('state changed');
                         // Animated.timing(
@@ -50,12 +48,26 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 }
             }
 
+            getNavigatorButtons() {
+                return {
+                    ...BaseScreenComponent.navigatorButtons,
+                    rightButtons: BaseScreenComponent.navigatorButtons.rightButtons.map(
+                        button => {
+                            if (!(button.id === 'calendar-picker')) return button;
+                            return {...button, buttonColor: this.state.shown === false ? 'rgba(255,255,255,0.6)' : 'white'};
+                        })
+                };
+            }
+
             broadcastDeepLinkForDateChange(date) {
                 this.props.navigator.handleDeepLink({
                     link: 'date',
                     payload: date
                 });
                 this.setState({shown: false, date});
+
+                this.props.navigator.setButtons(this.getNavigatorButtons());
+                this.props.navigator.setTitle({title: date.format('MMMM Do')});
             }
 
             render() {
@@ -66,6 +78,8 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                         {RenderIf(
                             <View style={{flex: 1}}>
                                 <CalendarStripStyled
+                                    showMonth={false}
+                                    style={{elevation: 10}}
                                     padding={10}
                                     date={this.state.date}
                                     noRounding
@@ -73,11 +87,11 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                                 />
                             </View>,
                             this.state.shown)}
-                        <View style={{flex: 4}}>
+                        <View style={{flex: 8}}>
                             <BaseScreenComponent
                                 {...this.props}
                                 date={this.state.date}
-                                onNavigatorEvent={this.onNavigatorEvent.bind(this)}
+                                onNavigatorEvent={this.onNavigatorEvent}
                             />
                         </View>
                     </View>
