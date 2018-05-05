@@ -14,6 +14,7 @@ function VisitListScreen(props) {
                 style={{flex: 1, marginTop: 10}}
                 date={props.date}
                 renderWithCallback={VisitCard}
+                tapForDetails
                 onOrderChange={props.onOrderChange}
             />
             <Button
