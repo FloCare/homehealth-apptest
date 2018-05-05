@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
-import Polyline from '@mapbox/polyline';
-import geoJsonBounds from 'geojson-bounds';
+import * as MapUtils from '../../utils/MapUtils';
 import {VisitRow} from './VisitRow';
 import {floDB, VisitOrder} from '../../utils/data/schema';
 import {MapMarker} from '../common/PatientMap/MapMarker';
@@ -69,7 +68,7 @@ class VisitMapScreenController extends Component {
             }
             coordinates.push([address.latitude, address.longitude]);
         }
-        return this.getViewPortFromBounds(coordinates);
+        return MapUtils.getViewPortFromBounds(coordinates);
     }
 
     async getAllPolylines() {
@@ -83,7 +82,7 @@ class VisitMapScreenController extends Component {
         const visitOrderList = this.state.visitOrderList;
         for (let i = 0; i < visitOrderList.length - 1; i++) {
             try {
-                const geoDataObject = await this.getProcessedGeoDataBetweenTwoPoints(visitOrderList[i].getAddress().coordinates,
+                const geoDataObject = await MapUtils.getProcessedGeoDataBetweenTwoPoints(visitOrderList[i].getAddress().coordinates,
                     visitOrderList[i + 1].getAddress().coordinates);
 
                 newPolylines.push(geoDataObject.polyline);
@@ -96,59 +95,7 @@ class VisitMapScreenController extends Component {
             }
         }
         if (noErrorFlag) {
-            this.setState({polylines: newPolylines, viewport: this.getViewPortFromBounds(boundsCoordinates)});
-        }
-    }
-
-    getViewPortFromBounds(boundsCoordinates) {
-        console.log(boundsCoordinates);
-        const multipoint = {
-            type: 'MultiPoint',
-            coordinates: boundsCoordinates
-        };
-
-        const [west, south, east, north] = geoJsonBounds.extent(multipoint);
-        const viewport = {};
-
-        //TODO wut?
-        viewport.longitude = (south + north) / 2;
-        viewport.latitude = (east + west) / 2;
-        viewport.longitudeDelta = (east - west) * 1.5;
-        viewport.latitudeDelta = (north - south) * 1.5;
-
-        return viewport;
-    }
-
-    async getDirectionsDataBetweenPoints(startLoc, destinationLoc) {
-        try {
-            const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc.latitude},${startLoc.longitude}&destination=${destinationLoc.latitude},${destinationLoc.longitude}`);
-            const respJson = await resp.json();
-            return respJson;
-        } catch (error) {
-            console.log('directions api call threw error');
-            console.log(error);
-            throw error;
-        }
-    }
-
-    extractInformationFromDirectionApiResponse(respJson) {
-        const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
-        const geoData = {};
-        geoData.polyline = points.map((point) => ({
-            latitude: point[0],
-            longitude: point[1]
-        }));
-        geoData.bounds = respJson.routes[0].bounds;
-        return geoData;
-    }
-
-    async getProcessedGeoDataBetweenTwoPoints(startLoc, destinationLoc) {
-        try {
-            const respJson = await this.getDirectionsDataBetweenPoints(startLoc, destinationLoc);
-            return this.extractInformationFromDirectionApiResponse(respJson);
-        } catch (error) {
-            console.log('error log: getProcessedGeoDataBetweenTwoPoints');
-            throw error;
+            this.setState({polylines: newPolylines, viewport: MapUtils.getViewPortFromBounds(boundsCoordinates)});
         }
     }
 
