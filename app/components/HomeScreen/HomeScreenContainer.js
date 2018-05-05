@@ -58,7 +58,7 @@ class HomeScreenContainer extends Component {
 
     onOrderChange() {
         this.forceUpdate();
-        console.log('was called');
+        console.log('Home screen force update');
     }
 
     onPatientAdded() {
