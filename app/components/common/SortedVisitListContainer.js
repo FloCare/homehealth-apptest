@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
+import {screenNames} from '../../utils/constants';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
 class SortedVisitListContainer extends Component {
@@ -220,12 +221,28 @@ class SortedVisitListContainer extends Component {
         return this.props.renderWithCallback({isDoneToggle: this.isDoneToggle.bind(this), navigator: this.props.navigator});
     }
 
+    onPressRow(visitID) {
+        console.log(visitID);
+        if (this.props.tapForDetails) {
+            const visit = floDB.objectForPrimaryKey(Visit, visitID);
+            if (visit.getPatient()) {
+                this.props.navigator.push({
+                    screen: screenNames.patientDetails,
+                    passProps: {
+                        patientId: visit.getPatient().patientID
+                    }
+                });
+            }
+        }
+    }
+
     render() {
         console.log(`sortedVisitList container rendered, length ${this.state.orderedVisitList.length}`);
         return (
             <SortableList
                 style={this.props.style}
                 data={this.state.orderedVisitList}
+                onPressRow={this.onPressRow.bind(this)}
                 // data={arrayToObjectByKey(this.state.orderedVisitList, 'visitID')}
                 renderRow={this.state.renderWithCallback}
                 scrollEnabled={this.props.scrollEnabled}

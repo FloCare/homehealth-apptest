@@ -92,6 +92,7 @@ export function VisitSummary(props) {
                     scrollEnabled={false}
                     sortingEnabled={false}
                     renderWithCallback={VisitCard}
+                    tapForDetails
                     onOrderChange={props.onOrderChange}
                 />
             </View>
