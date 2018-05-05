@@ -136,7 +136,6 @@ class SortedVisitListContainer extends Component {
                 if (visitList[i].getAddress().coordinates) {
                     //TODO review this
                     tweakedVisitList.push(visitList[i]);
-                    break;
                 }
             }
         } else tweakedVisitList.push(...visitList);
