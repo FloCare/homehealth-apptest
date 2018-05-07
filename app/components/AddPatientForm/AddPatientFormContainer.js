@@ -6,6 +6,7 @@ import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
 import {parsePhoneNumber} from '../../utils/lib';
+import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -64,49 +65,10 @@ class AddPatientFormContainer extends Component {
 
     onAddressSelect(data, details) {
         // Todo: Handle OFFLINE flow
+        const resp = ParseGooglePlacesAPIResponse(data, details);
+        const {streetAddress, city, stateName, zip, country, lat, long} = resp;
 
-        console.log('details:', details);
-
-        const address = details.address_components;
-        let zip = null;
-        let city = null;
-        let state = null;
-        let country = null;
-        let lat = null;
-        let long = null;
-        // Todo: Build streetAddress from address components
-        const streetAddress = details.formatted_address;
-        const geometry = details.geometry;
-
-        address.forEach((component) => {
-            const types = component.types;
-            // Todo: Handle edge cases for city
-            if (types.indexOf('locality') > -1) {
-                city = component.long_name;
-            }
-
-            if (types.indexOf('administrative_area_level_1') > -1) {
-                state = component.short_name;
-            }
-
-            if (types.indexOf('postal_code') > -1) {
-                zip = component.long_name;
-            }
-
-            if (types.indexOf('country') > -1) {
-                country = component.long_name;
-            }
-        });
-
-        if (geometry) {
-            const location = geometry.location;
-            if (location) {
-                lat = location.lat;
-                long = location.lng;
-            }
-        }
-
-        const value = Object.assign({}, this.state.value, {streetAddress, city, state, zip, country, lat, long});
+        const value = Object.assign({}, this.state.value, {streetAddress, city, state: stateName, zip, country, lat, long});
         this.setState({value});
     }
 
