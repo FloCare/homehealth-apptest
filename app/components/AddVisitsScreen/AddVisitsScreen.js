@@ -24,7 +24,7 @@ import EmptyStateButton from '../common/EmptyStateButton';
 // }
 
 function getComponentToDisplayBasedOnProps(props) {
-    if (props.listItems.length === 0) {
+    if (props.isZeroState) {
         return (
             <View
                 style={{
@@ -89,6 +89,11 @@ function getComponentToDisplayBasedOnProps(props) {
 
     return (
         <View style={{flex: 1}}>
+            <SearchBar
+                lightTheme
+                placeholder='search patients or stops'
+                onChangeText={props.onChangeText}
+            />
             {this.getTags()}
             <FlatList
                 data={props.listItems}
@@ -102,11 +107,6 @@ function AddVisitsScreen(props) {
     //TODO theres inconsistencies in whether the button lable is in caps or not
     return (
         <View style={{flex: 1}}>
-            <SearchBar
-                lightTheme
-                placeholder='search patients or stops'
-                onChangeText={props.onChangeText}
-            />
             {getComponentToDisplayBasedOnProps(props)}
             <Button
                 large

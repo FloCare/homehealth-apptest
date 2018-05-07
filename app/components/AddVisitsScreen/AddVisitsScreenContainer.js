@@ -283,6 +283,7 @@ class AddVisitsScreenContainer extends Component {
     render() {
         return (
             <AddVisitsScreen
+                isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
                 onTagPress={this.onTagPress}
                 onPressAddPatient={(() => this.props.navigator.push(newPatientNavigatorArg))}
