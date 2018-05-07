@@ -70,8 +70,7 @@ class VisitListScreenContainer extends Component {
 
     render() {
         const obj = {}; obj[this.state.date.dateString] = {selected: true, selectedColor: 'blue'};
-        console.log(this.props.onOrderChange);
-        console.log('order c hange fn');
+        console.log('visitListScreenContainer rerendering');
         return (
             <VisitListScreen
                 navigator={this.props.navigator}

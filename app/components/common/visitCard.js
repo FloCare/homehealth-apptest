@@ -23,6 +23,7 @@ function VisitCard({isDoneToggle, navigator}) {
     // render() {
     //     console.log(`card render ${this.props.patientName}called at ${Date.now()}`);
     return (({data}) => {
+        console.log('- - - - - - - - - - - - - - ')
         const visit = data;
         const phoneNumber = visit.getAssociatedNumber();
         const coordinates = visit.getAddress().coordinates;

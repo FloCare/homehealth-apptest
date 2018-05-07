@@ -63,7 +63,7 @@ class SortedVisitListContainer extends Component {
 
     componentWillReceiveProps(nextProps) {
         //TODO avoid this many rerenders
-        // console.log('component received props bruv');
+        console.log('SortedVisitListHasReceivedProps');
         const nextState = this.getStateFromDate(nextProps.date);
         // const currenctOrderedVisitList = this.state.orderedVisitList;
         // console.log(`${nextState.orderedVisitList.length},${currenctOrderedVisitList.length}`);
@@ -90,7 +90,7 @@ class SortedVisitListContainer extends Component {
     }
 
     updateNewVisitOrderToDb(order, valid) {
-        console.log('update to db');
+        console.log('new visit order updated to DB');
         // if (valid) {
         //     this.orderIndexCache = this.orderIndexMovingCache;
         // }
@@ -115,34 +115,34 @@ class SortedVisitListContainer extends Component {
             const newOrderedVisitList = this.orderIndexMovingCache.map((index) => this.state.orderedVisitList[index]);
             // console.log('new list:')
             // console.log(newOrderedVisitList);
-            if (SortedVisitListContainer.performValidityCheck(newOrderedVisitList)) {
-                this.updateNewVisitOrderToDb(newOrderedVisitList, true);
-            } else {
-                //TODO ensure rendering of old material, not working right now
-                this.updateNewVisitOrderToDb(Array.from(this.state.orderedVisitList), false);
-                console.log('failed validity check');
-            }
+            this.updateNewVisitOrderToDb(newOrderedVisitList, true);
+            // if (SortedVisitListContainer.performValidityCheck(newOrderedVisitList)) {
+            //     this.updateNewVisitOrderToDb(newOrderedVisitList, true);
+            // } else {
+            //     //TODO ensure rendering of old material, not working right now
+            //     this.updateNewVisitOrderToDb(Array.from(this.state.orderedVisitList), false);
+            //     console.log('failed validity check');
+            // }
         }
         this.orderIndexMovingCache = undefined;
     }
 
 
     tweakVisitListOrder(visitList) {
-        let tweakedVisitList = visitList;
-        console.log('tweaks');
+        //TODO make this process cleaner
+        let tweakedVisitList = [];
         if (this.props.hideIncompleteAddress) {
-            for (let i = 0; i < tweakedVisitList.length; i++) {
-                if (!visitList[i].getAddress().coordinates) {
+            for (let i = 0; i < visitList.length; i++) {
+                if (visitList[i].getAddress().coordinates) {
                     //TODO review this
-                    tweakedVisitList = Array.from(visitList).splice(i, 1);
-                    break;
+                    tweakedVisitList.push(visitList[i]);
                 }
             }
-        }
+        } else tweakedVisitList.push(...visitList);
         if (this.props.isCompletedHidden) {
             console.log('here');
             for (let i = 0; i < tweakedVisitList.length; i++) {
-                if (visitList[i].isDone) {
+                if (tweakedVisitList[i].isDone) {
                     tweakedVisitList = tweakedVisitList.slice(0, i);
                     break;
                 }
@@ -158,7 +158,7 @@ class SortedVisitListContainer extends Component {
     }
 
     markVisitDone(visit) {
-        console.log(`${visit.visitID} was changed`);
+        console.log(`${visit.visitID} was marked done`);
         const newOrderedVisitList = [];
         const currenctOrderedList = this.state.orderedVisitListObject.visitList;
 
@@ -178,25 +178,25 @@ class SortedVisitListContainer extends Component {
     }
 
     markVisitUndone(visit) {
-        console.log(`${visit.visitID} was changed`);
+        console.log(`${visit.visitID} was marked undone`);
         const newOrderedVisitList = [];
-        const currenctOrderedList = this.state.orderedVisitList;
+        const currentOrderedList = this.state.orderedVisitList;
 
         let i;
-        for (i = 0; i < currenctOrderedList.length; i++) {
+        for (i = 0; i < currentOrderedList.length; i++) {
             if (visit.isDone) {
-                newOrderedVisitList.push(...currenctOrderedList.slice(0, i));
+                newOrderedVisitList.push(...currentOrderedList.slice(0, i));
                 newOrderedVisitList.push(visit);
                 break;
             }
         }
 
-        if (currenctOrderedList.length !== i + 1) {
-            for (let j = i; j < currenctOrderedList.length; j++) {
-                if (visit.visitID === currenctOrderedList[j].visitID) {
-                    newOrderedVisitList.push(...currenctOrderedList.slice(i, j));
-                    if (currenctOrderedList.length !== j + 1) {
-                        newOrderedVisitList.push(...currenctOrderedList.slice(j + 1, currenctOrderedList.length));
+        if (currentOrderedList.length !== i + 1) {
+            for (let j = i; j < currentOrderedList.length; j++) {
+                if (visit.visitID === currentOrderedList[j].visitID) {
+                    newOrderedVisitList.push(...currentOrderedList.slice(i, j));
+                    if (currentOrderedList.length !== j + 1) {
+                        newOrderedVisitList.push(...currentOrderedList.slice(j + 1, currentOrderedList.length));
                     }
                 }
             }
@@ -209,8 +209,6 @@ class SortedVisitListContainer extends Component {
 
     isDoneToggle(visit) {
         console.log(`${visit.visitID} was changed`);
-        // console.log(this);
-        // console.log(this.state);
         if (!visit.isDone) {
             this.markVisitDone(visit);
         } else {
@@ -228,6 +226,7 @@ class SortedVisitListContainer extends Component {
             <SortableList
                 style={this.props.style}
                 data={this.state.orderedVisitList}
+                // data={arrayToObjectByKey(this.state.orderedVisitList, 'visitID')}
                 renderRow={this.state.renderWithCallback}
                 scrollEnabled={this.props.scrollEnabled}
                 sortingEnabled={this.props.sortingEnabled}

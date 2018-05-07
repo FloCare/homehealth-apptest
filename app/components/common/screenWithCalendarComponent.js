@@ -26,13 +26,13 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
 
             //TODO unpredictable
             onNavigatorEvent(event) {
-                console.log('state changed');
+                console.log('Navigator Event received by ScreenWithCalendarComponent');
                 if (event.type === 'NavBarButtonPress') {
                     if (event.id === 'calendar-picker') {
                         this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown});
                         this.props.navigator.setButtons(this.getNavigatorButtons());
                         this.setState((prevState) => ({shown: !prevState.shown}));
-                        console.log('state changed');
+                        console.log('Date change triggered by calendar-picker');
                         // Animated.timing(
                         //     this.state.calendarStripHeight,
                         //     {

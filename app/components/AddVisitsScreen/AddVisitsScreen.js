@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, FlatList} from 'react-native';
-import {SearchBar, ListItem, Button, Text} from 'react-native-elements';
+import {SearchBar, Button, Text} from 'react-native-elements';
 import {Tag} from '../common/tag';
-import {CustomButton} from '../common/CustomButton';
+import EmptyStateButton from '../common/EmptyStateButton';
 
 //TODO improve efficiency
 //TODO mark the places already selected for visit as such
@@ -26,14 +26,36 @@ import {CustomButton} from '../common/CustomButton';
 function getComponentToDisplayBasedOnProps(props) {
     if (props.listItems.length === 0) {
         return (
-            <View style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
-                <Text style={{textAlign: 'center'}}>
-                    Please use the Add button above to add new patients
+            <View
+                style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Text
+                    style={{
+                        fontWeight: '300',
+                        fontSize: 20
+                    }}
+                >No Patients</Text>
+
+                <Text
+                    style={{
+                        textAlign: 'center',
+                        padding: 0,
+                        margin: 20,
+                        marginTop: 5,
+                    }}
+                >
+                    When you add patients, you'll see them here
                 </Text>
+                <EmptyStateButton
+                    onPress={props.onPressAddPatient}
+                >
+                    Add Patient
+                </EmptyStateButton>
             </View>
         );
     }
@@ -41,33 +63,32 @@ function getComponentToDisplayBasedOnProps(props) {
     this.getTags = function () {
         if (props.selectedItems.length > 0) {
             return (
-                <View style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    marginLeft: 16,
-                    marginRight: 16,
-                    marginTop: 4,
-                    borderBottomWidth: 1,
-                    borderColor: "#aaaaaa",
-                    paddingBottom: 4
-                }}>
-                    {props.selectedItems.map((item) => <Tag text={item.name}
-                                                            onPress={() => props.onTagPress(item)}/>)}
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        marginLeft: 16,
+                        marginRight: 16,
+                        marginTop: 4,
+                        borderBottomWidth: 1,
+                        borderColor: '#aaaaaa',
+                        paddingBottom: 4
+                    }}
+                >
+                    {props.selectedItems.map((item) => <Tag
+                        text={item.name}
+                        onPress={() => props.onTagPress(item)}
+                    />)}
                 </View>
             );
         }
         return (
-            <View/>
-        )
-    }
+            <View />
+        );
+    };
 
     return (
         <View style={{flex: 1}}>
-            <SearchBar
-                lightTheme
-                placeholder='search patients or stops'
-                onChangeText={props.onChangeText}
-            />
             {this.getTags()}
             <FlatList
                 data={props.listItems}
@@ -81,6 +102,11 @@ function AddVisitsScreen(props) {
     //TODO theres inconsistencies in whether the button lable is in caps or not
     return (
         <View style={{flex: 1}}>
+            <SearchBar
+                lightTheme
+                placeholder='search patients or stops'
+                onChangeText={props.onChangeText}
+            />
             {getComponentToDisplayBasedOnProps(props)}
             <Button
                 large
