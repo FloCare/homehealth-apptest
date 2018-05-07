@@ -8,6 +8,16 @@ function arrayToMap(array, keyProperty) {
     return array.reduce((map, object) => map.set(object[keyProperty], object), new Map());
 }
 
+function arrayToObjectByKey(array, keyProperty) {
+    if (!keyProperty) {
+        console.error('keyProperty missing');
+    }
+    if (!array) {
+        console.error('array undefined');
+    }
+    return array.reduce((map, object) => { map[object[keyProperty]] = object; return map; }, {});
+}
+
 function filterResultObjectByListMembership(object, property, membershipList) {
     return object.filtered(membershipList
         .map((membershipItem) => `${property}=="${membershipItem}"`)
@@ -37,8 +47,8 @@ const createSectionedListFromRealmObject = (realmObj) => {
         }
         return m;
     }, {});
-    const sectionsArray = Object.keys(sections).map((key) => { return {title: key, data: sections[key]}; });
+    const sectionsArray = Object.keys(sections).map((key) => ({title: key, data: sections[key]}));
     return sectionsArray;
 };
 
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListFromRealmObject};
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListFromRealmObject, arrayToObjectByKey};

@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
+import {TouchableWithoutFeedback} from 'react-native';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames} from '../../utils/constants';
+import {arrayToObjectByKey} from '../../utils/collectionUtils';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
 class SortedVisitListContainer extends Component {
@@ -113,7 +115,8 @@ class SortedVisitListContainer extends Component {
     onReleaseRow() {
         console.log('release row called');
         if (this.orderIndexMovingCache) {
-            const newOrderedVisitList = this.orderIndexMovingCache.map((index) => this.state.orderedVisitList[index]);
+            const visitByKey = arrayToObjectByKey(this.state.orderedVisitListObject.visitList, 'visitID');
+            const newOrderedVisitList = this.orderIndexMovingCache.map((key) => visitByKey[key]);
             // console.log('new list:')
             // console.log(newOrderedVisitList);
             this.updateNewVisitOrderToDb(newOrderedVisitList, true);
@@ -218,7 +221,36 @@ class SortedVisitListContainer extends Component {
     }
 
     renderRow() {
-        return this.props.renderWithCallback({isDoneToggle: this.isDoneToggle.bind(this), navigator: this.props.navigator});
+        const renderWithCallback = this.props.renderWithCallback({
+            isDoneToggle: this.isDoneToggle.bind(this),
+            navigator: this.props.navigator
+        });
+        //TODO hackey
+        if (this.props.singleEntry) {
+            return ((props) => <TouchableWithoutFeedback onPress={this.onPressRowSingleton.bind(this)}>
+                        {renderWithCallback(props)}
+                    </TouchableWithoutFeedback>
+            );
+        }
+
+        return renderWithCallback;
+    }
+
+    onPressRowSingleton() {
+        if (this.props.tapForDetails) {
+            const visit = floDB.objectForPrimaryKey(VisitOrder, this.props.date.valueOf()).visitList[0];
+            if (visit.getPatient()) {
+                this.props.navigator.push({
+                    screen: screenNames.patientDetails,
+                    passProps: {
+                        patientId: visit.getPatient().patientID
+                    },
+                    navigatorStyle: {
+                        tabBarHidden: true
+                    }
+                });
+            }
+        }
     }
 
     onPressRow(visitID) {
@@ -230,6 +262,9 @@ class SortedVisitListContainer extends Component {
                     screen: screenNames.patientDetails,
                     passProps: {
                         patientId: visit.getPatient().patientID
+                    },
+                    navigatorStyle: {
+                        tabBarHidden: true
                     }
                 });
             }
@@ -238,10 +273,11 @@ class SortedVisitListContainer extends Component {
 
     render() {
         console.log(`sortedVisitList container rendered, length ${this.state.orderedVisitList.length}`);
+
         return (
             <SortableList
                 style={this.props.style}
-                data={this.state.orderedVisitList}
+                data={arrayToObjectByKey(this.state.orderedVisitList, 'visitID')}
                 onPressRow={this.onPressRow.bind(this)}
                 // data={arrayToObjectByKey(this.state.orderedVisitList, 'visitID')}
                 renderRow={this.state.renderWithCallback}
