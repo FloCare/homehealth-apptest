@@ -61,11 +61,11 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
 
         if (types.indexOf('postal_code') > -1) {
             zip = component.long_name;
-            if (zip && streetAddress.lastIndexOf(` ${zip}`) > -1) {
-                streetAddress = streetAddress.replace(` ${zip}`, '');
-            } else if (postalCode && streetAddress.lastIndexOf(`, ${postalCode}`) > -1) {
-                streetAddress = streetAddress.replace(` ${postalCode}`, '');
-            }
+            // if (zip && streetAddress.lastIndexOf(` ${zip}`) > -1) {
+            //     streetAddress = streetAddress.replace(` ${zip}`, '');
+            // } else if (postalCode && streetAddress.lastIndexOf(`, ${postalCode}`) > -1) {
+            //     streetAddress = streetAddress.replace(` ${postalCode}`, '');
+            // }
         }
 
         if (types.indexOf('country') > -1) {

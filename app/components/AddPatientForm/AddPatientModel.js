@@ -13,7 +13,7 @@ const AddPatientModel = t.struct({
     city: t.maybe(t.String),
     state: t.maybe(t.String),
     primaryContact: PhoneNumber,
-    emergencyContact: t.maybe(PhoneNumber),
+    //emergencyContact: t.maybe(PhoneNumber),
     //diagnosis: t.maybe(t.String),
     notes: t.maybe(t.String)
 });
@@ -46,11 +46,11 @@ const formOptions = {
             placeholder: '541-754-3010',
             keyboardType: 'numeric'
         },
-        emergencyContact: {
-            label: 'Emergency Contact (Optional)',
-            placeholder: '541-754-3010',
-            keyboardType: 'numeric'
-        },
+        // emergencyContact: {
+        //     label: 'Emergency Contact (Optional)',
+        //     placeholder: '541-754-3010',
+        //     keyboardType: 'numeric'
+        // },
         // diagnosis: {
         //     label: 'Diagnosis',
         //     placeholder: '#ADHD',
