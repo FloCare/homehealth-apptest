@@ -174,6 +174,7 @@ class HomeScreenContainer extends Component {
                     onDateSelected={this.onDateSelected}
                     onOrderChange={this.onOrderChange}
                     onPressAddVisit={this.navigateToAddVisit}
+                    onPressAddVisitZeroState={this.navigateToAddVisitFAB}
                 />
                 <Fab
                     onPressAddNote={this.navigateToAddNote}
