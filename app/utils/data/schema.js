@@ -124,6 +124,10 @@ class Visit extends Realm.Object {
         return undefined;
     }
 
+    getPlace() {
+        return CollectionUtils.getFirstElement(this.place);
+    }
+
     getAddress() {
         return this.getFromOwner(patient => patient.address, place => place.address);
     }

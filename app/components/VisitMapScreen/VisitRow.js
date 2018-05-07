@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {Icon, Text} from 'react-native-elements';
+import {Text} from 'react-native-elements';
 
 function VisitRow() {
     return (({index, data}) => 
@@ -19,11 +19,15 @@ function VisitRow() {
                     }}
                 >
                     {/*//TODO remove this hack*/}
-                    <Text style={{color: 'white'}}>{`  ${String.fromCharCode('A'.charCodeAt(0) + index)}`}</Text>
+                    <Text style={{color: 'white', alignSelf: 'center', alignItems: 'center'}}>{`${String.fromCharCode('A'.charCodeAt(0) + index)}`}</Text>
                 </View>
-                <View style={{flex: 1, backgroundColor: 'rgba(255,255,255,0.4)', marginLeft: 10, paddingLeft: 15, alignContent: 'center'}}>
-                    {/*<Icon name={'menu'} />*/}
-                    <Text style={{color: 'white', opacity: 1}}>{data.getAssociatedName()}</Text>
+                <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.35)', marginLeft: 10, alignItems: 'center'}}>
+                    <View style={{flex: 1, margin: 10, justifyContent: 'space-between'}}>
+                        <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
+                        <View style={{height: 2}} />
+                        <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
+                    </View>
+                    <Text style={{flex: 20, paddingLeft: 5, color: 'white', fontSize: 14}}>{data.getAssociatedName()}</Text>
                 </View>
             </View>
         ));
