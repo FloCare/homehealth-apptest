@@ -3,6 +3,7 @@ import {PhoneNumber, zipCode} from '../../utils/lib';
 import AddressAutoComplete from '../common/AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
+import PatientFormTemplate from './AddPatientFormTemplate';
 
 const AddPatientModel = t.struct({
     name: t.String,
@@ -10,6 +11,7 @@ const AddPatientModel = t.struct({
     apartmentNo: t.maybe(t.String),
     zip: zipCode,
     city: t.maybe(t.String),
+    state: t.maybe(t.String),
     primaryContact: PhoneNumber,
     emergencyContact: t.maybe(PhoneNumber),
     //diagnosis: t.maybe(t.String),
@@ -24,6 +26,7 @@ const nameError = (value) => {
 
 const formOptions = {
     stylesheet,
+    template: PatientFormTemplate,
     fields: {
         name: {
             label: 'Patient Name',
@@ -44,7 +47,7 @@ const formOptions = {
             keyboardType: 'numeric'
         },
         emergencyContact: {
-            label: 'Emergency Contact',
+            label: 'Emergency Contact (Optional)',
             placeholder: '541-754-3010',
             keyboardType: 'numeric'
         },
@@ -70,19 +73,24 @@ const formOptions = {
             }
         },
         apartmentNo: {
-            label: 'Apartment No.',
+            label: 'Apt. No. (Optional)',
             placeholder: '#482',
             keyboardType: 'numeric',
             error: 'Please enter a valid apartment No'
         },
         city: {
-            label: 'City, State',
+            label: 'City',
             error: 'Please enter a valid city name',
-            placeholder: 'Los Angeles, CA'
+            placeholder: 'Los Angeles'
+        },
+        state: {
+            label: 'State',
+            error: 'Please enter a valid state name',
+            placeholder: 'CA'
         },
         notes: {
             error: 'Please enter a valid note',
-            label: 'Notes'
+            label: 'Notes (Optional)'
         }
     }
 };

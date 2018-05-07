@@ -6,6 +6,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {floDB, Place} from '../../utils/data/schema';
 import styles from './styles';
 import {Options} from './AddStopFormModel';
+import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 
 const Form = t.form.Form;
 
@@ -70,48 +71,11 @@ class AddStopFormContainer extends Component {
     }
 
     onAddressSelect(data, details) {
-        // Todo: Move this to a generic function
-        const address = details.address_components;
+        // Todo: Handle OFFLINE flow
+        const resp = ParseGooglePlacesAPIResponse(data, details);
+        const {streetAddress, city, stateName, zip, country, lat, long} = resp;
 
-        let zip = null;
-        let city = null;
-        let state = null;
-        let country = null;
-        let lat = null;
-        let long = null;
-
-        const streetAddress = details.formatted_address;
-        const geometry = details.geometry;
-
-        address.forEach((component) => {
-            const types = component.types;
-            // Todo: Handle edge cases for city
-            if (types.indexOf('locality') > -1) {
-                city = component.long_name;
-            }
-
-            if (types.indexOf('administrative_area_level_1') > -1) {
-                state = component.short_name;
-            }
-
-            if (types.indexOf('postal_code') > -1) {
-                zip = component.long_name;
-            }
-
-            if (types.indexOf('country') > -1) {
-                country = component.long_name;
-            }
-        });
-
-        if (geometry) {
-            const location = geometry.location;
-            if (location) {
-                lat = location.lat;
-                long = location.lng;
-            }
-        }
-
-        const value = Object.assign({}, this.state.value, {address: streetAddress, zip, city, state, country, lat, long});
+        const value = Object.assign({}, this.state.value, {address: streetAddress, zip, city, state: stateName, country, lat, long});
         this.setState({value});
     }
 
@@ -221,7 +185,7 @@ class AddStopFormContainer extends Component {
                 </KeyboardAwareScrollView>
                 <Button
                     large
-                    disabled={!(this.state.value.address)}
+                    disabled={(!(this.state.value.address)) || (!(this.state.value.stopName))}
                     containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
                     title='Done'

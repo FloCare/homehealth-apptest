@@ -67,11 +67,9 @@ function Autocompletetextbox(locals) {
                             borderBottomWidth:0
                         },
                         textInput: {
+                            ...textboxStyle,
                             marginLeft: 0,
-                            marginRight: 0,
-                            height: 38,
-                            color: '#5d5d5d',
-                            fontSize: 16
+                            marginRight: 0
                         },
                         predefinedPlacesDescription: {
                             color: '#1faadb'
