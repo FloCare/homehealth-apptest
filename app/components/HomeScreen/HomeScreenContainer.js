@@ -56,7 +56,8 @@ class HomeScreenContainer extends Component {
             }
             if (event.id === 'map-view') {
                 this.props.navigator.pop();
-                this.navigateToVisitMapScreen();
+                //TODO fix this hard coding
+                this.navigateToVisitMapScreen(false);
             }
         }
     }
@@ -102,6 +103,7 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToVisitMapScreen(showCompleted) {
+        console.log(`showc${showCompleted}`);
         const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
         if (visitOrderObject.visitList) {
             const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList, showCompleted);
@@ -186,7 +188,7 @@ class HomeScreenContainer extends Component {
             <View style={{flex: 1}}>
                 <HomeScreen
                     navigator={this.props.navigator}
-                    navigateToVisitMapScreen={()=>this.navigateToVisitMapScreen(false)}
+                    navigateToVisitMapScreen={this.navigateToVisitMapScreen}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}
                     date={this.state.date}
                     totalVisitsCount={visitResultObject.length}

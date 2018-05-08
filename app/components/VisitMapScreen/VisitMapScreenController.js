@@ -74,6 +74,7 @@ class VisitMapScreenController extends Component {
     }
 
     async getAllPolylines() {
+        if (this.state.visitOrderList.length < 2) { return; }
         const newPolylines = [];
         const boundsCoordinates = [];
         let totalDistance;
@@ -104,6 +105,7 @@ class VisitMapScreenController extends Component {
         for (let i = 0; i < visitList.length; i++) {
             if (visitList[i].getAddress().coordinates && (!visitList[i].isDone || showCompleted)) updatedList.push(visitList[i]);
         }
+        console.log(`${updatedList.length},${showCompleted}`);
         return updatedList;
     }
 
