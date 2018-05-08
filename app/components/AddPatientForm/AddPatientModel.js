@@ -43,12 +43,12 @@ const formOptions = {
         },
         primaryContact: {
             label: 'Primary Contact',
-            placeholder: '541-754-3010',
+            placeholder: '5417543010',
             keyboardType: 'numeric'
         },
         // emergencyContact: {
         //     label: 'Emergency Contact (Optional)',
-        //     placeholder: '541-754-3010',
+        //     placeholder: '5417543010',
         //     keyboardType: 'numeric'
         // },
         // diagnosis: {
@@ -90,7 +90,8 @@ const formOptions = {
         },
         notes: {
             error: 'Please enter a valid note',
-            label: 'Notes (Optional)'
+            label: 'Notes (Optional)',
+            placeholder: 'Door Password - 1234'
         }
     }
 };

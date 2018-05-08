@@ -82,7 +82,8 @@ const styles = {
     buttonStyle: {
         backgroundColor: PrimaryColor,
         marginLeft: 0,
-        marginRight: 0
+        marginRight: 0,
+        height: 50
     }
 };
 

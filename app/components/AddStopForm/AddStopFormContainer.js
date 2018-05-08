@@ -184,7 +184,6 @@ class AddStopFormContainer extends Component {
                     />
                 </KeyboardAwareScrollView>
                 <Button
-                    large
                     disabled={(!(this.state.value.address)) || (!(this.state.value.stopName))}
                     containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
