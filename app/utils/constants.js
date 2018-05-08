@@ -1,3 +1,5 @@
+const PrimaryColor = '#45ceb1';
+
 const diagnosisList = [
     {
         name: 'Diagnosis',
@@ -46,4 +48,4 @@ const visitType = {
     place: 'place'
 };
 
-export {diagnosisList, screenNames, visitType};
+export {diagnosisList, screenNames, visitType, PrimaryColor};

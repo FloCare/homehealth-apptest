@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import {Linking, Alert} from 'react-native';
+import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
@@ -33,6 +35,7 @@ class PatientListScreenContainer extends Component {
         this.navigateToAddPatient = this.navigateToAddPatient.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.handleListUpdate = this.handleListUpdate.bind(this);
+        this.onPressPopupButton = this.onPressPopupButton.bind(this);
     }
 
     componentDidMount() {
@@ -73,6 +76,57 @@ class PatientListScreenContainer extends Component {
         this.setState({selectedPatient: patientId});
     }
 
+    onPressPopupButton(buttonPressed, item) {
+        switch (buttonPressed) {
+            case 'Notes':
+                this.navigateTo(
+                    screenNames.addNote,
+                    'Add Notes',
+                    {
+                        patientId: item.patientID,
+                        name: item.name
+                    }
+                );
+                break;
+            case 'Call':
+                if (item && item.primaryContact) {
+                    RNImmediatePhoneCall.immediatePhoneCall(item.primaryContact);
+                }
+                Alert.alert('Warning', 'Please add a valid mobile number as the patient primary contact');
+                break;
+            case 'Maps':
+                // Todo: Move boilerplate like this to a schema helper method
+                if (
+                    item &&
+                    item.address &&
+                    item.address.coordinates &&
+                    (item.address.coordinates.latitude && item.address.coordinates.longitude)
+                ) {
+                    Linking.openURL(
+                        `https://www.google.com/maps/dir/?api=1&destination=${item.address.coordinates.latitude},${item.address.coordinates.longitude}`).catch(err => console.error('An error occurred', err)
+                    );
+                }
+                Alert.alert('Warning', 'Please enter a valid address for the patient');
+                break;
+            case 'Visits':
+                this.props.navigator.showLightBox({
+                    screen: screenNames.addVisitsForPatientScreen,
+                    style: {
+                        backgroundBlur: 'dark',
+                        backgroundColor: '#00000070',
+                        tapBackgroundToDismiss: true
+                    },
+                    passProps: {
+                        patientId: item.patientID
+                    },
+                });
+                break;
+            default:
+                console.log('Invalid option pressed');
+                break;
+        }
+    }
+
     getSectionData(query) {
         if (!query) {
             const patientList = floDB.objects(Patient.schema.name);
@@ -110,7 +164,6 @@ class PatientListScreenContainer extends Component {
             animated: true,
             animationType: 'fade',
             title,
-            backbuttonHidden: true,
             passProps: props,
             navigatorStyle: {
                 tabBarHidden: true
@@ -135,6 +188,7 @@ class PatientListScreenContainer extends Component {
                 selectedPatient={this.state.selectedPatient}
                 onItemPressed={this.onItemPressed}
                 onPressAddPatient={this.navigateToAddPatient}
+                onPressPopupButton={this.onPressPopupButton}
             />
         );
     }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import {SearchBar} from 'react-native-elements';
+import { MenuProvider } from 'react-native-popup-menu';
 import styles from './styles';
 import {SectionedPatientList} from '../SectionedPatientList';
 import EmptyStateButton from '../common/EmptyStateButton';
@@ -12,7 +13,8 @@ const PatientListScreen = (props) => {
         selectedPatient,
         onItemPressed,
         patientCount,
-        onPressAddPatient
+        onPressAddPatient,
+        onPressPopupButton
     } = props;
     if (patientCount === 0) {
         return (
@@ -61,14 +63,28 @@ const PatientListScreen = (props) => {
                     }}
                     placeholder='Search'
                 />
-                <SectionedPatientList
-                    patientList={patientList}
-                    selectedPatient={selectedPatient}
-                    onItemPressed={onItemPressed}
-                />
+                <MenuProvider customStyles={MenuProviderStyles}>
+                    <SectionedPatientList
+                        patientList={patientList}
+                        selectedPatient={selectedPatient}
+                        onItemPressed={onItemPressed}
+                        onPressPopupButton={onPressPopupButton}
+                    />
+                </MenuProvider>
             </View>
         );
     }
+};
+
+const styles2 = {
+    backdrop: {
+        backgroundColor: 'red'
+    }
+};
+
+const MenuProviderStyles = {
+    menuProviderWrapper: styles2.container,
+    backdrop: styles2.backdrop
 };
 
 export {PatientListScreen};

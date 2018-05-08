@@ -3,22 +3,23 @@ import {View, Linking, ScrollView, Image} from 'react-native';
 import {Text, Button, Divider, Icon} from 'react-native-elements';
 import moment from 'moment';
 import ViewMoreText from 'react-native-view-more-text';
+import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
 
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
-import RNImmediatePhoneCall from "react-native-immediate-phone-call";
+import {PrimaryColor} from '../../utils/constants';
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
-        <Text style={{color: '#45ceb1'}} onPress={onPressAddNotes}>EDIT NOTES</Text>
+        <Text style={{color: PrimaryColor}} onPress={onPressAddNotes}>EDIT NOTES</Text>
     );
 };
 
 const renderViewLess = (onPress) => {
     return (
-        <Text style={{color: '#45ceb1'}} onPress={onPress}>View less</Text>
+        <Text style={{color: PrimaryColor}} onPress={onPress}>View less</Text>
     );
 };
 
@@ -111,7 +112,7 @@ const PatientDetailCard = (props) => {
                         title="Call"
                         textStyle={{
                             fontSize: 18,
-                            color: '#45ceb1'
+                            color: PrimaryColor
                         }}
                         buttonStyle={styles.callButtonStyle}
                         containerViewStyle={{
@@ -144,14 +145,19 @@ const PatientDetailCard = (props) => {
                         title="Call"
                         textStyle={{
                             fontSize: 18,
-                            color: '#45ceb1'
+                            color: PrimaryColor
                         }}
                         buttonStyle={styles.callButtonStyle}
                         containerViewStyle={{
+                            width: '20%',
                             position: 'absolute',
                             right: 0
                         }}
-                        onPress={() => Linking.openURL(`tel:${emergencyContact}`).catch(err => console.error('An error occurred', err))}
+                        onPress={() => {
+                            if (emergencyContact) {
+                                RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
+                            }
+                        }}
                     />
                 </View>
                 }
