@@ -25,6 +25,39 @@ Patient.schema = {
 
 // Address can belong to a 'Patient' or a 'Place'
 class Address extends Realm.Object {
+    get formattedAddressForGeocoding() {
+        let addr = '';
+        if (this.apartmentNo) {
+            addr += `${this.apartmentNo}, `;
+        }
+        if (this.streetAddress) {
+            addr += `${this.streetAddress}`;
+        }
+        if (this.city) {
+            addr += `, ${this.city}`;
+        }
+        return addr;
+    }
+
+    get formattedAddress() {
+        let addr = this.formattedAddressForGeocoding;
+        if (this.zipCode) {
+            addr += ` ${this.zipCode}`;
+        }
+        if (this.state) {
+            addr += `, ${this.state}`;
+        }
+        return addr;
+    }
+
+    get formattedCompleteAddress() {
+        let addr = this.formattedAddress;
+        if (this.country) {
+            addr += `, ${this.country}`;
+        }
+        return addr;
+    }
+
     get coordinates() {
         if (!(this.latitude && this.longitude)) { return null; }
         return {
@@ -60,9 +93,10 @@ Address.schema = {
         zipCode: 'string?',
         city: 'string?',
         state: 'string?',
-        country: {type: 'string?', default: 'USA'},
+        country: {type: 'string?', default: 'USA'},     // Todo: Remove
         latitude: 'double?',
-        longitude: 'double?'
+        longitude: 'double?',
+        isValidated: {type: 'bool', default: false}
     }
 };
 
@@ -191,7 +225,8 @@ const floDB = new Realm({
         VisitOrder
     ],
     // Todo: Remove this setting for production
-    deleteRealmIfMigrationNeeded: true,
+    // deleteRealmIfMigrationNeeded: true,
+    schemaVersion: 1
 });
 
 
