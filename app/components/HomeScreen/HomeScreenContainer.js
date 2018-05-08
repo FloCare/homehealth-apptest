@@ -101,17 +101,18 @@ class HomeScreenContainer extends Component {
         });
     }
 
-    navigateToVisitMapScreen() {
+    navigateToVisitMapScreen(showCompleted) {
         const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
         if (visitOrderObject.visitList) {
-            const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList);
+            const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList, showCompleted);
             if (visitOrderList.length > 0) {
                 this.props.navigator.push({
                     screen: screenNames.visitMapScreen,
                     passProps: {
                         date: this.state.date,
                         onOrderChange: this.onOrderChange.bind(this),
-                        onNavigationEvent: this.onNavigatorEvent
+                        onNavigationEvent: this.onNavigatorEvent,
+                        showCompleted
                     },
                     navigatorStyle: {
                         tabBarHidden: true

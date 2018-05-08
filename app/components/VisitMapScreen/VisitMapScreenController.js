@@ -28,7 +28,7 @@ class VisitMapScreenController extends Component {
     constructor(props) {
         super(props);
         this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
-        const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(this.visitOrderObject.visitList);
+        const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(this.visitOrderObject.visitList, props.showCompleted);
         this.state = {
             date: props.date,
             visitOrderList,
@@ -100,7 +100,8 @@ class VisitMapScreenController extends Component {
         }
     }
 
-    static getUpdateOrderedVisitList(visitList) {
+    static getUpdateOrderedVisitList(visitList, showCompleted) {
+        if (showCompleted) { return visitList; }
         const updatedList = [];
         for (let i = 0; i < visitList.length; i++) {
             if (visitList[i].getAddress().coordinates && !visitList[i].isDone) updatedList.push(visitList[i]);
@@ -109,7 +110,7 @@ class VisitMapScreenController extends Component {
     }
 
     onChangeOrder(nextOrder) {
-        this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder)});
+        this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder, this.props.showCompleted)});
         this.getAllPolylines();
         this.props.onOrderChange(nextOrder);
     }
@@ -132,6 +133,7 @@ class VisitMapScreenController extends Component {
                 <ControlPanel
                     date={this.state.date}
                     onChangeOrder={this.onChangeOrder}
+                    showCompleted={this.props.showCompleted}
                 />
             </View>
         );
@@ -145,7 +147,7 @@ function ControlPanel(props) {
                 date={props.date}
                 hideIncompleteAddress
                 renderWithCallback={VisitRow}
-                isCompletedHidden
+                isCompletedHidden={!props.showCompleted}
                 onOrderChange={props.onChangeOrder}
             />
         </View>
