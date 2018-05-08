@@ -90,7 +90,8 @@ const formOptions = {
         },
         notes: {
             error: 'Please enter a valid note',
-            label: 'Notes (Optional)'
+            label: 'Notes (Optional)',
+            placeholder: 'Door Password - 1234'
         }
     }
 };
