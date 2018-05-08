@@ -4,7 +4,7 @@ import MapView, {Marker} from 'react-native-maps';
 import * as MapUtils from '../../utils/MapUtils';
 import {VisitRow} from './VisitRow';
 import {floDB, VisitOrder} from '../../utils/data/schema';
-import {MapMarker} from '../common/PatientMap/MapMarker';
+import {MapMarker} from './MapMarker';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
@@ -118,10 +118,12 @@ class VisitMapScreenController extends Component {
             <View style={{flex: 1}}>
                 <MapPanel
                     viewport={this.state.viewport}
-                    markerData={this.state.visitOrderList.map((visit) =>
+                    markerData={this.state.visitOrderList.map((visit, index) =>
                         ({
                             coordinates: visit.getAddress().coordinates,
-                            name: visit.getAssociatedName()
+                            name: visit.getAssociatedName(),
+                            type: visit.getPatient() ? 'patient' : 'place',
+                            label: `${String.fromCharCode('A'.charCodeAt(0) + index)}`
                         })
                     )}
                     polylines={this.state.polylines}
@@ -154,15 +156,19 @@ function MapPanel(props) {
         <MapView
             style={{flex: 1}}
             initialRegion={props.viewport}
+            loadingEnabled
         >
-            {props.markerData.map((markerData) => <Marker coordinate={markerData.coordinates}><MapMarker text={markerData.name} /></Marker>)}
+            {props.markerData.map((markerData) =>
+                <Marker coordinate={markerData.coordinates} anchor={{x: 0.25, y: 1}}>
+                    <MapMarker type={markerData.type} label={markerData.label} />
+                </Marker>)}
             {props.polylines.map((polylineCoordinate) =>
                 // console.log('once');
                 // console.log(polylineCoordinate);
                 (<MapView.Polyline
                     coordinates={polylineCoordinate}
                     strokeWidth={3}
-                    strokeColor="blue"
+                    strokeColor="#45ceb1"
                 />))}
         </MapView>
     );

@@ -35,7 +35,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                     By adding patients and visits you'll be able to see a summary of the visits for the day
                 </Text>
                 <EmptyStateButton
-                    onPress={props.onPressAddVisit}
+                    onPress={props.onPressAddVisitZeroState}
                 >
                     Add Visits
                 </EmptyStateButton>

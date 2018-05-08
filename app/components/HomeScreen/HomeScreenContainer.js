@@ -107,7 +107,7 @@ class HomeScreenContainer extends Component {
     navigateToAddNote() {
         this.props.navigator.push({
             screen: screenNames.addNote,
-            title: 'Add Note',
+            title: 'Add Notes',
             navigatorStyle: {
                 tabBarHidden: true
             }
@@ -174,6 +174,7 @@ class HomeScreenContainer extends Component {
                     onDateSelected={this.onDateSelected}
                     onOrderChange={this.onOrderChange}
                     onPressAddVisit={this.navigateToAddVisit}
+                    onPressAddVisitZeroState={this.navigateToAddVisitFAB}
                 />
                 <Fab
                     onPressAddNote={this.navigateToAddNote}

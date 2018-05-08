@@ -22,9 +22,9 @@ function VisitCard({isDoneToggle, navigator}) {
     //
     // render() {
     //     console.log(`card render ${this.props.patientName}called at ${Date.now()}`);
-    return (({data}) => {
-        console.log('- - - - - - - - - - - - - - ')
-        const visit = data;
+    return ((props) => {
+        console.log('- - - - - - - - - - - - - - ');
+        const visit = props.data;
         const phoneNumber = visit.getAssociatedNumber();
         const coordinates = visit.getAddress().coordinates;
 
@@ -39,7 +39,14 @@ function VisitCard({isDoneToggle, navigator}) {
         return (
             //TODO suboptimal
             //<TouchableWithoutFeedback onPress={() => pushPatientDetailScreen(navigator, visit.getPatient())}>
-                <Card containerStyle={[styles.cardContainerStyle]}>
+                <Card
+                    containerStyle={
+                        [
+                            styles.cardContainerStyle,
+                            props.sortingActive && !props.active ? {opacity: 0.7} : {},
+                            props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {}
+                            ]}
+                >
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flex: 1}}>
                             <Text style={styles.nameStyle}>{visit.getAssociatedName()}</Text>
@@ -66,8 +73,11 @@ function VisitCard({isDoneToggle, navigator}) {
                                 }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: phoneNumber ? 1 : 0.5}}>
-                                <Image source={require('../../../resources/call.png')} />
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: phoneNumber ? 1 : 0.4}}>
+                                <Image
+                                    source={require('../../../resources/call.png')}
+                                    style={!phoneNumber ? {tintColor: 'black'} : {}}
+                                />
                                 <Text
                                     style={{fontSize: 14, color: '#222222'}}
                                 >{'  CALL'}</Text>
@@ -82,8 +92,11 @@ function VisitCard({isDoneToggle, navigator}) {
                                 if (coordinates !== null) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${visit.getAddress().getCommaSeperatedCoordinates()}`).catch(err => console.error('An error occurred', err)); }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: coordinates ? 1 : 0.5}}>
-                                <Image source={require('../../../resources/navigate.png')} />
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: coordinates ? 1 : 0.4}}>
+                                <Image
+                                    source={require('../../../resources/navigate.png')}
+                                    style={!coordinates ? {tintColor: 'black'} : {}}
+                                />
                                 <Text
                                     style={{fontSize: 14, color: '#222222'}}
                                 >{'  NAVIGATE'}</Text>

@@ -8,8 +8,8 @@ import {arrayToMap} from '../../utils/collectionUtils';
 import {screenNames, visitType} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
 
-const newStop = 'Create new Stop';
-const newPatient = 'Create new Patient';
+const newStop = 'Add new Stop';
+const newPatient = 'Add new Patient';
 
 const newStopNavigatorArg = {
     screen: screenNames.addStop,
@@ -224,6 +224,8 @@ class AddVisitsScreenContainer extends Component {
 
     onDone() {
         //TODO improve efficiency by not having to query for patient object
+
+        //This is the part where we create the new visit items
         floDB.write(() => {
             for (const selectedItem of this.state.selectedItems.values()) {
                 if (selectedItem.type === visitType.patient) {
@@ -243,6 +245,7 @@ class AddVisitsScreenContainer extends Component {
             }
         });
 
+        //this is the part where we modify the day's visitOrderList
         const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
         let visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
         if (!visitOrderObject) {
@@ -280,6 +283,7 @@ class AddVisitsScreenContainer extends Component {
     render() {
         return (
             <AddVisitsScreen
+                isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
                 onTagPress={this.onTagPress}
                 onPressAddPatient={(() => this.props.navigator.push(newPatientNavigatorArg))}

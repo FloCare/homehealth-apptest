@@ -1,6 +1,25 @@
 import React, {Component} from 'react';
 import {Text, View, Image, SectionList, TouchableOpacity} from 'react-native';
+import {
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+} from 'react-native-popup-menu';
 import styles from './styles';
+import {PrimaryColor} from '../../utils/constants';
+
+const CustomMenu = (props) => {
+    const {style, children, layouts, ...other} = props;
+    //const position = {top: layouts.triggerLayout.y, left: layouts.triggerLayout.x};
+    const position = {top: layouts.optionsLayout.height, left: layouts.optionsLayout.width};
+    console.log('position:', position);
+    return (
+        <View {...other} style={[style, position]}>
+            {children}
+        </View>
+    );
+};
 
 class SectionedPatientList extends Component {
     constructor(props) {
@@ -10,7 +29,7 @@ class SectionedPatientList extends Component {
         this.renderSeparator = this.renderSeparator.bind(this);
     }
 
-    renderItem(item, selectedPatient) {
+    renderItem(item, selectedPatient, onPressPopupButton) {
         if (item.patientID === selectedPatient) {
             return (
                 <View
@@ -24,9 +43,27 @@ class SectionedPatientList extends Component {
                             <Text style={styles.nameStyle}>{item.name}</Text>
                             <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
                         </TouchableOpacity>
-                        {/*<TouchableOpacity style={{marginVertical: 15}} onPress={() => {console.log('More button pressed')}}>*/}
-                            {/*<Image source={require('../../../resources/threeDotButton.png')} />*/}
-                        {/*</TouchableOpacity>*/}
+                        <View style={{flex: 1, marginVertical: 15}}>
+                            <Menu rendererProps={{placement: 'top'}}>
+                                <MenuTrigger
+                                    children={<Image source={require('../../../resources/threeDotButton.png')} />}
+                                />
+                                <MenuOptions>
+                                    <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
+                                        <Text style={{color: PrimaryColor}}>Add Notes</Text>
+                                    </MenuOption>
+                                    <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
+                                        <Text style={{color: PrimaryColor}}>Call</Text>
+                                    </MenuOption>
+                                    <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
+                                        <Text style={{color: PrimaryColor}}>Show on maps</Text>
+                                    </MenuOption>
+                                    <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
+                                        <Text style={{color: PrimaryColor}}>Add Visit</Text>
+                                    </MenuOption>
+                                </MenuOptions>
+                            </Menu>
+                        </View>
                     </View>
                 </View>
             );
@@ -43,9 +80,27 @@ class SectionedPatientList extends Component {
                         <Text style={styles.nameStyle}>{item.name}</Text>
                         <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
                     </TouchableOpacity>
-                    {/*<TouchableOpacity style={{ flex: 1, marginVertical: 15}} onPress={() => {console.log('More button pressed')}}>*/}
-                        {/*<Image source={require('../../../resources/threeDotButton.png')} />*/}
-                    {/*</TouchableOpacity>*/}
+                    <View style={{flex: 1, marginVertical: 15}}>
+                        <Menu rendererProps={{placement: 'top'}}>
+                            <MenuTrigger
+                                children={<Image source={require('../../../resources/threeDotButton.png')} />}
+                            />
+                            <MenuOptions>
+                                <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
+                                    <Text style={{color: PrimaryColor}}>Add Notes</Text>
+                                </MenuOption>
+                                <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
+                                    <Text style={{color: PrimaryColor}}>Call</Text>
+                                </MenuOption>
+                                <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
+                                    <Text style={{color: PrimaryColor}}>Show on maps</Text>
+                                </MenuOption>
+                                <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
+                                    <Text style={{color: PrimaryColor}}>Add Visit</Text>
+                                </MenuOption>
+                            </MenuOptions>
+                        </Menu>
+                    </View>
                 </View>
             </View>
         );
@@ -64,11 +119,11 @@ class SectionedPatientList extends Component {
     }
 
     render() {
-        const {selectedPatient} = this.props;
+        const {selectedPatient, onPressPopupButton} = this.props;
         return (
             <SectionList
                 sections={this.props.patientList}
-                renderItem={({item}) => this.renderItem(item, selectedPatient)}
+                renderItem={({item}) => this.renderItem(item, selectedPatient, onPressPopupButton)}
                 renderSectionHeader={this.renderSectionHeader}
                 ItemSeparatorComponent={this.renderSeparator}
                 keyExtractor={(item, index) => index}
