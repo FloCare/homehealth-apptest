@@ -137,22 +137,32 @@ class AddStopFormContainer extends Component {
                         primaryContact: this.state.value.primaryContact
                     });
 
-                    stop.address = {
-                        addressID: addressId,
-                        streetAddress: this.state.value.address,
-                        zipCode: this.state.value.zip,
-                        city: this.state.value.city,
-                        state: this.state.value.state,
-                        country: this.state.value.country,
-                    };
-
-                    // Add a latLong if present
                     if (this.state.value.lat && this.state.value.long) {
+                        stop.address = {
+                            addressID: addressId,
+                            streetAddress: this.state.value.address,
+                            zipCode: this.state.value.zip,
+                            city: this.state.value.city,
+                            state: this.state.value.state,
+                            country: this.state.value.country,
+                            isValidated: true
+                        };
                         stop.address.coordinates = {
                             latitude: this.state.value.lat,
                             longitude: this.state.value.long
                         };
+                    } else {
+                        stop.address = {
+                            addressID: addressId,
+                            streetAddress: this.state.value.address,
+                            zipCode: this.state.value.zip,
+                            city: this.state.value.city,
+                            state: this.state.value.state,
+                            country: this.state.value.country,
+                            isValidated: false
+                        };
                     }
+
                 });
                 console.log('Save to DB successful');
             } catch (err) {

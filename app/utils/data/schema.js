@@ -93,7 +93,7 @@ Address.schema = {
         zipCode: 'string?',
         city: 'string?',
         state: 'string?',
-        country: {type: 'string?', default: 'USA'},     // Todo: Remove
+        country: {type: 'string?', default: 'US'},     // Todo: Remove
         latitude: 'double?',
         longitude: 'double?',
         isValidated: {type: 'bool', default: false}
@@ -269,7 +269,8 @@ function CreateAndSaveDummies() {
             zipCode: '12345',
             city: 'Bangalore',
             state: 'KA',
-            country: 'India'
+            country: 'India',
+            isValidated: true
         };
         // Create a LatLong for that address
         patient.address.coordinates = {
