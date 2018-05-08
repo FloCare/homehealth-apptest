@@ -21,9 +21,21 @@ function getViewPortFromBounds(boundsCoordinates) {
     return viewport;
 }
 
-async function callDirectionsApiForPoints(startLoc, destinationLoc) {
+function coordinatesToCSVString(Coordinates) {
+    return `${coordinates.latitude},${coordinates.longitude}`;
+}
+
+async function callDirectionsApiForPoints(coordinates) {
     try {
-        const resp = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc.latitude},${startLoc.longitude}&destination=${destinationLoc.latitude},${destinationLoc.longitude}`);
+        if (coordinates.length < 2) { console.error('directins request between less than two points'); }
+        let requestString = `https://maps.googleapis.com/maps/api/directions/json?origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
+        if (coordinates.length > 2) {
+            requestString += '&waypoints=';
+            for (let i = 1; i < length - 1; i++) {
+                requestString = `${requestString + coordinatesToCSVString(coordinates[i])},`;
+            }
+        }
+        const resp = await fetch(requestString);
         return await resp.json();
     } catch (error) {
         console.log('directions api call threw error');
@@ -51,7 +63,7 @@ async function getProcessedGeoDataBetweenTwoPoints(startLoc, destinationLoc) {
             respJson = directionsResposeCache[cacheKey];
         }
         else {
-            respJson = await this.callDirectionsApiForPoints(startLoc, destinationLoc);
+            respJson = await this.callDirectionsApiForPoints([startLoc, destinationLoc]);
             if(respJson.status === 'OK')
                 directionsResposeCache[cacheKey] = respJson;
             else console.log(respJson.error_message);
