@@ -11,12 +11,12 @@ function getComponentToDisplayBasedOnVisitCount(props) {
     if (props.remainingVisitsCount === 0) {
         //TODO pull it out, make it common
         const visitListButtons = (
-            <View>
+            <View style={{paddingTop: 10}}>
                 <Text
                     style={{
                         alignSelf: 'center',
                         fontSize: 12,
-                        color: '#ffffff'
+                        color: '#999999'
                     }}
                 >
                     View visits on
