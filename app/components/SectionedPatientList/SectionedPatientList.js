@@ -41,7 +41,7 @@ class SectionedPatientList extends Component {
                             onPress={({e}) => this.props.onItemPressed({item}, e)}
                         >
                             <Text style={styles.nameStyle}>{item.name}</Text>
-                            <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                            <Text style={styles.addressStyle}>{item.address.formattedAddress}</Text>
                         </TouchableOpacity>
                         <View style={{flex: 1, marginVertical: 15}}>
                             <Menu rendererProps={{placement: 'top'}}>
@@ -78,7 +78,7 @@ class SectionedPatientList extends Component {
                         onPress={({e}) => this.props.onItemPressed({item}, e)}
                     >
                         <Text style={styles.nameStyle}>{item.name}</Text>
-                        <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                        <Text style={styles.addressStyle}>{item.address.formattedAddress}</Text>
                     </TouchableOpacity>
                     <View style={{flex: 1, marginVertical: 15}}>
                         <Menu rendererProps={{placement: 'top'}}>
