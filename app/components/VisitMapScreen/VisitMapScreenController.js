@@ -80,20 +80,16 @@ class VisitMapScreenController extends Component {
         //TODO safety checks
         // console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
 
-        const visitOrderList = this.state.visitOrderList;
-        for (let i = 0; i < visitOrderList.length - 1; i++) {
-            try {
-                const geoDataObject = await MapUtils.getProcessedGeoDataBetweenTwoPoints(visitOrderList[i].getAddress().coordinates,
-                    visitOrderList[i + 1].getAddress().coordinates);
+        try {
+            const geoDataObject = await MapUtils.getProcessedDataForOrderedList(this.state.visitOrderList.map(visit => visit.getAddress().coordinates));
 
-                newPolylines.push(geoDataObject.polyline);
-                boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
-                boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.lng]);
-            } catch (error) {
-                console.log(error);
-                noErrorFlag = false;
-                throw (error);
-            }
+            newPolylines.push(geoDataObject.polyline);
+            boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
+            boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.lng]);
+        } catch (error) {
+            console.log(error);
+            noErrorFlag = false;
+            throw (error);
         }
         if (noErrorFlag) {
             this.setState({polylines: newPolylines, viewport: MapUtils.getViewPortFromBounds(boundsCoordinates)});
@@ -109,8 +105,7 @@ class VisitMapScreenController extends Component {
     }
 
     onChangeOrder(nextOrder) {
-        this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder, this.props.showCompleted)});
-        this.getAllPolylines();
+        this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder, this.props.showCompleted)}, this.getAllPolylines);
         this.props.onOrderChange(nextOrder);
     }
 
