@@ -1,14 +1,14 @@
 import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from './screens';
-import {screenNames} from './utils/constants';
+import {screenNames, PrimaryColor} from './utils/constants';
 
 RegisterScreens();
 
 // const navigatorStyle = {
-//     navBarBackgroundColor: '#45ceb1',
+//     navBarBackgroundColor: PrimaryColor,
 //     navBarTextColor: '#ffffff',
 //     navBarButtonColor: '#666666',
-//     tabBarBackgroundColor: '#45ceb1',
+//     tabBarBackgroundColor: PrimaryColor,
 // };
 
 Navigation.startTabBasedApp({
@@ -61,11 +61,11 @@ Navigation.startTabBasedApp({
         // }
     ],
     appStyle: {
-        navBarBackgroundColor: '#45ceb1',
+        navBarBackgroundColor: PrimaryColor,
         navBarTextColor: '#ffffff',
         navBarButtonColor: 'white',
         tabBarBackgroundColor: '#f8f8f8',
         tabBarTranslucent: false,
-        tabBarSelectedButtonColor: '#45ceb1'
+        tabBarSelectedButtonColor: PrimaryColor
     }
 });

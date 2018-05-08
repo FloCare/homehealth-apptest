@@ -1,7 +1,8 @@
 import React from 'react';
-import {Button} from "react-native-elements";
+import {Button} from 'react-native-elements';
+import {PrimaryColor} from '../../utils/constants';
 
-const CustomButton = ({ ...props }) => {
+const CustomButton = ({...props}) => {
 	return (
 		<Button
 			buttonStyle={styles.buttonStyle}
@@ -12,10 +13,10 @@ const CustomButton = ({ ...props }) => {
 
 const styles = {
     buttonStyle: {
-        backgroundColor: '#45ceb1',
+        backgroundColor: PrimaryColor,
         marginLeft: 0,
         marginRight: 0
     }
 };
 
-export { CustomButton };
+export {CustomButton};

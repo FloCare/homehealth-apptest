@@ -6,6 +6,7 @@ import {VisitRow} from './VisitRow';
 import {floDB, VisitOrder} from '../../utils/data/schema';
 import {MapMarker} from './MapMarker';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
+import {PrimaryColor} from '../../utils/constants';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
@@ -139,7 +140,7 @@ class VisitMapScreenController extends Component {
 
 function ControlPanel(props) {
     return (
-        <View style={{backgroundColor: '#45ceb1', paddingTop: 10, paddingBottom: 10}}>
+        <View style={{backgroundColor: PrimaryColor, paddingTop: 10, paddingBottom: 10}}>
             <SortedVisitListContainer
                 date={props.date}
                 hideIncompleteAddress
@@ -168,7 +169,7 @@ function MapPanel(props) {
                 (<MapView.Polyline
                     coordinates={polylineCoordinate}
                     strokeWidth={3}
-                    strokeColor="#45ceb1"
+                    strokeColor={PrimaryColor}
                 />))}
         </MapView>
     );

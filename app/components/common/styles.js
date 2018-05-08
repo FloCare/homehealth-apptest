@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {PrimaryColor} from '../../utils/constants';
 
 export const styles = StyleSheet.create({
     // container: {
@@ -107,13 +108,13 @@ export const styles = StyleSheet.create({
 });
 
 export const colors = {
-    primaryColor: '#45ceb1'
+    primaryColor: PrimaryColor
 };
 
 export const navigatorStyles = {
     navigatorStyle: {
         tabBarHidden: true,
-        navBarBackgroundColor: '#45ceb1',
+        navBarBackgroundColor: PrimaryColor,
         navBarTextColor: '#ffffff',
         navBarButtonColor: '#666666',
         //todo not working

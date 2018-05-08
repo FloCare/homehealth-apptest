@@ -2,6 +2,7 @@ import React from 'react';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {StyleSheet} from 'react-native';
+import {PrimaryColor} from '../../utils/constants';
 
 const styles = StyleSheet.create({
     actionButtonIcon: {
@@ -16,19 +17,19 @@ const Fab = (props) => {
     return (
         //TODO work shadow out
         <ActionButton
-            buttonColor='#45ceb1'
+            buttonColor={PrimaryColor}
             size={50}
             useNativeFeedback={false}
             bgColor={'rgba(255,255,255,0.8)'}
             hideShadow
         >
-            <ActionButton.Item buttonColor='#45ceb1' title="Add Note" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>
+            <ActionButton.Item buttonColor={PrimaryColor} title="Add Note" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>
                 <Icon name="md-paper" style={styles.actionButtonIcon} />
             </ActionButton.Item>
-            <ActionButton.Item buttonColor='#45ceb1' title="Add Visit" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddVisit}>
+            <ActionButton.Item buttonColor={PrimaryColor} title="Add Visit" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddVisit}>
                 <Icon name="md-calendar" style={styles.actionButtonIcon} />
             </ActionButton.Item>
-            <ActionButton.Item buttonColor='#45ceb1' title="Add Patient" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddPatient}>
+            <ActionButton.Item buttonColor={PrimaryColor} title="Add Patient" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddPatient}>
                 <Icon name="md-person" style={styles.actionButtonIcon} />
             </ActionButton.Item>
         </ActionButton>

@@ -5,7 +5,7 @@ import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
-import {screenNames, visitType} from '../../utils/constants';
+import {screenNames, visitType, PrimaryColor} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
 
 const newStop = 'Add new Stop';
@@ -203,7 +203,7 @@ class AddVisitsScreenContainer extends Component {
 
     createListItemComponent({item}) {
         const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/location.png');
-        const rightIcon = item.isSelected ? {name: 'check', color: '#45ceb1'} : <View />;
+        const rightIcon = item.isSelected ? {name: 'check', color: PrimaryColor} : <View />;
         console.log(item);
         console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
         return (

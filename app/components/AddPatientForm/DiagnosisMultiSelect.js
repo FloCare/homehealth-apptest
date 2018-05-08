@@ -1,7 +1,7 @@
 import React from 'react';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import {View} from 'react-native';
-import {diagnosisList} from '../../utils/constants';
+import {diagnosisList, PrimaryColor} from '../../utils/constants';
 
 function DiagnosisMultiSelect(locals) {
     if (locals.hidden) {
@@ -19,6 +19,7 @@ function DiagnosisMultiSelect(locals) {
                     readOnlyHeadings
                     onSelectedItemsChange={locals.config.onSelectedItemsChange}
                     selectedItems={locals.config.selectedItems}
+                    colors={{primary: PrimaryColor}}
                 />
             </View>
         </View>

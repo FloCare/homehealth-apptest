@@ -1,3 +1,5 @@
+import {PrimaryColor} from '../../utils/constants';
+
 const styles = {
     containerStyle: {
         flex: 1,
@@ -9,7 +11,7 @@ const styles = {
         backgroundColor: '#ffffff',
     },
     buttonStyle: {
-        backgroundColor: '#45ceb1',
+        backgroundColor: PrimaryColor,
         marginLeft: 0,
         marginRight: 0
     }

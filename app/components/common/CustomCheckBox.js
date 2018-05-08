@@ -1,11 +1,12 @@
 import React from 'react';
 import {CheckBox} from 'react-native-elements';
+import {PrimaryColor} from '../../utils/constants';
 
 const CustomCheckBox = (props) => (
     <CheckBox
         checked={props.checked}
-        checkedColor="#45ceb1"
-        uncheckedColor="#525252"
+        checkedColor={PrimaryColor}
+        uncheckedColor='#525252'
         containerStyle={[styles.checkBoxContainerStyle, props.checkBoxContainerStyle]}
         title={'Done'}
         iconRight

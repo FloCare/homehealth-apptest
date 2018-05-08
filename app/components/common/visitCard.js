@@ -5,7 +5,7 @@ import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {Diagnosis} from './Diagnosis';
-import {screenNames} from '../../utils/constants';
+import {screenNames, PrimaryColor} from '../../utils/constants';
 
 function pushPatientDetailScreen(navigator, patient) {
     if (patient) {
@@ -33,7 +33,7 @@ function VisitCard({isDoneToggle, navigator}) {
                 isDoneToggle(visit);
             }
         };
-        // const rightIcon = visit.isDone ? {name: 'checkbox', color: '#45ceb1'} : {name: 'box', color: '#45ceb1'};
+        // const rightIcon = visit.isDone ? {name: 'checkbox', color: PrimaryColor} : {name: 'box', color: PrimaryColor};
         // console.log(visit);
         // console.log('rerendered visitcard');
         return (

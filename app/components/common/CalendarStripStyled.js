@@ -1,6 +1,7 @@
 import React from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment/moment';
+import {PrimaryColor} from '../../utils/constants';
 
 function CalendarStripStyled(props) {
     const selectedDateRadius = 40;
@@ -31,14 +32,14 @@ function CalendarStripStyled(props) {
             customDatesStyles={[
                 {
                     startDate: props.date.valueOf(),
-                    dateContainerStyle: {backgroundColor: '#45ceb1', ...radius},
+                    dateContainerStyle: {backgroundColor: PrimaryColor, ...radius},
                     dateNameStyle: {color: 'white'},
                     dateNumberStyle: {color: 'white'},
                 },
                 {
                     startDate: moment().utc().startOf('day').valueOf(),
-                    dateNameStyle: {color: '#45ceb1'},
-                    dateNumberStyle: {color: '#45ceb1'},
+                    dateNameStyle: {color: PrimaryColor},
+                    dateNumberStyle: {color: PrimaryColor},
                 }
             ]}
         />
