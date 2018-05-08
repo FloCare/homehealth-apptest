@@ -23,7 +23,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                         fontWeight: '300',
                         fontSize: 20
                     }}
-                >No Day's Summary</Text>
+                >{props.totalVisitCount !== 0 ? 'Great job! All planned visits complete' : 'No Day\'s Summary'}</Text>
                 <Text
                     style={{
                         textAlign: 'center',
@@ -31,8 +31,11 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                         margin: 20,
                         marginTop: 5,
                     }}
-                >
-                    By adding patients and visits you'll be able to see a summary of the visits for the day
+                >{
+                    props.totalVisitCount !== 0 ?
+                        'If you missed adding any visit for the day' :
+                        'By adding patients and visits you\'ll be able to see a summary of the visits for the day'
+                }
                 </Text>
                 <EmptyStateButton
                     onPress={props.onPressAddVisitZeroState}
