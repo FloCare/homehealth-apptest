@@ -107,7 +107,7 @@ class HomeScreenContainer extends Component {
     navigateToAddNote() {
         this.props.navigator.push({
             screen: screenNames.addNote,
-            title: 'Add Note',
+            title: 'Add Notes',
             navigatorStyle: {
                 tabBarHidden: true
             }
