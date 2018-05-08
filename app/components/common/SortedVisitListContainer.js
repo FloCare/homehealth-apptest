@@ -3,7 +3,7 @@ import SortableList from 'react-native-sortable-list';
 import {TouchableWithoutFeedback} from 'react-native';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames} from '../../utils/constants';
-import {arrayToObjectByKey} from '../../utils/collectionUtils';
+import {arrayToMap, arrayToObjectByKey} from '../../utils/collectionUtils';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
 class SortedVisitListContainer extends Component {
@@ -92,11 +92,21 @@ class SortedVisitListContainer extends Component {
         // return false;
     }
 
+    appendCompletedVisits(order) {
+        //TODO instead of finding and appending missing visits, try to just rearrange ones we're dealing with after filtering
+        const visitByID = arrayToMap(order, 'visitID');
+        for (const visit of this.state.orderedVisitListObject.visitList) {
+            if (!visitByID.has(visit.visitID)) { order.push(visit); }
+        }
+    }
+
     updateNewVisitOrderToDb(order, valid) {
         console.log('new visit order updated to DB');
         // if (valid) {
         //     this.orderIndexCache = this.orderIndexMovingCache;
         // }
+
+        this.appendCompletedVisits(order);
         floDB.write(() => {
             this.state.orderedVisitListObject.visitList = order;
         });
@@ -143,6 +153,7 @@ class SortedVisitListContainer extends Component {
                 }
             }
         } else tweakedVisitList.push(...visitList);
+        //TODO delicate logic here, make it more robust
         if (this.props.isCompletedHidden) {
             console.log('here');
             for (let i = 0; i < tweakedVisitList.length; i++) {
