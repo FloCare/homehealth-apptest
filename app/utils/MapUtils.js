@@ -29,12 +29,14 @@ async function callDirectionsApiForPoints(coordinates) {
     try {
         if (coordinates.length < 2) { console.error('directins request between less than two points'); }
         let requestString = `https://maps.googleapis.com/maps/api/directions/json?origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
+        // let requestString = `https://maps.googleapis.com/maps/api/directions/json?units='imperial'&origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
         if (coordinates.length > 2) {
             requestString += '&waypoints=';
             for (let i = 1; i < coordinates.length - 1; i++) {
-                requestString = `${requestString + coordinatesToCSVString(coordinates[i])}|`;
+                requestString = `${requestString}via:${coordinatesToCSVString(coordinates[i])}|`;
             }
         }
+        console.log(requestString)
         const resp = await fetch(requestString);
         return await resp.json();
     } catch (error) {
@@ -52,6 +54,8 @@ function extractInformationFromDirectionApiResponse(respJson) {
         longitude: point[1]
     }));
     geoData.bounds = respJson.routes[0].bounds;
+    //TODO when multiple legs are introduced, change this
+    geoData.distance = respJson.routes[0].legs[0].distance.text;
     return geoData;
 }
 
@@ -71,6 +75,7 @@ async function getProcessedGeoDataBetweenTwoPoints(startLoc, destinationLoc) {
         return this.extractInformationFromDirectionApiResponse(respJson);
     } catch (error) {
         console.log('error log: getProcessedGeoDataBetweenTwoPoints');
+        console.log(error)
         throw error;
     }
 }
@@ -86,7 +91,7 @@ async function getProcessedDataForOrderedList(coordinates) {
             respJson = await this.callDirectionsApiForPoints(coordinates);
             if(respJson.status === 'OK')
                 directionsResposeCache[cacheKey] = respJson;
-            else console.log(respJson.error_message);
+            else console.log("error message: "+respJson.error_message);
         }
         return this.extractInformationFromDirectionApiResponse(respJson);
     } catch (error) {

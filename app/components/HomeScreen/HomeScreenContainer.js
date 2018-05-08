@@ -186,7 +186,7 @@ class HomeScreenContainer extends Component {
             <View style={{flex: 1}}>
                 <HomeScreen
                     navigator={this.props.navigator}
-                    navigateToVisitMapScreen={this.navigateToVisitMapScreen}
+                    navigateToVisitMapScreen={()=>this.navigateToVisitMapScreen(false)}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}
                     date={this.state.date}
                     totalVisitsCount={visitResultObject.length}

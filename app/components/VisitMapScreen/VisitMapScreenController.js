@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {Image, Text, View} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as MapUtils from '../../utils/MapUtils';
 import {VisitRow} from './VisitRow';
@@ -7,6 +7,7 @@ import {floDB, VisitOrder} from '../../utils/data/schema';
 import {MapMarker} from './MapMarker';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor} from '../../utils/constants';
+import {RenderIf} from '../../utils/data/syntacticHelpers';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
@@ -75,7 +76,7 @@ class VisitMapScreenController extends Component {
     async getAllPolylines() {
         const newPolylines = [];
         const boundsCoordinates = [];
-
+        let totalDistance;
         let noErrorFlag = true;
         //TODO safety checks
         // console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
@@ -86,13 +87,15 @@ class VisitMapScreenController extends Component {
             newPolylines.push(geoDataObject.polyline);
             boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
             boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.lng]);
+
+            totalDistance = geoDataObject.distance;
         } catch (error) {
             console.log(error);
             noErrorFlag = false;
             throw (error);
         }
         if (noErrorFlag) {
-            this.setState({polylines: newPolylines, viewport: MapUtils.getViewPortFromBounds(boundsCoordinates)});
+            this.setState({polylines: newPolylines, viewport: MapUtils.getViewPortFromBounds(boundsCoordinates), totalDistance});
         }
     }
 
@@ -110,6 +113,7 @@ class VisitMapScreenController extends Component {
     }
 
     render() {
+        console.log(`show completed ${this.props.showCompleted}`);
         return (
             <View style={{flex: 1}}>
                 <MapPanel
@@ -123,6 +127,7 @@ class VisitMapScreenController extends Component {
                         })
                     )}
                     polylines={this.state.polylines}
+                    totalDistance={this.state.totalDistance}
                 />
                 <ControlPanel
                     date={this.state.date}
@@ -150,24 +155,45 @@ function ControlPanel(props) {
 
 function MapPanel(props) {
     return (
-        <MapView
-            style={{flex: 1}}
-            initialRegion={props.viewport}
-            loadingEnabled
-        >
-            {props.markerData.map((markerData) =>
-                <Marker coordinate={markerData.coordinates} anchor={{x: 0.25, y: 1}}>
-                    <MapMarker type={markerData.type} label={markerData.label} />
-                </Marker>)}
-            {props.polylines.map((polylineCoordinate) =>
-                // console.log('once');
-                // console.log(polylineCoordinate);
-                (<MapView.Polyline
-                    coordinates={polylineCoordinate}
-                    strokeWidth={3}
-                    strokeColor={PrimaryColor}
-                />))}
-        </MapView>
+        <View style={{flex: 1}}>
+            <MapView
+                style={{flex: 1}}
+                initialRegion={props.viewport}
+                loadingEnabled
+            >
+                {props.markerData.map((markerData) =>
+                    <Marker coordinate={markerData.coordinates} anchor={{x: 0.25, y: 1}}>
+                        <MapMarker type={markerData.type} label={markerData.label} />
+                    </Marker>)}
+                {props.polylines.map((polylineCoordinate) =>
+                    // console.log('once');
+                    // console.log(polylineCoordinate);
+                    (<MapView.Polyline
+                        coordinates={polylineCoordinate}
+                        strokeWidth={3}
+                        strokeColor={PrimaryColor}
+                    />))}
+            </MapView>
+            {RenderIf(
+                <View
+                    style={{
+                        height: 29,
+                        backgroundColor: '#50a391',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingLeft: 25
+                    }}
+                >
+                    <Image
+                        source={require('../../../resources/time.png')}
+                    />
+                    <Text style={{paddingLeft: 20, color: 'white'}}>
+                        {props.totalDistance}
+                    </Text>
+                </View>,
+                props.totalDistance
+            )}
+        </View>
     );
 }
 
