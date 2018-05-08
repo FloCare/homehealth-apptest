@@ -43,12 +43,12 @@ const formOptions = {
         },
         primaryContact: {
             label: 'Primary Contact',
-            placeholder: '541-754-3010',
+            placeholder: '5417543010',
             keyboardType: 'numeric'
         },
         // emergencyContact: {
         //     label: 'Emergency Contact (Optional)',
-        //     placeholder: '541-754-3010',
+        //     placeholder: '5417543010',
         //     keyboardType: 'numeric'
         // },
         // diagnosis: {
