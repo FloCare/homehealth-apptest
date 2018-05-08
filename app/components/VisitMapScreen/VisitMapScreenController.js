@@ -64,7 +64,7 @@ class VisitMapScreenController extends Component {
             const address = visit.getAddress();
             if (!address || !address.latitude || !address.latitude) {
                 //TODO what to do in this case?
-                console.log(visit);
+                console.log(address);
                 console.error(`visit:${visit} doesn't have an associated address or address coordinates`);
             }
             coordinates.push([address.latitude, address.longitude]);
@@ -101,10 +101,9 @@ class VisitMapScreenController extends Component {
     }
 
     static getUpdateOrderedVisitList(visitList, showCompleted) {
-        if (showCompleted) { return visitList; }
         const updatedList = [];
         for (let i = 0; i < visitList.length; i++) {
-            if (visitList[i].getAddress().coordinates && !visitList[i].isDone) updatedList.push(visitList[i]);
+            if (visitList[i].getAddress().coordinates && (!visitList[i].isDone || showCompleted)) updatedList.push(visitList[i]);
         }
         return updatedList;
     }
