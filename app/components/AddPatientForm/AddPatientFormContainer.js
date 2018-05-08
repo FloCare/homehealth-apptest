@@ -21,6 +21,7 @@ class AddPatientFormContainer extends Component {
                 zip: props.zip || null,
                 city: props.city || null,
                 state: props.state || null,
+                country: props.country || null,
                 primaryContact: props.primaryContact || null,
                 emergencyContact: props.emergencyContact || null,
                 //diagnosis: props.diagnosis || null,
@@ -105,6 +106,7 @@ class AddPatientFormContainer extends Component {
                 zip: null,
                 city: null,
                 state: null,
+                country: null,
                 primaryContact: null,
                 emergencyContact: null,
                 //diagnosis: null,
@@ -141,11 +143,12 @@ class AddPatientFormContainer extends Component {
                         if (this.state.value.lat && this.state.value.long) {
                             patient.address = {
                                 addressID: this.state.value.addressID,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
-                                city: this.state.value.city ? this.state.value.city.toString() : '',
-                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
+                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
+                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
+                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
                                 isValidated: true
                             };
                             patient.address.coordinates = {
@@ -155,11 +158,12 @@ class AddPatientFormContainer extends Component {
                         } else {
                             patient.address = {
                                 addressID: this.state.value.addressID,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
-                                city: this.state.value.city ? this.state.value.city.toString() : '',
-                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
+                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
+                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
+                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
                                 isValidated: false
                             };
                         }
@@ -167,10 +171,10 @@ class AddPatientFormContainer extends Component {
                         // Edit the patient info
                         floDB.create(Patient.schema.name, {
                             patientID: this.state.value.patientID,
-                            name: this.state.value.name ? this.state.value.name.toString() : '',
-                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString()) : '',
-                            emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString()) : '',
-                            notes: this.state.value.notes ? this.state.value.notes.toString() : '',
+                            name: this.state.value.name ? this.state.value.name.toString().trim() : '',
+                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString().trim()) : '',
+                            emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString().trim()) : '',
+                            notes: this.state.value.notes ? this.state.value.notes.toString().trim() : '',
                             timestamp: 0,                                   // Todo: Add a timestmap
                         }, this.edit);
                     });
@@ -192,10 +196,10 @@ class AddPatientFormContainer extends Component {
                         // Add the patient
                         const patient = floDB.create(Patient.schema.name, {
                             patientID: patientId,
-                            name: this.state.value.name ? this.state.value.name.toString() : '',
-                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString()) : '',
-                            emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString()) : '',
-                            notes: this.state.value.notes ? this.state.value.notes.toString() : '',
+                            name: this.state.value.name ? this.state.value.name.toString().trim() : '',
+                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString().trim()) : '',
+                            emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString().trim()) : '',
+                            notes: this.state.value.notes ? this.state.value.notes.toString().trim() : '',
                             timestamp: 0,                                   // Todo: Add a timestmap
                         });
 
@@ -203,11 +207,12 @@ class AddPatientFormContainer extends Component {
                         if (this.state.value.lat && this.state.value.long) {
                             patient.address = {
                                 addressID: addressId,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
-                                city: this.state.value.city ? this.state.value.city.toString() : '',
-                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
+                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
+                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
+                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
                                 isValidated: true
                             };
                             patient.address.coordinates = {
@@ -217,11 +222,12 @@ class AddPatientFormContainer extends Component {
                         } else {
                             patient.address = {
                                 addressID: addressId,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
-                                city: this.state.value.city ? this.state.value.city.toString() : '',
-                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
+                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
+                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
+                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
                                 isValidated: false
                             };
                         }

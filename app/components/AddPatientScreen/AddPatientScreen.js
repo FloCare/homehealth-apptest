@@ -18,6 +18,7 @@ class AddPatientScreen extends Component {
             zip,
             city,
             state,
+            country,
             apartmentNo,
             primaryContact,
             emergencyContact,
@@ -38,6 +39,7 @@ class AddPatientScreen extends Component {
                     zip={zip}
                     city={city}
                     state={state}
+                    country={country}
                     primaryContact={primaryContact}
                     emergencyContact={emergencyContact}
                     notes={notes}

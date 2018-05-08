@@ -63,6 +63,7 @@ class AddPatientScreenContainer extends Component {
                     zip={values.zip}
                     city={values.city}
                     state={values.state}
+                    country={null}
                     primaryContact={values.primaryContact}
                     emergencyContact={values.emergencyContact}
                     notes={values.notes}
