@@ -3,6 +3,7 @@ import {Button} from 'react-native-elements';
 import React from 'react';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
+import {PrimaryColor} from '../../utils/constants';
 
 function VisitListScreen(props) {
     return (
@@ -23,7 +24,7 @@ function VisitListScreen(props) {
                 onPress={props.onAddVisitPress}
                 containerViewStyle={{flexDirection: 'row', marginLeft: 0, marginRight: 0}}
                 buttonStyle={{flex: 1}}
-                backgroundColor={'#45ceb1'}
+                backgroundColor={PrimaryColor}
             />
         </View>
         );

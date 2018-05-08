@@ -4,9 +4,10 @@ import {Text} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
+import {PrimaryColor} from '../../utils/constants';
 
 export function VisitSummary(props) {
-    const primaryColor = '#45ceb1';
+    const primaryColor = PrimaryColor;
     const secondary = '#34da92';
     return (
         <LinearGradient

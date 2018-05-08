@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Image, Text} from 'react-native';
+import {PrimaryColor} from '../../utils/constants';
 
 function MapMarker(props) {
     return (
@@ -7,7 +8,7 @@ function MapMarker(props) {
             <Image
                 source={props.type === 'patient' ? require('../../../resources/patient.png') : require('../../../resources/pin.png')}
             />
-            <View style={{height: 25, width: 25, borderRadius: 12.5, borderColor: '#45ceb1', borderWidth: 1.5, backgroundColor: 'white', marginLeft: 3}} >
+            <View style={{height: 25, width: 25, borderRadius: 12.5, borderColor: PrimaryColor, borderWidth: 1.5, backgroundColor: 'white', marginLeft: 3}} >
                 <Text style={{alignSelf: 'center', justifySelf: 'center'}}>
                     {props.label}
                 </Text>

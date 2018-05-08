@@ -1,3 +1,5 @@
+import {PrimaryColor} from '../../utils/constants';
+
 const styles = {
     parentContainerStyle: {
         flex: 1
@@ -15,7 +17,7 @@ const styles = {
         shadowOpacity: 1,
         borderStyle: 'solid',
         borderWidth: 1,
-        borderColor: '#45ceb1'
+        borderColor: PrimaryColor
     },
     containerStyle: {
         margin: 14,
@@ -75,10 +77,10 @@ const styles = {
         borderRadius: 3,
         padding: 8,
         width: '100%',
-        backgroundColor: '#45ceb1'
+        backgroundColor: PrimaryColor
     },
     buttonStyle: {
-        backgroundColor: '#45ceb1',
+        backgroundColor: PrimaryColor,
         marginLeft: 0,
         marginRight: 0
     }

@@ -9,17 +9,17 @@ import {
 import styles from './styles';
 import {PrimaryColor} from '../../utils/constants';
 
-const CustomMenu = (props) => {
-    const {style, children, layouts, ...other} = props;
-    //const position = {top: layouts.triggerLayout.y, left: layouts.triggerLayout.x};
-    const position = {top: layouts.optionsLayout.height, left: layouts.optionsLayout.width};
-    console.log('position:', position);
-    return (
-        <View {...other} style={[style, position]}>
-            {children}
-        </View>
-    );
-};
+// const CustomMenu = (props) => {
+//     const {style, children, layouts, ...other} = props;
+//     //const position = {top: layouts.triggerLayout.y, left: layouts.triggerLayout.x};
+//     const position = {top: layouts.optionsLayout.height, left: layouts.optionsLayout.width};
+//     console.log('position:', position);
+//     return (
+//         <View {...other} style={[style, position]}>
+//             {children}
+//         </View>
+//     );
+// };
 
 class SectionedPatientList extends Component {
     constructor(props) {
@@ -33,7 +33,7 @@ class SectionedPatientList extends Component {
         if (item.patientID === selectedPatient) {
             return (
                 <View
-                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#45ceb1'}}
+                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: PrimaryColor}}
                 >
                     <View style={{flex: 10, flexDirection: 'row'}}>
                         <TouchableOpacity
