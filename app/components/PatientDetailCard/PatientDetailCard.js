@@ -219,7 +219,6 @@ const PatientDetailCard = (props) => {
                 buttonStyle={styles.buttonStyle}
                 title='Add Visit'
                 onPress={onPressAddVisit}
-                large
             />
         </View>
     );

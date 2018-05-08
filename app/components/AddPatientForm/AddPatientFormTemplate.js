@@ -32,7 +32,7 @@ const PatientFormTemplate = (locals) => {
             <View style={styles.margin}>
                 {locals.inputs.emergencyContact}
             </View>
-            <View style={styles.margin}>
+            <View style={{...styles.margin, marginBottom: 30}}>
                 {locals.inputs.notes}
             </View>
         </View>

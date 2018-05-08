@@ -19,11 +19,10 @@ function VisitListScreen(props) {
                 onOrderChange={props.onOrderChange}
             />
             <Button
-                large
                 title='ADD VISIT'
                 onPress={props.onAddVisitPress}
                 containerViewStyle={{flexDirection: 'row', marginLeft: 0, marginRight: 0}}
-                buttonStyle={{flex: 1}}
+                buttonStyle={{flex: 1, height: 50}}
                 backgroundColor={PrimaryColor}
             />
         </View>

@@ -110,11 +110,10 @@ function AddVisitsScreen(props) {
         <View style={{flex: 1}}>
             {getComponentToDisplayBasedOnProps(props)}
             <Button
-                large
                 title='Done'
                 onPress={props.onDone}
                 containerViewStyle={{flexDirection: 'row', marginLeft: 0, marginRight: 0}}
-                buttonStyle={{flex: 1}}
+                buttonStyle={{flex: 1, height: 50}}
                 backgroundColor={PrimaryColor}
             />
         </View>

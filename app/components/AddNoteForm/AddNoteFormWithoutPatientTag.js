@@ -103,7 +103,6 @@ const AddNoteFormWithoutPatientTag = (props) => {
                 onPress={handleSubmit}
                 containerViewStyle={{marginLeft: 0, marginRight: 0}}
                 buttonStyle={styles.buttonStyle}
-                large
             />
         </View>
     );
