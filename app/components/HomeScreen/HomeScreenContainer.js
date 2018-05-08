@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Alert} from 'react-native';
+import {View, Alert, NetInfo} from 'react-native';
 import moment from 'moment';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
@@ -7,6 +7,7 @@ import {screenNames} from '../../utils/constants';
 import Fab from '../common/Fab';
 import {addListener} from '../../utils/utils';
 import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
+import {HandleConnectionChange} from '../../utils/connectionUtils';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -29,6 +30,17 @@ class HomeScreenContainer extends Component {
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
         addListener(this.onOrderChange);
+    }
+
+    componentDidMount() {
+        NetInfo.getConnectionInfo().then((connectionInfo) => {
+            console.log(`Initial, type:  ${connectionInfo.type}, effectiveType: ${connectionInfo.effectiveType}`);
+        });
+
+        NetInfo.addEventListener(
+            'connectionChange',
+            HandleConnectionChange
+        );
     }
 
     onNavigatorEvent(event) {
@@ -65,6 +77,13 @@ class HomeScreenContainer extends Component {
         Alert.alert(
             'Patient Added',
             'Please navigate to the patient lists to view the patient.',
+        );
+    }
+
+    componentWillUnMount() {
+        NetInfo.removeEventListener(
+            'connectionChange',
+            HandleFirstConnectivityChange
         );
     }
 

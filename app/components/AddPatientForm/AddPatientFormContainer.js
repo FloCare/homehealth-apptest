@@ -138,20 +138,29 @@ class AddPatientFormContainer extends Component {
                         const patient = floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
                         // Edit the corresponding address info
-                        patient.address = {
-                            addressID: this.state.value.addressID,
-                            streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
-                            apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
-                            zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
-                            city: this.state.value.city ? this.state.value.city.toString() : '',
-                            state: this.state.value.state ? this.state.value.state.toString() : ''
-                        };
-
-                        // Edit the latLong info
                         if (this.state.value.lat && this.state.value.long) {
+                            patient.address = {
+                                addressID: this.state.value.addressID,
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
+                                city: this.state.value.city ? this.state.value.city.toString() : '',
+                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                isValidated: true
+                            };
                             patient.address.coordinates = {
                                 latitude: this.state.value.lat,
                                 longitude: this.state.value.long
+                            };
+                        } else {
+                            patient.address = {
+                                addressID: this.state.value.addressID,
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
+                                city: this.state.value.city ? this.state.value.city.toString() : '',
+                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                isValidated: false
                             };
                         }
 
@@ -191,20 +200,29 @@ class AddPatientFormContainer extends Component {
                         });
 
                         // Add the corresponding address
-                        patient.address = {
-                            addressID: addressId,
-                            streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
-                            apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
-                            zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
-                            city: this.state.value.city ? this.state.value.city.toString() : '',
-                            state: this.state.value.state ? this.state.value.state.toString() : ''
-                        };
-
-                        // Add a latLong if present
                         if (this.state.value.lat && this.state.value.long) {
+                            patient.address = {
+                                addressID: addressId,
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
+                                city: this.state.value.city ? this.state.value.city.toString() : '',
+                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                isValidated: true
+                            };
                             patient.address.coordinates = {
                                 latitude: this.state.value.lat,
                                 longitude: this.state.value.long
+                            };
+                        } else {
+                            patient.address = {
+                                addressID: addressId,
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString() : '',
+                                city: this.state.value.city ? this.state.value.city.toString() : '',
+                                state: this.state.value.state ? this.state.value.state.toString() : '',
+                                isValidated: false
                             };
                         }
 

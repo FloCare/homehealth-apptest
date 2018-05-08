@@ -91,7 +91,7 @@ const PatientDetailCard = (props) => {
             {coordinates &&
             <PatientDetailMapComponent
                 patientCoordinates={coordinates}
-                patientAddress={address.streetAddress}
+                patientAddress={address.formattedAddress}
                 onRegionChangeComplete={showCallout}
                 setMarkerRef={setMarkerRef}
             />
