@@ -174,7 +174,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     getFlatAddress(addressObject) {
-        return addressObject.streetAddress;
+        return addressObject.formattedAddress;
     }
 
     getFlatPatientItem(patient) {

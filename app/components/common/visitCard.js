@@ -50,7 +50,7 @@ function VisitCard({isDoneToggle, navigator}) {
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flex: 1}}>
                             <Text style={styles.nameStyle}>{visit.getAssociatedName()}</Text>
-                            <Text style={styles.addressStyle}>{visit.getAddress().streetAddress}</Text>
+                            <Text style={styles.addressStyle}>{visit.getAddress().formattedAddress}</Text>
                         </View>
                         <CustomCheckBox
                             checked={visit.isDone}
