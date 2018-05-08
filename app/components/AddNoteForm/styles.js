@@ -1,6 +1,8 @@
+import {PrimaryColor} from '../../utils/constants';
+
 const styles = {
     buttonStyle: {
-        backgroundColor: '#45ceb1',
+        backgroundColor: PrimaryColor,
         marginLeft: 0,
         marginRight: 0
     }

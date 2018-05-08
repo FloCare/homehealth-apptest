@@ -5,7 +5,8 @@ import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
 import {floDB, Patient, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
-import {makeCallbacks} from "../../utils/utils";
+import {makeCallbacks} from '../../utils/utils';
+import {PrimaryColor} from '../../utils/constants';
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -125,14 +126,14 @@ class AddVisitsForPatientScreen extends Component {
                         customDatesStyles={[
                             {
                                 startDate: this.state.date.valueOf(),
-                                dateContainerStyle: {backgroundColor: '#45ceb1', borderRadius: 10},
+                                dateContainerStyle: {backgroundColor: PrimaryColor, borderRadius: 10},
                                 dateNameStyle: {color: 'white'},
                                 dateNumberStyle: {color: 'white'},
                             },
                             {
                                 startDate: moment().utc().startOf('day').valueOf(),
-                                dateNameStyle: {color: '#45ceb1'},
-                                dateNumberStyle: {color: '#45ceb1'},
+                                dateNameStyle: {color: PrimaryColor},
+                                dateNumberStyle: {color: PrimaryColor},
                             }
                         ]}
                     />
@@ -147,7 +148,7 @@ class AddVisitsForPatientScreen extends Component {
                         marginRight: 0
                     }}
                     buttonStyle={{
-                        backgroundColor: '#45ceb1',
+                        backgroundColor: PrimaryColor,
                         borderRadius: 10,
                         borderTopLeftRadius: 0,
                         borderTopRightRadius: 0
