@@ -18,9 +18,15 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
     const adrAddress = details.adr_address;
     const parsedHTMLAddr = HTMLParser.parse(adrAddress);
 
+    let cityName = null;
     let postalCode = null;
     let countryName = null;
     let stateName = null;
+    try {
+        cityName = parsedHTMLAddr.querySelector('.locality').rawText;
+    } catch (e) {
+        console.log('CityName not found in address:', e);
+    }
     try {
         postalCode = parsedHTMLAddr.querySelector('.postal-code').rawText;
     } catch (e) {
@@ -42,11 +48,16 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
     address.forEach((component) => {
         const types = component.types;
         // Todo: Handle edge cases for city
+        // Todo: Need to remove the LAST OCCURENCE of each component
         if (types.indexOf('locality') > -1) {
             city = component.long_name;
+            if (city && streetAddress.lastIndexOf(`, ${city}`) > -1) {
+                streetAddress = streetAddress.replace(`, ${city}`, '');
+            } else if (cityName && streetAddress.lastIndexOf(`, ${cityName}`) > -1) {
+                streetAddress = streetAddress.replace(`, ${cityName}`, '');
+            }
         }
 
-        // Todo: Need to remove the LAST OCCURENCE of each component
         if (types.indexOf('administrative_area_level_1') > -1) {
             state = component.short_name;
             const stateLongName = component.long_name;
@@ -61,11 +72,11 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
 
         if (types.indexOf('postal_code') > -1) {
             zip = component.long_name;
-            // if (zip && streetAddress.lastIndexOf(` ${zip}`) > -1) {
-            //     streetAddress = streetAddress.replace(` ${zip}`, '');
-            // } else if (postalCode && streetAddress.lastIndexOf(`, ${postalCode}`) > -1) {
-            //     streetAddress = streetAddress.replace(` ${postalCode}`, '');
-            // }
+            if (zip && streetAddress.lastIndexOf(` ${zip}`) > -1) {
+                streetAddress = streetAddress.replace(` ${zip}`, '');
+            } else if (postalCode && streetAddress.lastIndexOf(`, ${postalCode}`) > -1) {
+                streetAddress = streetAddress.replace(` ${postalCode}`, '');
+            }
         }
 
         if (types.indexOf('country') > -1) {
