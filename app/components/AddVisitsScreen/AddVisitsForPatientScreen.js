@@ -29,7 +29,7 @@ class AddVisitsForPatientScreen extends Component {
         const patientId = this.props.patientId;
         console.log('Adding visit for: ', patientId);
         const patient = floDB.objectForPrimaryKey(Patient, patientId);
-        console.log('Patient episodes are: ', patient.episodes);
+        // console.log('Patient episodes are: ', patient.episodes);
         console.log('Date is:', this.state.date.valueOf());
 
         try {
@@ -47,7 +47,7 @@ class AddVisitsForPatientScreen extends Component {
             // Todo: Visit and visitOrder should be inserted in same transaction
             const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
             let visitOrderObj = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
-            console.log('VisitOrderObj: ', visitOrderObj);
+            // console.log('VisitOrderObj: ', visitOrderObj);
             if (!visitOrderObj) {
                 floDB.write(() => {
                     visitOrderObj = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
