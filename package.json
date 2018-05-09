@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "android-dev": "SET ENVFILE=.env.dev && react-native run-android",
+    "android-prod": "SET ENVFILE=.env.prod && react-native run-android",
+    "build-android-prod": "export ENVFILE=.env.prod && cd android && ./gradlew assembleRelease && cd ..",
     "test": "jest"
   },
   "dependencies": {
@@ -17,6 +20,7 @@
     "moment": "^2.22.1",
     "react": "16.3.1",
     "react-native": "0.55.1",
+    "react-native-config": "^0.11.5",
     "react-native-action-button": "^2.8.4",
     "react-native-calendar-strip": "git+https://github.com/harshalbid271/react-native-calendar-strip.git",
     "react-native-elements": "^0.19.1",
