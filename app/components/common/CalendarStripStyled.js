@@ -1,7 +1,7 @@
 import React from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
-import moment from 'moment/moment';
 import {PrimaryColor} from '../../utils/constants';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
 
 function CalendarStripStyled(props) {
     const selectedDateRadius = 40;
@@ -37,7 +37,7 @@ function CalendarStripStyled(props) {
                     dateNumberStyle: {color: 'white'},
                 },
                 {
-                    startDate: moment().utc().startOf('day').valueOf(),
+                    startDate: todayMomentInUTCMidnight(),
                     dateNameStyle: {color: PrimaryColor},
                     dateNumberStyle: {color: PrimaryColor},
                 }

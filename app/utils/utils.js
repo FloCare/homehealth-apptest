@@ -1,7 +1,13 @@
+import moment from 'moment/moment';
+
 const uuidv4 = require('uuid/v4');
 
 function generateUUID() {
     return uuidv4();
+}
+
+function todayMomentInUTCMidnight() {
+    return moment().startOf('day').add(moment().utcOffset(), 'minutes').utc();
 }
 
 //TODO this is a workaround till we bake in redux
@@ -21,4 +27,4 @@ function makeCallbacks() {
     }
 }
 
-export {generateUUID, addListener, removeListener, makeCallbacks};
+export {generateUUID, addListener, removeListener, makeCallbacks, todayMomentInUTCMidnight};

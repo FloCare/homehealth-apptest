@@ -74,13 +74,14 @@ class VisitMapScreenController extends Component {
     }
 
     async getAllPolylines() {
+        console.log(`attempting polyline fetch${this.state.visitOrderList.length}`);
+
         if (this.state.visitOrderList.length < 2) { return; }
         const newPolylines = [];
         const boundsCoordinates = [];
         let totalDistance;
         let noErrorFlag = true;
         //TODO safety checks
-        // console.log(`attempting polyline fetch${this.state.orderedVisitIDListObject.length}`);
 
         try {
             const geoDataObject = await MapUtils.getProcessedDataForOrderedList(this.state.visitOrderList.map(visit => visit.getAddress().coordinates));

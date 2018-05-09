@@ -5,14 +5,14 @@ import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
 import {floDB, Patient, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
-import {makeCallbacks} from '../../utils/utils';
+import {makeCallbacks, todayMomentInUTCMidnight} from '../../utils/utils';
 import {PrimaryColor} from '../../utils/constants';
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: moment().utc().startOf('day')
+            date: todayMomentInUTCMidnight()
         };
         this.onDateSelected = this.onDateSelected.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -29,7 +29,7 @@ class AddVisitsForPatientScreen extends Component {
         const patientId = this.props.patientId;
         console.log('Adding visit for: ', patientId);
         const patient = floDB.objectForPrimaryKey(Patient, patientId);
-        console.log('Patient episodes are: ', patient.episodes);
+        // console.log('Patient episodes are: ', patient.episodes);
         console.log('Date is:', this.state.date.valueOf());
 
         try {
@@ -48,7 +48,7 @@ class AddVisitsForPatientScreen extends Component {
             // Todo: Check if this can be improved
             // Todo: Visit and visitOrder should be inserted in same transaction
             let visitOrderObj = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
-            console.log('VisitOrderObj: ', visitOrderObj);
+            // console.log('VisitOrderObj: ', visitOrderObj);
             if (!visitOrderObj) {
                 floDB.write(() => {
                     visitOrderObj = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
@@ -126,7 +126,7 @@ class AddVisitsForPatientScreen extends Component {
                                 dateNumberStyle: {color: 'white'},
                             },
                             {
-                                startDate: moment().utc().startOf('day').valueOf(),
+                                startDate: todayMomentInUTCMidnight().valueOf(),
                                 dateNameStyle: {color: PrimaryColor},
                                 dateNumberStyle: {color: PrimaryColor},
                             }
