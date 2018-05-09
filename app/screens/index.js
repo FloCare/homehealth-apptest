@@ -1,11 +1,9 @@
 import {Navigation} from 'react-native-navigation';
-import moment from 'moment/moment';
 import {screenNames} from '../utils/constants';
 import AddPatientScreenContainer from './AddPatientScreenContainer';
 import PatientDetailScreenContainer from './PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
-import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
@@ -14,6 +12,7 @@ import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScr
 import {ScreenWithCalendarComponent} from '../components/common/screenWithCalendarComponent';
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
+import {todayMomentInUTCMidnight} from "../utils/utils";
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
