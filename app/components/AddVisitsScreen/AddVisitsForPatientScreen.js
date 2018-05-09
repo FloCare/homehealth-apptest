@@ -34,18 +34,19 @@ class AddVisitsForPatientScreen extends Component {
 
         try {
             // Add a visit object
+            let newVisit;
             floDB.write(() => {
                 // For this patient, for that episode, push a new visit
                 const visitID = `${Math.random().toString()}_Visit`;
-                patient.episodes[0].visits.push({
+                newVisit = floDB.create(Visit, {
                     visitID,
                     midnightEpochOfVisit: this.state.date.valueOf()
                 });
+                patient.episodes[0].visits.push(newVisit);
             });
 
             // Todo: Check if this can be improved
             // Todo: Visit and visitOrder should be inserted in same transaction
-            const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
             let visitOrderObj = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
             console.log('VisitOrderObj: ', visitOrderObj);
             if (!visitOrderObj) {
@@ -53,10 +54,7 @@ class AddVisitsForPatientScreen extends Component {
                     visitOrderObj = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
                 });
             }
-            if (visitOrderObj && visitOrderObj.length > 0) {
-                visitOrderObj.visitList.push(patient.episodes[0].visit);
-            }
-            const visitListByID = arrayToMap(visitOrderObj.visitList, 'visitID');
+
             let indexOfFirstDoneVisit;
             for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObj.visitList.length && !visitOrderObj.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {}
 
@@ -64,11 +62,8 @@ class AddVisitsForPatientScreen extends Component {
             const newVisitOrder = [];
             newVisitOrder.push(...visitOrderObj.visitList.slice(0, indexOfFirstDoneVisit));
 
-            for (let j = 0; j < allVisits.length; j++) {
-                if (!visitListByID.has(allVisits[j].visitID)) {
-                    newVisitOrder.push(allVisits[j]);
-                }
-            }
+            newVisitOrder.push(newVisit);
+
             newVisitOrder.push(...visitOrderObj.visitList.slice(indexOfFirstDoneVisit, visitOrderObj.visitList.length));
 
             floDB.write(() => {
