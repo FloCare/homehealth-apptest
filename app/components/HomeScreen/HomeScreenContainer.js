@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import {View, Alert, NetInfo} from 'react-native';
-import moment from 'moment';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames} from '../../utils/constants';
 import Fab from '../common/Fab';
-import {addListener} from '../../utils/utils';
+import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
 
@@ -13,7 +12,7 @@ class HomeScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: moment().utc().startOf('day')
+            date: todayMomentInUTCMidnight()
         };
 
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);

@@ -23,7 +23,7 @@ const RegisterScreens = () => {
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
     //
-    //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, moment().utc().startOf('day').valueOf());
+    //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
     //     floDB.write(() => {
     //         visitOrder.visitList = floDB.objects(Visit);
     //     });

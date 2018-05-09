@@ -130,7 +130,7 @@ class PatientDetailScreenContainer extends Component {
             const episode = patientDetails.episodes[0];
             // const visits = episode.visits.filtered(
             //     'midnightEpochOfVisit==$0',
-            //     moment().utc().startOf('day').valueOf()).sorted('isDone');
+            //     todayMomentInUTCMidnight().valueOf()).sorted('isDone');
             // const visits = episode.visits.sorted([['midnightEpochOfVisit', true], ['miles', false])
 
             const completedVisits = episode.visits.filtered('isDone = true').sorted('midnightEpochOfVisit');

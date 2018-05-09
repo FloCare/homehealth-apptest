@@ -1,5 +1,5 @@
-import moment from 'moment';
 import * as CollectionUtils from '../collectionUtils';
+import {todayMomentInUTCMidnight} from '../utils';
 
 const Realm = require('realm');
 
@@ -244,7 +244,7 @@ function CreateAndSaveDummies() {
     console.log('Creating Realm objects');
     console.log('==========================================');
 
-    const midnightEpoch = moment().utc().startOf('day').valueOf();
+    const midnightEpoch = todayMomentInUTCMidnight().valueOf();
 
     let orderObject = floDB.objectForPrimaryKey(VisitOrder, midnightEpoch);
     if (!orderObject) {

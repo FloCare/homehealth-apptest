@@ -75,11 +75,11 @@ const PatientDetailCard = (props) => {
     let nextVisitTimestamp = null;
     const visitSectionData = [];
     if (lastVisit) {
-        lastVisitTimestamp = moment.utc(lastVisit.midnightEpochOfVisit).local();
+        lastVisitTimestamp = moment.utc(lastVisit.midnightEpochOfVisit);
         visitSectionData.push(`Last visited by You On "${lastVisitTimestamp.format('YYYY-MMM-DD')}"`);
     }
     if (nextVisit) {
-        nextVisitTimestamp = moment.utc(nextVisit.midnightEpochOfVisit).local();
+        nextVisitTimestamp = moment.utc(nextVisit.midnightEpochOfVisit);
         visitSectionData.push(`Next visit scheduled On "${nextVisitTimestamp.format('YYYY-MMM-DD')}"`);
     }
     if (visitSectionData.length === 0) {
