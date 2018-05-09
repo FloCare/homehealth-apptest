@@ -20,7 +20,7 @@
     "react-native-action-button": "^2.8.4",
     "react-native-calendar-strip": "git+https://github.com/harshalbid271/react-native-calendar-strip.git",
     "react-native-elements": "^0.19.1",
-    "react-native-google-places-autocomplete": "^1.3.6",
+    "react-native-google-places-autocomplete": "FloCare/react-native-google-places-autocomplete",
     "react-native-immediate-phone-call": "^1.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.5.0",
     "react-native-linear-gradient": "react-native-community/react-native-linear-gradient",
@@ -30,7 +30,7 @@
     "react-native-sectioned-multi-select": "^0.4.5",
     "react-native-sortable-list": "git+https://github.com/FloCare/react-native-sortable-list.git",
     "react-native-vector-icons": "^4.6.0",
-    "react-native-view-more-text": "^1.4.4",
+    "react-native-view-more-text": "FloCare/react-native-view-more-text",
     "realm": "^2.3.4",
     "tcomb-form-native": "^0.6.11",
     "uuid": "^3.2.1"

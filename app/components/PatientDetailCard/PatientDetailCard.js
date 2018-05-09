@@ -203,6 +203,7 @@ const PatientDetailCard = (props) => {
                             numberOfLines={2}
                             renderViewMore={(e) => renderViewMore(e, onPressAddNotes)}
                             renderViewLess={renderViewLess}
+                            alwaysShowMore
                         >
                             {notes || 'You have not added any note for this patient.'}
                         </ViewMoreText>
