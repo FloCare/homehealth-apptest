@@ -87,16 +87,16 @@ class SectionedPatientList extends Component {
                             />
                             <MenuOptions>
                                 <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
-                                    <Text style={{color: PrimaryColor}}>Add Notes</Text>
+                                    <Text style={styles.menuOptionsStyle}>Add Notes</Text>
                                 </MenuOption>
                                 <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
-                                    <Text style={{color: PrimaryColor}}>Call</Text>
+                                    <Text style={styles.menuOptionsStyle}>Call</Text>
                                 </MenuOption>
                                 <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
-                                    <Text style={{color: PrimaryColor}}>Show on maps</Text>
+                                    <Text style={styles.menuOptionsStyle}>Show on maps</Text>
                                 </MenuOption>
                                 <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
-                                    <Text style={{color: PrimaryColor}}>Add Visit</Text>
+                                    <Text style={styles.menuOptionsStyle}>Add Visit</Text>
                                 </MenuOption>
                             </MenuOptions>
                         </Menu>

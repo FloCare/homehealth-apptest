@@ -9,6 +9,11 @@
     "build-android-prod": "export ENVFILE=.env.prod && cd android && ./gradlew assembleRelease && cd ..",
     "test": "jest"
   },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
+  },
   "dependencies": {
     "@mapbox/polyline": "^1.0.0",
     "fast-html-parser": "^1.0.1",

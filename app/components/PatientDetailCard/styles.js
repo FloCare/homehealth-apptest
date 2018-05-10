@@ -39,10 +39,13 @@ const styles = {
         textAlign: 'left',
         color: '#999999',
     },
-    headerStyle: {
+    fontStyle: {
         fontSize: 18,
+        fontFamily: 'SF-Pro-Text-Regular'
+    },
+    headerStyle: {
         color: '#222222',
-        marginBottom: 5
+        marginBottom: 5,
     },
     dividerStyle: {
         margin: 0,
