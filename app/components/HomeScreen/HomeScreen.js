@@ -1,9 +1,7 @@
 import React from 'react';
-import CalendarStrip from 'react-native-calendar-strip';
-import {Image, TouchableWithoutFeedback, View} from 'react-native';
-import moment from 'moment';
+import {Image, TouchableWithoutFeedback, View, Platform} from 'react-native';
+import {Text} from 'react-native-elements';
 import {VisitSummary} from './VisitSummary';
-import {Button, Text} from 'react-native-elements';
 import EmptyStateButton from '../common/EmptyStateButton';
 import {CalendarStripStyled} from '../common/CalendarStripStyled';
 
@@ -109,7 +107,7 @@ function HomeScreen(props) {
             <CalendarStripStyled
                 dateRowAtBottom
                 showMonth
-                paddingTop={20}
+                paddingTop={Platform.select({ios: 30, android: 20})}
                 date={props.date}
                 noRounding={props.remainingVisitsCount === 0}
                 onDateSelected={props.onDateSelected}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Linking, Alert} from 'react-native';
+import {Linking, Alert, Platform} from 'react-native';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
@@ -10,11 +10,18 @@ import {styles} from '../components/common/styles';
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
         rightButtons: [
-            {
-                icon: require('../../resources/addButton.png'), // for icon button, provide the local image asset name
-                id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                buttonColor: 'white'
-            }
+            Platform.select({
+                android: {
+                    icon: require('../../resources/addButton.png'), // for icon button, provide the local image asset name
+                    id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                    buttonColor: 'white'
+                },
+                ios: {
+                    id: 'add',
+                    systemItem: 'add'
+                }
+            })
+
         ]
     };
 

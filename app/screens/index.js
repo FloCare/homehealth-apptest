@@ -12,7 +12,8 @@ import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScr
 import {ScreenWithCalendarComponent} from '../components/common/screenWithCalendarComponent';
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
-import {todayMomentInUTCMidnight} from "../utils/utils";
+// import {todayMomentInUTCMidnight} from "../utils/utils";
+// import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from "../utils/data/schema";
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {

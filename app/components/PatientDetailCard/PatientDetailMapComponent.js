@@ -6,6 +6,7 @@ import {MapMarker} from '../common/PatientMap/MapMarker';
 export function PatientDetailMapComponent(props) {
     return (
         <MapView
+            provider={'google'}
             scrollEnabled={false}
             zoomEnabled={false}
             rotateEnabled={false}
@@ -22,9 +23,9 @@ export function PatientDetailMapComponent(props) {
                 coordinate={props.patientCoordinates}
                 title={props.patientAddress}
                 ref={props.setMarkerRef}
-                onCalloutPress={() => { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err)) }}
+                onCalloutPress={() => { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err)); }}
                 onPress={() => {
-                    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err))
+                    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err));
                 }}
             >
                 <MapMarker />

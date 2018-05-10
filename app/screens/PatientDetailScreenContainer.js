@@ -1,20 +1,32 @@
 import React, {Component} from 'react';
+import {Platform} from 'react-native';
 import update from 'immutability-helper';
-import moment from 'moment/moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
 
 class PatientDetailScreenContainer extends Component {
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                icon: require('../../resources/editButton.png'),
-                id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                buttonColor: '#fffff'
+    static navigatorButtons = Platform.select({
+            ios: {
+                rightButtons: [
+                    {
+                        id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                        buttonColor: '#fffff',
+                        systemItem: 'edit' //iOS only
+                    }
+                ]
+            },
+            android: {
+                rightButtons: [
+                    {
+                        icon: require('../../resources/editButton.png'),
+                        id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                        buttonColor: '#fffff',
+                    }
+                ]
             }
-        ]
-    };
+        }
+    );
 
     constructor(props) {
         super(props);
@@ -104,7 +116,7 @@ class PatientDetailScreenContainer extends Component {
     // this is the onPress handler for the navigation header 'Edit' button
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
-            let title = `${this.state.patientDetail.name}`;
+            const title = `${this.state.patientDetail.name}`;
             this.props.navigator.setTitle({
                 title
             });

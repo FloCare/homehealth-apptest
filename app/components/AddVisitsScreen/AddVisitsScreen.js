@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, FlatList} from 'react-native';
-import {SearchBar, Button, Text} from 'react-native-elements';
+import {SearchBar, Text} from 'react-native-elements';
 import {Tag} from '../common/tag';
 import EmptyStateButton from '../common/EmptyStateButton';
-import {PrimaryColor} from '../../utils/constants';
+import {SimpleButton} from "../common/SimpleButton";
 
 //TODO improve efficiency
 //TODO mark the places already selected for visit as such
@@ -109,12 +109,10 @@ function AddVisitsScreen(props) {
     return (
         <View style={{flex: 1}}>
             {getComponentToDisplayBasedOnProps(props)}
-            <Button
+            <SimpleButton
                 title='Done'
                 onPress={props.onDone}
-                containerViewStyle={{flexDirection: 'row', marginLeft: 0, marginRight: 0}}
-                buttonStyle={{flex: 1, height: 50}}
-                backgroundColor={PrimaryColor}
+                style={{height: 50}}
             />
         </View>
     );
