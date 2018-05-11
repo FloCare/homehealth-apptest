@@ -40,7 +40,7 @@ function getComponentToDisplayBasedOnProps(props) {
                         fontWeight: '300',
                         fontSize: 20
                     }}
-                >No Patients</Text>
+                >Let's get you started</Text>
 
                 <Text
                     style={{
@@ -50,7 +50,7 @@ function getComponentToDisplayBasedOnProps(props) {
                         marginTop: 5,
                     }}
                 >
-                    When you add patients, you'll see them here
+                    Add Patients to get started. Adding Patients will allow you to Add Visits
                 </Text>
                 <EmptyStateButton
                     onPress={props.onPressAddPatient}
