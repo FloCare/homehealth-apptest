@@ -4,6 +4,7 @@ import {Text} from 'react-native-elements';
 import {VisitSummary} from './VisitSummary';
 import EmptyStateButton from '../common/EmptyStateButton';
 import {CalendarStripStyled} from '../common/CalendarStripStyled';
+import {Images} from '../../Images';
 
 function getComponentToDisplayBasedOnVisitCount(props) {
     if (props.remainingVisitsCount === 0) {
@@ -31,7 +32,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                         {/*// underlayColor={primaryColor}>*/}
                         <Image
                             style={{resizeMode: 'contain'}}
-                            source={require('../../../resources/map.png')}
+                            source={Images.map}
                         />
                     </TouchableWithoutFeedback>
 
@@ -39,7 +40,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                     <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
                         <Image
                             style={{resizeMode: 'contain'}}
-                            source={require('../../../resources/list.png')}
+                            source={Images.list}
                         />
                     </TouchableWithoutFeedback>
                 </View>

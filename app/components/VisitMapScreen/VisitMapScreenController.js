@@ -8,6 +8,7 @@ import {MapMarker} from './MapMarker';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor} from '../../utils/constants';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
+import {Images} from "../../Images";
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
@@ -15,13 +16,13 @@ class VisitMapScreenController extends Component {
     static navigatorButtons = {
         rightButtons: [
             {
-                icon: require('../../../resources/listView.png'),
+                icon: Images.listView,
                 id: 'list-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                 buttonColor: '#fffff'
             },
             {
                 id: 'calendar-picker',
-                icon: require('../../../resources/calenderSelected.png'),
+                icon: Images.calendarSelected
             }
         ]
     };
@@ -189,7 +190,7 @@ function MapPanel(props) {
                     }}
                 >
                     <Image
-                        source={require('../../../resources/time.png')}
+                        source={Images.time}
                     />
                     <Text style={{paddingLeft: 20, color: 'white'}}>
                         {props.totalDistance}

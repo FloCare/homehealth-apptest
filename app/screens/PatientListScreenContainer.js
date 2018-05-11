@@ -6,13 +6,14 @@ import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
+import {Images} from '../Images';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
         rightButtons: [
             Platform.select({
                 android: {
-                    icon: require('../../resources/addButton.png'), // for icon button, provide the local image asset name
+                    icon: Images.addButton, // for icon button, provide the local image asset name
                     id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                     buttonColor: 'white'
                 },
@@ -64,7 +65,7 @@ class PatientListScreenContainer extends Component {
 
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
-            let title = `Patients (${this.state.patientCount})`;
+            const title = `Patients (${this.state.patientCount})`;
             this.props.navigator.setTitle({
                 title 
             });

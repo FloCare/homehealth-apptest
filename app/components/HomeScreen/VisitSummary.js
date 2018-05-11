@@ -5,6 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor} from '../../utils/constants';
+import {Images} from '../../Images';
 
 export function VisitSummary(props) {
     const primaryColor = PrimaryColor;
@@ -55,7 +56,7 @@ export function VisitSummary(props) {
                         {/*// underlayColor={primaryColor}>*/}
                         <Image
                             style={{resizeMode: 'contain'}}
-                            source={require('../../../resources/map.png')}
+                            source={Images.map}
                         />
                     </TouchableWithoutFeedback>
 
@@ -63,7 +64,7 @@ export function VisitSummary(props) {
                     <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
                         <Image
                             style={{resizeMode: 'contain'}}
-                            source={require('../../../resources/list.png')}
+                            source={Images.list}
                         />
                     </TouchableWithoutFeedback>
                 </View>

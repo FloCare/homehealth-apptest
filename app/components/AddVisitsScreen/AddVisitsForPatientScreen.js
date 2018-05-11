@@ -7,6 +7,7 @@ import {floDB, Patient, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
 import {makeCallbacks, todayMomentInUTCMidnight} from '../../utils/utils';
 import {PrimaryColor} from '../../utils/constants';
+import {Images} from "../../Images";
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -100,7 +101,7 @@ class AddVisitsForPatientScreen extends Component {
                         Add Visit
                     </Text>
                     <TouchableHighlight onPress={() => this.props.navigator.dismissLightBox()}>
-                        <Image source={require('../../../resources/close.png')} />
+                        <Image source={Images.close} />
                     </TouchableHighlight>
                 </View>
                 <Divider

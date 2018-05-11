@@ -10,6 +10,7 @@ import {styles as componentStyles} from '../common/styles';
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor} from '../../utils/constants';
+import {Images} from "../../Images";
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
@@ -99,7 +100,7 @@ const PatientDetailCard = (props) => {
 
             <ScrollView>
                 <View style={styles.containerStyle}>
-                    <Image source={require('../../../resources/elliotLugo.png')} />
+                    <Image source={Images.elliotLugo} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Primary Contact
@@ -132,7 +133,7 @@ const PatientDetailCard = (props) => {
 
                 {emergencyContact !== '' && emergencyContact &&
                 <View style={styles.containerStyle}>
-                    <Image source={require('../../../resources/elliotLugo.png')} />
+                    <Image source={Images.elliotLugo} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Emergency Contact
@@ -167,7 +168,7 @@ const PatientDetailCard = (props) => {
                 }
 
                 <View style={[styles.containerStyle, {opacity: 0.3}]}>
-                    <Image source={require('../../../resources/diagnosis.png')} />
+                    <Image source={Images.diagnosis} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Diagnosis
@@ -179,7 +180,7 @@ const PatientDetailCard = (props) => {
                 <Divider style={styles.dividerStyle} />
 
                 <View style={styles.containerStyle}>
-                    <Image source={require('../../../resources/visits.png')} />
+                    <Image source={Images.visits} />
                     <View style={{marginLeft: 14}}>
                         <Text style={styles.headerStyle}>
                             Visits
@@ -192,7 +193,7 @@ const PatientDetailCard = (props) => {
 
                 <View style={styles.containerStyle}>
                     <Image
-                        source={require('../../../resources/notes.png')}
+                        source={Images.notes}
                     />
                     <View style={{marginLeft: 14, marginRight: 16}}>
                         <Text style={styles.headerStyle}>

@@ -1,6 +1,7 @@
 import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from './screens';
 import {screenNames, PrimaryColor} from './utils/constants';
+import {Images} from './Images';
 
 RegisterScreens();
 
@@ -17,52 +18,19 @@ const navigatorStyle = {
 
 Navigation.startTabBasedApp({
     tabs: [
-        // {
-        //     label: 'two',
-        //     icon: require('../resources/ic_fiber_pin_2x.png'),
-        //     screen: 'VisitsList'
-        // },
-        // {
-        //     title: 'Visits',
-        //     label: 'two',
-        //     icon: require('../resources/ic_fiber_pin_2x.png'),
-        //     screen: 'Visit2',
-        //     navigatorStyle
-        // },
         {
             title: 'Home Screen',
             label: 'Today',
-            icon: require('../resources/calendar.png'),
+            icon: Images.calendar,
             screen: screenNames.homeScreen,
             navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
         },
-        // {
-        //     title: 'Visits Screen',
-        //     label: 'visits',
-        //     icon: require('../resources/ic_location_on_black_24dp.png'),
-        //     screen: screenNames.visitListScreen,
-        //     navigatorStyle
-        // },
-        // {
-        //     title: 'Add new patient',
-        //     label: 'add',
-        //     icon: require('../resources/ic_location_on_black_24dp.png'),
-        //     screen: screenNames.addPatient,
-        //     navigatorStyle
-        // },
         {
             title: 'Patients',
             label: 'Patients',
-            icon: require('../resources/person_ic.png'),
+            icon: Images.person_ic,
             screen: screenNames.patientList,
         }
-        // {
-        //     title: 'RealmTest',
-        //     label: 'realmTest',
-        //     icon: require('../resources/ic_location_on_black_24dp.png'),
-        //     screen: 'RealmTest',
-        //     navigatorStyle
-        // }
     ],
     appStyle: navigatorStyle,
     tabsStyle: navigatorStyle

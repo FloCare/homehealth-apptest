@@ -6,6 +6,7 @@ import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {Diagnosis} from './Diagnosis';
 import {screenNames, PrimaryColor} from '../../utils/constants';
+import {Images} from "../../Images";
 
 function pushPatientDetailScreen(navigator, patient) {
     if (patient) {
@@ -75,7 +76,7 @@ function VisitCard({isDoneToggle, navigator}) {
                         >
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: phoneNumber ? 1 : 0.4}}>
                                 <Image
-                                    source={require('../../../resources/call.png')}
+                                    source={Images.call}
                                     style={!phoneNumber ? {tintColor: 'black'} : {}}
                                 />
                                 <Text
@@ -94,7 +95,7 @@ function VisitCard({isDoneToggle, navigator}) {
                         >
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: coordinates ? 1 : 0.4}}>
                                 <Image
-                                    source={require('../../../resources/navigate.png')}
+                                    source={Images.navigate}
                                     style={!coordinates ? {tintColor: 'black'} : {}}
                                 />
                                 <Text

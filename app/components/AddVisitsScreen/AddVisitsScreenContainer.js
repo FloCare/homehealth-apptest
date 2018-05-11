@@ -7,6 +7,7 @@ import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema'
 import {arrayToMap} from '../../utils/collectionUtils';
 import {screenNames, visitType, PrimaryColor} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
+import {Images} from "../../Images";
 
 const newStop = 'Add new Stop';
 const newPatient = 'Add new Patient';
@@ -48,7 +49,7 @@ class AddVisitsScreenContainer extends Component {
             }),
             {
                 id: 'calendar-picker',
-                icon: require('../../../resources/calenderSelected.png'),
+                icon: Images.calendarSelected,
             }
         ]
     };
@@ -202,7 +203,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     createListItemComponent({item}) {
-        const avatar = item.type === 'patient' ? require('../../../resources/person_ic.png') : require('../../../resources/location.png');
+        const avatar = item.type === 'patient' ? Images.person_ic : Images.location;
         const rightIcon = item.isSelected ? {name: 'check', color: PrimaryColor} : <View />;
         console.log(item);
         console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));

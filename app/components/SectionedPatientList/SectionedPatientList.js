@@ -8,6 +8,7 @@ import {
 } from 'react-native-popup-menu';
 import styles from './styles';
 import {PrimaryColor} from '../../utils/constants';
+import {Images} from '../../Images';
 
 // const CustomMenu = (props) => {
 //     const {style, children, layouts, ...other} = props;
@@ -30,47 +31,9 @@ class SectionedPatientList extends Component {
     }
 
     renderItem(item, selectedPatient, onPressPopupButton) {
-        if (item.patientID === selectedPatient) {
-            return (
-                <View
-                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: PrimaryColor}}
-                >
-                    <View style={{flex: 10, flexDirection: 'row'}}>
-                        <TouchableOpacity
-                            style={{flex: 9, flexDirection: 'column'}}
-                            onPress={({e}) => this.props.onItemPressed({item}, e)}
-                        >
-                            <Text style={styles.nameStyle}>{item.name}</Text>
-                            <Text style={styles.addressStyle}>{item.address.formattedAddress}</Text>
-                        </TouchableOpacity>
-                        <View style={{flex: 1, marginVertical: 15}}>
-                            <Menu rendererProps={{placement: 'top'}}>
-                                <MenuTrigger
-                                    children={<Image source={require('../../../resources/threeDotButton.png')} />}
-                                />
-                                <MenuOptions>
-                                    <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
-                                        <Text style={{color: PrimaryColor}}>Add Notes</Text>
-                                    </MenuOption>
-                                    <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
-                                        <Text style={{color: PrimaryColor}}>Call</Text>
-                                    </MenuOption>
-                                    <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
-                                        <Text style={{color: PrimaryColor}}>Show on maps</Text>
-                                    </MenuOption>
-                                    <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
-                                        <Text style={{color: PrimaryColor}}>Add Visit</Text>
-                                    </MenuOption>
-                                </MenuOptions>
-                            </Menu>
-                        </View>
-                    </View>
-                </View>
-            );
-        }
         return (
             <View
-                style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff'}}
+                style={{paddingLeft: 5, paddingRight: 5, backgroundColor: item.patientID === selectedPatient ? PrimaryColor : '#ffffff'}}
             >
                 <View style={{flex: 10, flexDirection: 'row'}}>
                     <TouchableOpacity
@@ -83,7 +46,7 @@ class SectionedPatientList extends Component {
                     <View style={{flex: 1, marginVertical: 15}}>
                         <Menu rendererProps={{placement: 'top'}}>
                             <MenuTrigger
-                                children={<Image source={require('../../../resources/threeDotButton.png')} />}
+                                children={<Image source={Images.threeDotButton} />}
                             />
                             <MenuOptions>
                                 <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >

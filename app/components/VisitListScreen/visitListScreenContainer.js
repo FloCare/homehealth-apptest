@@ -3,17 +3,18 @@ import CalendarStrip from 'react-native-calendar-strip';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
 import {screenNames} from '../../utils/constants';
+import {Images} from '../../Images';
 
 class VisitListScreenContainer extends Component {
     static navigatorButtons = {
         rightButtons: [
             {
                 id: 'map-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                icon: require('../../../resources/mapView.png'),
+                icon: Images.mapView
             },
             {
                 id: 'calendar-picker',
-                icon: require('../../../resources/calenderSelected.png'),
+                icon: Images.calendarSelected
             }
         ]
     };

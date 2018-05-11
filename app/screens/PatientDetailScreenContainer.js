@@ -4,6 +4,7 @@ import update from 'immutability-helper';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
+import {Images} from '../Images';
 
 class PatientDetailScreenContainer extends Component {
     static navigatorButtons = Platform.select({
@@ -19,7 +20,7 @@ class PatientDetailScreenContainer extends Component {
             android: {
                 rightButtons: [
                     {
-                        icon: require('../../resources/editButton.png'),
+                        icon: Images.editButton,
                         id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                         buttonColor: '#fffff',
                     }
