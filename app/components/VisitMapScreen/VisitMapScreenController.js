@@ -160,8 +160,9 @@ function MapPanel(props) {
     return (
         <View style={{flex: 1}}>
             <MapView
+                provider={'google'}
                 style={{flex: 1}}
-                initialRegion={props.viewport}
+                region={props.viewport}
                 loadingEnabled
             >
                 {props.markerData.map((markerData) =>

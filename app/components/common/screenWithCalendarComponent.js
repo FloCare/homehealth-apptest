@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
+import {View, Platform} from 'react-native';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
 import {CalendarStripStyled} from './CalendarStripStyled';
 
@@ -29,7 +29,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 console.log('Navigator Event received by ScreenWithCalendarComponent');
                 if (event.type === 'NavBarButtonPress') {
                     if (event.id === 'calendar-picker') {
-                        this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown});
+                        if (Platform.OS === 'android') { this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown}); }
                         this.props.navigator.setButtons(this.getNavigatorButtons());
                         this.setState((prevState) => ({shown: !prevState.shown}));
                         console.log('Date change triggered by calendar-picker');

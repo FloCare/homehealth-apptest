@@ -6,7 +6,7 @@ function VisitRow() {
     return (({index, data}) => 
         // console.log(data);
          (
-            <View style={{flexDirection: 'row', marginLeft: 20, marginRight: 20, marginTop: 7.5, marginBotton: 7.5}}>
+            <View style={{flexDirection: 'row', marginLeft: 20, marginRight: 20, marginTop: 3.5, marginBottom: 3.5}}>
                 <View
                     style={{
                         alignContent: 'center',

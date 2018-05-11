@@ -13,6 +13,7 @@ import {ScreenWithCalendarComponent} from '../components/common/screenWithCalend
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 import {todayMomentInUTCMidnight} from "../utils/utils";
+import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from "../utils/data/schema";
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -27,6 +28,7 @@ const RegisterScreens = () => {
     //         visitOrder.visitList = floDB.objects(Visit);
     //     });
     // }
+    console.disableYellowBox = true;
 
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
     Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);

@@ -4,12 +4,16 @@ import {screenNames, PrimaryColor} from './utils/constants';
 
 RegisterScreens();
 
-// const navigatorStyle = {
-//     navBarBackgroundColor: PrimaryColor,
-//     navBarTextColor: '#ffffff',
-//     navBarButtonColor: '#666666',
-//     tabBarBackgroundColor: PrimaryColor,
-// };
+const navigatorStyle = {
+    navBarBackgroundColor: PrimaryColor,
+    navBarTextColor: '#ffffff',
+    navBarButtonColor: 'white',
+    tabBarBackgroundColor: '#f8f8f8',
+    tabBarTranslucent: false,
+    tabBarSelectedButtonColor: PrimaryColor,
+    hideBackButtonTitle: true,
+    statusBarTextColorScheme: 'light'
+};
 
 Navigation.startTabBasedApp({
     tabs: [
@@ -30,7 +34,7 @@ Navigation.startTabBasedApp({
             label: 'Today',
             icon: require('../resources/calendar.png'),
             screen: screenNames.homeScreen,
-            navigatorStyle: {navBarHidden: true}
+            navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
         },
         // {
         //     title: 'Visits Screen',
@@ -60,12 +64,6 @@ Navigation.startTabBasedApp({
         //     navigatorStyle
         // }
     ],
-    appStyle: {
-        navBarBackgroundColor: PrimaryColor,
-        navBarTextColor: '#ffffff',
-        navBarButtonColor: 'white',
-        tabBarBackgroundColor: '#f8f8f8',
-        tabBarTranslucent: false,
-        tabBarSelectedButtonColor: PrimaryColor
-    }
+    appStyle: navigatorStyle,
+    tabsStyle: navigatorStyle
 });
