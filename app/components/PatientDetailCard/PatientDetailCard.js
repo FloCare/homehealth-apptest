@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, Linking, ScrollView, Image} from 'react-native';
-import {Text, Button, Divider, Icon} from 'react-native-elements';
+import {View, ScrollView, Image} from 'react-native';
+import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import ViewMoreText from 'react-native-view-more-text';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -11,16 +11,17 @@ import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor} from '../../utils/constants';
 import {Images} from "../../Images";
+import StyledText from '../common/StyledText';
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
-        <Text style={{color: PrimaryColor}} onPress={onPressAddNotes}>EDIT NOTES</Text>
+        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPressAddNotes}>EDIT NOTES</Text>
     );
 };
 
 const renderViewLess = (onPress) => {
     return (
-        <Text style={{color: PrimaryColor}} onPress={onPress}>View less</Text>
+        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPress}>View less</Text>
     );
 };
 
@@ -29,20 +30,20 @@ const getVisitsView = function (visitSectionData) {
         if (visitSectionData.length > 1) {
             return (
                 <View style={componentStyles.listContainer}>
-                    <Text style={{...styles.visitStyle, opacity: 0.7}}>
+                    <StyledText style={{...styles.fontStyle, ...styles.visitStyle, opacity: 0.7}}>
                         {visitSectionData[0]}
-                    </Text>
-                    <Text style={styles.visitStyle}>
+                    </StyledText>
+                    <StyledText style={{...styles.fontStyle, ...styles.visitStyle}}>
                         {visitSectionData[1]}
-                    </Text>
+                    </StyledText>
                 </View>
             );
         } else {
             return (
                 <View style={componentStyles.listContainer}>
-                    <Text style={{...styles.visitStyle, width: '70%'}}>
+                    <StyledText style={{...styles.fontStyle, ...styles.visitStyle, width: '70%'}}>
                         {visitSectionData[0]}
-                    </Text>
+                    </StyledText>
                 </View>
             );
         }
@@ -102,17 +103,17 @@ const PatientDetailCard = (props) => {
                 <View style={styles.containerStyle}>
                     <Image source={Images.elliotLugo} />
                     <View style={{marginLeft: 14}}>
-                        <Text style={styles.headerStyle}>
+                        <StyledText style={{...styles.headerStyle, ...styles.fontStyle}}>
                             Primary Contact
-                        </Text>
-                        <Text style={{fontSize: 12, color: '#999999'}}>
+                        </StyledText>
+                        <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
                             {primaryContact}
-                        </Text>
+                        </StyledText>
                     </View>
                     <Button
                         title="Call"
                         textStyle={{
-                            fontSize: 18,
+                            ...styles.fontStyle,
                             color: PrimaryColor
                         }}
                         buttonStyle={styles.callButtonStyle}
@@ -135,17 +136,17 @@ const PatientDetailCard = (props) => {
                 <View style={styles.containerStyle}>
                     <Image source={Images.elliotLugo} />
                     <View style={{marginLeft: 14}}>
-                        <Text style={styles.headerStyle}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Emergency Contact
-                        </Text>
-                        <Text style={{fontSize: 12, color: '#999999'}}>
+                        </StyledText>
+                        <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
                             {emergencyContact}
-                        </Text>
+                        </StyledText>
                     </View>
                     <Button
                         title="Call"
                         textStyle={{
-                            fontSize: 18,
+                            ...styles.fontStyle,
                             color: PrimaryColor
                         }}
                         buttonStyle={styles.callButtonStyle}
@@ -170,9 +171,9 @@ const PatientDetailCard = (props) => {
                 <View style={[styles.containerStyle, {opacity: 0.3}]}>
                     <Image source={Images.diagnosis} />
                     <View style={{marginLeft: 14}}>
-                        <Text style={styles.headerStyle}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Diagnosis
-                        </Text>
+                        </StyledText>
                         <Diagnosis diagnosis />
                     </View>
                 </View>
@@ -182,9 +183,9 @@ const PatientDetailCard = (props) => {
                 <View style={styles.containerStyle}>
                     <Image source={Images.visits} />
                     <View style={{marginLeft: 14}}>
-                        <Text style={styles.headerStyle}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Visits
-                        </Text>
+                        </StyledText>
                         {getVisitsView(visitSectionData)}
                     </View>
                 </View>
@@ -196,11 +197,11 @@ const PatientDetailCard = (props) => {
                         source={Images.notes}
                     />
                     <View style={{marginLeft: 14, marginRight: 16}}>
-                        <Text style={styles.headerStyle}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Notes
-                        </Text>
+                        </StyledText>
                         <ViewMoreText
-                            textStyle={styles.noteStyle}
+                            textStyle={{...styles.fontStyle, ...styles.noteStyle}}
                             numberOfLines={2}
                             renderViewMore={(e) => renderViewMore(e, onPressAddNotes)}
                             renderViewLess={renderViewLess}
@@ -221,6 +222,11 @@ const PatientDetailCard = (props) => {
                 buttonStyle={styles.buttonStyle}
                 title='Add Visit'
                 onPress={onPressAddVisit}
+                textStyle={{
+                    ...styles.fontStyle,
+                    color: 'white',
+                    fontSize: 16
+                }}
             />
         </View>
     );

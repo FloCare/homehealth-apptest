@@ -1,8 +1,10 @@
 import React from 'react';
-import {View, Text, TextInput, FlatList} from 'react-native';
+import {View, TextInput, FlatList} from 'react-native';
 import {Button, SearchBar, ListItem} from 'react-native-elements';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import styles from './styles';
+import StyledText from '../common/StyledText';
+import {PrimaryFontFamily} from '../../utils/constants';
 
 // createListItemComponent = (item, onItemToggle) => {
 //     const avatar = item.type === 'patient' ? require('../../../resources/ic_fiber_pin_2x.png') : require('../../../resources/ic_location_on_black_24dp.png');
@@ -57,18 +59,10 @@ const AddNoteFormWithoutPatientTag = (props) => {
                 lightTheme
             />
             {!searching && (name) &&
-            <View style={{backgroundColor: '#e1e8ee', borderWidth: 1, borderColor: '#a2a2a2', height: 50}}>
-                <Text
-                    style={{
-                        flex: 1,
-                        textAlign: 'left',
-                        textAlignVertical: 'center',
-                        fontWeight: '200',
-                        fontSize: 23,
-                        paddingLeft: 10,
-                        paddingRight: 10
-                    }}
-                >{name}</Text>
+            <View style={styles.nameContainerStyle}>
+                <StyledText
+                    style={styles.nameTextStyle}
+                >{name}</StyledText>
             </View>
             }
             {searching &&
@@ -79,16 +73,11 @@ const AddNoteFormWithoutPatientTag = (props) => {
             }
             {!searching && name &&
                 <KeyboardAwareScrollView
-                    style={{
-                        flex: 9,
-                        borderColor: '#a2a2a2',
-                        borderBottomWidth: 1,
-                        backgroundColor: '#e1e8ee'
-                    }}
+                    style={styles.scrollViewStyle}
                     keyboardShouldPersistTaps='handled'
                 >
                     <TextInput
-                        style={{textAlignVertical: 'top', paddingLeft: 10, paddingRight: 10}}
+                        style={styles.notesTextStyle}
                         placeholder='Please type your notes here ...'
                         multiline
                         numberOfLines={20}
@@ -103,6 +92,10 @@ const AddNoteFormWithoutPatientTag = (props) => {
                 onPress={handleSubmit}
                 containerViewStyle={{marginLeft: 0, marginRight: 0}}
                 buttonStyle={styles.buttonStyle}
+                textStyle={{
+                    fontFamily: PrimaryFontFamily,
+                    fontSize: 16
+                }}
             />
         </View>
     );
