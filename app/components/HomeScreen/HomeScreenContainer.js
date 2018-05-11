@@ -83,7 +83,7 @@ class HomeScreenContainer extends Component {
     componentWillUnMount() {
         NetInfo.removeEventListener(
             'connectionChange',
-            HandleFirstConnectivityChange
+            HandleConnectionChange 
         );
     }
 

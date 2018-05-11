@@ -151,6 +151,7 @@ dependencies {
     compile project(':react-native-immediate-phone-call')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-vector-icons')
+    compile project(':react-native-config')
     compile project(':realm')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:25.0.1"
@@ -165,3 +166,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"

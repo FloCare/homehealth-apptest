@@ -117,7 +117,7 @@ class PatientDetailScreenContainer extends Component {
     }
 
     onRegionChangeComplete() {
-        console.log('Calling callout on map');
+        //console.log('Calling callout on map');
         this.marker.showCallout();
     }
 
@@ -170,7 +170,7 @@ class PatientDetailScreenContainer extends Component {
     }
 
     handleDBUpdate() {
-        console.log('inside handleDB update listener, patinet Id:', this.props.patientId);
+        //console.log('inside handleDB update listener, patinet Id:', this.props.patientId);
         this.getPatientDetails(this.props.patientId);
     }
 
@@ -185,7 +185,7 @@ class PatientDetailScreenContainer extends Component {
             const latitude = loc.lat;
             const longitude = loc.lng;
 
-            console.log('Fetched the lat long for this user: ', latitude, longitude);
+            //console.log('Fetched the lat long for this user: ', latitude, longitude);
 
             // Todo: Revisit this
             // Write to DB first
@@ -216,8 +216,8 @@ class PatientDetailScreenContainer extends Component {
             this.setState({patientDetail: newState});
         } else {
             console.log('Failed to parse Geocode Response from Google APIs');
-            console.log(result.status);
-            console.log(result.results[0].geometry.location);
+            //console.log(result.status);
+            //console.log(result.results[0].geometry.location);
         }
     }
 
