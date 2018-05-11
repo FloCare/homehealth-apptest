@@ -184,7 +184,7 @@ class HomeScreenContainer extends Component {
         const visitResultObject = floDB.objects(Visit.schema.name)
             .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf());
         return (
-            <View style={{flex: 1}}>
+            <View style={{flex: 1, backgroundColor: '#fcfcfc'}}>
                 <HomeScreen
                     navigator={this.props.navigator}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}

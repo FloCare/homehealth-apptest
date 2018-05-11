@@ -4,6 +4,7 @@ import {SearchBar, Text} from 'react-native-elements';
 import {Tag} from '../common/tag';
 import EmptyStateButton from '../common/EmptyStateButton';
 import {SimpleButton} from "../common/SimpleButton";
+import StyledText from "../common/StyledText";
 
 //TODO improve efficiency
 //TODO mark the places already selected for visit as such
@@ -35,23 +36,26 @@ function getComponentToDisplayBasedOnProps(props) {
                     justifyContent: 'center'
                 }}
             >
-                <Text
+                <StyledText
                     style={{
                         fontWeight: '300',
-                        fontSize: 20
+                        fontSize: 20,
+                        color: 'grey'
                     }}
-                >Let's get you started</Text>
+                >Let's get you started</StyledText>
 
-                <Text
+                <StyledText
                     style={{
                         textAlign: 'center',
                         padding: 0,
                         margin: 20,
                         marginTop: 5,
+                        fontSize: 14,
+                        color: 'grey'
                     }}
                 >
                     Add Patients to get started. Adding Patients will allow you to Add Visits
-                </Text>
+                </StyledText>
                 <EmptyStateButton
                     onPress={props.onPressAddPatient}
                 >

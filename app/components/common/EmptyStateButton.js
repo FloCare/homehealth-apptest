@@ -20,9 +20,10 @@ const styles = {
         width: 200,
         height: 50,
 		borderRadius: 5,
-		borderWidth: 1,
+		borderWidth: 0,
 		borderColor: 'black',
 		marginTop: 10,
+		justifyContent: 'center'
 	},
 	textStyle: {
 		alignSelf: 'center',
@@ -30,7 +31,7 @@ const styles = {
 		fontWeight: '300',
 		paddingTop: 10,
 		paddingBottom: 10,
-		color: 'black'
+		color: '#888888'
 	}
 };
 
