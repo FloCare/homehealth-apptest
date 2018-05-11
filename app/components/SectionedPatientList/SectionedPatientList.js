@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, Image, SectionList, TouchableOpacity} from 'react-native';
+import {View, Image, SectionList, TouchableOpacity} from 'react-native';
 import {
     Menu,
     MenuOptions,
@@ -7,7 +7,8 @@ import {
     MenuTrigger,
 } from 'react-native-popup-menu';
 import styles from './styles';
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, TransparentPrimaryColor} from '../../utils/constants';
+import StyledText from '../common/StyledText';
 
 // const CustomMenu = (props) => {
 //     const {style, children, layouts, ...other} = props;
@@ -33,15 +34,15 @@ class SectionedPatientList extends Component {
         if (item.patientID === selectedPatient) {
             return (
                 <View
-                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: PrimaryColor}}
+                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: TransparentPrimaryColor(0.3)}}
                 >
                     <View style={{flex: 10, flexDirection: 'row'}}>
                         <TouchableOpacity
                             style={{flex: 9, flexDirection: 'column'}}
                             onPress={({e}) => this.props.onItemPressed({item}, e)}
                         >
-                            <Text style={styles.nameStyle}>{item.name}</Text>
-                            <Text style={styles.addressStyle}>{item.address.formattedAddress}</Text>
+                            <StyledText style={styles.nameStyle}>{item.name}</StyledText>
+                            <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
                         </TouchableOpacity>
                         <View style={{flex: 1, marginVertical: 15}}>
                             <Menu rendererProps={{placement: 'top'}}>
@@ -50,16 +51,16 @@ class SectionedPatientList extends Component {
                                 />
                                 <MenuOptions>
                                     <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
-                                        <Text style={{color: PrimaryColor}}>Add Notes</Text>
+                                        <StyledText style={{color: PrimaryColor}}>Add Notes</StyledText>
                                     </MenuOption>
                                     <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
-                                        <Text style={{color: PrimaryColor}}>Call</Text>
+                                        <StyledText style={{color: PrimaryColor}}>Call</StyledText>
                                     </MenuOption>
                                     <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
-                                        <Text style={{color: PrimaryColor}}>Show on maps</Text>
+                                        <StyledText style={{color: PrimaryColor}}>Show on maps</StyledText>
                                     </MenuOption>
                                     <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
-                                        <Text style={{color: PrimaryColor}}>Add Visit</Text>
+                                        <StyledText style={{color: PrimaryColor}}>Add Visit</StyledText>
                                     </MenuOption>
                                 </MenuOptions>
                             </Menu>
@@ -77,8 +78,8 @@ class SectionedPatientList extends Component {
                         style={{flex: 9, flexDirection: 'column'}}
                         onPress={({e}) => this.props.onItemPressed({item}, e)}
                     >
-                        <Text style={styles.nameStyle}>{item.name}</Text>
-                        <Text style={styles.addressStyle}>{item.address.formattedAddress}</Text>
+                        <StyledText style={styles.nameStyle}>{item.name}</StyledText>
+                        <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
                     </TouchableOpacity>
                     <View style={{flex: 1, marginVertical: 15}}>
                         <Menu rendererProps={{placement: 'top'}}>
@@ -87,16 +88,16 @@ class SectionedPatientList extends Component {
                             />
                             <MenuOptions>
                                 <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
-                                    <Text style={styles.menuOptionsStyle}>Add Notes</Text>
+                                    <StyledText style={styles.menuOptionsStyle}>Add Notes</StyledText>
                                 </MenuOption>
                                 <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
-                                    <Text style={styles.menuOptionsStyle}>Call</Text>
+                                    <StyledText style={styles.menuOptionsStyle}>Call</StyledText>
                                 </MenuOption>
                                 <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
-                                    <Text style={styles.menuOptionsStyle}>Show on maps</Text>
+                                    <StyledText style={styles.menuOptionsStyle}>Show on maps</StyledText>
                                 </MenuOption>
                                 <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
-                                    <Text style={styles.menuOptionsStyle}>Add Visit</Text>
+                                    <StyledText style={styles.menuOptionsStyle}>Add Visit</StyledText>
                                 </MenuOption>
                             </MenuOptions>
                         </Menu>
@@ -108,7 +109,7 @@ class SectionedPatientList extends Component {
 
     renderSectionHeader({section}) {
         return (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
+            <StyledText style={styles.sectionHeader}>{section.title}</StyledText>
         );
     }
 

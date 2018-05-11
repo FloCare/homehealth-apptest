@@ -1,4 +1,9 @@
 const PrimaryColor = '#45ceb1';
+const TransparentPrimaryColor = (opacity) => {
+    // Todo: Can use a method to convert PrimaryColor in hexcode 
+    // Todo: to rgba
+    return `rgba(69, 206, 177, ${opacity})`;
+};
 
 const diagnosisList = [
     {
@@ -48,4 +53,4 @@ const visitType = {
     place: 'place'
 };
 
-export {diagnosisList, screenNames, visitType, PrimaryColor};
+export {diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor};

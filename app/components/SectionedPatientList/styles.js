@@ -30,7 +30,8 @@ const styles = {
     },
     menuOptionsStyle: {
         fontFamily: 'SF-Pro-Display-Regular',
-        color: PrimaryColor
+        color: PrimaryColor,
+        fontSize: 14
     }
 };
 
