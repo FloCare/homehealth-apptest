@@ -1,4 +1,4 @@
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 
 const styles = {
     sectionHeader: {
@@ -14,14 +14,14 @@ const styles = {
         paddingBottom: 0,
         fontSize: 17,
         color: '#222222',
-        fontFamily: 'SF-Pro-Text-Regular'
+        fontFamily: PrimaryFontFamily 
     },
     addressStyle: {
         padding: 10,
         paddingTop: 0,
         fontSize: 12,
         color: '#666666',
-        fontFamily: 'SF-Pro-Text-Regular'
+        fontFamily: PrimaryFontFamily
     },
     seperatorStyle: {
         height: 1,

@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text} from 'react-native';
+import {PrimaryFontFamily} from '../../utils/constants';
 
 
 const StyledText = (props) => {
@@ -12,7 +13,7 @@ const StyledText = (props) => {
 
 const styles = {
     TextStyle: {
-        fontFamily: 'SF-Pro-Text-Regular',
+        fontFamily: PrimaryFontFamily,
         fontSize: 18
     }
 };

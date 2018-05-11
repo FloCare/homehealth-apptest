@@ -4,6 +4,7 @@ const TransparentPrimaryColor = (opacity) => {
     // Todo: to rgba
     return `rgba(69, 206, 177, ${opacity})`;
 };
+const PrimaryFontFamily = 'SF-Pro-Text-Regular';
 
 const diagnosisList = [
     {
@@ -53,4 +54,4 @@ const visitType = {
     place: 'place'
 };
 
-export {diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor};
+export {diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily};

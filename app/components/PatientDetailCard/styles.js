@@ -1,4 +1,4 @@
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 
 const styles = {
     parentContainerStyle: {
@@ -41,7 +41,7 @@ const styles = {
     },
     fontStyle: {
         fontSize: 18,
-        fontFamily: 'SF-Pro-Text-Regular'
+        fontFamily: PrimaryFontFamily
     },
     headerStyle: {
         color: '#222222',

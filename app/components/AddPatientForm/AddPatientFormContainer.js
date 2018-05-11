@@ -7,6 +7,7 @@ import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
 import {parsePhoneNumber} from '../../utils/lib';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
+import {PrimaryFontFamily} from '../../utils/constants';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -266,6 +267,10 @@ class AddPatientFormContainer extends Component {
                 <Button
                     containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
+                    textStyle={{
+                        fontFamily: PrimaryFontFamily,
+                        fontSize: 16
+                    }}
                     title='Save'
                     onPress={(e) => this.handleSubmit(e, onSubmit)}
                 />

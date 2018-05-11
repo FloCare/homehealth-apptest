@@ -224,7 +224,7 @@ const PatientDetailCard = (props) => {
                 textStyle={{
                     ...styles.fontStyle,
                     color: 'white',
-                    fontSize: 14
+                    fontSize: 16
                 }}
             />
         </View>
