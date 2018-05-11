@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
+import {Platform, Text, TouchableOpacity} from 'react-native';
 import {PrimaryColor} from '../../utils/constants';
 
 const SimpleButton = (props) => (
@@ -27,7 +27,8 @@ const styles = {
     },
     textStyle: {
         color: 'white',
-        fontSize: 18
+        fontSize: 18,
+        fontFamily: Platform.select({ios: 'SFProDisplay-Regular', android: 'SF-Pro-Display-Regular'}),
     }
 };
 

@@ -1,3 +1,4 @@
+import {Platform} from 'react-native';
 import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 
 const styles = {
@@ -7,7 +8,7 @@ const styles = {
         fontSize: 17,
         color: '#525252',
         backgroundColor: '#f8f8f8',
-        fontFamily: 'SF-Pro-Text-Semibold'
+        fontFamily: Platform.select({ios: 'SFProText-Semibold', android: 'SF-Pro-Text-Semibold'})
     },
     nameStyle: {
         padding: 10,
@@ -29,7 +30,7 @@ const styles = {
         backgroundColor: '#CED0CE',
     },
     menuOptionsStyle: {
-        fontFamily: 'SF-Pro-Display-Regular',
+        fontFamily: Platform.select({ios: 'SFProDisplay-Regular', android: 'SF-Pro-Display-Regular'}),
         color: PrimaryColor,
         fontSize: 14
     }
