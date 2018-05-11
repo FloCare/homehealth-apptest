@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import Config from 'react-native-config';
+import {PrimaryFontFamily} from '../../utils/constants';
 
 // Todo: CleanUp this template - pass relevant arguments to the GoogleAutocomplete component
 
@@ -70,7 +71,8 @@ function Autocompletetextbox(locals) {
                         textInput: {
                             ...textboxStyle,
                             marginLeft: 0,
-                            marginRight: 0
+                            marginRight: 0,
+                            fontFamily: PrimaryFontFamily
                         },
                         predefinedPlacesDescription: {
                             color: '#1faadb'

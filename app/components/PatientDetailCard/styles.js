@@ -1,4 +1,4 @@
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 
 const styles = {
     parentContainerStyle: {
@@ -39,10 +39,13 @@ const styles = {
         textAlign: 'left',
         color: '#999999',
     },
-    headerStyle: {
+    fontStyle: {
         fontSize: 18,
+        fontFamily: PrimaryFontFamily
+    },
+    headerStyle: {
         color: '#222222',
-        marginBottom: 5
+        marginBottom: 5,
     },
     dividerStyle: {
         margin: 0,

@@ -1,14 +1,15 @@
 import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
+import StyledText from './StyledText';
 
 const EmptyStateButton = ({onPress, children}) => {
 	const {buttonStyle, textStyle} = styles;
 
 	return (
 		<TouchableOpacity style={buttonStyle} onPress={onPress}>
-			<Text style={textStyle}>
+			<StyledText style={textStyle}>
 				{ children }
-			</Text>
+			</StyledText>
 		</TouchableOpacity>
 	);
 };
@@ -19,16 +20,17 @@ const styles = {
         width: 200,
         height: 50,
 		borderRadius: 5,
-		borderWidth: 0,
+		borderWidth: 1,
 		borderColor: 'black',
 		marginTop: 10,
 	},
 	textStyle: {
 		alignSelf: 'center',
 		fontSize: 16,
-		fontWeight: '200',
+		fontWeight: '300',
 		paddingTop: 10,
-		paddingBottom: 10
+		paddingBottom: 10,
+		color: 'black'
 	}
 };
 

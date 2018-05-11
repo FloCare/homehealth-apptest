@@ -1,16 +1,16 @@
 import React from 'react';
 import {Image, TouchableWithoutFeedback, View, Platform} from 'react-native';
-import {Text} from 'react-native-elements';
 import {VisitSummary} from './VisitSummary';
 import EmptyStateButton from '../common/EmptyStateButton';
 import {CalendarStripStyled} from '../common/CalendarStripStyled';
+import StyledText from '../common/StyledText';
 
 function getComponentToDisplayBasedOnVisitCount(props) {
     if (props.remainingVisitsCount === 0) {
         //TODO pull it out, make it common
         const visitListButtons = (
             <View style={{paddingTop: 10}}>
-                <Text
+                <StyledText
                     style={{
                         alignSelf: 'center',
                         fontSize: 12,
@@ -18,7 +18,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                     }}
                 >
                     View visits on
-                </Text>
+                </StyledText>
                 <View
                     style={{
                         // flex: 1,
@@ -55,26 +55,29 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                     justifyContent: 'center'
                 }}
             >
-                <Text
+                <StyledText
                     style={{
                         fontWeight: '300',
-                        fontSize: 20
+                        fontSize: 20,
+                        color: 'grey'
                     }}
-                >{props.totalVisitsCount !== 0 ? 'Great job! All planned visits complete' : 'No Day\'s Summary'}</Text>
+                >{props.totalVisitsCount !== 0 ? 'Great job! All planned visits complete' : 'No Day\'s Summary'}</StyledText>
                 {props.totalVisitsCount !== 0 ? visitListButtons : null}
-                <Text
+                <StyledText
                     style={{
                         textAlign: 'center',
                         padding: 0,
                         margin: 20,
                         marginTop: 5,
+                        fontSize: 14,
+                        color: 'grey'
                     }}
                 >{
                   props.totalVisitsCount !== 0 ?
                         'If you missed adding any visit for the day' :
                         'By adding patients and visits you\'ll be able to see a summary of the visits for the day'
                 }
-                </Text>
+                </StyledText>
                 <EmptyStateButton
                     onPress={props.onPressAddVisitZeroState}
                 >
