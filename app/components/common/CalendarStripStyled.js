@@ -1,6 +1,6 @@
 import React from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
 
 function CalendarStripStyled(props) {
@@ -18,7 +18,7 @@ function CalendarStripStyled(props) {
             style={[{flex: 1, paddingTop: props.paddingTop, backgroundColor: 'white'}, props.dateRowAtBottom ? {justifyContent: 'flex-end'} : {justifyContent: 'center'}, props.style]}
             innerStyle={{flex: undefined}}
             calendarHeaderViewStyle={{marginLeft: 40, marginBottom: 10}}
-            calendarHeaderStyle={{fontSize: 24, alignSelf: 'flex-start'}}
+            calendarHeaderStyle={{fontSize: 24, alignSelf: 'flex-start', fontFamily: PrimaryFontFamily}}
             datesStripStyle={[{flex: undefined}, props.dateRowAtBottom ? {alignItems: 'flex-end'} : null]}
             dateNumberStyle={{fontSize: 18, fontWeight: undefined}}
             iconContainer={{flex: 1, opacity: 0.2}}
