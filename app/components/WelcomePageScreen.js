@@ -35,7 +35,7 @@ export class WelcomePageScreen extends Component {
     return (
       <ScrollView >
         <View>
-          <Text style={styles.welcome}>
+          <Text style={styles.headerText}>
                 Be more efficient and organized
           </Text>
         </View>
@@ -89,8 +89,8 @@ export class WelcomePageScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  welcome: {  
-    fontSize: 20,
+  headerText: {  
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
     margin: 10,
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   bulletPointsStyle: {  
     fontSize: 16,
     textAlign: 'center',
+    textAlign: 'left',
     marginLeft: 40,
     marginBottom: 30,
     marginTop: 10,

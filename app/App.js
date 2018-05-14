@@ -33,7 +33,7 @@ Navigation.startTabBasedApp({
         // },
         {
             icon: Images.person_ic,
-            screen: screenNames.welcomeScreen,
+            screen: screenNames.inviteScreen,
             navigatorStyle: {navBarHidden: false}
         }
     ],
