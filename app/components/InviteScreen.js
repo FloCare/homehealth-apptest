@@ -19,6 +19,22 @@ export class InviteScreen extends Component {
     this.sendEmail = this.sendEmail.bind(this);
   }
 
+  componentDidMount() {
+    try {
+          const val = AsyncStorage.getItem('isFirstVisit');
+          if(val === 'false') {
+            this.props.navigator.push({
+            screen: screenNames.homeScreen,
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+            });
+          }
+        } catch (error) {
+
+        }
+  }
+
   TODO 
   sendEmail = () => {
     const {emailId, organizationName} = this.state;

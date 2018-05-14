@@ -18,8 +18,6 @@ export class WelcomePageScreen extends Component {
   onButtonPress() {
         try {
           const val = AsyncStorage.getItem('isFirstVisit');
-          console.log('****************');
-          console.log(val);
         } catch (error) {
 
         }
@@ -30,6 +28,22 @@ export class WelcomePageScreen extends Component {
             }
         });
 	}
+
+  componentDidMount() {
+    try {
+          const val = AsyncStorage.getItem('isFirstVisit');
+          if(val === 'false') {
+            this.props.navigator.push({
+            screen: screenNames.homeScreen,
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+            });
+          }
+        } catch (error) {
+
+        }
+  }
     
   render() {
     return (

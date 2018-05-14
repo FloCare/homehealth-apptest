@@ -33,7 +33,7 @@ Navigation.startTabBasedApp({
         // },
         {
             icon: Images.person_ic,
-            screen: screenNames.inviteScreen,
+            screen: screenNames.passcodeVerificationScreen,
             navigatorStyle: {navBarHidden: false}
         }
     ],

@@ -43,10 +43,7 @@ export class PasscodeVerificationScreen extends Component {
     return (
         <View>
             <View style={styles.welcome}>
-               <Header titleText='Enter Access Code' />
-            </View>
-            <View>
-                <Text style={styles.welcome}> Confirm your code . </Text>
+               <Header titleText='Enter Passcode' />
             </View>
             <Image 
                style={styles.stretch}
@@ -54,9 +51,6 @@ export class PasscodeVerificationScreen extends Component {
             /> 
             <View >
                 <OtpInputs handleChange={code => this.verifyCode(code)} numberOfInputs={4} />
-            </View>
-            <View>
-                <Text style={styles.recieveOTPStyle}> Did not receive OTP ? </Text>
             </View>
         </View>
     );   
@@ -78,11 +72,6 @@ const styles = StyleSheet.create({
     margin: 10,
     marginBottom: 20,
     marginTop: 10,
-  },
-  recieveOTPStyle: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginTop: 100
   }
 });
 
