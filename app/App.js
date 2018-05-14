@@ -18,18 +18,23 @@ const navigatorStyle = {
 
 Navigation.startTabBasedApp({
     tabs: [
+        // {
+        //     title: 'Home Screen',
+        //     label: 'Today',
+        //     icon: Images.calendar,
+        //     screen: screenNames.homeScreen,
+        //     navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
+        // },
+        // {
+        //     title: 'Patients',
+        //     label: 'Patients',
+        //     icon: Images.person_ic,
+        //     screen: screenNames.patientList,
+        // },
         {
-            title: 'Home Screen',
-            label: 'Today',
-            icon: Images.calendar,
-            screen: screenNames.homeScreen,
-            navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
-        },
-        {
-            title: 'Patients',
-            label: 'Patients',
             icon: Images.person_ic,
-            screen: screenNames.patientList,
+            screen: screenNames.welcomeScreen,
+            navigatorStyle: {navBarHidden: false}
         }
     ],
     appStyle: navigatorStyle,
