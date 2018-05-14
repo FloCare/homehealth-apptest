@@ -3,13 +3,13 @@ import {
     Animated,
     Easing,
     StyleSheet,
-    Text,
     Image,
     View,
     Dimensions,
     Platform,
 } from 'react-native';
 import SortableList from 'react-native-sortable-list';
+import StyledText from './common/StyledText';
 
 const window = Dimensions.get('window');
 
@@ -61,7 +61,7 @@ export class Basic extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>React Native Sortable List</Text>
+                <StyledText style={styles.title}>React Native Sortable List</StyledText>
                 <SortableList
                     style={styles.list}
                     contentContainerStyle={styles.contentContainer}
@@ -134,7 +134,7 @@ class Row extends Component {
                 ]}
             >
                 <Image source={{uri: data.image}} style={styles.image} />
-                <Text style={styles.text}>{data.text}</Text>
+                <StyledText style={styles.text}>{data.text}</StyledText>
             </Animated.View>
         );
     }

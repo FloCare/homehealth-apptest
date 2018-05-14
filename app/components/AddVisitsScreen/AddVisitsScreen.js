@@ -1,10 +1,10 @@
 import React from 'react';
 import {View, FlatList} from 'react-native';
-import {SearchBar, Text} from 'react-native-elements';
+import {SearchBar} from 'react-native-elements';
 import {Tag} from '../common/tag';
 import EmptyStateButton from '../common/EmptyStateButton';
 import {SimpleButton} from "../common/SimpleButton";
-import StyledText from "../common/StyledText";
+import StyledText from '../common/StyledText';
 
 //TODO improve efficiency
 //TODO mark the places already selected for visit as such

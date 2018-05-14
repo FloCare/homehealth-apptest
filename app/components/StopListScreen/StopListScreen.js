@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import styles from './styles';
 import {SectionedStopList} from '../SectionedStopList';
 import EmptyStateButton from '../common/EmptyStateButton';
+import StyledText from '../common/StyledText';
 
 const StopListScreen = (props) => {
     const {onSearch, stopList, selectedStop, onPressAddStop, stopCount} = props;
@@ -30,12 +31,12 @@ const StopListScreen = (props) => {
                         justifyContent: 'center'
                     }}
                 >
-                    <Text
+                    <StyledText
                         style={{
                             fontWeight: '300',
                             fontSize: 20
                         }}
-                    >No Places</Text>
+                    >No Places</StyledText>
                     <View
                         style={{
                             flexDirection: 'row',
@@ -44,7 +45,7 @@ const StopListScreen = (props) => {
                             marginBottom: 20
                         }}
                     >
-                        <Text>When you add places, you'll see them here</Text>
+                        <StyledText>When you add places, you'll see them here</StyledText>
                     </View>
                     <EmptyStateButton
                         onPress={onPressAddStop}

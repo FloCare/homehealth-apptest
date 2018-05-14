@@ -1,12 +1,13 @@
 import React from 'react';
-import {Card, Divider, Text} from 'react-native-elements';
+import {Card, Text, Divider} from 'react-native-elements';
 import {View, TouchableHighlight, Image, Linking, TouchableWithoutFeedback} from 'react-native';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {Diagnosis} from './Diagnosis';
 import {screenNames, PrimaryColor} from '../../utils/constants';
-import {Images} from "../../Images";
+import {Images} from '../../Images';
+import StyledText from '../common/StyledText';
 
 function pushPatientDetailScreen(navigator, patient) {
     if (patient) {
@@ -79,9 +80,9 @@ function VisitCard({isDoneToggle, navigator}) {
                                     source={Images.call}
                                     style={!phoneNumber ? {tintColor: 'black'} : {}}
                                 />
-                                <Text
+                                <StyledText
                                     style={{fontSize: 14, color: '#222222'}}
-                                >{'  CALL'}</Text>
+                                >{'  CALL'}</StyledText>
                             </View>
                         </TouchableHighlight>
                         <Divider style={{width: 1.5, height: '60%', marginTop: 8, backgroundColor: '#dddddd'}} />
@@ -98,9 +99,9 @@ function VisitCard({isDoneToggle, navigator}) {
                                     source={Images.navigate}
                                     style={!coordinates ? {tintColor: 'black'} : {}}
                                 />
-                                <Text
+                                <StyledText
                                     style={{fontSize: 14, color: '#222222'}}
-                                >{'  NAVIGATE'}</Text>
+                                >{'  NAVIGATE'}</StyledText>
                             </View>
                         </TouchableHighlight>
                     </View>

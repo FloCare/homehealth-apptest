@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Text, View, SectionList, TouchableOpacity} from 'react-native';
+import {View, SectionList, TouchableOpacity} from 'react-native';
 import styles from './styles';
+import StyledText from '../common/StyledText';
 
 class SectionedStopList extends Component {
     constructor(props) {
@@ -17,8 +18,8 @@ class SectionedStopList extends Component {
                     style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ff9999'}}
                     onPress={() => { console.log('Nowhere to go!'); }}
                 >
-                    <Text style={styles.nameStyle}>{item.name}</Text>
-                    <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                    <StyledText style={styles.nameStyle}>{item.name}</StyledText>
+                    <StyledText style={styles.addressStyle}>{item.address.streetAddress}</StyledText>
                 </TouchableOpacity>
             );
         }
@@ -27,15 +28,15 @@ class SectionedStopList extends Component {
                 style={{paddingLeft: 5, paddingRight: 5, backgroundColor: '#ffffff'}}
                 onPress={() => { console.log('Nowhere to go!'); }}
             >
-                <Text style={styles.nameStyle}>{item.name}</Text>
-                <Text style={styles.addressStyle}>{item.address.streetAddress}</Text>
+                <StyledText style={styles.nameStyle}>{item.name}</StyledText>
+                <StyledText style={styles.addressStyle}>{item.address.streetAddress}</StyledText>
             </TouchableOpacity>
         );
     }
 
     renderSectionHeader({section}) {
         return (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
+            <StyledText style={styles.sectionHeader}>{section.title}</StyledText>
         );
     }
 

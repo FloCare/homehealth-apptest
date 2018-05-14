@@ -1,6 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import {Text} from 'react-native-elements';
+import StyledText from '../common/StyledText';
 
 function VisitRow() {
     return (({index, data}) => 
@@ -27,7 +28,7 @@ function VisitRow() {
                         <View style={{height: 2}} />
                         <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
                     </View>
-                    <Text style={{flex: 20, paddingLeft: 5, color: 'white', fontSize: 14}}>{data.getAssociatedName()}</Text>
+                    <StyledText style={{flex: 20, paddingLeft: 5, color: 'white', fontSize: 14}}>{data.getAssociatedName()}</StyledText>
                 </View>
             </View>
         ));

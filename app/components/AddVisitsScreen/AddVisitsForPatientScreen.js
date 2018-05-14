@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, Image, TouchableHighlight} from 'react-native';
+import {View, Image, TouchableHighlight} from 'react-native';
 import {Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -7,7 +7,8 @@ import {floDB, Patient, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
 import {makeCallbacks, todayMomentInUTCMidnight} from '../../utils/utils';
 import {PrimaryColor} from '../../utils/constants';
-import {Images} from "../../Images";
+import {Images} from '../../Images';
+import StyledText from '../common/StyledText';
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -92,14 +93,14 @@ class AddVisitsForPatientScreen extends Component {
                 }}
             >
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 10}}>
-                    <Text
+                    <StyledText
                         style={{
                             fontWeight: 'bold',
                             fontSize: 15,
                         }}
                     >
                         Add Visit
-                    </Text>
+                    </StyledText>
                     <TouchableHighlight onPress={() => this.props.navigator.dismissLightBox()}>
                         <Image source={Images.close} />
                     </TouchableHighlight>

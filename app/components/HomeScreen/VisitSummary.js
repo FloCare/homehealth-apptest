@@ -1,11 +1,11 @@
 import React from 'react';
 import {View, Dimensions, Image, TouchableHighlight, TouchableWithoutFeedback} from 'react-native';
-import {Text} from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
+import StyledText from '../common/StyledText';
 
 export function VisitSummary(props) {
     const primaryColor = PrimaryColor;
@@ -24,7 +24,7 @@ export function VisitSummary(props) {
             }}
         >
             <View style={{flex: 1, justifyContent: 'center'}}>
-                <Text
+                <StyledText
                     style={{
                         fontSize: 24,
                         fontWeight: 'bold',
@@ -32,10 +32,10 @@ export function VisitSummary(props) {
                     }}
                 >
                     {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
-                </Text>
+                </StyledText>
             </View>
             <View style={{flex: 2}}>
-                <Text
+                <StyledText
                     style={{
                         alignSelf: 'center',
                         fontSize: 12,
@@ -43,7 +43,7 @@ export function VisitSummary(props) {
                     }}
                 >
                     View visits on
-                </Text>
+                </StyledText>
                 <View
                     style={{
                         flex: 1,
@@ -77,14 +77,14 @@ export function VisitSummary(props) {
                     alignItems: 'center',
                 }}
             >
-                <Text
+                <StyledText
                     style={{
                         fontSize: 14,
                         color: '#ffffff',
                     }}
                 >
                     Next Visit
-                </Text>
+                </StyledText>
                 {/*prefer to use VisitCard rather than VisitListContainer*/}
                 <SortedVisitListContainer
                     navigator={props.navigator}
