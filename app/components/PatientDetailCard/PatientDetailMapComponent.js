@@ -9,6 +9,7 @@ export function PatientDetailMapComponent(props) {
             provider={'google'}
             scrollEnabled={false}
             rotateEnabled={false}
+            zoomEnabled={false}
             loadingEnabled
             minZoomLevel={15}
             initialRegion={Object.assign({latitudeDelta: 0.0421, longitudeDelta: 0.0922}, props.patientCoordinates)}
