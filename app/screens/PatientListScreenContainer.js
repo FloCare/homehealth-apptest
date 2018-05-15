@@ -169,8 +169,6 @@ class PatientListScreenContainer extends Component {
     navigateTo(screen, title, props) {
         this.props.navigator.push({
             screen,
-            animated: true,
-            animationType: 'fade',
             title,
             passProps: props,
             navigatorStyle: {

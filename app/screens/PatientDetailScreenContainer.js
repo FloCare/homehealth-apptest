@@ -86,8 +86,6 @@ class PatientDetailScreenContainer extends Component {
     onPressEditInfo() {
         this.props.navigator.push({
             screen: screenNames.addPatient,
-            animated: true,
-            animationType: 'fade',
             title: 'Edit Patient Information',
             navigatorStyle: {
                 tabBarHidden: true

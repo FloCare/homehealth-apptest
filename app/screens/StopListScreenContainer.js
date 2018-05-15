@@ -39,8 +39,6 @@ class StopListScreenContainer extends Component {
     onPressAddStop() {
         this.props.navigator.push({
             screen: screenNames.addStop,
-            animated: true,
-            animationType: 'fade',
             title: 'Add Stop',
             navigatorStyle: {
                 tabBarHidden: true
