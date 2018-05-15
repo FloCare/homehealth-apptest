@@ -58,6 +58,10 @@
 		D1BB34047FBF4CA983EE9879 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 717EFD56916442F2A55BF6CD /* Foundation.ttf */; };
 		D296483B067D4BE482E9CE5F /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 602379455E244704B120166C /* MaterialCommunityIcons.ttf */; };
 		D56BA7E965194378980CE6FD /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C531C7BC51A744ECAB552BFB /* Entypo.ttf */; };
+		3961221A48DA431AB8014E64 /* SF-Pro-Display-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 71CAEADF1F954D3488927730 /* SF-Pro-Display-Regular.otf */; };
+		2418B102ABE54C068F31C734 /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = C46E15ECFE7D4A0383F42710 /* SF-Pro-Text-Regular.otf */; };
+		ACEB004F8EC149ED9FF384C8 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8165B36344D4F4AB4204A59 /* SF-Pro-Text-Semibold.otf */; };
+		B0981553D2B644FAAB45642F /* libRNSecureKeyStore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */; };
 		F8D23B4B20AADC79008C137B /* libRNImmediatePhoneCall.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D23B4920AADC37008C137B /* libRNImmediatePhoneCall.a */; };
 /* End PBXBuildFile section */
 
@@ -419,6 +423,11 @@
 		CCDC477A1B2549D38FC920F7 /* libRealmReact.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRealmReact.a; sourceTree = "<group>"; };
 		F8D23B1D20AADC36008C137B /* RNImmediatePhoneCall.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNImmediatePhoneCall.xcodeproj; path = "../node_modules/react-native-immediate-phone-call/ios/RNImmediatePhoneCall.xcodeproj"; sourceTree = "<group>"; };
 		FDD8B5A4B69141D0B8F10A9B /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		71CAEADF1F954D3488927730 /* SF-Pro-Display-Regular.otf */ = {isa = PBXFileReference; name = "SF-Pro-Display-Regular.otf"; path = "../assets/fonts/SF-Pro-Display-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C46E15ECFE7D4A0383F42710 /* SF-Pro-Text-Regular.otf */ = {isa = PBXFileReference; name = "SF-Pro-Text-Regular.otf"; path = "../assets/fonts/SF-Pro-Text-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C8165B36344D4F4AB4204A59 /* SF-Pro-Text-Semibold.otf */ = {isa = PBXFileReference; name = "SF-Pro-Text-Semibold.otf"; path = "../assets/fonts/SF-Pro-Text-Semibold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */ = {isa = PBXFileReference; name = "RNSecureKeyStore.xcodeproj"; path = "../node_modules/react-native-secure-key-store/ios/RNSecureKeyStore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */ = {isa = PBXFileReference; name = "libRNSecureKeyStore.a"; path = "libRNSecureKeyStore.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -454,6 +463,8 @@
 				AE01B817FA184A148323C2DA /* libReactNativeNavigation.a in Frameworks */,
 				5A1B53C65911494B9D22E771 /* libRNVectorIcons.a in Frameworks */,
 				4EE701A262C186B2CCDBA380 /* libPods-mtp.a in Frameworks */,
+				B92FE6674CFD400884F60BC1 /* libRNImmediatePhoneCall.a in Frameworks */,
+				B0981553D2B644FAAB45642F /* libRNSecureKeyStore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -677,6 +688,8 @@
 				4BD87139A67C4D839B3BCF49 /* RealmReact.xcodeproj */,
 				66D6045D675D457D817D9A36 /* ReactNativeNavigation.xcodeproj */,
 				26171A6AED08441A940CB40B /* RNVectorIcons.xcodeproj */,
+				62B7ED35A26F429896E228C4 /* RNImmediatePhoneCall.xcodeproj */,
+				E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1442,10 +1455,20 @@
 					"$(SRCROOT)..\node_modules\neact-native-navigationios/**",
 					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = mtpTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1469,10 +1492,20 @@
 					"$(SRCROOT)..\node_modules\neact-native-navigationios/**",
 					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = mtpTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1506,6 +1539,7 @@
 					"eact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..",
 					ode_modules,
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = mtp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1542,6 +1576,7 @@
 					"eact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..",
 					ode_modules,
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = mtp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1575,9 +1610,19 @@
 					"$(SRCROOT)..\node_modules\neact-native-navigationios/**",
 					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = "mtp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1610,9 +1655,19 @@
 					"$(SRCROOT)..\node_modules\neact-native-navigationios/**",
 					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = "mtp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1644,9 +1699,19 @@
 					"$(SRCROOT)..\node_modules\neact-native-navigationios/**",
 					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = "mtp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1678,9 +1743,19 @@
 					"$(SRCROOT)..\node_modules\neact-native-navigationios/**",
 					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
 					"$(SRCROOT)..\node_modules\neact-native-mapslibios/**",
+					"$(SRCROOT)/../node_modules/react-native-secure-key-store/ios/**",
 				);
 				INFOPLIST_FILE = "mtp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",

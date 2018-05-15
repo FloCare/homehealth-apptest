@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import OtpInputs from 'react-native-otp-inputs';
-// import RNSecureKeyStore from 'react-native-secure-key-store';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import UserInactivity from 'react-native-user-inactivity';
 import {View, Image, StyleSheet, Text} from 'react-native';
 import Header from './common/Header';
@@ -26,16 +26,15 @@ export class PasscodeVerificationScreen extends Component {
 
   verifyCode(code) {
     if (code.length === 4) {
-      // RNSecureKeyStore.get('passCode')
-      // .then((res) => {
-      //   console.log('@@@@@@@@@@@@@@@@@@@@@@@@');
-      //   console.log(res);
-      //   if (res === code) {
-      //     this.props.navigator.pop();
-      //   }
-      // }, (err) => {
-      //   console.log(err);
-      // });
+      RNSecureKeyStore.get('passCode')
+      .then((res) => {
+        if (res === code) {
+          this.props.navigator.pop();
+        }
+        //TODO Handle the logic when the passcode is not right
+      }, (err) => {
+        console.log(err);
+      });
     }
   }
 
