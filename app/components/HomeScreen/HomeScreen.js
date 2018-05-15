@@ -60,9 +60,11 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                     style={{
                         fontWeight: '300',
                         fontSize: 20,
-                        color: 'grey'
+                        color: 'grey',
+                        paddingHorizontal: 20,
+                        textAlign: 'center'
                     }}
-                >{props.totalVisitsCount !== 0 ? 'Great job! All planned visits complete' : 'No Day\'s Summary'}</StyledText>
+                >{props.totalVisitsCount !== 0 ? 'Great job! All planned visits completed' : 'No Day\'s Summary'}</StyledText>
                 {props.totalVisitsCount !== 0 ? visitListButtons : null}
                 <StyledText
                     style={{
