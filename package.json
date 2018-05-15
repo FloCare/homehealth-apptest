@@ -26,8 +26,6 @@
     "react": "16.3.1",
     "react-native": "0.55.1",
     "react-native-user-inactivity": "0.0.1-beta.1",
-    "react-native-awesome-alerts": "1.0.7",
-    "react-native-secure-key-store": "^1.0.0",
     "react-native-otp-inputs": "0.5.0",
     "react-native-config": "^0.11.5",
     "react-native-action-button": "^2.8.4",
