@@ -43,6 +43,7 @@ const AddNoteFormWithoutPatientTag = (props) => {
         onItemSelect,
         handleSubmit,
         searchRef,
+        searchText,
         searching,
         setNoSearching
     } = props;
@@ -51,6 +52,7 @@ const AddNoteFormWithoutPatientTag = (props) => {
         <View style={{flex: 10, justifyContent: 'space-between'}}>
             <SearchBar
                 ref={searchRef}
+                value={searchText}
                 onChangeText={onChangeSearchText}
                 placeholder='Search a patient name'
                 clearIcon={{name: 'close'}}

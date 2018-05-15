@@ -9,6 +9,7 @@ import StyledText from '../common/StyledText';
 
 const PatientListScreen = (props) => {
     const {
+        searchText,
         onSearch,
         patientList,
         selectedPatient,
@@ -66,6 +67,7 @@ const PatientListScreen = (props) => {
                     round
                     lightTheme
                     disabled
+                    value={searchText}
                     onChangeText={(query) => {
                         onSearch(query);
                     }}
@@ -73,6 +75,7 @@ const PatientListScreen = (props) => {
                         onSearch(null);
                     }}
                     placeholder='Search'
+                    clearIcon={{color: '#86939e', name: 'cancel'}}
                 />
                 <MenuProvider customStyles={MenuProviderStyles}>
                     <SectionedPatientList

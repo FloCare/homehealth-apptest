@@ -11,6 +11,7 @@ class AddNoteFormContainer extends Component {
             name: props.name,
             note: null,
             searching: false,
+            searchText: null,
             patientList: null
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -33,6 +34,7 @@ class AddNoteFormContainer extends Component {
     }
 
     onChangeSearchText(query) {
+        this.setState({searchText: query});
         if (query && query.toString().length > 0) {
             console.log(query);
             this.setState({searching: true});
@@ -64,8 +66,10 @@ class AddNoteFormContainer extends Component {
                 note: patient.notes,
                 patientId: patient.patientID,
                 name: patient.name,
-                searching: false
+                searching: false,
+                searchText: null
             });
+            // Todo: Can be removed now?
             this.search.clearText();
         } catch (e) {
             console.log('Error in selecting Item:', e);
@@ -130,6 +134,7 @@ class AddNoteFormContainer extends Component {
                 <AddNoteFormWithoutPatientTag
                     searchRef={this.setSearchRef}
                     value={this.state.note}
+                    searchText={this.state.searchText}
                     name={this.state.name}
                     patientId={this.state.patientId}
                     patientList={this.state.patientList}

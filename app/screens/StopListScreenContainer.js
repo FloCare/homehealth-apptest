@@ -8,6 +8,7 @@ class StopListScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            searchText: null,
             stopList: [],
             stopCount: 0
         };
@@ -24,6 +25,7 @@ class StopListScreenContainer extends Component {
     }
 
     onSearch(query) {
+        this.setState({searchText: query});
         this.getSectionData(query);
     }
 
@@ -83,6 +85,7 @@ class StopListScreenContainer extends Component {
             <StopListScreen
                 stopList={this.state.stopList}
                 stopCount={this.state.stopCount}
+                searchText={this.state.searchText}
                 onSearch={this.onSearch}
                 selectedStop={selectedStop}
                 onPressAddStop={this.onPressAddStop}

@@ -7,7 +7,7 @@ import EmptyStateButton from '../common/EmptyStateButton';
 import StyledText from '../common/StyledText';
 
 const StopListScreen = (props) => {
-    const {onSearch, stopList, selectedStop, onPressAddStop, stopCount} = props;
+    const {searchText, onSearch, stopList, selectedStop, onPressAddStop, stopCount} = props;
     if (stopCount === 0) {
         return (
             <View style={styles.container.container}>
@@ -15,6 +15,7 @@ const StopListScreen = (props) => {
                     round
                     lightTheme
                     disabled
+                    value={searchText}
                     onChangeText={(query) => {
                         onSearch(query);
                     }}
