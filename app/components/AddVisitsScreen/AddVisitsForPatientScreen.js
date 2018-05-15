@@ -76,7 +76,8 @@ class AddVisitsForPatientScreen extends Component {
         }
         //TODO implement redux and remove this hack
         makeCallbacks();
-        this.props.navigator.dismissLightBox();
+        //this.props.navigator.dismissLightBox();
+        this.props.navigator.dismissAllModals();
     }
 
     render() {
