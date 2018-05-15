@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import OtpInputs from 'react-native-otp-inputs';
 import {Button} from 'react-native-elements';
-import AwesomeAlert from 'react-native-awesome-alerts';
 import {StyleSheet, Text, TextInput, ScrollView, View, AsyncStorage} from 'react-native';
 import Header from './common/Header';
 import {screenNames} from '../utils/constants';
