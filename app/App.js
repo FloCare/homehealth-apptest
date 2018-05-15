@@ -30,6 +30,12 @@ Navigation.startTabBasedApp({
             label: 'Patients',
             icon: Images.person_ic,
             screen: screenNames.patientList,
+        },
+        {
+            label: 'Welcome',
+            icon: Images.person_ic,
+            screen: screenNames.inviteScreen,
+            navigatorStyle: {navBarHidden: false}
         }
     ],
     appStyle: navigatorStyle,

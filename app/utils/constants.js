@@ -39,6 +39,11 @@ const screenNames = {
     //Top Level Screens
     homeScreen: 'HomeScreen',
     patientList: 'PatientList',
+    welcomeScreen: 'WelcomeScreen',
+    inviteScreen: 'InviteScreen',
+    accessCodeScreen: 'AccessCodeScreen',
+    thankyouScreen: 'ThankYouScreen',
+    passcodeVerificationScreen: 'passcodeVerificationScreen',
 
     addPatient: 'AddPatient',
     patientDetails: 'PatientDetails',
