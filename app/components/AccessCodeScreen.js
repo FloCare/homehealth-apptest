@@ -1,6 +1,6 @@
 
 import React, {Component} from 'react';
-// import RNSecureKeyStore from 'react-native-secure-key-store';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import OtpInputs from 'react-native-otp-inputs';
 // import UserInactivity from 'react-native-user-inactivity';
 import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
@@ -80,13 +80,14 @@ try {
 //Secure the entered passcode in the keystore
 secureKey(passcode) {
   if (passcode.length === 4) {
-    console.log('Hello');
-    // RNSecureKeyStore.set('passCode', passcode).then((res) => {
-    //   console.log(res);
-    // }, (err) => {
-    //   console.log(err);
-    // });
+    //Save the passcode to keystore
+    RNSecureKeyStore.set('passCode', passcode).then((res) => {
+      console.log(res);
+    }, (err) => {
+      console.log(err);
+    });
 
+    // TODO Re-visit once the code is merged
     // RNSecureKeyStore.get('patientData')
     // .then((res) => {
     //   //Save the patient/visit/episode objects to Realm
@@ -95,33 +96,34 @@ secureKey(passcode) {
     //   console.log(err);
     // });
 
+    // Create the encryption key
     const key = new Int8Array(64);
     for (let i = 0; i < key.length; i++) {
-      key[i] = 1;
-      }
+      key[i] = Math.random(128);
+    }
 
-      // RNSecureKeyStore.set('encryptionKey', key.toString).then((res) => {
+      // RNSecureKeyStore.set('encryptionKey', key).then((res) => {
       //   console.log(res);
       // }, (err) => {
       //   console.log(err);
       // });
 
-  this.floDB = new Realm({
-    schema: [
-        Visit,
-        Patient,
-        Address,
-        Episode,
-        Place,
-        VisitOrder
-    ],
-    deleteRealmIfMigrationNeeded: true,
-    encryptionKey: key,
-    schemaVersion: 0
-  });
+  // this.floDB = new Realm({
+  //   schema: [
+  //       Visit,
+  //       Patient,
+  //       Address,
+  //       Episode,
+  //       Place,
+  //       VisitOrder
+  //   ],
+  //   deleteRealmIfMigrationNeeded: true,
+  //   encryptionKey: key,
+  //   schemaVersion: 0
+  // });
 
     this.props.navigator.push({
-    screen: screenNames.signupScreen,
+    screen: screenNames.homeScreen,
     navigatorStyle: {
         tabBarHidden: true
     }
