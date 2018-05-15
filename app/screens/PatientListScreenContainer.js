@@ -117,7 +117,7 @@ class PatientListScreenContainer extends Component {
                 Alert.alert('Warning', 'Please enter a valid address for the patient');
                 break;
             case 'Visits':
-                this.props.navigator.showModal({
+                this.props.navigator.showLightBox({
                     screen: screenNames.addVisitsForPatientScreen,
                     style: {
                         backgroundBlur: 'dark',

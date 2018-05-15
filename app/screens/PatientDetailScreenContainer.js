@@ -54,7 +54,7 @@ class PatientDetailScreenContainer extends Component {
     }
 
     onPressAddVisit() {
-        this.props.navigator.showModal({
+        this.props.navigator.showLightBox({
             screen: screenNames.addVisitsForPatientScreen,
             style: {
                 backgroundBlur: 'dark',
@@ -65,18 +65,6 @@ class PatientDetailScreenContainer extends Component {
                 patientId: this.state.patientDetail.patientID
             },
         });
-
-        // this.props.navigator.showLightBox({
-        //     screen: screenNames.addVisitsForPatientScreen,
-        //     style: {
-        //         backgroundBlur: 'dark',
-        //         backgroundColor: '#00000070',
-        //         tapBackgroundToDismiss: true
-        //     },
-        //     passProps: {
-        //         patientId: this.state.patientDetail.patientID
-        //     },
-        // });
     }
 
     onPressAddNotes() {
