@@ -90,7 +90,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
     }
 
     return (
-        <View style={{flex: 4, marginTop: -1}}>
+        <View style={{flex: 4, marginTop: -3}}>
             <VisitSummary
                 navigator={props.navigator}
                 date={props.date}
