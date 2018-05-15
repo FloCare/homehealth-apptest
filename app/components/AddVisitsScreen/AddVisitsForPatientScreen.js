@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Image, TouchableHighlight} from 'react-native';
+import {View, Image, TouchableHighlight, Dimensions} from 'react-native';
 import {Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
@@ -80,16 +80,14 @@ class AddVisitsForPatientScreen extends Component {
     }
 
     render() {
+        const {height, width} = Dimensions.get('window');
         return (
             <View
                 style={{
-                    height: '55%',
-                    width: '90%',
+                    height: height*0.3,
+                    width: width*0.8,
                     backgroundColor: '#eeeeee',
                     borderRadius: 10,
-                    marginLeft: '5%',
-                    marginRight: '5%',
-                    marginTop: '15%',
                 }}
             >
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 10}}>

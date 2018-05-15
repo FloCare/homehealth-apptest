@@ -3,7 +3,7 @@ import {View, FlatList} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Tag} from '../common/tag';
 import EmptyStateButton from '../common/EmptyStateButton';
-import {SimpleButton} from "../common/SimpleButton";
+import {SimpleButton} from '../common/SimpleButton';
 import StyledText from '../common/StyledText';
 
 //TODO improve efficiency
@@ -96,8 +96,10 @@ function getComponentToDisplayBasedOnProps(props) {
         <View style={{flex: 1}}>
             <SearchBar
                 lightTheme
-                placeholder='search patients or stops'
+                placeholder='Search patients and stops'
+                value={props.searchText}
                 onChangeText={props.onChangeText}
+                clearIcon={{color: '#86939e', name: 'cancel'}}
             />
             {this.getTags()}
             <FlatList

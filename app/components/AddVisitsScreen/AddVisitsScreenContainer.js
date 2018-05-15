@@ -7,7 +7,7 @@ import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema'
 import {arrayToMap} from '../../utils/collectionUtils';
 import {screenNames, visitType, PrimaryColor} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
-import {Images} from "../../Images";
+import {Images} from '../../Images';
 
 const newStop = 'Add new Stop';
 const newPatient = 'Add new Patient';
@@ -124,7 +124,7 @@ class AddVisitsScreenContainer extends Component {
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
         this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
 
-        this.setState({filterText: text});
+        this.setState({searchText: text});
     }
 
 
@@ -286,6 +286,7 @@ class AddVisitsScreenContainer extends Component {
             <AddVisitsScreen
                 isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
+                searchText={this.state.searchText}
                 onTagPress={this.onTagPress}
                 onPressAddPatient={(() => this.props.navigator.push(newPatientNavigatorArg))}
                 // onItemToggle={this.onItemToggle}

@@ -21,6 +21,7 @@ const Fab = (props) => {
             size={50}
             useNativeFeedback={false}
             bgColor={'rgba(255,255,255,0.8)'}
+            offsetY={'3%'}
             hideShadow
         >
             <ActionButton.Item buttonColor={PrimaryColor} title="Add Note" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>

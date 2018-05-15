@@ -11,7 +11,7 @@ function VisitListScreen(props) {
             {/*<VisitListContainer visitResultObject={props.visitResultObject} />*/}
             <SortedVisitListContainer
                 navigator={props.navigator}
-                style={{flex: 1, marginTop: 10}}
+                style={{flex: 1}}
                 date={props.date}
                 renderWithCallback={VisitCard}
                 tapForDetails

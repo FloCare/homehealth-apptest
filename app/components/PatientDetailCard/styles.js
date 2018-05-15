@@ -17,7 +17,9 @@ const styles = {
         shadowOpacity: 1,
         borderStyle: 'solid',
         borderWidth: 1,
-        borderColor: PrimaryColor
+        borderColor: PrimaryColor,
+        paddingTop: 0,
+        paddingBottom: 0
     },
     containerStyle: {
         margin: 14,
