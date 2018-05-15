@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import OtpInputs from 'react-native-otp-inputs';
 import {Button} from 'react-native-elements';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import {StyleSheet, Text, TextInput, ScrollView, View, AsyncStorage} from 'react-native';
 import Header from './common/Header';
 import {screenNames} from '../utils/constants';
 import {PrimaryFontFamily} from '../utils/constants';
 
-const inviteCodes = ['1234', '5678', '2468', 'floc'];
+const inviteCodes = ['9999', '5678', '2468', '7777'];
 
 export class InviteScreen extends Component {
 
@@ -21,8 +22,8 @@ export class InviteScreen extends Component {
 
   componentDidMount() {
     try {
-          const val = AsyncStorage.getItem('isFirstVisit');
-          if(val === 'false') {
+          const isFirstVisit = AsyncStorage.getItem('isFirstVisit');
+          if(isFirstVisit === 'false') {
             this.props.navigator.push({
             screen: screenNames.homeScreen,
             navigatorStyle: {
@@ -35,7 +36,7 @@ export class InviteScreen extends Component {
         }
   }
 
-  TODO 
+// TODO Integrate Node email
   sendEmail = () => {
     const {emailId, organizationName} = this.state;
     // const to = ['karthik@flocare.health']; // string or array of email addresses
@@ -48,7 +49,7 @@ export class InviteScreen extends Component {
     //     }).catch(console.error);
         
         this.props.navigator.push({
-            screen: screenNames.welcomeScreen,
+            screen: screenNames.thankyouScreen,
             navigatorStyle: {
                 tabBarHidden: true
             }
@@ -59,77 +60,76 @@ export class InviteScreen extends Component {
     const {emailId, organizationName} = this.state;
     return (
       <ScrollView >
-        <View style={styles.grayTextStyle}>
-            <Text style={styles.grayTextStyle}> Hey Whats up </Text>
-        </View>  
-        <View style={styles.boldTextStyle}>
-            <Text style={styles.boldTextStyle}> Have an invite? </Text>
-        </View>  
-        <View style={styles.grayTextStyle}>
-            <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
-        </View>  
-          <View >
-              <OtpInputs  
-              inputContainerStyles={styles.buttonText}
-              handleChange={
-                code => {
-                  // TODO add the initial set of invite codes
-                  if (inviteCodes.indexOf(code) > 0) {
-                    try {
-                      console.log('wohoooooo');
-                        AsyncStorage.setItem('isFirstVisit', 'false');
-                    } catch (error) {
-                        console.error('AsyncStorage error: ', error.message);
+            <View style={styles.grayTextStyle}>
+                <Text style={styles.grayTextStyle}> Hey Whats up </Text>
+            </View>  
+            <View style={styles.boldTextStyle}>
+                <Text style={styles.boldTextStyle}> Have an invite? </Text>
+            </View>  
+            <View style={styles.grayTextStyle}>
+                <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
+            </View>  
+            <View >
+                <OtpInputs  
+                  inputContainerStyles={styles.buttonText}
+                  handleChange={
+                    code => {
+                              if (code.length === 4) {
+                                  this.props.navigator.push({
+                                        screen: screenNames.welcomeScreen,
+                                        backbuttonHidden: true,
+                                        navigatorStyle: {
+                                            tabBarHidden: true
+                                        }
+                                  });
+                                  if (inviteCodes.indexOf(code) > 0) {
+                                    try {
+                                        AsyncStorage.setItem('isFirstVisit', 'false');
+                                    } catch (error) {
+                                        console.error('AsyncStorage error: ', error.message);
+                                    }
+                                  
+                                  }
+                              }
+
+                          // TODO when the invite code is wrong
+                          // else {
+                          //   <Text> Please enter a valid invite </Text>
+                          // }
                     }
-                    this.props.navigator.push({
-                      screen: screenNames.welcomeScreen,
-                      navigatorStyle: {
-                          tabBarHidden: true
-                      }
-                    });
-                  }
-                  // TODO when the invite code is wrong
-                  // else {
-                  //   <Text> Please enter a valid invite </Text>
-                  // }
-                }
-              } numberOfInputs={4}
-              />
-          </View>
-          <View style={styles.instructionStyle}>
-          <Text style={styles.welcome}>
-          Don't have an invite yet?
-          </Text>
-          </View>
-          <View style={styles.grayTextStyle}>
-          <Text style={styles.grayTextStyle}>
-          Please leave your work emailId and Organization name we will invite you!
-          </Text>
-          </View>
-          <View style={{padding: 25}}>
-            <Text style={{fontSize: 18}}>Email Id</Text>
-            <TextInput
-              style={{height: 40, marginTop: 15, marginBottom: 15}}
-              onChangeText={value => this.setState({emailId: value})}
-              placeholder={'abc@domain.com '}
-              value={emailId}
-            />
-            <Text style={{fontSize: 18}}>Organization Name</Text>
-            <TextInput
-              style={{height: 40, marginTop: 15, marginBottom: 15}}
-              onChangeText={value => this.setState({organizationName: value})}
-              placeholder={'Organization '}
-              value={organizationName}
-            />
-            <Button
-          containerViewStyle={{marginLeft: 0, marginRight: 0}}
-          buttonStyle={styles.buttonStyle}
-          textStyle={{
-          fontFamily: PrimaryFontFamily,
-          fontSize: 16
-          }}
-          title='Submit' onPress={this.sendEmail} />
-          </View>
+                  } numberOfInputs={4}
+                />
+              </View>
+              <View style={styles.instructionStyle}>
+                <Text style={styles.welcome}> Don't have an invite yet?</Text>
+              </View>
+              <View style={styles.grayTextStyle}>
+                <Text style={styles.grayTextStyle}>Please leave your work emailId and Organization name we will invite you!</Text>
+              </View>
+              <View style={{padding: 25}}>
+                <Text style={{fontSize: 18}}>Email Id</Text>
+                <TextInput
+                  style={{height: 40, marginTop: 15, marginBottom: 15}}
+                  onChangeText={value => this.setState({emailId: value})}
+                  placeholder={'abc@domain.com '}
+                  value={emailId}
+                />
+                <Text style={{fontSize: 18}}>Organization Name</Text>
+                <TextInput
+                  style={{height: 40, marginTop: 15, marginBottom: 15}}
+                  onChangeText={value => this.setState({organizationName: value})}
+                  placeholder={'Organization '}
+                  value={organizationName}
+                />
+                <Button
+                  containerViewStyle={{marginLeft: 0, marginRight: 0}}
+                  buttonStyle={styles.buttonStyle}
+                  textStyle={{
+                  fontFamily: PrimaryFontFamily,
+                  fontSize: 16
+                  }}
+                  title='Submit' onPress={this.sendEmail} />
+              </View>
       </ScrollView>
     );
   }
@@ -149,17 +149,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   grayTextStyle: {
-        fontSize: 18,
-        color: 'grey',
-        justifyContent: 'center',
-        alignItems: 'center'
+    fontSize: 18,
+    color: 'grey',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   boldTextStyle: {
-        fontSize: 18,
-        marginTop: 20,
-        marginBottom: 10,
-        justifyContent: 'center',
-        alignItems: 'center'
+    fontSize: 18,
+    marginTop: 20,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   stretch: {
     alignSelf: 'center',
@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   buttonStyle: {
-  backgroundColor: '#45ceb1',
-  marginLeft: 0,
-  marginRight: 0
+    backgroundColor: '#45ceb1',
+    marginLeft: 0,
+    marginRight: 0
 },
   button: {
     color: '#666666',

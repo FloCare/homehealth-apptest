@@ -1,14 +1,7 @@
 
 import React, {Component} from 'react';
 import {Button} from 'react-native-elements';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  AsyncStorage
-} from 'react-native';
+import {StyleSheet, Text, View, ScrollView, Image, AsyncStorage} from 'react-native';
 import {screenNames} from '../utils/constants';
 import {PrimaryFontFamily} from '../utils/constants';
 
@@ -16,11 +9,6 @@ import {PrimaryFontFamily} from '../utils/constants';
 export class WelcomePageScreen extends Component {
 
   onButtonPress() {
-        try {
-          const val = AsyncStorage.getItem('isFirstVisit');
-        } catch (error) {
-
-        }
         this.props.navigator.push({
             screen: screenNames.homeScreen,
             navigatorStyle: {
@@ -41,7 +29,7 @@ export class WelcomePageScreen extends Component {
             });
           }
         } catch (error) {
-
+            console.error('AsyncStorage error: ', error.message);
         }
   }
     
@@ -49,54 +37,45 @@ export class WelcomePageScreen extends Component {
     return (
       <ScrollView >
         <View>
-          <Text style={styles.headerText}>
-                Be more efficient and organized
-          </Text>
+          <Text style={styles.headerText}>Be more efficient and organized</Text>
         </View>
         <View>
-        <Image
-          style={styles.stretch}
-          source={require('../../resources/welcomeScreenImg.png')}
-        />  
+          <Image
+            style={styles.stretch}
+            source={require('../../resources/welcomeScreenImg.png')}
+          />  
         </View>  
-        
         <View style={styles.instructionStyle}>
-        <Image
-          style={styles.sectionStretch}
-          source={require('../../resources/planImg.png')}
-        />
-          <Text style={styles.bulletPointsStyle}>
-          Plan your day better by having information at your tips
-          </Text>
+          <Image
+            style={styles.sectionStretch}
+            source={require('../../resources/planImg.png')}
+          />
+          <Text style={styles.bulletPointsStyle}>Plan your day better by having information at your tips</Text>
         </View>
         <View style={styles.instructionStyle}>
-        <Image
-          style={styles.sectionStretch}
-          source={require('../../resources/mapImg.png')}
-        />
-          <Text style={styles.bulletPointsStyle}>
-          View your visits on map and map a better routing
-          </Text>
+          <Image
+            style={styles.sectionStretch}
+            source={require('../../resources/mapImg.png')}
+          />
+          <Text style={styles.bulletPointsStyle}>View your visits on map and map a better routing</Text>
         </View>
         <View style={styles.instructionStyle}>
-        <Image
-          style={styles.sectionStretch}
-          source={require('../../resources/secureImg.png')}
-        />
-          <Text style={styles.bulletPointsStyle}>
-          Be HIPAA compliant with 2 step verification and data encryption.
-          </Text>
-      </View>
-      <Button
-          containerViewStyle={{marginLeft: 0, marginRight: 0}}
-          buttonStyle={styles.buttonStyle}
-          textStyle={{
-          fontFamily: PrimaryFontFamily,
-          fontSize: 16
-          }}
-          title='Explore' onPress={this.onButtonPress.bind(this)}>
-				Explore
-			</Button>
+          <Image
+            style={styles.sectionStretch}
+            source={require('../../resources/secureImg.png')}
+          />
+          <Text style={styles.bulletPointsStyle}>Be HIPAA compliant with 2 step verification and data encryption</Text>
+        </View>
+        <Button
+            containerViewStyle={{marginLeft: 0, marginRight: 0}}
+            buttonStyle={styles.buttonStyle}
+            textStyle={{
+            fontFamily: PrimaryFontFamily,
+            fontSize: 16
+            }}
+            title='Explore' onPress={this.onButtonPress.bind(this)}>
+  				Explore
+  			</Button>
       </ScrollView> 
     );
   }
@@ -139,9 +118,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
-buttonStyle: {
-  backgroundColor: '#45ceb1',
-  marginLeft: 0,
-  marginRight: 0
-}
+  buttonStyle: {
+    backgroundColor: '#45ceb1',
+    marginLeft: 0,
+    marginRight: 0
+  }
 });

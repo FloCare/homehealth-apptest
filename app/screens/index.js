@@ -9,6 +9,7 @@ import {WelcomePageScreen} from '../components/WelcomePageScreen';
 import {InviteScreen} from '../components/InviteScreen';
 import {PasscodeVerificationScreen} from '../components/PasscodeVerificationScreen';
 import {AccessCodeScreen} from '../components/AccessCodeScreen';
+import {ThankYouScreen} from '../components/ThankYouScreen';
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
@@ -41,6 +42,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
     Navigation.registerComponent(screenNames.welcomeScreen, () => WelcomePageScreen);
     Navigation.registerComponent(screenNames.inviteScreen, () => InviteScreen);
+    Navigation.registerComponent(screenNames.thankyouScreen, () => ThankYouScreen);
     Navigation.registerComponent(screenNames.passcodeVerificationScreen, () => PasscodeVerificationScreen);
     Navigation.registerComponent(screenNames.accessCodeScreen, () => AccessCodeScreen);
     Navigation.registerComponent(screenNames.visitListScreen, () => ScreenWithCalendarComponent(VisitListScreenContainer));
