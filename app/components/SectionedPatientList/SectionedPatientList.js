@@ -4,12 +4,13 @@ import {
     Menu,
     MenuOptions,
     MenuOption,
-    MenuTrigger,
+    MenuTrigger
 } from 'react-native-popup-menu';
 import styles from './styles';
-import {PrimaryColor, TransparentPrimaryColor} from '../../utils/constants';
+import {TransparentPrimaryColor} from '../../utils/constants';
 import StyledText from '../common/StyledText';
 import {Images} from '../../Images';
+import CustomMenuRenderer from '../common/CustomMenuRenderer';
 
 // const CustomMenu = (props) => {
 //     const {style, children, layouts, ...other} = props;
@@ -32,47 +33,13 @@ class SectionedPatientList extends Component {
     }
 
     renderItem(item, selectedPatient, onPressPopupButton) {
+        let backgroundColor = '#ffffff';
         if (item.patientID === selectedPatient) {
-            return (
-                <View
-                    style={{paddingLeft: 5, paddingRight: 5, backgroundColor: TransparentPrimaryColor(0.3)}}
-                >
-                    <View style={{flex: 10, flexDirection: 'row'}}>
-                        <TouchableOpacity
-                            style={{flex: 9, flexDirection: 'column'}}
-                            onPress={({e}) => this.props.onItemPressed({item}, e)}
-                        >
-                            <StyledText style={styles.nameStyle}>{item.name}</StyledText>
-                            <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
-                        </TouchableOpacity>
-                        <View style={{flex: 1, marginVertical: 15}}>
-                            <Menu rendererProps={{placement: 'top'}}>
-                                <MenuTrigger
-                                    children={<Image source={require('../../../resources/threeDotButton.png')} />}
-                                />
-                                <MenuOptions>
-                                    <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
-                                        <StyledText style={{color: PrimaryColor}}>Add Notes</StyledText>
-                                    </MenuOption>
-                                    <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
-                                        <StyledText style={{color: PrimaryColor}}>Call</StyledText>
-                                    </MenuOption>
-                                    <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
-                                        <StyledText style={{color: PrimaryColor}}>Show on maps</StyledText>
-                                    </MenuOption>
-                                    <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
-                                        <StyledText style={{color: PrimaryColor}}>Add Visit</StyledText>
-                                    </MenuOption>
-                                </MenuOptions>
-                            </Menu>
-                        </View>
-                    </View>
-                </View>
-            );
+            backgroundColor = TransparentPrimaryColor(0.3);
         }
         return (
             <View
-                style={{paddingLeft: 5, paddingRight: 5, backgroundColor: item.patientID === selectedPatient ? PrimaryColor : '#ffffff'}}
+                style={{paddingLeft: 5, paddingRight: 5, backgroundColor}}
             >
                 <View style={{flex: 10, flexDirection: 'row'}}>
                     <TouchableOpacity
@@ -83,7 +50,7 @@ class SectionedPatientList extends Component {
                         <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
                     </TouchableOpacity>
                     <View style={{flex: 1, marginVertical: 15}}>
-                        <Menu rendererProps={{placement: 'top'}}>
+                        <Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>
                             <MenuTrigger
                                 children={<Image source={Images.threeDotButton} />}
                             />

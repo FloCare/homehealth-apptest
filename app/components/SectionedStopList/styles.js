@@ -1,3 +1,5 @@
+import {PrimaryColor} from '../../utils/constants';
+
 const styles = {
     sectionHeader: {
         padding: 10,
@@ -22,6 +24,14 @@ const styles = {
         height: 1,
         marginLeft: 15,
         backgroundColor: '#CED0CE',
+    },
+    menuOptionsStyle: {
+        color: PrimaryColor
+    },
+    rendererStyle: {
+        height: 120,
+        justifyContent: 'center',
+        paddingLeft: 10
     }
 };
 
