@@ -42,7 +42,7 @@
     "react-native-sortable-list": "git+https://github.com/FloCare/react-native-sortable-list.git",
     "react-native-vector-icons": "^4.6.0",
     "react-native-view-more-text": "FloCare/react-native-view-more-text",
-    "realm": "^2.3.4",
+    "realm": "2.4.0",
     "tcomb-form-native": "^0.6.11",
     "uuid": "^3.2.1"
   },

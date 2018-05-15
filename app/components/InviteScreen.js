@@ -6,6 +6,7 @@ import Header from './common/Header';
 import {screenNames} from '../utils/constants';
 import {PrimaryFontFamily} from '../utils/constants';
 
+// TODO Provide actual invite codes , move it to a backend later
 const inviteCodes = ['9999', '5678', '2468', '7777'];
 
 export class InviteScreen extends Component {
@@ -19,21 +20,22 @@ export class InviteScreen extends Component {
     this.sendEmail = this.sendEmail.bind(this);
   }
 
-  componentDidMount() {
-    try {
-          const isFirstVisit = AsyncStorage.getItem('isFirstVisit');
-          if(isFirstVisit === 'false') {
-            this.props.navigator.push({
-            screen: screenNames.homeScreen,
-            navigatorStyle: {
-                tabBarHidden: true
-            }
-            });
-          }
-        } catch (error) {
-
-        }
-  }
+// TODO will be used in the Sign In Page to figure out if it is a first time visit
+  // async componentDidMount() {
+  //   try {
+  //         const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
+  //         if(isFirstVisit === 'false') {
+  //           this.props.navigator.push({
+  //           screen: screenNames.homeScreen,
+  //           navigatorStyle: {
+  //               tabBarHidden: true
+  //           }
+  //           });
+  //         }
+  //       } catch (error) {
+  //           console.error('AsyncStorage error: ', error.message);
+  //       }
+  // }
 
 // TODO Integrate Node email
   sendEmail = () => {
@@ -74,16 +76,19 @@ export class InviteScreen extends Component {
                   handleChange={
                     code => {
                               if (code.length === 4) {
-                                  this.props.navigator.push({
-                                        screen: screenNames.welcomeScreen,
-                                        backbuttonHidden: true,
-                                        navigatorStyle: {
-                                            tabBarHidden: true
-                                        }
-                                  });
-                                  if (inviteCodes.indexOf(code) > 0) {
+                                  if (inviteCodes.indexOf(code) >= 0) {
                                     try {
                                         AsyncStorage.setItem('isFirstVisit', 'false');
+                                        console.log('%%%%%%');
+                                        console.log(AsyncStorage.getItem('isFirstVisit'));
+                                        console.log('******');
+                                        this.props.navigator.push({
+                                          screen: screenNames.welcomeScreen,
+                                          backbuttonHidden: true,
+                                          navigatorStyle: {
+                                              tabBarHidden: true
+                                          }
+                                        });
                                     } catch (error) {
                                         console.error('AsyncStorage error: ', error.message);
                                     }
