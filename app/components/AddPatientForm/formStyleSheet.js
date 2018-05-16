@@ -8,6 +8,9 @@ const stylesheet = _.cloneDeep(t.form.Form.stylesheet);
 stylesheet.textbox.normal.borderWidth = 0;
 stylesheet.textbox.error.borderWidth = 0;
 
+stylesheet.textbox.normal.borderColor = '#00000070';
+stylesheet.textbox.error.borderColor = '#00000070';
+
 stylesheet.textbox.normal.marginBottom = 0;
 stylesheet.textbox.error.marginBottom = 0;
 
