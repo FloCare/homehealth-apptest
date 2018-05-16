@@ -16,22 +16,6 @@ export class WelcomePageScreen extends Component {
             }
         });
 	}
-
-  // async componentDidMount() {
-  //   try {
-  //         const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
-  //         if(isFirstVisit === 'false') {
-  //           this.props.navigator.push({
-  //           screen: screenNames.homeScreen,
-  //           navigatorStyle: {
-  //               tabBarHidden: true
-  //           }
-  //           });
-  //         }
-  //       } catch (error) {
-  //           console.error('AsyncStorage error: ', error.message);
-  //       }
-  // }
     
   render() {
     return (
