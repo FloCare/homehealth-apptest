@@ -7,8 +7,10 @@ import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
 import {Patient, Episode, Visit, Place, Address, VisitOrder} from '../utils/data/schema';
 import {screenNames} from '../utils/constants';
 import {parsePhoneNumber} from '../utils/lib';
+import {arrayBufferToString, stringToArrayBuffer, generateRandomString} from '../utils/encryptionUtils';
 
 const Realm = require('realm');
+const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
 
 
 export class AccessCodeScreen extends Component {
@@ -97,16 +99,19 @@ secureKey(passcode) {
     // });
 
     // Create the encryption key
+    // TODO move this function of generating a random string to a common module
+    const randomString = '';
     const key = new Int8Array(64);
     for (let i = 0; i < key.length; i++) {
-      key[i] = Math.random(128);
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomString += chars.substring(rnum,rnum+1);
     }
 
-      // RNSecureKeyStore.set('encryptionKey', key).then((res) => {
-      //   console.log(res);
-      // }, (err) => {
-      //   console.log(err);
-      // });
+    RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
+      console.log(res);
+    }, (err) => {
+      console.log(err);
+    });
 
   // this.floDB = new Realm({
   //   schema: [
@@ -118,7 +123,7 @@ secureKey(passcode) {
   //       VisitOrder
   //   ],
   //   deleteRealmIfMigrationNeeded: true,
-  //   encryptionKey: key,
+  //   encryptionKey: stringToArrayBuffer(randomString),
   //   schemaVersion: 0
   // });
 
