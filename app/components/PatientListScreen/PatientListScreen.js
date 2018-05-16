@@ -20,42 +20,17 @@ const PatientListScreen = (props) => {
     } = props;
     if (patientCount === 0) {
         return (
-            <View
-                style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}
-            >
-                <StyledText
-                    style={{
-                        color: 'grey',
-                        fontWeight: '200',
-                        fontSize: 22
-                    }}
-                >No Patients</StyledText>
+            <View style={styles.emptyStateContainerStyle}>
+                <StyledText style={styles.emptyStateHeaderStyle}>
+                    No Patients
+                </StyledText>
 
-                <View
-                    style={{
-                        width: '75%'
-                    }}
-                >
-                    <StyledText
-                        style={{
-                            textAlign: 'center',
-                            padding: 0,
-                            margin: 20,
-                            marginTop: 5,
-                            fontSize: 14,
-                            color: 'grey',
-                        }}
-                    >When you add patients, you'll see them here
+                <View style={{width: '75%'}}>
+                    <StyledText style={styles.emptyStateMessageStyle}>
+                        When you add patients, you'll see them here
                     </StyledText>
                 </View>
-                <EmptyStateButton
-                    onPress={onPressAddPatient}
-                >
+                <EmptyStateButton onPress={onPressAddPatient}>
                     Add Patient
                 </EmptyStateButton>
             </View>
@@ -77,7 +52,7 @@ const PatientListScreen = (props) => {
                     placeholder='Search'
                     clearIcon={{color: '#86939e', name: 'cancel'}}
                 />
-                <MenuProvider customStyles={MenuProviderStyles}>
+                <MenuProvider>
                     <SectionedPatientList
                         patientList={patientList}
                         selectedPatient={selectedPatient}
@@ -88,17 +63,6 @@ const PatientListScreen = (props) => {
             </View>
         );
     }
-};
-
-const styles2 = {
-    backdrop: {
-        backgroundColor: 'red'
-    }
-};
-
-const MenuProviderStyles = {
-    menuProviderWrapper: styles2.container,
-    backdrop: styles2.backdrop
 };
 
 export {PatientListScreen};

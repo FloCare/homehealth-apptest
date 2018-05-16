@@ -10,7 +10,7 @@ import {styles as componentStyles} from '../common/styles';
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor} from '../../utils/constants';
-import {Images} from "../../Images";
+import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 
 const renderViewMore = (e, onPressAddNotes) => {
