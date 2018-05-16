@@ -2,7 +2,6 @@ import React from 'react';
 import {View, ScrollView, Image} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
-import ViewMoreText from 'react-native-view-more-text';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
@@ -12,16 +11,11 @@ import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
+import ViewMore from '../common/ViewMore';
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
         <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPressAddNotes}>EDIT NOTES</Text>
-    );
-};
-
-const renderViewLess = (onPress) => {
-    return (
-        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPress}>View less</Text>
     );
 };
 
@@ -200,15 +194,13 @@ const PatientDetailCard = (props) => {
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Notes
                         </StyledText>
-                        <ViewMoreText
+                        <ViewMore
                             textStyle={{...styles.fontStyle, ...styles.noteStyle}}
                             numberOfLines={2}
                             renderViewMore={(e) => renderViewMore(e, onPressAddNotes)}
-                            renderViewLess={renderViewLess}
-                            alwaysShowMore
                         >
                             {notes || 'You have not added any note for this patient.'}
-                        </ViewMoreText>
+                        </ViewMore>
                     </View>
                 </View>
 
