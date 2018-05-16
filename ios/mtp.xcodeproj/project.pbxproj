@@ -55,13 +55,10 @@
 		ACEB004F8EC149ED9FF384C8 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8165B36344D4F4AB4204A59 /* SF-Pro-Text-Semibold.otf */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		AE01B817FA184A148323C2DA /* libReactNativeNavigation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BD0704309C4BE08373A503 /* libReactNativeNavigation.a */; };
+		B0981553D2B644FAAB45642F /* libRNSecureKeyStore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */; };
 		D1BB34047FBF4CA983EE9879 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 717EFD56916442F2A55BF6CD /* Foundation.ttf */; };
 		D296483B067D4BE482E9CE5F /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 602379455E244704B120166C /* MaterialCommunityIcons.ttf */; };
 		D56BA7E965194378980CE6FD /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C531C7BC51A744ECAB552BFB /* Entypo.ttf */; };
-		3961221A48DA431AB8014E64 /* SF-Pro-Display-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 71CAEADF1F954D3488927730 /* SF-Pro-Display-Regular.otf */; };
-		2418B102ABE54C068F31C734 /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = C46E15ECFE7D4A0383F42710 /* SF-Pro-Text-Regular.otf */; };
-		ACEB004F8EC149ED9FF384C8 /* SF-Pro-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8165B36344D4F4AB4204A59 /* SF-Pro-Text-Semibold.otf */; };
-		B0981553D2B644FAAB45642F /* libRNSecureKeyStore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */; };
 		F8D23B4B20AADC79008C137B /* libRNImmediatePhoneCall.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D23B4920AADC37008C137B /* libRNImmediatePhoneCall.a */; };
 /* End PBXBuildFile section */
 
@@ -360,6 +357,13 @@
 			remoteGlobalIDString = 5DBEB1501B18CEA900B34395;
 			remoteInfo = RNVectorIcons;
 		};
+		F801134520AC515F001BDEF2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNSecureKeyStore;
+		};
 		F8D23B4820AADC37008C137B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F8D23B1D20AADC36008C137B /* RNImmediatePhoneCall.xcodeproj */;
@@ -381,6 +385,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* mtpTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mtpTests.m; sourceTree = "<group>"; };
 		0BCF7E108A8942D288BBC3B7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSecureKeyStore.a; sourceTree = "<group>"; };
 		100145C316504D158424271A /* libAirMaps.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAirMaps.a; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
@@ -421,13 +426,9 @@
 		C531C7BC51A744ECAB552BFB /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		C8165B36344D4F4AB4204A59 /* SF-Pro-Text-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Text-Semibold.otf"; path = "../assets/fonts/SF-Pro-Text-Semibold.otf"; sourceTree = "<group>"; };
 		CCDC477A1B2549D38FC920F7 /* libRealmReact.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRealmReact.a; sourceTree = "<group>"; };
+		E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSecureKeyStore.xcodeproj; path = "../node_modules/react-native-secure-key-store/ios/RNSecureKeyStore.xcodeproj"; sourceTree = "<group>"; };
 		F8D23B1D20AADC36008C137B /* RNImmediatePhoneCall.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNImmediatePhoneCall.xcodeproj; path = "../node_modules/react-native-immediate-phone-call/ios/RNImmediatePhoneCall.xcodeproj"; sourceTree = "<group>"; };
 		FDD8B5A4B69141D0B8F10A9B /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
-		71CAEADF1F954D3488927730 /* SF-Pro-Display-Regular.otf */ = {isa = PBXFileReference; name = "SF-Pro-Display-Regular.otf"; path = "../assets/fonts/SF-Pro-Display-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C46E15ECFE7D4A0383F42710 /* SF-Pro-Text-Regular.otf */ = {isa = PBXFileReference; name = "SF-Pro-Text-Regular.otf"; path = "../assets/fonts/SF-Pro-Text-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C8165B36344D4F4AB4204A59 /* SF-Pro-Text-Semibold.otf */ = {isa = PBXFileReference; name = "SF-Pro-Text-Semibold.otf"; path = "../assets/fonts/SF-Pro-Text-Semibold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */ = {isa = PBXFileReference; name = "RNSecureKeyStore.xcodeproj"; path = "../node_modules/react-native-secure-key-store/ios/RNSecureKeyStore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */ = {isa = PBXFileReference; name = "libRNSecureKeyStore.a"; path = "libRNSecureKeyStore.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -463,7 +464,6 @@
 				AE01B817FA184A148323C2DA /* libReactNativeNavigation.a in Frameworks */,
 				5A1B53C65911494B9D22E771 /* libRNVectorIcons.a in Frameworks */,
 				4EE701A262C186B2CCDBA380 /* libPods-mtp.a in Frameworks */,
-				B92FE6674CFD400884F60BC1 /* libRNImmediatePhoneCall.a in Frameworks */,
 				B0981553D2B644FAAB45642F /* libRNSecureKeyStore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -688,7 +688,6 @@
 				4BD87139A67C4D839B3BCF49 /* RealmReact.xcodeproj */,
 				66D6045D675D457D817D9A36 /* ReactNativeNavigation.xcodeproj */,
 				26171A6AED08441A940CB40B /* RNVectorIcons.xcodeproj */,
-				62B7ED35A26F429896E228C4 /* RNImmediatePhoneCall.xcodeproj */,
 				E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */,
 			);
 			name = Libraries;
@@ -747,6 +746,7 @@
 				75BD0704309C4BE08373A503 /* libReactNativeNavigation.a */,
 				8D6BDE0995BE43FF841A06EF /* libRNVectorIcons.a */,
 				100145C316504D158424271A /* libAirMaps.a */,
+				0FD3CEC798624E4BA7687274 /* libRNSecureKeyStore.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -771,6 +771,14 @@
 			isa = PBXGroup;
 			children = (
 				E775796D2080DC63008C7675 /* libRNVectorIcons.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F801134220AC515E001BDEF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F801134620AC515F001BDEF2 /* libRNSecureKeyStore.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -871,7 +879,11 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = YQQ76BAGA8;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = YQQ76BAGA8;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -955,6 +967,10 @@
 				{
 					ProductGroup = F8D23B1E20AADC36008C137B /* Products */;
 					ProjectRef = F8D23B1D20AADC36008C137B /* RNImmediatePhoneCall.xcodeproj */;
+				},
+				{
+					ProductGroup = F801134220AC515E001BDEF2 /* Products */;
+					ProjectRef = E9C82845950941EF884C95D0 /* RNSecureKeyStore.xcodeproj */;
 				},
 				{
 					ProductGroup = E77579632080DC63008C7675 /* Products */;
@@ -1252,6 +1268,13 @@
 			remoteRef = E775796C2080DC63008C7675 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F801134620AC515F001BDEF2 /* libRNSecureKeyStore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSecureKeyStore.a;
+			remoteRef = F801134520AC515F001BDEF2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F8D23B4920AADC37008C137B /* libRNImmediatePhoneCall.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1443,7 +1466,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YQQ76BAGA8;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1460,15 +1483,6 @@
 				INFOPLIST_FILE = mtpTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1484,7 +1498,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YQQ76BAGA8;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/realm/src/**",
@@ -1497,15 +1511,6 @@
 				INFOPLIST_FILE = mtpTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1523,7 +1528,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YQQ76BAGA8;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../node_modules/react-native-navigation/ios\"/**",
 					"$(inherited)",
@@ -1548,7 +1553,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = placeholder.koramangala.unique;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flocare.flocare;
 				PRODUCT_NAME = mtp;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1560,7 +1565,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YQQ76BAGA8;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../node_modules/react-native-navigation/ios\"/**",
 					"$(inherited)",
@@ -1585,7 +1590,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = placeholder.koramangala.unique;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flocare.flocare;
 				PRODUCT_NAME = mtp;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1614,15 +1619,6 @@
 				);
 				INFOPLIST_FILE = "mtp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1659,15 +1655,6 @@
 				);
 				INFOPLIST_FILE = "mtp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1703,15 +1690,6 @@
 				);
 				INFOPLIST_FILE = "mtp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1747,15 +1725,6 @@
 				);
 				INFOPLIST_FILE = "mtp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-ObjC",
