@@ -81,6 +81,8 @@ export class AccessCodeScreen extends Component {
 secureKey(passcode) {
   if (passcode.length === 4) {
     // Save the passcode to keystore
+    // swal("Oops!", "Something went wrong!", "error");
+    //Save the passcode to keystore
     RNSecureKeyStore.set('passCode', passcode).then((res) => {
       console.log(res);
     }, (err) => {

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 //import UserInactivity from 'react-native-user-inactivity';
-import {View, Image, StyleSheet} from 'react-native';
+import {View, Image, StyleSheet, Text} from 'react-native';
 import Header from '../components/common/Header';
 import StartApp from '../screens/App';
 
@@ -30,9 +30,6 @@ class PasscodeVerificationScreen extends Component {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
         if (res === code) {
-          console.log('=====================================');
-          console.log('Passcode Correct !!!!');
-          console.log('=====================================');
           // TODO: Logic for passcode being right
           StartApp();
           // Fetch enc key
@@ -51,10 +48,10 @@ class PasscodeVerificationScreen extends Component {
           //     console.log(err);
           //   });
         } else {
-          //TODO Handle the logic when the passcode is not right
-          console.log('=====================================');
-          console.log('Incorrect Passcode.');
-          console.log('=====================================');
+          this.setState({ 
+            showMessage: true
+          });
+          this.refs.verificationRef.clear();
         }
       }, (err) => {
         console.log(err);
@@ -62,29 +59,39 @@ class PasscodeVerificationScreen extends Component {
     }
   }
 
+  renderView() {
+    if (this.state.showMessage) {
+      return (<Text style={styles.alertMessageStyle}> Invalid invite code </Text>);
+    }
+  }
+
   render() {
     console.log('Hello world');
     return (
         <View>
-            <View style={styles.welcome}>
+            <View style={styles.welcomeTextStyle}>
                <Header titleText='Enter Passcode' />
             </View>
             <Image 
                style={styles.stretch}
                source={require('../../resources/secureAccessImg.png')}
             /> 
-            <View >
+            <View>
               <CodeInput
-                      codeLength = '4'
-                      secureTextEntry
-                      activeColor='grey'
-                      inactiveColor='grey'
-                      autoFocus={true}
-                      ignoreCase={true}
-                      inputPosition='center'
-                      onFulfill={(code) => this.verifyCode(code)}
-                      />
+                codeLength='4'
+                secureTextEntry
+                ref="verificationRef"
+                activeColor='grey'
+                inactiveColor='grey'
+                autoFocus
+                ignoreCase
+                inputPosition='center'
+                onFulfill={(code) => this.verifyCode(code)}
+              />
             </View>
+            <View style={styles.alertMessageStyle}>
+                {this.renderView()}
+              </View>
         </View>
     );   
   }
@@ -99,7 +106,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  welcome: {  
+  alertMessageStyle: {
+    marginTop: 20,
+    fontSize: 12,
+    color: 'red',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  welcomeTextStyle: {  
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
