@@ -62,10 +62,7 @@ export class InviteScreen extends Component {
             AsyncStorage.setItem('isFirstVisit', 'false');
             this.props.navigator.push({
               screen: screenNames.welcomeScreen,
-              backbuttonHidden: true,
-              navigatorStyle: {
-              tabBarHidden: true
-              }
+              backButtonHidden: true,
             });
           } catch (error) {
             console.error('AsyncStorage error: ', error.message);

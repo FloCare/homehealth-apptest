@@ -1,20 +1,15 @@
 import React, {Component} from 'react';
 import {Button} from 'react-native-elements';
-import {StyleSheet, Text, View, ScrollView, Image, AsyncStorage} from 'react-native';
-import {screenNames} from '../utils/constants';
-import {PrimaryFontFamily} from '../utils/constants';
-
+import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
+import {PrimaryFontFamily, screenNames} from '../utils/constants';
 
 export class WelcomePageScreen extends Component {
 
   onButtonPress() {
-        this.props.navigator.push({
-            screen: screenNames.accessCodeScreen,
-            navigatorStyle: {
-                tabBarHidden: true,
-                backbuttonHidden: true,
-            }
-        });
+    this.props.navigator.push({
+      screen: screenNames.accessCodeScreen,
+      backButtonHidden: true,
+    });
 	}
     
   render() {
@@ -57,9 +52,10 @@ export class WelcomePageScreen extends Component {
             fontFamily: PrimaryFontFamily,
             fontSize: 16
             }}
-            title='Explore' onPress={this.onButtonPress.bind(this)}>
-  				Explore
-  			</Button>
+            title='Explore' onPress={this.onButtonPress.bind(this)}
+        >
+          Explore
+        </Button>
       </ScrollView> 
     );
   }
@@ -79,7 +75,6 @@ const styles = StyleSheet.create({
   },
   bulletPointsStyle: {  
     fontSize: 16,
-    textAlign: 'center',
     textAlign: 'left',
     marginLeft: 40,
     marginBottom: 30,

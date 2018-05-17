@@ -78,7 +78,7 @@ class PasscodeVerificationScreen extends Component {
             /> 
             <View>
               <CodeInput
-                codeLength='4'
+                codeLength={4}
                 secureTextEntry
                 ref="verificationRef"
                 activeColor='grey'
