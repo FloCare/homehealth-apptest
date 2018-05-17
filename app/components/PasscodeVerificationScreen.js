@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import OtpInputs from 'react-native-otp-inputs';
+import CodeInput from 'react-native-confirmation-code-input';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import UserInactivity from 'react-native-user-inactivity';
 import {View, Image, StyleSheet, Text} from 'react-native';
@@ -49,7 +49,16 @@ export class PasscodeVerificationScreen extends Component {
                source={require('../../resources/secureAccessImg.png')}
             /> 
             <View >
-                <OtpInputs handleChange={code => this.verifyCode(code)} numberOfInputs={4} />
+              <CodeInput
+                      codeLength = '4'
+                      secureTextEntry
+                      activeColor='grey'
+                      inactiveColor='grey'
+                      autoFocus={true}
+                      ignoreCase={true}
+                      inputPosition='center'
+                      onFulfill={(code) => this.verifyCode(code)}
+                      />
             </View>
         </View>
     );   

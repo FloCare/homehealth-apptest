@@ -10,7 +10,7 @@ export class WelcomePageScreen extends Component {
 
   onButtonPress() {
         this.props.navigator.push({
-            screen: screenNames.homeScreen,
+            screen: screenNames.accessCodeScreen,
             navigatorStyle: {
                 tabBarHidden: true
             }

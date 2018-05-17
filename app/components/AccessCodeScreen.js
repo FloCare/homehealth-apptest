@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import OtpInputs from 'react-native-otp-inputs';
+import CodeInput from 'react-native-confirmation-code-input';
 // import UserInactivity from 'react-native-user-inactivity';
 import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
 import {Patient, Episode, Visit, Place, Address, VisitOrder} from '../utils/data/schema';
@@ -10,8 +10,6 @@ import {parsePhoneNumber} from '../utils/lib';
 import {arrayBufferToString, stringToArrayBuffer, generateRandomString} from '../utils/encryptionUtils';
 
 const Realm = require('realm');
-const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-
 
 export class AccessCodeScreen extends Component {
 
@@ -23,61 +21,62 @@ export class AccessCodeScreen extends Component {
       timeWentInactive: null,
     };
     this.secureKey = this.secureKey.bind(this);
-    this.savePatientObject = this.savePatientObject.bind(this);
+    // this.savePatientObject = this.savePatientObject.bind(this);
     // this.onInactivity = this.onInactivity.bind(this);
 }
 
-savePatientObject(value) {
-try {
-  const patientId = Math.random().toString();
-  const episodeId = Math.random().toString();
-  const addressId = Math.random().toString();
-    this.floDB.write(() => {
-        // Add the patient
-        const patient = this.floDB.create(Patient.schema.name, {
-            patientID: patientId,
-            name: value.name ? value.name.toString() : '',
-            primaryContact: value.primaryContact ? parsePhoneNumber(value.primaryContact.toString()) : '',
-            emergencyContact: value.emergencyContact ? parsePhoneNumber(value.emergencyContact.toString()) : '',
-            notes: value.notes ? value.notes.toString() : '',
-            timestamp: 0,                                   // Todo: Add a timestmap
-        });
+// TODO revisit when this screen is moved after a first patient is added. Commenting for now
+// savePatientObject(value) {
+//   try {
+//     const patientId = Math.random().toString();
+//     const episodeId = Math.random().toString();
+//     const addressId = Math.random().toString();
+//       this.floDB.write(() => {
+//           // Add the patient
+//           const patient = this.floDB.create(Patient.schema.name, {
+//               patientID: patientId,
+//               name: value.name ? value.name.toString() : '',
+//               primaryContact: value.primaryContact ? parsePhoneNumber(value.primaryContact.toString()) : '',
+//               emergencyContact: value.emergencyContact ? parsePhoneNumber(value.emergencyContact.toString()) : '',
+//               notes: value.notes ? value.notes.toString() : '',
+//               timestamp: 0,                                   // Todo: Add a timestmap
+//           });
 
-        // Add the corresponding address
-        const address = patient.address = {
-            addressID: addressId,
-            streetAddress: value.streetAddress ? value.streetAddress.toString() : '',
-            zipCode: value.zip ? value.zip.toString() : '',
-            city: value.city ? value.city.toString() : '',
-            state: value.state ? value.state.toString() : ''
-        };
+//           // Add the corresponding address
+//           const address = patient.address = {
+//               addressID: addressId,
+//               streetAddress: value.streetAddress ? value.streetAddress.toString() : '',
+//               zipCode: value.zip ? value.zip.toString() : '',
+//               city: value.city ? value.city.toString() : '',
+//               state: value.state ? value.state.toString() : ''
+//           };
 
-        // Add a latLong if present
-        if (value.lat && value.long) {
-            address.coordinates = {
-                latitude: value.lat,
-                longitude: value.long
-            };
-            // const latLongID = Math.random().toString();
-            // address.latLong = {
-            //     latLongID,
-            //     lat: value.lat,
-            //     long: value.long
-            // };
-        }
+//           // Add a latLong if present
+//           if (value.lat && value.long) {
+//               address.coordinates = {
+//                   latitude: value.lat,
+//                   longitude: value.long
+//               };
+//               // const latLongID = Math.random().toString();
+//               // address.latLong = {
+//               //     latLongID,
+//               //     lat: value.lat,
+//               //     long: value.long
+//               // };
+//           }
 
-        // Add an Episode
-        patient.episodes.push({
-            episodeID: episodeId,
-            diagnosis: []                                   // Todo: Add diagnosis
-        });
-      });
-  } catch (err) {
-    console.log('Error on Patient and Episode creation: ', err);
-    // Todo: Raise an error to the screen
-    return;
-  }
-}
+//           // Add an Episode
+//           patient.episodes.push({
+//               episodeID: episodeId,
+//               diagnosis: []                                   // Todo: Add diagnosis
+//           });
+//         });
+//     } catch (err) {
+//       console.log('Error on Patient and Episode creation: ', err);
+//       // Todo: Raise an error to the screen
+//       return;
+//     }
+// }
 
 //Secure the entered passcode in the keystore
 secureKey(passcode) {
@@ -89,7 +88,14 @@ secureKey(passcode) {
       console.log(err);
     });
 
-    // TODO Re-visit once the code is merged
+    this.props.navigator.push({
+      screen: screenNames.homeScreen,
+      navigatorStyle: {
+        tabBarHidden: true
+      }
+    });
+
+    // TODO Re-visit once this screen is moved to the flow after first patient being added
     // RNSecureKeyStore.get('patientData')
     // .then((res) => {
     //   //Save the patient/visit/episode objects to Realm
@@ -100,18 +106,18 @@ secureKey(passcode) {
 
     // Create the encryption key
     // TODO move this function of generating a random string to a common module
-    const randomString = '';
-    const key = new Int8Array(64);
-    for (let i = 0; i < key.length; i++) {
-      var rnum = Math.floor(Math.random() * chars.length);
-      randomString += chars.substring(rnum,rnum+1);
-    }
+    // const randomString = '';
+    // const key = new Int8Array(64);
+    // for (let i = 0; i < key.length; i++) {
+    //   var rnum = Math.floor(Math.random() * chars.length);
+    //   randomString += chars.substring(rnum,rnum+1);
+    // }
 
-    RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
-      console.log(res);
-    }, (err) => {
-      console.log(err);
-    });
+    // RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
+    //   console.log(res);
+    // }, (err) => {
+    //   console.log(err);
+    // });
 
   // this.floDB = new Realm({
   //   schema: [
@@ -127,12 +133,6 @@ secureKey(passcode) {
   //   schemaVersion: 0
   // });
 
-    this.props.navigator.push({
-    screen: screenNames.homeScreen,
-    navigatorStyle: {
-        tabBarHidden: true
-    }
-  });
   }
 }
     
@@ -169,7 +169,16 @@ secureKey(passcode) {
         />  
         </View>
         <View >
-          <OtpInputs handleChange={code => this.secureKey(code)} numberOfInputs={4} />
+        <CodeInput
+                    codeLength = '4'
+                    secureTextEntry
+                    activeColor='grey'
+                    inactiveColor='grey'
+                    autoFocus={true}
+                    ignoreCase={true}
+                    inputPosition='center'
+                    onFulfill={(code) => this.secureKey(code)}
+                    />
         </View>
       </ScrollView> 
     );
