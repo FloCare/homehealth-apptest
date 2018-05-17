@@ -34,7 +34,7 @@ Navigation.startTabBasedApp({
         {
             label: 'Welcome',
             icon: Images.person_ic,
-            screen: screenNames.accessCodeScreen,
+            screen: screenNames.inviteScreen,
             navigatorStyle: {navBarHidden: false}
         }
     ],
