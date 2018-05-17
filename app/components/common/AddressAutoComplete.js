@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import Config from 'react-native-config';
+//import Config from 'react-native-config';
 import {PrimaryFontFamily} from '../../utils/constants';
 
 // Todo: CleanUp this template - pass relevant arguments to the GoogleAutocomplete component
@@ -56,7 +56,7 @@ function Autocompletetextbox(locals) {
                     autoFocus={false}
                     fetchDetails
                     query={{
-                        key: Config.GOOGLE_API_KEY_PLACES
+                        key: 'AIzaSyDiWZ3198smjFepUa0ZAoHePSnSxuhTzRU'
                     }}
                     textInputProps={{
                         onChangeText: locals.config.onChangeAddressText

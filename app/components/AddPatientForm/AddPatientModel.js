@@ -89,9 +89,29 @@ const formOptions = {
             placeholder: 'CA'
         },
         notes: {
+            multiline: true,
             error: 'Please enter a valid note',
             label: 'Notes (Optional)',
-            placeholder: 'Door Password - 1234'
+            placeholder: 'Door Password - 1234',
+            stylesheet: {
+                ...stylesheet,
+                textboxView: {
+                    borderBottomView: 0
+                },
+                textbox: {
+                    ...stylesheet.textbox,
+                    normal: {
+                        ...stylesheet.textbox.normal,
+                        height: 100,
+                        textAlignVertical: 'top',
+                        borderWidth: 0.5
+                    },
+                    error: {
+                        ...stylesheet.textbox.error,
+                        height: 200,
+                    },
+                },
+            },
         }
     }
 };

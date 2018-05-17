@@ -31,6 +31,7 @@ class PatientListScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            searchText: null,
             patientList: [],
             patientCount: 0,      // not always a count of patientList
             selectedPatient: props.selectedPatient,
@@ -52,6 +53,7 @@ class PatientListScreenContainer extends Component {
     }
 
     onSearch(query) {
+        this.setState({searchText: query});
         this.getSectionData(query);
     }
 
@@ -190,6 +192,7 @@ class PatientListScreenContainer extends Component {
             <PatientListScreen
                 patientList={this.state.patientList}
                 patientCount={this.state.patientCount}
+                searchText={this.state.searchText}
                 onSearch={this.onSearch}
                 selectedPatient={this.state.selectedPatient}
                 onItemPressed={this.onItemPressed}
