@@ -31,17 +31,28 @@ export class PasscodeVerificationScreen extends Component {
         if (res === code) {
           this.props.navigator.pop();
         }
-        //TODO Handle the logic when the passcode is not right
+        else {
+          this.setState({ 
+            showMessage: true
+          });
+          this.refs.verificationRef.clear();
+        }
       }, (err) => {
         console.log(err);
       });
     }
   }
 
+  renderView() {
+    if (this.state.showMessage) {
+      return (<Text style={styles.alertMessageStyle}> Invalid invite code </Text>);
+    }
+  }
+
   render() {
     return (
         <View>
-            <View style={styles.welcome}>
+            <View style={styles.welcomeTextStyle}>
                <Header titleText='Enter Passcode' />
             </View>
             <Image 
@@ -52,6 +63,7 @@ export class PasscodeVerificationScreen extends Component {
               <CodeInput
                       codeLength = '4'
                       secureTextEntry
+                      ref="verificationRef"
                       activeColor='grey'
                       inactiveColor='grey'
                       autoFocus={true}
@@ -60,6 +72,9 @@ export class PasscodeVerificationScreen extends Component {
                       onFulfill={(code) => this.verifyCode(code)}
                       />
             </View>
+            <View style={styles.alertMessageStyle}>
+                {this.renderView()}
+              </View>
         </View>
     );   
   }
@@ -74,7 +89,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  welcome: {  
+  alertMessageStyle: {
+    marginTop: 20,
+    fontSize: 12,
+    color: 'red',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  welcomeTextStyle: {  
     fontSize: 20,
     textAlign: 'center',
     margin: 10,

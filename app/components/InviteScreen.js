@@ -11,6 +11,8 @@ const inviteCodes = ['9999', '5678', '2468', '7777'];
 
 export class InviteScreen extends Component {
 
+    state = { showMessage: false };
+
 // TODO will be used in the Sign In Page to figure out if it is a first time visit
   // async componentDidMount() {
   //   try {
@@ -72,6 +74,18 @@ export class InviteScreen extends Component {
             console.error('AsyncStorage error: ', error.message);
           }                      
       }
+      else {
+        this.setState({ 
+          showMessage: true
+        });
+        this.refs.codeInputRef.clear();
+      }
+    }
+  }
+
+  renderView() {
+    if (this.state.showMessage) {
+      return (<Text style={styles.alertMessageStyle}> Invalid invite code </Text>);
     }
   }
 
@@ -90,8 +104,9 @@ export class InviteScreen extends Component {
             <View >
                     <CodeInput
                     codeLength = '4'
-                    ref="codeInputRef2"
+                    ref="codeInputRef"
                     secureTextEntry
+                    inputPosition='center'
                     activeColor='grey'
                     inactiveColor='grey'
                     autoFocus={true}
@@ -99,6 +114,9 @@ export class InviteScreen extends Component {
                     inputPosition='center'
                     onFulfill={(code) => this._verifyInviteCode(code)}
                     />
+              </View>
+              <View style={styles.alertMessageStyle}>
+                {this.renderView()}
               </View>
       </ScrollView>
     );
@@ -116,6 +134,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 20,
     marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  alertMessageStyle: {
+    marginTop: 20,
+    fontSize: 12,
+    color: 'red',
     justifyContent: 'center',
     alignItems: 'center'
   }
