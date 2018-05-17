@@ -84,6 +84,7 @@ class PasscodeVerificationScreen extends Component {
                 activeColor='grey'
                 inactiveColor='grey'
                 autoFocus
+                keyboardType='numeric'
                 ignoreCase
                 inputPosition='center'
                 onFulfill={(code) => this.verifyCode(code)}
