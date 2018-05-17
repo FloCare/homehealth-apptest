@@ -1,43 +1,13 @@
 import {Navigation} from 'react-native-navigation';
-import {RegisterScreens} from './screens';
-import {screenNames, PrimaryColor} from './utils/constants';
-import {Images} from './Images';
+import {screenNames} from './utils/constants';
+import RegisterInitScreens from './init_screens';
 
-RegisterScreens();
+RegisterInitScreens();
 
-const navigatorStyle = {
-    navBarBackgroundColor: PrimaryColor,
-    navBarTextColor: '#ffffff',
-    navBarButtonColor: 'white',
-    tabBarBackgroundColor: '#f8f8f8',
-    tabBarTranslucent: false,
-    tabBarSelectedButtonColor: PrimaryColor,
-    hideBackButtonTitle: true,
-    statusBarTextColorScheme: 'light'
-};
-
-Navigation.startTabBasedApp({
-    tabs: [
-        {
-            title: 'Home Screen',
-            label: 'Today',
-            icon: Images.calendar,
-            screen: screenNames.homeScreen,
-            navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
-        },
-        {
-            title: 'Patients',
-            label: 'Patients',
-            icon: Images.person_ic,
-            screen: screenNames.patientList,
-        },
-        {
-            label: 'Welcome',
-            icon: Images.person_ic,
-            screen: screenNames.inviteScreen,
-            navigatorStyle: {navBarHidden: false}
-        }
-    ],
-    appStyle: navigatorStyle,
-    tabsStyle: navigatorStyle
+// Display Invite/PasscodeVerification Screen
+Navigation.startSingleScreenApp({
+  screen: {
+    screen: screenNames.passcodeVerificationScreen,
+    title: 'Welcome', 
+  }
 });

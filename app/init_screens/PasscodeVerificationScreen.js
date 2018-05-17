@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import UserInactivity from 'react-native-user-inactivity';
+//import UserInactivity from 'react-native-user-inactivity';
 import {View, Image, StyleSheet, Text} from 'react-native';
-import Header from './common/Header';
+import Header from '../components/common/Header';
+import StartApp from '../screens/App';
 
 
-export class PasscodeVerificationScreen extends Component {
+class PasscodeVerificationScreen extends Component {
 
   constructor(props) {
     super(props);
@@ -21,7 +22,7 @@ export class PasscodeVerificationScreen extends Component {
     this.setState({
       timeWentInactive,
     });
-    this.props.navigator.pop();
+    //this.props.navigator.pop();
   }
 
   verifyCode(code) {
@@ -29,9 +30,24 @@ export class PasscodeVerificationScreen extends Component {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
         if (res === code) {
-          this.props.navigator.pop();
-        }
-        else {
+          // TODO: Logic for passcode being right
+          StartApp();
+          // Fetch enc key
+          // Register new screens here
+          
+
+          // Todo: Check if Encryption key should be a function of passcode
+          // Fetch the encryption key
+          // RNSecureKeyStore.get('encryptionKey')
+          //   .then((k) => {
+          //     // Connect to realm
+
+          //     // Navigate to the App
+          //   }, (err) => {
+          //     // Todo: Raise the error to the app
+          //     console.log(err);
+          //   });
+        } else {
           this.setState({ 
             showMessage: true
           });
@@ -50,6 +66,7 @@ export class PasscodeVerificationScreen extends Component {
   }
 
   render() {
+    console.log('Hello world');
     return (
         <View>
             <View style={styles.welcomeTextStyle}>
@@ -59,18 +76,18 @@ export class PasscodeVerificationScreen extends Component {
                style={styles.stretch}
                source={require('../../resources/secureAccessImg.png')}
             /> 
-            <View >
+            <View>
               <CodeInput
-                      codeLength = '4'
-                      secureTextEntry
-                      ref="verificationRef"
-                      activeColor='grey'
-                      inactiveColor='grey'
-                      autoFocus={true}
-                      ignoreCase={true}
-                      inputPosition='center'
-                      onFulfill={(code) => this.verifyCode(code)}
-                      />
+                codeLength='4'
+                secureTextEntry
+                ref="verificationRef"
+                activeColor='grey'
+                inactiveColor='grey'
+                autoFocus
+                ignoreCase
+                inputPosition='center'
+                onFulfill={(code) => this.verifyCode(code)}
+              />
             </View>
             <View style={styles.alertMessageStyle}>
                 {this.renderView()}
@@ -105,3 +122,4 @@ const styles = StyleSheet.create({
   }
 });
 
+export default PasscodeVerificationScreen;
