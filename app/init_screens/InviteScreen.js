@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
-import {Button} from 'react-native-elements';
-import {StyleSheet, Text, TextInput, ScrollView, View, AsyncStorage} from 'react-native';
-import Header from './common/Header';
+import {StyleSheet, Text, ScrollView, View, AsyncStorage} from 'react-native';
 import {screenNames} from '../utils/constants';
-import {PrimaryFontFamily} from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
 const inviteCodes = ['9999', '5678', '2468', '7777'];
@@ -78,28 +75,28 @@ export class InviteScreen extends Component {
   render() {
     return (
       <ScrollView >
-            <View style={styles.grayTextStyle}>
-                <Text style={styles.grayTextStyle}> Hey Whats up </Text>
-            </View>  
-            <View style={styles.boldTextStyle}>
-                <Text style={styles.boldTextStyle}> Have an invite? </Text>
-            </View>  
-            <View style={styles.grayTextStyle}>
-                <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
-            </View>  
-            <View >
-                    <CodeInput
-                    codeLength = '4'
-                    ref="codeInputRef2"
-                    secureTextEntry
-                    activeColor='grey'
-                    inactiveColor='grey'
-                    autoFocus={true}
-                    ignoreCase={true}
-                    inputPosition='center'
-                    onFulfill={(code) => this._verifyInviteCode(code)}
-                    />
-              </View>
+        <View style={styles.grayTextStyle}>
+            <Text style={styles.grayTextStyle}> Hey Whats up </Text>
+        </View>  
+        <View style={styles.boldTextStyle}>
+            <Text style={styles.boldTextStyle}> Have an invite? </Text>
+        </View>  
+        <View style={styles.grayTextStyle}>
+            <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
+        </View>  
+        <View >
+                <CodeInput
+                codeLength='4'
+                ref="codeInputRef2"
+                secureTextEntry
+                activeColor='grey'
+                inactiveColor='grey'
+                autoFocus
+                ignoreCase
+                inputPosition='center'
+                onFulfill={(code) => this._verifyInviteCode(code)}
+                />
+          </View>
       </ScrollView>
     );
   }

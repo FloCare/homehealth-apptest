@@ -1,4 +1,3 @@
-
 import React, {Component} from 'react';
 import {Button} from 'react-native-elements';
 import {StyleSheet, Text, View, ScrollView, Image, AsyncStorage} from 'react-native';

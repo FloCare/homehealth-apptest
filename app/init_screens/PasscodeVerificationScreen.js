@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import UserInactivity from 'react-native-user-inactivity';
-import {View, Image, StyleSheet, Text} from 'react-native';
-import Header from './common/Header';
+//import UserInactivity from 'react-native-user-inactivity';
+import {View, Image, StyleSheet} from 'react-native';
+import Header from '../components/common/Header';
+import StartApp from '../screens/App';
 
 
-export class PasscodeVerificationScreen extends Component {
+class PasscodeVerificationScreen extends Component {
 
   constructor(props) {
     super(props);
@@ -21,7 +22,7 @@ export class PasscodeVerificationScreen extends Component {
     this.setState({
       timeWentInactive,
     });
-    this.props.navigator.pop();
+    //this.props.navigator.pop();
   }
 
   verifyCode(code) {
@@ -29,9 +30,32 @@ export class PasscodeVerificationScreen extends Component {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
         if (res === code) {
-          this.props.navigator.pop();
+          console.log('=====================================');
+          console.log('Passcode Correct !!!!');
+          console.log('=====================================');
+          // TODO: Logic for passcode being right
+          StartApp();
+          // Fetch enc key
+          // Register new screens here
+          
+
+          // Todo: Check if Encryption key should be a function of passcode
+          // Fetch the encryption key
+          // RNSecureKeyStore.get('encryptionKey')
+          //   .then((k) => {
+          //     // Connect to realm
+
+          //     // Navigate to the App
+          //   }, (err) => {
+          //     // Todo: Raise the error to the app
+          //     console.log(err);
+          //   });
+        } else {
+          //TODO Handle the logic when the passcode is not right
+          console.log('=====================================');
+          console.log('Incorrect Passcode.');
+          console.log('=====================================');
         }
-        //TODO Handle the logic when the passcode is not right
       }, (err) => {
         console.log(err);
       });
@@ -39,6 +63,7 @@ export class PasscodeVerificationScreen extends Component {
   }
 
   render() {
+    console.log('Hello world');
     return (
         <View>
             <View style={styles.welcome}>
@@ -83,3 +108,4 @@ const styles = StyleSheet.create({
   }
 });
 
+export default PasscodeVerificationScreen;
