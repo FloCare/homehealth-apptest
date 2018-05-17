@@ -106,6 +106,7 @@ export class InviteScreen extends Component {
             activeColor='grey'
             inactiveColor='grey'
             autoFocus
+            keyboardType='numeric'
             ignoreCase
             inputPosition='center'
             onFulfill={(code) => this._verifyInviteCode(code)}

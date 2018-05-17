@@ -7,7 +7,7 @@ RegisterInitScreens();
 // Display Invite/PasscodeVerification Screen
 Navigation.startSingleScreenApp({
   screen: {
-    screen: screenNames.passcodeVerificationScreen,
+    screen: screenNames.inviteScreen,
     title: 'Welcome', 
   }
 });

@@ -3,10 +3,7 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
 import CodeInput from 'react-native-confirmation-code-input';
 // import UserInactivity from 'react-native-user-inactivity';
 import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
-import {Patient, Episode, Visit, Place, Address, VisitOrder} from '../utils/data/schema';
-import {screenNames} from '../utils/constants';
-import {parsePhoneNumber} from '../utils/lib';
-import {arrayBufferToString, stringToArrayBuffer, generateRandomString} from '../utils/encryptionUtils';
+import StartApp from '../screens/App';
 
 //const Realm = require('realm');
 
@@ -83,7 +80,8 @@ secureKey(passcode) {
     // Save the passcode to keystore
     // swal("Oops!", "Something went wrong!", "error");
     //Save the passcode to keystore
-    RNSecureKeyStore.set('passCode', passcode).then((res) => {
+    RNSecureKeyStore.set('passCode', passcode)
+    .then((res) => {
       console.log(res);
     }, (err) => {
       console.log(err);
@@ -121,14 +119,15 @@ secureKey(passcode) {
     //   console.log(err);
     // });
 
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
     let randomString = '';
     const key = new Int8Array(64);
     for (let i = 0; i < key.length; i++) {
-      var rnum = Math.floor(Math.random() * chars.length);
+      const rnum = Math.floor(Math.random() * chars.length);
       randomString += chars.substring(rnum, rnum + 1);
     }
 
-    RNSecureKeyStore.set('testkey', randomString).then((res) => {
+    RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
       console.log(res);
     }, (err) => {
       console.log(err);
@@ -147,13 +146,7 @@ secureKey(passcode) {
     //   encryptionKey: stringToArrayBuffer(randomString),
     //   schemaVersion: 0
     // });
-
-    this.props.navigator.push({
-      screen: screenNames.homeScreen,
-      navigatorStyle: {
-          tabBarHidden: true
-      }
-    });
+    StartApp();
   }
 }
     
@@ -191,15 +184,16 @@ secureKey(passcode) {
         </View>
         <View >
         <CodeInput
-                    codeLength='4'
-                    secureTextEntry
-                    activeColor='grey'
-                    inactiveColor='grey'
-                    autoFocus
-                    ignoreCase
-                    inputPosition='center'
-                    onFulfill={(code) => this.secureKey(code)}
-                    />
+          codeLength='4'
+          secureTextEntry
+          activeColor='grey'
+          inactiveColor='grey'
+          autoFocus
+          keyboardType='numeric'
+          ignoreCase
+          inputPosition='center'
+          onFulfill={(code) => this.secureKey(code)}
+        />
         </View>
       </ScrollView> 
     );
