@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import OtpInputs from 'react-native-otp-inputs';
+import CodeInput from 'react-native-confirmation-code-input';
 import {Button} from 'react-native-elements';
 import {StyleSheet, Text, TextInput, ScrollView, View, AsyncStorage} from 'react-native';
 import Header from './common/Header';
@@ -8,6 +8,8 @@ import {PrimaryFontFamily} from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
 const inviteCodes = ['9999', '5678', '2468', '7777'];
+
+export class InviteScreen extends Component {
 
 // TODO will be used in the Sign In Page to figure out if it is a first time visit
   // async componentDidMount() {
@@ -54,8 +56,26 @@ const inviteCodes = ['9999', '5678', '2468', '7777'];
   //   });
   // };
 
+  _verifyInviteCode(code) {
+    if (code.length === 4) {
+      if (inviteCodes.indexOf(code) >= 0) {
+          try {
+            AsyncStorage.setItem('isFirstVisit', 'false');
+            this.props.navigator.push({
+              screen: screenNames.welcomeScreen,
+              backbuttonHidden: true,
+              navigatorStyle: {
+              tabBarHidden: true
+              }
+            });
+          } catch (error) {
+            console.error('AsyncStorage error: ', error.message);
+          }                      
+      }
+    }
+  }
+
   render() {
-    const {emailId, organizationName} = this.state;
     return (
       <ScrollView >
             <View style={styles.grayTextStyle}>
@@ -68,34 +88,17 @@ const inviteCodes = ['9999', '5678', '2468', '7777'];
                 <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
             </View>  
             <View >
-                <OtpInputs  
-                  handleChange={
-                    code => {
-                              if (code.length === 4) {
-                                  if (inviteCodes.indexOf(code) >= 0) {
-                                    try {
-                                        AsyncStorage.setItem('isFirstVisit', 'false');
-                                        this.props.navigator.push({
-                                          screen: screenNames.welcomeScreen,
-                                          backbuttonHidden: true,
-                                          navigatorStyle: {
-                                              tabBarHidden: true
-                                          }
-                                        });
-                                    } catch (error) {
-                                        console.error('AsyncStorage error: ', error.message);
-                                    }
-                                  
-                                  }
-                              }
-
-                          // TODO when the invite code is wrong
-                          // else {
-                          //   <Text> Please enter a valid invite </Text>
-                          // }
-                    }
-                  } numberOfInputs={4}
-                />
+                    <CodeInput
+                    codeLength = '4'
+                    ref="codeInputRef2"
+                    secureTextEntry
+                    activeColor='grey'
+                    inactiveColor='grey'
+                    autoFocus={true}
+                    ignoreCase={true}
+                    inputPosition='center'
+                    onFulfill={(code) => this._verifyInviteCode(code)}
+                    />
               </View>
       </ScrollView>
     );

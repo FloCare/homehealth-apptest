@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import OtpInputs from 'react-native-otp-inputs';
+import CodeInput from 'react-native-confirmation-code-input';
 // import UserInactivity from 'react-native-user-inactivity';
 import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
 import {Patient, Episode, Visit, Place, Address, VisitOrder} from '../utils/data/schema';
@@ -10,8 +10,6 @@ import {parsePhoneNumber} from '../utils/lib';
 import {arrayBufferToString, stringToArrayBuffer, generateRandomString} from '../utils/encryptionUtils';
 
 const Realm = require('realm');
-const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-
 
 export class AccessCodeScreen extends Component {
 
@@ -171,7 +169,16 @@ secureKey(passcode) {
         />  
         </View>
         <View >
-          <OtpInputs handleChange={code => this.secureKey(code)} numberOfInputs={4} />
+        <CodeInput
+                    codeLength = '4'
+                    secureTextEntry
+                    activeColor='grey'
+                    inactiveColor='grey'
+                    autoFocus={true}
+                    ignoreCase={true}
+                    inputPosition='center'
+                    onFulfill={(code) => this.secureKey(code)}
+                    />
         </View>
       </ScrollView> 
     );
