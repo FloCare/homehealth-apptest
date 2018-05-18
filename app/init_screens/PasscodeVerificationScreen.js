@@ -14,7 +14,6 @@ class PasscodeVerificationScreen extends Component {
       timeWentInactive: null,
     };
     this.props = props;
-    this.onInactivity = this.onInactivity.bind(this);
     this.verifyCode = this.verifyCode.bind(this);
   }
 

@@ -67,7 +67,7 @@ class HomeScreenContainer extends Component {
                         inactivity: true
                     }
                 });
-            }, 30000);
+            }, 3000);
         }
         if(event.id === 'didDisappear') {
             clearTimeout(this.timeout);
