@@ -50,6 +50,8 @@ const PatientListScreen = (props) => {
                         onSearch(null);
                     }}
                     placeholder='Search'
+                    containerStyle={{backgroundColor: '#f8f8f8', borderBottomWidth: 0, borderTopWidth: 0}}
+                    inputStyle={{backgroundColor: 'white', color: 'black'}}
                     clearIcon={{color: '#86939e', name: 'cancel'}}
                 />
                 <MenuProvider>
