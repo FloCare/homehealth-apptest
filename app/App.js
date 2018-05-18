@@ -28,7 +28,7 @@ async function check() {
 const res = check();
 
 // Display Invite/PasscodeVerification Screen
-if (res) {
+if (!res) {
 	Navigation.startSingleScreenApp({
 		screen: {
 			screen: screenNames.passcodeVerificationScreen,

@@ -1,25 +1,27 @@
 import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
 import RNSecureKeyStore from 'react-native-secure-key-store';
+import UserInactivity from 'react-native-user-inactivity';
 import {View, Image, StyleSheet, Text} from 'react-native';
-import Header from '../components/common/Header';
-import StartApp from '../screens/App';
+import Header from './common/Header';
 
 
-class PasscodeVerificationScreen extends Component {
+export class PasscodeVerificationScreen extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       timeWentInactive: null,
     };
-    this.props = props;
     this.onInactivity = this.onInactivity.bind(this);
     this.verifyCode = this.verifyCode.bind(this);
   }
 
-  isSessionTimedout(props) {
-    return props.inactivity;
+  onInactivity = (timeWentInactive) => {
+    this.setState({
+      timeWentInactive,
+    });
+    this.props.navigator.pop();
   }
 
   verifyCode(code) {
@@ -27,37 +29,13 @@ class PasscodeVerificationScreen extends Component {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
         if (res === code) {
-          // TODO: Logic for passcode being right
-          if(!this.isSessionTimedout(this.props)) {
-              StartApp();
-          }
-          else {
-            console.log('dismiss modal');
-            this.props.navigator.dismissModal({
-                animationType: 'slide-down' // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
-            });
-          }
-
-          // Fetch enc key
-          // Register new screens here
-          
-
-          // Todo: Check if Encryption key should be a function of passcode
-          // Fetch the encryption key
-          // RNSecureKeyStore.get('encryptionKey')
-          //   .then((k) => {
-          //     // Connect to realm
-
-          //     // Navigate to the App
-          //   }, (err) => {
-          //     // Todo: Raise the error to the app
-          //     console.log(err);
-          //   });
-        } else {
+          this.props.navigator.pop();
+        }
+        else {
           this.setState({ 
             showMessage: true
           });
-          this.refs.verificationRef.clear();
+          // this.refs.verificationRef.clear();
         }
       }, (err) => {
         console.log(err);
@@ -67,12 +45,11 @@ class PasscodeVerificationScreen extends Component {
 
   renderView() {
     if (this.state.showMessage) {
-      return (<Text style={styles.alertMessageStyle}> Invalid invite code </Text>);
+      return (<Text style={styles.alertMessageStyle}> Invalid passcode </Text>);
     }
   }
 
   render() {
-    console.log('Hello world');
     return (
         <View>
             <View style={styles.welcomeTextStyle}>
@@ -82,19 +59,18 @@ class PasscodeVerificationScreen extends Component {
                style={styles.stretch}
                source={require('../../resources/secureAccessImg.png')}
             /> 
-            <View>
+            <View >
               <CodeInput
-                codeLength={4}
-                secureTextEntry
-                ref="verificationRef"
-                activeColor='grey'
-                inactiveColor='grey'
-                autoFocus
-                keyboardType='numeric'
-                ignoreCase
-                inputPosition='center'
-                onFulfill={(code) => this.verifyCode(code)}
-              />
+                      codeLength = '4'
+                      secureTextEntry
+                      ref="verificationRef"
+                      activeColor='grey'
+                      inactiveColor='grey'
+                      autoFocus={true}
+                      ignoreCase={true}
+                      inputPosition='center'
+                      onFulfill={(code) => this.verifyCode(code)}
+                      />
             </View>
             <View style={styles.alertMessageStyle}>
                 {this.renderView()}
@@ -129,4 +105,3 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PasscodeVerificationScreen;

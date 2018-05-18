@@ -14,7 +14,6 @@ class HomeScreenContainer extends Component {
         this.state = {
             date: todayMomentInUTCMidnight()
         };
-
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);
@@ -58,6 +57,20 @@ class HomeScreenContainer extends Component {
                 //TODO fix this hard coding
                 this.navigateToVisitMapScreen(false);
             }
+        }
+        if(event.id === 'didAppear') {
+            this.timeout = setTimeout(() => {
+                this.props.navigator.showModal({
+                    screen: screenNames.passcodeVerificationScreen,
+                    backButtonHidden: true,
+                    passProps: {
+                        inactivity: true
+                    }
+                });
+            }, 30000);
+        }
+        if(event.id === 'didDisappear') {
+            clearTimeout(this.timeout);
         }
     }
 
