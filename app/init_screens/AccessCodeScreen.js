@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import CodeInput from 'react-native-confirmation-code-input';
-// import UserInactivity from 'react-native-user-inactivity';
 import {StyleSheet, Text, View, Image} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import StartApp from '../screens/App';
@@ -19,7 +18,6 @@ export class AccessCodeScreen extends Component {
     };
     this.secureKey = this.secureKey.bind(this);
     // this.savePatientObject = this.savePatientObject.bind(this);
-    // this.onInactivity = this.onInactivity.bind(this);
   }
 
 // TODO revisit when this screen is moved after a first patient is added. Commenting for now
@@ -155,11 +153,6 @@ secureKey(passcode) {
     // TODO replicate in multiple screens or find a better way of doing at the overall APP level
     return (
       <KeyboardAwareScrollView>
-        {/* <UserInactivity
-        timeForInactivity={10000000}
-        checkInterval={1000}
-        onInactivity={this.onInactivity}
-        />*/}
         <View>
           <Text style={styles.topSectionStyle}>
                 Please secure the app
