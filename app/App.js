@@ -16,19 +16,18 @@ const navigatorStyle = {
     tabBarButtonColor: 'black',
     hideBackButtonTitle: true,
     statusBarTextColorScheme: 'light',
-    forceTitlesDisplay: true
+    forceTitlesDisplay: true,
+    keepStyleAcrossPush: false
 };
 
 function getLargeNavBarOrSubstitute() {
     if (Platform.OS === 'ios' && parseInt(Platform.Version, 10) >= 11) {
         return {
             largeTitle: true,
-            navBarBackgroundColor: 'white',
-            statusBarTextColorSchemeSingleScreen: 'dark',
-            navBarTextColor: '#000000',
+            navBarBackgroundColor: PrimaryColor,
             topBarElevationShadowEnabled: false,
             navBarNoBorder: true,
-            navBarButtonColor: PrimaryColor,
+            navBarButtonColor: 'white',
         };
     }
 

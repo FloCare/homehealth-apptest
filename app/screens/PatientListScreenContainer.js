@@ -173,7 +173,8 @@ class PatientListScreenContainer extends Component {
             title,
             passProps: props,
             navigatorStyle: {
-                tabBarHidden: true
+                tabBarHidden: true,
+                largeTitle: false
             }
         });
     }

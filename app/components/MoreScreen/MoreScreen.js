@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Image} from 'react-native';
 import {Divider, List, ListItem} from 'react-native-elements';
 import {Images} from '../../Images';
+import {screenNames} from '../../utils/constants';
 
 const list = [
     {
@@ -15,6 +16,16 @@ const list = [
     {
         icon: Images.savedPlaces,
         title: 'Saved Places',
+        onPress: {
+            screen: screenNames.stopList,
+            animated: true,
+            animationType: 'slide-horizontal',
+            title: 'Saved Places',
+            navigatorStyle: {
+                tabBarHidden: true,
+                largeTitle: false,
+            }
+        }
     },
     'div',
     {
@@ -51,25 +62,27 @@ function MoreScreen(props) {
                 {
                     list.map((listItem) => {
                         if (listItem === 'div') {
-                            return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
+                            return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}}/>;
                         }
 
                         return (<ListItem
-                                    containerStyle={{
-                                        borderTopWidth: 0,
-                                        borderBottomWidth: 0,
-                                        paddingTop: 10,
-                                        paddingBottom: 10
-                                    }}
-                                    avatarOverlayContainerStyle={{
-                                        backgroundColor: 'white',
-                                    }}
-                                    titleContainerStyle={{
-                                        paddingLeft: 15
-                                    }}
-                                    avatar={listItem.icon}
-                                    avatarStyle={{resizeMode: Image.resizeMode.contain}}
-                                    title={listItem.title}
+                            containerStyle={{
+                                borderTopWidth: 0,
+                                borderBottomWidth: 0,
+                                paddingTop: 10,
+                                paddingBottom: 10
+                            }}
+                            avatarOverlayContainerStyle={{
+                                backgroundColor: 'white',
+                            }}
+                            titleContainerStyle={{
+                                paddingLeft: 15
+                            }}
+                            avatar={listItem.icon}
+                            avatarStyle={{resizeMode: Image.resizeMode.contain}}
+                            title={listItem.title}
+                            disabled={listItem.onPress === undefined}
+                            onPress={() => props.navigator.push(listItem.onPress)}
                         />);
                     })
                 }
