@@ -133,7 +133,6 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onItemToggle(item) {
-        console.log('touchregistered');
         this.setState(
             (prevState) => {
                 if (prevState.selectedItems.has(item.key)) {
@@ -205,8 +204,8 @@ class AddVisitsScreenContainer extends Component {
     createListItemComponent({item}) {
         const avatar = item.type === 'patient' ? Images.person_ic : Images.location;
         const rightIcon = item.isSelected ? {name: 'check', color: PrimaryColor} : <View />;
-        console.log(item);
-        console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
+        // console.log(item);
+        // console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
         return (
             <ListItem
                 key={item.key}
@@ -270,7 +269,7 @@ class AddVisitsScreenContainer extends Component {
         }
         newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
 
-        console.log(`old visit lenght ${visitOrderObject.visitList.length}, new length ${newVisitOrder.length}`);
+        console.log(`Visit length list updated from length ${visitOrderObject.visitList.length} to new length ${newVisitOrder.length}`);
         floDB.write(() => {
             visitOrderObject.visitList = newVisitOrder;
         });
