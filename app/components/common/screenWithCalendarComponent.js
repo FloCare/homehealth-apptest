@@ -27,21 +27,21 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
             //TODO unpredictable
             onNavigatorEvent(event) {
                 console.log('Navigator Event received by ScreenWithCalendarComponent');
-                if (event.type === 'NavBarButtonPress') {
-                    if (event.id === 'calendar-picker') {
-                        if (Platform.OS === 'android') { this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown}); }
-                        this.props.navigator.setButtons(this.getNavigatorButtons());
-                        this.setState((prevState) => ({shown: !prevState.shown}));
-                        console.log('Date change triggered by calendar-picker');
-                        // Animated.timing(
-                        //     this.state.calendarStripHeight,
-                        //     {
-                        //         toValue: this.state.shown ? 0 : 200,
-                        //         duration: 1000,
-                        //     }
-                        // ).start();
-                    }
-                }
+                // if (event.type === 'NavBarButtonPress') {
+                //     if (event.id === 'calendar-picker') {
+                //         if (Platform.OS === 'android') { this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown}); }
+                //         this.props.navigator.setButtons(this.getNavigatorButtons());
+                //         this.setState((prevState) => ({shown: !prevState.shown}));
+                //         console.log('Date change triggered by calendar-picker');
+                //         // Animated.timing(
+                //         //     this.state.calendarStripHeight,
+                //         //     {
+                //         //         toValue: this.state.shown ? 0 : 200,
+                //         //         duration: 1000,
+                //         //     }
+                //         // ).start();
+                //     }
+                // }
 
                 if (this.props.onNavigationEvent) {
                     this.props.onNavigationEvent(event);

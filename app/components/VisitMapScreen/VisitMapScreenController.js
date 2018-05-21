@@ -20,10 +20,10 @@ class VisitMapScreenController extends Component {
                 id: 'list-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                 buttonColor: '#fffff'
             },
-            {
-                id: 'calendar-picker',
-                icon: Images.calendarSelected
-            }
+            // {
+            //     id: 'calendar-picker',
+            //     icon: Images.calendarSelected
+            // }
         ]
     };
 
