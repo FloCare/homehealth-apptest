@@ -115,8 +115,9 @@ class PatientListScreenContainer extends Component {
             case 'Call':
                 if (item && item.primaryContact) {
                     RNImmediatePhoneCall.immediatePhoneCall(item.primaryContact);
+                } else {
+                    Alert.alert('Warning', 'Please add a valid mobile number as the patient primary contact');
                 }
-                Alert.alert('Warning', 'Please add a valid mobile number as the patient primary contact');
                 break;
             case 'Maps':
                 // Todo: Move boilerplate like this to a schema helper method
@@ -129,8 +130,9 @@ class PatientListScreenContainer extends Component {
                     Linking.openURL(
                         `https://www.google.com/maps/dir/?api=1&destination=${item.address.coordinates.latitude},${item.address.coordinates.longitude}`).catch(err => console.error('An error occurred', err)
                     );
+                } else {
+                    Alert.alert('Warning', 'Please enter a valid address for the patient');
                 }
-                Alert.alert('Warning', 'Please enter a valid address for the patient');
                 break;
             case 'Visits':
                 this.props.navigator.showLightBox({
