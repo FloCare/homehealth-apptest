@@ -1,8 +1,7 @@
 import {Navigation} from 'react-native-navigation';
-import {screenNames} from './utils/constants';
-import RegisterInitScreens from './init_screens';
 import {AsyncStorage} from 'react-native';
-import {PrimaryColor} from './utils/constants';
+import {screenNames, PrimaryColor} from './utils/constants';
+import RegisterInitScreens from './init_screens';
 
 RegisterInitScreens();
 
@@ -16,7 +15,7 @@ const navigatorStyle = {
     keepStyleAcrossPush: false
 };
 
-async function check() {
+const check = async() => {
 	try {
 		const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
 		return isFirstVisit;
@@ -27,23 +26,27 @@ async function check() {
 	}
 };
 
-const res = check();
+const StartApp = async() => {
+	const res = await check();
 
-// Display Invite/PasscodeVerification Screen
-if (!res) {
-	Navigation.startSingleScreenApp({
-		screen: {
-			screen: screenNames.passcodeVerificationScreen,
-		},
-		appStyle: navigatorStyle,
-        animationType: 'fade'
-	});
-} else {
-	Navigation.startSingleScreenApp({
-		screen: {
-			screen: screenNames.inviteScreen,
-		},
-		appStyle: navigatorStyle,
-        animationType: 'fade'
-	});
-}
+	// Display Invite/PasscodeVerification Screen
+	if (res) {
+		Navigation.startSingleScreenApp({
+			screen: {
+				screen: screenNames.passcodeVerificationScreen,
+			},
+			appStyle: navigatorStyle,
+			animationType: 'fade'
+		});
+	} else {
+		Navigation.startSingleScreenApp({
+			screen: {
+				screen: screenNames.inviteScreen,
+			},
+			appStyle: navigatorStyle,
+			animationType: 'fade'
+		});
+	}
+};
+
+StartApp();
