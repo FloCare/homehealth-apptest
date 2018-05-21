@@ -20,4 +20,10 @@ export const Images = {
     time: require('../resources/time.png'),
     patient: require('../resources/patient.png'),
     pin: require('../resources/pin.png'),
+    secureAcessImage: require('../resources/secureAccessImg.png'),
+    verificationCodeImage: require('../resources/verificationcodeImg.png'),
+    secureImg: require('../resources/secureImg.png'),
+    mapImg: require('../resources/mapImg.png'),
+    planImg: require('../resources/planImg.png'),
+    welcomeScreenImg: require('../resources/welcomeScreenImg.png')
 };

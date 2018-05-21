@@ -4,6 +4,7 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
 import {View, Image, StyleSheet, Text, Alert} from 'react-native';
 import Header from '../components/common/Header';
 import StartApp from '../screens/App';
+import {Images} from '../Images';
 
 
 class PasscodeVerificationScreen extends Component {
@@ -11,7 +12,7 @@ class PasscodeVerificationScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeWentInactive: null,
+      showMessage: false
     };
     this.props = props;
     this.verifyCode = this.verifyCode.bind(this);
@@ -52,7 +53,7 @@ class PasscodeVerificationScreen extends Component {
 
   renderView() {
     if (this.state.showMessage) {
-      return (<Text style={styles.alertMessageStyle}> Invalid invite code </Text>);
+      return (<Text style={styles.alertMessageStyle}>Invalid passcode</Text>);
     }
   }
 
@@ -65,7 +66,7 @@ class PasscodeVerificationScreen extends Component {
             </View>
             <Image 
                style={styles.stretch}
-               source={require('../../resources/secureAccessImg.png')}
+               source={Images.secureAccessImage}
             /> 
             <View>
               <CodeInput

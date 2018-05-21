@@ -4,6 +4,7 @@ import CodeInput from 'react-native-confirmation-code-input';
 import {StyleSheet, Text, View, Image, Alert} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import StartApp from '../screens/App';
+import {Images} from '../Images';
 
 //const Realm = require('realm');
 
@@ -187,7 +188,7 @@ setPasscode(passcode) {
         <View>
         <Image
           style={styles.stretch}
-          source={require('../../resources/verificationcodeImg.png')}
+          source={Images.verificationCodeImage}
         />  
         </View>
         <View >
