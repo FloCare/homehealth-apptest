@@ -20,6 +20,7 @@ import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsFo
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {MoreScreen} from '../components/MoreScreen/MoreScreen';
+import {LegalScreen} from "../components/LegalScreen";
 
 const RegisterScreens = () => {
     if (floDB.objects(Visit.schema.name).length === 0) {
@@ -52,6 +53,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
     Navigation.registerComponent(screenNames.moreScreen, () => MoreScreen);
+    Navigation.registerComponent(screenNames.legal, () => LegalScreen);
     Navigation.registerComponent(screenNames.welcomeScreen, () => WelcomePageScreen);
     Navigation.registerComponent(screenNames.inviteScreen, () => InviteScreen);
     Navigation.registerComponent(screenNames.thankyouScreen, () => ThankYouScreen);

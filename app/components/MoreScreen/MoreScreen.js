@@ -39,6 +39,14 @@ const list = [
     {
         icon: Images.legal,
         title: 'Legal',
+        onPress: {
+            screen: screenNames.legal,
+            title: 'Legal',
+            navigatorStyle: {
+                tabBarHidden: true,
+                largeTitle: false,
+            }
+        },
     },
 ];
 
@@ -62,7 +70,7 @@ function MoreScreen(props) {
                 {
                     list.map((listItem) => {
                         if (listItem === 'div') {
-                            return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}}/>;
+                            return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
                         }
 
                         return (<ListItem
