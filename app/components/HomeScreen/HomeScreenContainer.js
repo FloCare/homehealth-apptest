@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Alert, NetInfo} from 'react-native';
+import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames} from '../../utils/constants';
@@ -83,7 +83,7 @@ class HomeScreenContainer extends Component {
     componentWillUnMount() {
         NetInfo.removeEventListener(
             'connectionChange',
-            HandleConnectionChange 
+            HandleConnectionChange
         );
     }
 
@@ -184,7 +184,14 @@ class HomeScreenContainer extends Component {
         const visitResultObject = floDB.objects(Visit.schema.name)
             .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf());
         return (
-            <View style={{flex: 1, backgroundColor: '#fcfcfc'}}>
+            <View
+                style={[
+                    {backgroundColor: '#fcfcfc'},
+                    Platform.select({
+                        ios: {height: Dimensions.get('window').height - getTabBarHeight()},
+                        android: {flex: 1}
+                    })]}
+            >
                 <HomeScreen
                     navigator={this.props.navigator}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}
@@ -205,6 +212,19 @@ class HomeScreenContainer extends Component {
             </View>
         );
     }
+}
+
+function getTabBarHeight() {
+    if (Platform.OS === 'ios') {
+        const d = Dimensions.get('window');
+        const {height, width} = d;
+
+        if (height === 812 || width === 812) {
+            return 70;
+        } // iPhone X navbar height (regular title);
+        return 50; // iPhone navbar height;
+    }
+    return 70; //android portrait navbar height;
 }
 
 export {HomeScreenContainer};
