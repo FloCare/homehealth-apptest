@@ -2,6 +2,7 @@ import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from '.';
 import {screenNames, PrimaryColor} from '../utils/constants';
 import {Images} from '../Images';
+import {FloDB} from '../utils/data/schema';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -15,8 +16,17 @@ const navigatorStyle = {
 };
 
 const StartApp = (key) => {
+    // Initialize the DB
     try {
-        RegisterScreens(key);
+        FloDB.encKey = key;
+        FloDB.initialize();
+    } catch (err) {
+        console.log('Error in initializing DB: ', err);
+        throw err;
+    }
+
+    try {
+        RegisterScreens();
     } catch (err) {
         console.log('Error in registering screens: ', err);
         throw err;
