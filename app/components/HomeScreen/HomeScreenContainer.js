@@ -220,7 +220,7 @@ function getTabBarHeight() {
         const {height, width} = d;
 
         if (height === 812 || width === 812) {
-            return 70;
+            return 85;
         } // iPhone X navbar height (regular title);
         return 50; // iPhone navbar height;
     }
