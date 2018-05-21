@@ -61,6 +61,9 @@ function Autocompletetextbox(locals) {
                     textInputProps={{
                         onChangeText: locals.config.onChangeAddressText
                     }}
+                    GooglePlacesAutoCompleteComponentsFilter={{
+                        countries: ['us']
+                    }}
                     getDefaultValue={locals.config.getDefaultValue}
                     styles={{
                         textInputContainer: {

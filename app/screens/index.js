@@ -13,9 +13,16 @@ import {ScreenWithCalendarComponent} from '../components/common/screenWithCalend
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 import {todayMomentInUTCMidnight} from '../utils/utils';
-import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
+import {CreateAndSaveDummies, FloDB, Visit, VisitOrder} from '../utils/data/schema';
 
-const RegisterScreens = () => {
+
+const RegisterScreens = (key) => {
+    // Todo: Wait for DB to be initialized
+    FloDB.encKey = key;
+    FloDB.initialize();
+
+    // Todo: Handle the case when DB initialization fails
+
     // if (floDB.objects(Visit.schema.name).length === 0) {
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();

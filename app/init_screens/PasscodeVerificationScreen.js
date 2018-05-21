@@ -30,23 +30,17 @@ class PasscodeVerificationScreen extends Component {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
         if (res === code) {
-          // TODO: Logic for passcode being right
-          StartApp();
-          // Fetch enc key
-          // Register new screens here
-          
-
           // Todo: Check if Encryption key should be a function of passcode
           // Fetch the encryption key
-          // RNSecureKeyStore.get('encryptionKey')
-          //   .then((k) => {
-          //     // Connect to realm
-
-          //     // Navigate to the App
-          //   }, (err) => {
-          //     // Todo: Raise the error to the app
-          //     console.log(err);
-          //   });
+          RNSecureKeyStore.get('encryptionKey')
+            .then((k) => {
+              // Connect to realm, Register new screens
+              // Navigate to the Tab Based App
+              StartApp(k);
+            }, (err) => {
+              // Todo: Raise the error to the app
+              console.log(err);
+            });
         } else {
           this.setState({ 
             showMessage: true

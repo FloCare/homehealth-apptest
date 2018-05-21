@@ -1,5 +1,6 @@
 import * as CollectionUtils from '../collectionUtils';
 import {todayMomentInUTCMidnight} from '../utils';
+import {stringToArrayBuffer} from '../encryptionUtils';
 
 const Realm = require('realm');
 
@@ -215,19 +216,72 @@ VisitOrder.schema = {
     }
 };
 
-const floDB = new Realm({
-    schema: [
-        Visit,
-        Patient,
-        Address,
-        Episode,
-        Place,
-        VisitOrder
-    ],
-    // Todo: Remove this setting for production
-    // deleteRealmIfMigrationNeeded: true,
-    schemaVersion: 1
-});
+let floDB = null;
+let encKey = null;
+
+class FloDB {
+    static get floDB() {
+        return floDB;
+    }
+
+    static set floDB(db) {
+        floDB = db;
+    }
+
+    static get encKey() { 
+        return encKey;
+    }
+
+    static set encKey(key) {
+        encKey = key;
+    }
+
+    static initialize() {
+        console.log('initializing the DB ...');
+        const initialSchema = [Visit, Patient, Address, Episode, Place, VisitOrder];
+        const schemas = [
+            {
+                schema: initialSchema, 
+                schemaVersion: 1,
+                migration: () => { console.log('Migration function goes here'); },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(encKey)
+            }
+        ];
+
+        // Todo: Use when migrations needed
+        // let nextSchemaIndex = Realm.schemaVersion(Realm.defaultPath);
+        // if (nextSchemaIndex < 0) {
+        //     nextSchemaIndex = 0;
+        // }
+        // while (nextSchemaIndex < schemas.length) {
+        //     const migratedRealm = new Realm({
+        //         schema: schemas[nextSchemaIndex].schema,
+        //         schemaVersion: schemas[nextSchemaIndex].schemaVersion,
+        //         encryptionKey: schemas[nextSchemaIndex].encryptionKey,
+        //         path: schemas[nextSchemaIndex].path,
+        //         migration: schemas[nextSchemaIndex].migration
+        //     });
+        //     migratedRealm.close();
+        //     nextSchemaIndex++;
+        // }
+
+        const lastIndex = schemas.length - 1;
+        try {
+            floDB = new Realm({
+                schema: schemas[lastIndex].schema,
+                schemaVersion: schemas[lastIndex].schemaVersion,
+                encryptionKey: schemas[lastIndex].encryptionKey,
+                path: schemas[lastIndex].path,
+                migration: schemas[lastIndex].migration
+            });
+            console.log('initialization done ...');
+        } catch (err) {
+            console.log('ERROR IN DB INITIALIZATION: ', err);
+            // TODO: IMP: RAISE ERROR TO SCREENS
+        }
+    }
+}
 
 
 //TODO remove this code, for debug only
@@ -245,6 +299,8 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 
     const midnightEpoch = todayMomentInUTCMidnight().valueOf();
+
+    // Only call after initialising the DB
 
     let orderObject = floDB.objectForPrimaryKey(VisitOrder, midnightEpoch);
     if (!orderObject) {
@@ -295,4 +351,4 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};
+export {FloDB, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};

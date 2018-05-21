@@ -129,25 +129,10 @@ secureKey(passcode) {
     }
 
     RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
-      console.log(res);
+      StartApp(randomString);
     }, (err) => {
       console.log(err);
     });
-
-    // this.floDB = new Realm({
-    //   schema: [
-    //       Visit,
-    //       Patient,
-    //       Address,
-    //       Episode,
-    //       Place,
-    //       VisitOrder
-    //   ],
-    //   deleteRealmIfMigrationNeeded: true,
-    //   encryptionKey: stringToArrayBuffer(randomString),
-    //   schemaVersion: 0
-    // });
-    StartApp();
   }
 }
     
