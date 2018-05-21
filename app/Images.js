@@ -25,8 +25,7 @@ export const Images = {
     secureImg: require('../resources/secureImg.png'),
     mapImg: require('../resources/mapImg.png'),
     planImg: require('../resources/planImg.png'),
-    welcomeScreenImg: require('../resources/welcomeScreenImg.png')
-
+    welcomeScreenImg: require('../resources/welcomeScreenImg.png'),
     //MoreScreen
     visitLog: require('../resources/visitLog.png'),
     milesLog: require('../resources/milesLog.png'),
