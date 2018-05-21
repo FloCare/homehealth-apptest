@@ -17,9 +17,13 @@ import {CreateAndSaveDummies, FloDB, Visit, VisitOrder} from '../utils/data/sche
 
 
 const RegisterScreens = (key) => {
-    // Todo: Wait for DB to be initialized
-    FloDB.encKey = key;
-    FloDB.initialize();
+    try {
+        FloDB.encKey = key;
+        FloDB.initialize();
+    } catch (err) {
+        console.log('Error in initializing DB: ', err);
+        throw err;
+    }
 
     // Todo: Handle the case when DB initialization fails
 

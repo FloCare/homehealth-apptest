@@ -1,6 +1,7 @@
 import * as CollectionUtils from '../collectionUtils';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
+import {AppException} from '../AppException';
 
 const Realm = require('realm');
 
@@ -268,6 +269,7 @@ class FloDB {
 
         const lastIndex = schemas.length - 1;
         try {
+            // initializing the DB synchronously
             floDB = new Realm({
                 schema: schemas[lastIndex].schema,
                 schemaVersion: schemas[lastIndex].schemaVersion,
@@ -278,7 +280,7 @@ class FloDB {
             console.log('initialization done ...');
         } catch (err) {
             console.log('ERROR IN DB INITIALIZATION: ', err);
-            // TODO: IMP: RAISE ERROR TO SCREENS
+            throw new AppException('Error', 'Unable to retrieve data');
         }
     }
 }

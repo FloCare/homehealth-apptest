@@ -15,7 +15,12 @@ const navigatorStyle = {
 };
 
 const StartApp = (key) => {
-    RegisterScreens(key);
+    try {
+        RegisterScreens(key);
+    } catch (err) {
+        console.log('Error in registering screens: ', err);
+        throw err;
+    }
 
     Navigation.startTabBasedApp({
         tabs: [
