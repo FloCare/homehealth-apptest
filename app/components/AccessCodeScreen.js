@@ -1,11 +1,15 @@
+
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, View, Image} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import StartApp from '../screens/App';
+// import UserInactivity from 'react-native-user-inactivity';
+import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
+import {Patient, Episode, Visit, Place, Address, VisitOrder} from '../utils/data/schema';
+import {screenNames} from '../utils/constants';
+import {parsePhoneNumber} from '../utils/lib';
+import {arrayBufferToString, stringToArrayBuffer, generateRandomString} from '../utils/encryptionUtils';
 
-//const Realm = require('realm');
+const Realm = require('realm');
 
 export class AccessCodeScreen extends Component {
 
@@ -18,7 +22,8 @@ export class AccessCodeScreen extends Component {
     };
     this.secureKey = this.secureKey.bind(this);
     // this.savePatientObject = this.savePatientObject.bind(this);
-  }
+    // this.onInactivity = this.onInactivity.bind(this);
+}
 
 // TODO revisit when this screen is moved after a first patient is added. Commenting for now
 // savePatientObject(value) {
@@ -73,25 +78,23 @@ export class AccessCodeScreen extends Component {
 //     }
 // }
 
-// Secure the entered passcode in the keystore
+//Secure the entered passcode in the keystore
 secureKey(passcode) {
   if (passcode.length === 4) {
-    // Save the passcode to keystore
     // swal("Oops!", "Something went wrong!", "error");
     //Save the passcode to keystore
-    RNSecureKeyStore.set('passCode', passcode)
-    .then((res) => {
+    RNSecureKeyStore.set('passCode', passcode).then((res) => {
       console.log(res);
     }, (err) => {
       console.log(err);
     });
 
-    // this.props.navigator.push({
-    //   screen: screenNames.homeScreen,
-    //   navigatorStyle: {
-    //     tabBarHidden: true
-    //   }
-    // });
+    this.props.navigator.push({
+      screen: screenNames.homeScreen,
+      navigatorStyle: {
+        tabBarHidden: true
+      }
+    });
 
     // TODO Re-visit once this screen is moved to the flow after first patient being added
     // RNSecureKeyStore.get('patientData')
@@ -104,7 +107,6 @@ secureKey(passcode) {
 
     // Create the encryption key
     // TODO move this function of generating a random string to a common module
-
     // const randomString = '';
     // const key = new Int8Array(64);
     // for (let i = 0; i < key.length; i++) {
@@ -118,38 +120,44 @@ secureKey(passcode) {
     //   console.log(err);
     // });
 
-    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-    let randomString = '';
-    const key = new Int8Array(64);
-    for (let i = 0; i < key.length; i++) {
-      const rnum = Math.floor(Math.random() * chars.length);
-      randomString += chars.substring(rnum, rnum + 1);
-    }
+  // this.floDB = new Realm({
+  //   schema: [
+  //       Visit,
+  //       Patient,
+  //       Address,
+  //       Episode,
+  //       Place,
+  //       VisitOrder
+  //   ],
+  //   deleteRealmIfMigrationNeeded: true,
+  //   encryptionKey: stringToArrayBuffer(randomString),
+  //   schemaVersion: 0
+  // });
 
-    RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
-      StartApp(randomString);
-    }, (err) => {
-      console.log(err);
-    });
   }
 }
     
   render() {
     // TODO replicate in multiple screens or find a better way of doing at the overall APP level
     return (
-      <KeyboardAwareScrollView>
+      <ScrollView >
+        {/* <UserInactivity
+        timeForInactivity={10000000}
+        checkInterval={1000}
+        onInactivity={this.onInactivity}
+        /> */}
         <View>
           <Text style={styles.topSectionStyle}>
-                Please secure the app
+                We are glad that you are back
           </Text>
         </View>  
         
-        {/*<View>
+        <View>
           <Text style={styles.middleSectionStyle}>
           Looks like you have added patients its time to secure the app. By enabling secure access 
           you will only be able to open the app with the 4-digit security code.
           </Text>
-        </View>*/}
+        </View>
         <View>
           <Text style={styles.middleSectionStyle}>          
           Note: Please keep the passcode handy.
@@ -163,17 +171,17 @@ secureKey(passcode) {
         </View>
         <View >
         <CodeInput
-          codeLength='4'
-          inputPosition='center'
-          secureTextEntry
-          activeColor='grey'
-          inactiveColor='grey'
-          autoFocus
-          keyboardType='numeric'
-          onFulfill={(code) => this.secureKey(code)}
-        />
+                    codeLength = '4'
+                    secureTextEntry
+                    activeColor='grey'
+                    inactiveColor='grey'
+                    autoFocus={true}
+                    ignoreCase={true}
+                    inputPosition='center'
+                    onFulfill={(code) => this.secureKey(code)}
+                    />
         </View>
-      </KeyboardAwareScrollView> 
+      </ScrollView> 
     );
   }
 }
@@ -183,21 +191,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-    marginBottom: 10,
+    marginBottom: 20,
     marginTop: 10,
   },
   middleSectionStyle: {  
     fontSize: 12,
     textAlign: 'center',
     margin: 10,
-    marginBottom: 10,
+    marginBottom: 20,
     marginTop: 10,
   },
   stretch: {
     alignSelf: 'center',
     width: 200,
     height: 200,
-    marginBottom: 10,
+    marginBottom: 20,
   }
 });
 

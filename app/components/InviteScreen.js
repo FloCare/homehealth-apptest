@@ -1,15 +1,42 @@
 import React, {Component} from 'react';
-import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, ScrollView, View, AsyncStorage} from 'react-native';
+import CodePin from 'react-native-pin-code';
+import {Button} from 'react-native-elements';
+import {StyleSheet, Text, TextInput, ScrollView, View, AsyncStorage, KeyboardAvoidingView} from 'react-native';
+import Header from './common/Header';
 import {screenNames} from '../utils/constants';
+import {PrimaryFontFamily} from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
 const inviteCodes = ['9999', '5678', '2468', '7777'];
 
 export class InviteScreen extends Component {
 
-    state = {showMessage: false};
+  state = { showMessage: false, inactive: true };
 
+  componentWillMount() {
+    this._panResponder = PanResponder.create({
+      onMoveShouldSetPanResponderCapture: () => {
+        clearTimeout(this.timeout);
+
+        this.setState(state => {
+          if (state.inactive === false) return null;
+          return {
+            inactive: false,
+          };
+        });
+
+        this.timeout = setTimeout(() => {
+          this.setState({
+            inactive: true,
+          });
+        }, 3000);
+        return false;
+      },
+    });
+  }
+  componentWillUnmount() {
+    clearTimeout(this.timeout);
+  }
 // TODO will be used in the Sign In Page to figure out if it is a first time visit
   // async componentDidMount() {
   //   try {
@@ -63,11 +90,15 @@ export class InviteScreen extends Component {
             this.props.navigator.push({
               screen: screenNames.welcomeScreen,
               backButtonHidden: true,
+              navigatorStyle: {
+              tabBarHidden: true
+              }
             });
           } catch (error) {
             console.error('AsyncStorage error: ', error.message);
-          }
-        } else {
+          }                      
+      }
+      else {
         this.setState({ 
           showMessage: true
         });
@@ -84,32 +115,41 @@ export class InviteScreen extends Component {
 
   render() {
     return (
-      <ScrollView>
-        <View style={styles.grayTextStyle}>
-            <Text style={styles.grayTextStyle}> Welcome </Text>
-        </View>  
-        <View style={styles.boldTextStyle}>
-            <Text style={styles.boldTextStyle}> Have an invite? </Text>
-        </View>  
-        <View style={styles.grayTextStyle}>
-            <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
-        </View>  
-        <View>
-          <CodeInput
-            codeLength='4'
-            ref="codeInputRef"
-            secureTextEntry
-            inputPosition='center'
-            activeColor='grey'
-            inactiveColor='grey'
-            autoFocus
-            keyboardType='numeric'
-            ignoreCase
-            onFulfill={(code) => this._verifyInviteCode(code)}
+      <ScrollView >
+            <View style={styles.grayTextStyle}>
+                <Text style={styles.grayTextStyle}> Hey Whats up </Text>
+            </View>  
+            <View style={styles.boldTextStyle}>
+                <Text style={styles.boldTextStyle}> Have an invite? </Text>
+            </View>  
+            <View style={styles.grayTextStyle}>
+                <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
+            </View>  
+            <View >
+                    <KeyboardAvoidingView
+          behavior={'position'}
+          keyboardVerticalOffset={-30}
+          contentContainerStyle={styles.avoidingView}
+        >
+          <CodePin
+            ref={ref => (this.ref = ref)}
+            obfuscation
+            autoFocusFirst={false}
+            code="fake_code"
+            number={5}
+            checkPinCode={(code, callback) => callback(code === 'CODES')}
+            success={this.onSuccess}
           />
-        </View>
-        <View style={styles.alertMessageStyle}>
-          {this.renderView()}
+        </KeyboardAvoidingView>
+              </View>
+              <View style={styles.alertMessageStyle}>
+                {this.renderView()}
+              </View>
+              <View
+          style={[styles.activity, this.state.inactive ? styles.inactive : styles.active]}
+          {...this._panResponder.panHandlers}
+        >
+          <Text style={styles.text}>{this.state.inactive + ""}</Text>
         </View>
       </ScrollView>
     );
@@ -136,6 +176,19 @@ const styles = StyleSheet.create({
     color: 'red',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  activity: {
+    width: 200,
+    height: 80,
+    marginBottom: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  active: {
+    backgroundColor: "tomato",
+  },
+  inactive: {
+    backgroundColor: "black",
   }
 });
 
