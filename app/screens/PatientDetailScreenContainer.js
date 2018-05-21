@@ -125,7 +125,7 @@ class PatientDetailScreenContainer extends Component {
                 this.onPressEditInfo();
             }
         }
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             this.timeout = setTimeout(() => {
                 this.props.navigator.showModal({
                     screen: screenNames.passcodeVerificationScreen,
@@ -136,7 +136,7 @@ class PatientDetailScreenContainer extends Component {
                 });
             }, 30000);
         }
-        if(event.id === 'didDisappear') {
+        if (event.id === 'didDisappear') {
             clearTimeout(this.timeout);
         }
     }

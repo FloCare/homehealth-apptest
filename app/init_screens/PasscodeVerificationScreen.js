@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import {View, Image, StyleSheet, Text} from 'react-native';
+import {View, Image, StyleSheet, Text, Alert} from 'react-native';
 import Header from '../components/common/Header';
 import StartApp from '../screens/App';
 
@@ -17,37 +17,26 @@ class PasscodeVerificationScreen extends Component {
     this.verifyCode = this.verifyCode.bind(this);
   }
 
-  isSessionTimedout(props) {
-    return props.inactivity;
-  }
-
   verifyCode(code) {
     if (code.length === 4) {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
-        if (res === code) {
-          
-          // TODO: Logic for passcode being right       
+        if (res === code) {      
           // Todo: Check if Encryption key should be a function of passcode
           // Fetch the encryption key
-          RNSecureKeyStore.get('encryptionKey')
+          RNSecureKeyStore.get('flokey')
             .then((k) => {
               // Connect to realm, Register new screens
               // Navigate to the Tab Based App
-              if (!this.isSessionTimedout(this.props)) {
-                console.log('==============================');
-                console.log('Trying to start app ...');
-                console.log('==============================');
-                  StartApp(k);
-              } else {
-                console.log('dismiss modal');
-                this.props.navigator.dismissModal({
-                    animationType: 'slide-down' // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
-                });
+              try {
+                StartApp(k);
+              } catch (e) {
+                console.log('Error in starting app:', e);
+                Alert.alert('Error', 'Unable to retrieve data');
               }
             }, (err) => {
-              // Todo: Raise the error to the app
               console.log(err);
+              Alert.alert('Error', 'Unable to retrieve data');
             });
         } else {
           this.setState({ 

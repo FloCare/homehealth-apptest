@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, Alert} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import StartApp from '../screens/App';
 
 //const Realm = require('realm');
 
-export class AccessCodeScreen extends Component {
+class SetPassCodeScreen extends Component {
 
   constructor(props) {
     super(props);
@@ -16,7 +16,8 @@ export class AccessCodeScreen extends Component {
       storage: null,
       timeWentInactive: null,
     };
-    this.secureKey = this.secureKey.bind(this);
+    this.setPasscode = this.setPasscode.bind(this);
+    this.setKey = this.setKey.bind(this);
     // this.savePatientObject = this.savePatientObject.bind(this);
   }
 
@@ -73,17 +74,59 @@ export class AccessCodeScreen extends Component {
 //     }
 // }
 
+setKey() {
+  console.log('Trying to set the key ...');
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+  let randomString = '';
+  const key = new Int8Array(64);
+  for (let i = 0; i < key.length; i++) {
+    const rnum = Math.floor(Math.random() * chars.length);
+    randomString += chars.substring(rnum, rnum + 1);
+  }
+
+  RNSecureKeyStore.set('flokey', randomString)
+  .then((res) => {
+    console.log(res);
+    try {
+      StartApp(randomString);
+    } catch (err) {
+      console.log('Error in starting app:', err);
+      Alert.alert('Error', 'Unable to retrieve data');
+    }
+  }, (err) => {
+    console.log(err);
+    Alert.alert('Error', 'Unable to start the app');
+  });
+}
+
 // Secure the entered passcode in the keystore
-secureKey(passcode) {
+setPasscode(passcode) {
   if (passcode.length === 4) {
     // Save the passcode to keystore
-    // swal("Oops!", "Something went wrong!", "error");
-    //Save the passcode to keystore
     RNSecureKeyStore.set('passCode', passcode)
     .then((res) => {
-      console.log(res);
+      console.log('Updated the passcode to:', passcode);
+
+      // if key already set, use it
+      console.log('Trying to get the key ...');
+      RNSecureKeyStore.get('flokey')
+        .then((k) => {
+          // Connect to realm, Register new screens
+          // Navigate to the Tab Based App
+          try {
+            StartApp(k);
+          } catch (e) {
+            console.log('Error in starting app:', e);
+            Alert.alert('Error', 'Unable to retrieve data');
+          }
+        }, (err) => {
+          console.log('Key not already set', err);
+          this.setKey();
+        });
     }, (err) => {
       console.log(err);
+      Alert.alert('Error', 'Unable to update passcode');
+      return;
     });
 
     // this.props.navigator.push({
@@ -117,20 +160,6 @@ secureKey(passcode) {
     // }, (err) => {
     //   console.log(err);
     // });
-
-    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-    let randomString = '';
-    const key = new Int8Array(64);
-    for (let i = 0; i < key.length; i++) {
-      const rnum = Math.floor(Math.random() * chars.length);
-      randomString += chars.substring(rnum, rnum + 1);
-    }
-
-    RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
-      StartApp(randomString);
-    }, (err) => {
-      console.log(err);
-    });
   }
 }
     
@@ -170,7 +199,7 @@ secureKey(passcode) {
           inactiveColor='grey'
           autoFocus
           keyboardType='numeric'
-          onFulfill={(code) => this.secureKey(code)}
+          onFulfill={(code) => this.setPasscode(code)}
         />
         </View>
       </KeyboardAwareScrollView> 
@@ -201,4 +230,5 @@ const styles = StyleSheet.create({
   }
 });
 
-export default this.floDB;
+export {SetPassCodeScreen};
+
