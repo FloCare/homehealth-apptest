@@ -50,7 +50,9 @@ const PatientListScreen = (props) => {
                         onSearch(null);
                     }}
                     placeholder='Search'
-                    clearIcon={{color: '#86939e', name: 'cancel'}}
+                    containerStyle={{backgroundColor: '#f8f8f8', borderBottomWidth: 0, borderTopWidth: 0}}
+                    inputStyle={{backgroundColor: 'white', color: 'black'}}
+                    clearIcon={{color: '#dddddd', name: 'cancel'}}
                 />
                 <MenuProvider>
                     <SectionedPatientList

@@ -17,8 +17,8 @@ function CalendarStripStyled(props) {
         <CalendarStrip
             style={[{flex: 1, paddingTop: props.paddingTop, backgroundColor: 'white'}, props.dateRowAtBottom ? {justifyContent: 'flex-end'} : {justifyContent: 'center'}, props.style]}
             innerStyle={{flex: undefined}}
-            calendarHeaderViewStyle={{marginLeft: 40, marginBottom: 10}}
-            calendarHeaderStyle={{fontSize: 24, alignSelf: 'flex-start', fontFamily: PrimaryFontFamily}}
+            calendarHeaderViewStyle={{marginLeft: 40, marginVertical: 5}}
+            calendarHeaderStyle={{fontSize: 34, alignSelf: 'flex-start', fontFamily: PrimaryFontFamily}}
             datesStripStyle={[{flex: undefined}, props.dateRowAtBottom ? {alignItems: 'flex-end'} : null]}
             dateNumberStyle={{fontSize: 18, fontWeight: undefined}}
             iconContainer={{flex: 1, opacity: 0.2}}

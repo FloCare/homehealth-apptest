@@ -1,3 +1,4 @@
+import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from '.';
 import {screenNames, PrimaryColor} from '../utils/constants';
@@ -11,9 +12,24 @@ const navigatorStyle = {
     tabBarBackgroundColor: '#f8f8f8',
     tabBarTranslucent: false,
     tabBarSelectedButtonColor: PrimaryColor,
+    tabBarButtonColor: 'black',
     hideBackButtonTitle: true,
     statusBarTextColorScheme: 'light'
 };
+
+function getLargeNavBarOrSubstitute() {
+    if (Platform.OS === 'ios' && parseInt(Platform.Version, 10) >= 11) {
+        return {
+            largeTitle: true,
+            navBarBackgroundColor: PrimaryColor,
+            topBarElevationShadowEnabled: false,
+            navBarNoBorder: true,
+            navBarButtonColor: 'white',
+        };
+    }
+
+    return null;
+}
 
 const StartApp = (key) => {
     // Initialize the DB
@@ -46,7 +62,14 @@ const StartApp = (key) => {
                 label: 'Patients',
                 icon: Images.person_ic,
                 screen: screenNames.patientList,
-            }
+                navigatorStyle: getLargeNavBarOrSubstitute()
+            },
+            {
+                label: 'More',
+                icon: Images.more,
+                screen: screenNames.moreScreen,
+                navigatorStyle: getLargeNavBarOrSubstitute()
+            },
         ],
         appStyle: navigatorStyle,
         tabsStyle: navigatorStyle,

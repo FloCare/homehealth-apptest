@@ -14,7 +14,8 @@ import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {CreateAndSaveDummies, Visit, VisitOrder} from '../utils/data/schema';
-
+import {MoreScreen} from '../components/MoreScreen/MoreScreen';
+import {LegalScreen} from "../components/LegalScreen";
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -23,7 +24,17 @@ const RegisterScreens = () => {
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
-    //
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+
     //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
     //     floDB.write(() => {
     //         visitOrder.visitList = floDB.objects(Visit);
@@ -36,6 +47,8 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
+    Navigation.registerComponent(screenNames.moreScreen, () => MoreScreen);
+    Navigation.registerComponent(screenNames.legal, () => LegalScreen);
     Navigation.registerComponent(screenNames.visitListScreen, () => ScreenWithCalendarComponent(VisitListScreenContainer));
     Navigation.registerComponent(screenNames.visitMapScreen, () => ScreenWithCalendarComponent(VisitMapScreenController));
     Navigation.registerComponent(screenNames.addVisitScreen, () => ScreenWithCalendarComponent(AddVisitsScreenContainer));

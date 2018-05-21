@@ -7,7 +7,7 @@ const styles = {
         paddingLeft: 15,
         fontSize: 17,
         color: '#525252',
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#f3f3f3',
         fontFamily: Platform.select({ios: 'SFProText-Semibold', android: 'SF-Pro-Text-Semibold'})
     },
     nameStyle: {

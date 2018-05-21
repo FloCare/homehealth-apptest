@@ -12,10 +12,10 @@ class VisitListScreenContainer extends Component {
                 id: 'map-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                 icon: Images.mapView
             },
-            {
-                id: 'calendar-picker',
-                icon: Images.calendarSelected
-            }
+            // {
+            //     id: 'calendar-picker',
+            //     icon: Images.calendarSelected
+            // }
         ]
     };
 
@@ -70,7 +70,6 @@ class VisitListScreenContainer extends Component {
     }
 
     render() {
-        const obj = {}; obj[this.state.date.dateString] = {selected: true, selectedColor: 'blue'};
         console.log('visitListScreenContainer rerendering');
         return (
             <VisitListScreen

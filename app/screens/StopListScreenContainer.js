@@ -3,8 +3,26 @@ import {StopListScreen} from '../components/StopListScreen';
 import {floDB, Place} from '../utils/data/schema';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
+import {Images} from '../Images';
+import {Platform} from 'react-native';
 
 class StopListScreenContainer extends Component {
+    static navigatorButtons = {
+        rightButtons: [
+            Platform.select({
+                android: {
+                    icon: Images.addButton, // for icon button, provide the local image asset name
+                    id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                },
+                ios: {
+                    id: 'add',
+                    systemItem: 'add'
+                }
+            })
+
+        ]
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -31,10 +49,16 @@ class StopListScreenContainer extends Component {
 
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
-            let title = `Saved Places (${this.state.stopCount})`;
+            const title = `Saved Places (${this.state.stopCount})`;
             this.props.navigator.setTitle({
                 title
             });
+        }
+
+        if (event.type === 'NavBarButtonPress') { // this is the event type for button presses
+            if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
+                this.onPressAddStop();
+            }
         }
     }
 

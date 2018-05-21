@@ -11,7 +11,9 @@ const navigatorStyle = {
     navBarTextColor: '#ffffff',
     navBarButtonColor: 'white',
     hideBackButtonTitle: true,
-    statusBarTextColorScheme: 'light'
+    statusBarTextColorScheme: 'light',
+    forceTitlesDisplay: true,
+    keepStyleAcrossPush: false
 };
 
 async function check() {

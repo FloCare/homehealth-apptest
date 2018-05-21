@@ -1,11 +1,10 @@
 import {Platform} from 'react-native';
 
 const PrimaryColor = '#45ceb1';
-const TransparentPrimaryColor = (opacity) => {
+const TransparentPrimaryColor = (opacity) => 
     // Todo: Can use a method to convert PrimaryColor in hexcode 
     // Todo: to rgba
-    return `rgba(69, 206, 177, ${opacity})`;
-};
+     `rgba(69, 206, 177, ${opacity})`;
 const PrimaryFontFamily = Platform.select({ios: 'SFProText-Regular', android: 'SF-Pro-Text-Regular'});
 
 
@@ -39,11 +38,13 @@ const screenNames = {
     //Top Level Screens
     homeScreen: 'HomeScreen',
     patientList: 'PatientList',
+    moreScreen: 'MoreScreen',
     welcomeScreen: 'WelcomeScreen',
     inviteScreen: 'InviteScreen',
     setPassCodeScreen: 'SetPassCodeScreen',
     thankyouScreen: 'ThankYouScreen',
     passcodeVerificationScreen: 'passcodeVerificationScreen',
+    legal: 'Legal',
 
     addPatient: 'AddPatient',
     patientDetails: 'PatientDetails',
