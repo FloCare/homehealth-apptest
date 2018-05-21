@@ -17,22 +17,33 @@ import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScr
 import {ScreenWithCalendarComponent} from '../components/common/screenWithCalendarComponent';
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
-import {todayMomentInUTCMidnight} from "../utils/utils";
-import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from "../utils/data/schema";
+import {todayMomentInUTCMidnight} from '../utils/utils';
+import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
+import {MoreScreen} from '../components/MoreScreen/MoreScreen';
 
 const RegisterScreens = () => {
-    // if (floDB.objects(Visit.schema.name).length === 0) {
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //
-    //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
-    //     floDB.write(() => {
-    //         visitOrder.visitList = floDB.objects(Visit);
-    //     });
-    // }
+    if (floDB.objects(Visit.schema.name).length === 0) {
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+
+        const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
+        floDB.write(() => {
+            visitOrder.visitList = floDB.objects(Visit);
+        });
+    }
     console.disableYellowBox = true;
 
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
@@ -40,6 +51,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
     Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
+    Navigation.registerComponent(screenNames.moreScreen, () => MoreScreen);
     Navigation.registerComponent(screenNames.welcomeScreen, () => WelcomePageScreen);
     Navigation.registerComponent(screenNames.inviteScreen, () => InviteScreen);
     Navigation.registerComponent(screenNames.thankyouScreen, () => ThankYouScreen);
