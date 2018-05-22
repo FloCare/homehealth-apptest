@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames} from '../../utils/constants';
@@ -40,6 +41,8 @@ class HomeScreenContainer extends Component {
             'connectionChange',
             HandleConnectionChange
         );
+
+        SplashScreen.hide();
     }
 
     onNavigatorEvent(event) {
