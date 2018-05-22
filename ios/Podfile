@@ -1,7 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
-target 'mtp' do
+target 'FloCare' do
   rn_path = '../node_modules/react-native'
   rn_maps_path = '../node_modules/react-native-maps'
 
@@ -40,6 +40,8 @@ target 'mtp' do
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
   # pod 'react-native-config', :path => '../node_modules/react-native-config'
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
 end
 
