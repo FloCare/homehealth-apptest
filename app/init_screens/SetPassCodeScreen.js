@@ -193,7 +193,7 @@ setPasscode(passcode) {
         </View>
         <View >
         <CodeInput
-          codeLength='4'
+          codeLength={4}
           inputPosition='center'
           secureTextEntry
           activeColor='grey'

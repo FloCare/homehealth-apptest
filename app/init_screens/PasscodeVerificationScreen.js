@@ -82,9 +82,9 @@ class PasscodeVerificationScreen extends Component {
                 onFulfill={(code) => this.verifyCode(code)}
               />
             </View>
-            <View style={styles.alertMessageStyle}>
+            <View style={styles.alertViewStyle}>
                 {this.renderView()}
-              </View>
+            </View>
         </View>
     );   
   }
@@ -99,6 +99,11 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  alertViewStyle: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   alertMessageStyle: {
     marginTop: 20,
     fontSize: 12,
@@ -107,8 +112,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   welcomeTextStyle: {  
-    fontSize: 20,
-    textAlign: 'center',
     margin: 10,
     marginBottom: 20,
     marginTop: 10,
