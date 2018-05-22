@@ -58,20 +58,20 @@ class HomeScreenContainer extends Component {
                 this.navigateToVisitMapScreen(false);
             }
         }
-        if(event.id === 'didAppear') {
-            this.timeout = setTimeout(() => {
-                this.props.navigator.showModal({
-                    screen: screenNames.passcodeVerificationScreen,
-                    backButtonHidden: true,
-                    passProps: {
-                        inactivity: true
-                    }
-                });
-            }, 3000);
-        }
-        if(event.id === 'didDisappear') {
-            clearTimeout(this.timeout);
-        }
+        // if(event.id === 'didAppear') {
+        //     this.timeout = setTimeout(() => {
+        //         this.props.navigator.showModal({
+        //             screen: screenNames.passcodeVerificationScreen,
+        //             backButtonHidden: true,
+        //             passProps: {
+        //                 inactivity: true
+        //             }
+        //         });
+        //     }, 3000);
+        // }
+        // if(event.id === 'didDisappear') {
+        //     clearTimeout(this.timeout);
+        // }
     }
 
     onDateSelected(date) {

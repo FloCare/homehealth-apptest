@@ -15,7 +15,8 @@ import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsFo
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {CreateAndSaveDummies, Visit, VisitOrder} from '../utils/data/schema';
 import {MoreScreen} from '../components/MoreScreen/MoreScreen';
-import {LegalScreen} from "../components/LegalScreen";
+import {LegalScreen} from '../components/LegalScreen';
+import LockOnInActivity from '../components/common/LockOnInActivity';
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -45,7 +46,7 @@ const RegisterScreens = () => {
     Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
     Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);
     Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
-    Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
+    Navigation.registerComponent(screenNames.patientList, () => LockOnInActivity(PatientListScreenContainer));
     Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
     Navigation.registerComponent(screenNames.moreScreen, () => MoreScreen);
     Navigation.registerComponent(screenNames.legal, () => LegalScreen);

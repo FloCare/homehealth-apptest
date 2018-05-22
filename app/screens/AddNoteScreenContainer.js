@@ -10,20 +10,20 @@ class AddNoteScreenContainer extends Component {
     }
 
     onNavigatorEvent(event) {
-        if(event.id === 'didAppear') {
-            this.timeout = setTimeout(() => {
-                this.props.navigator.showModal({
-                    screen: screenNames.passcodeVerificationScreen,
-                    backButtonHidden: true,
-                    passProps: {
-                        inactivity: true
-                    }
-                });
-            }, 30000);
-        }
-        if(event.id === 'didDisappear') {
-            clearTimeout(this.timeout);
-        }
+        // if(event.id === 'didAppear') {
+        //     this.timeout = setTimeout(() => {
+        //         this.props.navigator.showModal({
+        //             screen: screenNames.passcodeVerificationScreen,
+        //             backButtonHidden: true,
+        //             passProps: {
+        //                 inactivity: true
+        //             }
+        //         });
+        //     }, 30000);
+        // }
+        // if(event.id === 'didDisappear') {
+        //     clearTimeout(this.timeout);
+        // }
     }
 
     onSubmit() {
