@@ -1,41 +1,53 @@
 import React, {Component} from 'react';
-import {View, PanResponder} from 'react-native';
+import {Text, View, PanResponder} from 'react-native';
 import {screenNames} from '../../utils/constants';
 
 const LockOnInActivity = (ScreenComponent) => {
 	return (
 		class CompositeClass extends Component {
+			static navigatorButtons = ScreenComponent.navigatorButtons;
 			constructor(props) {
 				super(props);
 				this.state = {
-					locked: true
+					show: false
 				};
 				this.resetTimer = this.resetTimer.bind(this);
 				this.openLockScreenModal = this.openLockScreenModal.bind(this);
 				this._panResponder = {};
 				this.timer = 0;
+				this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 			}
 
-			componentWillMount() {
+			// Todo: Move to screen did Appear from componentDidMount
+			onNavigatorEvent(event) {
 				console.log('==============================');
-				console.log('Creating Pan Responder');
+				console.log('Navigator Event received by LockOnInActivity');
 				console.log('==============================');
-				this._panResponder = PanResponder.create({
-					onStartShouldSetPanResponder: () => {
-						this.resetTimer();
-						return true;
-					},
-					onMoveShouldSetPanResponder: () => true,
-					onStartShouldSetPanResponderCapture: () => { this.resetTimer(); return false; },
-					onMoveShouldSetPanResponderCapture: () => false,
-					onPanResponderTerminationRequest: () => true,
-					onShouldBlockNativeResponder: () => false,
-				});
-				this.timer = setTimeout(() => this.setState({locked: false}), 3000);
-			}
 
-			componentWillUnMount() {
-				this.resetTimer();
+				if (this.props.onNavigationEvent) {
+                    this.props.onNavigationEvent(event);
+                }
+
+				if (event.id === 'didAppear') {
+					console.log('==============================');
+					console.log('Creating Pan Responder');
+					console.log('==============================');
+					this._panResponder = PanResponder.create({
+						onStartShouldSetPanResponder: () => {
+							this.resetTimer();
+							return true;
+						},
+						onMoveShouldSetPanResponder: () => true,
+						onStartShouldSetPanResponderCapture: () => { this.resetTimer(); return false; },
+						onMoveShouldSetPanResponderCapture: () => false,
+						onPanResponderTerminationRequest: () => true,
+						onShouldBlockNativeResponder: () => false,
+					});
+					this.timer = setTimeout(() => this.setState({show: true}), 3000);
+				}
+				if (event.id === 'didDisappear') {
+					clearTimeout(this.timer);
+				}
 			}
 
 			openLockScreenModal() {
@@ -44,25 +56,35 @@ const LockOnInActivity = (ScreenComponent) => {
 					backButtonHidden: true,
 					passProps: {
 						inactivity: true
-					}
+					},
+					overrideBackPress: true,
+					animationType: 'none'
 				});
 			}
 
 			resetTimer() {
 				clearTimeout(this.timer);
-				if (!this.state.locked) {
-					console.log('Inverting this.state.locked to true');
-					this.setState({locked: true});
-					this.openLockScreenModal();
+				if (this.state.show) {
+					console.log('Inverting this.state.show to false');
+					this.setState({show: false});
 				}
-				console.log('Reset Timer to 3s. Set State locked to false');
-				this.timer = setTimeout(() => this.setState({locked: false}), 3000);
+				console.log('Reset Timer to 3s. Set State show to true');
+				this.timer = setTimeout(() => this.setState({show: true}), 3000);
 			}
 
 			render() {
+				if (this.state.show) {
+					console.log('======================');
+					console.log('Show is: true');
+					console.log('======================');
+					this.openLockScreenModal();
+				}
 				return (
 					<View style={{flex: 1}} {...this._panResponder.panHandlers}>
-						<ScreenComponent {...this.props} />
+						<ScreenComponent 
+							{...this.props} 
+							onNavigatorEvent={this.onNavigatorEvent}
+						/>
 					</View>
 				);
 			}

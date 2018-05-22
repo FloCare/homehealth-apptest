@@ -22,10 +22,16 @@ class PasscodeVerificationScreen extends Component {
     if (code.length === 4) {
       RNSecureKeyStore.get('passCode')
       .then((res) => {
-        if (res === code) {      
+        if (res === code) {
           // Todo: Check if Encryption key should be a function of passcode
           // Fetch the encryption key
-          RNSecureKeyStore.get('flokey')
+          if (this.props.inactivity) {
+            this.props.navigator.dismissModal({
+              animationType: 'none'
+            });
+            return;
+          } else {
+            RNSecureKeyStore.get('flokey')
             .then((k) => {
               // Connect to realm, Register new screens
               // Navigate to the Tab Based App
@@ -39,6 +45,7 @@ class PasscodeVerificationScreen extends Component {
               console.log(err);
               Alert.alert('Error', 'Unable to retrieve data');
             });
+          }
         } else {
           this.setState({ 
             showMessage: true
@@ -60,7 +67,7 @@ class PasscodeVerificationScreen extends Component {
   render() {
     console.log('Hello world');
     return (
-        <View>
+        <View style={{flex: 1, backgroundColor: '#ffffff'}}>
             <View style={styles.welcomeTextStyle}>
                <Header titleText='Enter Passcode' />
             </View>
