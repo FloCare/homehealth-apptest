@@ -56,12 +56,12 @@ Navigation.startTabBasedApp({
             screen: screenNames.moreScreen,
             navigatorStyle: getLargeNavBarOrSubstitute()
         },
-        {
-            label: 'Welcome',
-            icon: Images.person_ic,
-            screen: screenNames.inviteScreen,
-            navigatorStyle: {navBarHidden: false}
-        }
+        // {
+        //     label: 'Welcome',
+        //     icon: Images.person_ic,
+        //     screen: screenNames.inviteScreen,
+        //     navigatorStyle: {navBarHidden: false}
+        // }
     ],
     appStyle: navigatorStyle,
     tabsStyle: navigatorStyle

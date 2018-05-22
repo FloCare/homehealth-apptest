@@ -1518,7 +1518,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocare.flocare;
+				PRODUCT_BUNDLE_IDENTIFIER = health.flocare.flocare;
 				PRODUCT_NAME = FloCare;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1544,7 +1544,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.flocare.flocare;
+				PRODUCT_BUNDLE_IDENTIFIER = health.flocare.flocare;
 				PRODUCT_NAME = FloCare;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
