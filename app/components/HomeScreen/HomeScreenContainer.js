@@ -14,7 +14,6 @@ class HomeScreenContainer extends Component {
         this.state = {
             date: todayMomentInUTCMidnight()
         };
-
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);

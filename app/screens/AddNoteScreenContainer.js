@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {AddNoteScreen} from '../components/AddNoteScreen';
+import {screenNames} from '../utils/constants';
 
 class AddNoteScreenContainer extends Component {
     constructor(props) {
