@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-//import UserInactivity from 'react-native-user-inactivity';
 import {View, StyleSheet} from 'react-native';
 import Header from '../components/common/Header';
 

@@ -18,8 +18,7 @@ const navigatorStyle = {
 const StartApp = async () => {
     const isFirstRun = await (async () => {
         try {
-            const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
-            return isFirstVisit;
+            return await AsyncStorage.getItem('isFirstVisit');
         } catch (error) {
             console.error('AsyncStorage error: ', error.message);
             // Todo: Figure out what to do here ???

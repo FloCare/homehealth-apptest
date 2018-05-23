@@ -3,7 +3,7 @@ import {Navigation} from 'react-native-navigation';
 import {RegisterScreens} from '.';
 import {screenNames, PrimaryColor} from '../utils/constants';
 import {Images} from '../Images';
-import {FloDB} from '../utils/data/schema';
+import {FloDBProvider} from '../utils/data/schema';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -34,8 +34,7 @@ function getLargeNavBarOrSubstitute() {
 const StartApp = (key) => {
     // Initialize the DB
     try {
-        FloDB.encKey = key;
-        FloDB.initialize();
+        FloDBProvider.initialize(key);
     } catch (err) {
         console.log('Error in initializing DB: ', err);
         throw err;
