@@ -1,17 +1,14 @@
 import React, {Component} from 'react';
 import CodeInput from 'react-native-confirmation-code-input';
-import {Button} from 'react-native-elements';
-import {StyleSheet, Text, TextInput, ScrollView, View, AsyncStorage} from 'react-native';
-import Header from './common/Header';
+import {StyleSheet, Text, ScrollView, View, AsyncStorage} from 'react-native';
 import {screenNames} from '../utils/constants';
-import {PrimaryFontFamily} from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
 const inviteCodes = ['9999', '5678', '2468', '7777'];
 
 export class InviteScreen extends Component {
 
-    state = { showMessage: false };
+    state = {showMessage: false};
 
 // TODO will be used in the Sign In Page to figure out if it is a first time visit
   // async componentDidMount() {
@@ -65,16 +62,12 @@ export class InviteScreen extends Component {
             AsyncStorage.setItem('isFirstVisit', 'false');
             this.props.navigator.push({
               screen: screenNames.welcomeScreen,
-              backbuttonHidden: true,
-              navigatorStyle: {
-              tabBarHidden: true
-              }
+              backButtonHidden: true,
             });
           } catch (error) {
             console.error('AsyncStorage error: ', error.message);
-          }                      
-      }
-      else {
+          }
+        } else {
         this.setState({ 
           showMessage: true
         });
@@ -91,42 +84,52 @@ export class InviteScreen extends Component {
 
   render() {
     return (
-      <ScrollView >
-            <View style={styles.grayTextStyle}>
-                <Text style={styles.grayTextStyle}> Hey Whats up </Text>
-            </View>  
-            <View style={styles.boldTextStyle}>
-                <Text style={styles.boldTextStyle}> Have an invite? </Text>
-            </View>  
-            <View style={styles.grayTextStyle}>
-                <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
-            </View>  
-            <View >
-                    <CodeInput
-                    codeLength = '4'
-                    ref="codeInputRef"
-                    secureTextEntry
-                    inputPosition='center'
-                    activeColor='grey'
-                    inactiveColor='grey'
-                    autoFocus={true}
-                    ignoreCase={true}
-                    inputPosition='center'
-                    onFulfill={(code) => this._verifyInviteCode(code)}
-                    />
-              </View>
-              <View style={styles.alertMessageStyle}>
-                {this.renderView()}
-              </View>
+      <ScrollView>
+        <View style={styles.textViewStyle}>
+            <Text style={styles.grayTextStyle}> Welcome </Text>
+        </View>  
+        <View style={styles.boldTextViewStyle}>
+            <Text style={styles.boldTextStyle}> Have an invite? </Text>
+        </View>  
+        <View style={styles.textViewStyle}>
+            <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
+        </View>  
+        <View>
+          <CodeInput
+            codeLength={4}
+            ref="codeInputRef"
+            secureTextEntry
+            inputPosition='center'
+            activeColor='grey'
+            inactiveColor='grey'
+            autoFocus
+            keyboardType='numeric'
+            ignoreCase
+            onFulfill={(code) => this._verifyInviteCode(code)}
+          />
+        </View>
+        <View style={styles.alertViewStyle}>
+          {this.renderView()}
+        </View>
       </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  textViewStyle: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   grayTextStyle: {
     fontSize: 18,
     color: 'grey',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  boldTextViewStyle: {
+    marginTop: 20,
+    marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -137,8 +140,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  alertMessageStyle: {
+  alertViewStyle: {
     marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  alertMessageStyle: {
     fontSize: 12,
     color: 'red',
     justifyContent: 'center',

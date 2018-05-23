@@ -20,7 +20,12 @@ export const Images = {
     time: require('../resources/time.png'),
     patient: require('../resources/patient.png'),
     pin: require('../resources/pin.png'),
-
+    secureAccessImage: require('../resources/secureAccessImg.png'),
+    verificationCodeImage: require('../resources/verificationcodeImg.png'),
+    secureImg: require('../resources/secureImg.png'),
+    mapImg: require('../resources/mapImg.png'),
+    planImg: require('../resources/planImg.png'),
+    welcomeScreenImg: require('../resources/welcomeScreenImg.png'),
     //MoreScreen
     visitLog: require('../resources/visitLog.png'),
     milesLog: require('../resources/milesLog.png'),

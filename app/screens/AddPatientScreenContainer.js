@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {AddPatientScreen} from '../components/AddPatientScreen';
+import {screenNames} from '../utils/constants';
 
 class AddPatientScreenContainer extends Component {
     /*

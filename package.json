@@ -24,6 +24,7 @@
     "lodash": "^4.17.5",
     "moment": "^2.22.1",
     "react": "16.3.1",
+    "react-native-confirmation-code-input": "FloCare/react-native-confirmation-code-input",
     "react-native": "^0.55.1",
     "react-native-action-button": "^2.8.4",
     "react-native-calendar-strip": "git+https://github.com/harshalbid271/react-native-calendar-strip.git",

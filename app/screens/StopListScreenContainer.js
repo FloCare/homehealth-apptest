@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
+import {Platform} from 'react-native';
 import {StopListScreen} from '../components/StopListScreen';
 import {floDB, Place} from '../utils/data/schema';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
 import {Images} from '../Images';
-import {Platform} from 'react-native';
 
 class StopListScreenContainer extends Component {
     static navigatorButtons = {

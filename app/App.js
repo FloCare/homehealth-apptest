@@ -1,68 +1,48 @@
-import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
-import {RegisterScreens} from './screens';
+import {AsyncStorage} from 'react-native';
 import {screenNames, PrimaryColor} from './utils/constants';
-import {Images} from './Images';
+import RegisterInitScreens from './init_screens';
 
-RegisterScreens();
+RegisterInitScreens();
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
     navBarTextColor: '#ffffff',
     navBarButtonColor: 'white',
-    tabBarBackgroundColor: '#f8f8f8',
-    tabBarTranslucent: false,
-    tabBarSelectedButtonColor: PrimaryColor,
-    tabBarButtonColor: 'black',
     hideBackButtonTitle: true,
     statusBarTextColorScheme: 'light',
     forceTitlesDisplay: true,
     keepStyleAcrossPush: false
 };
 
-function getLargeNavBarOrSubstitute() {
-    if (Platform.OS === 'ios' && parseInt(Platform.Version, 10) >= 11) {
-        return {
-            largeTitle: true,
-            navBarBackgroundColor: PrimaryColor,
-            topBarElevationShadowEnabled: false,
-            navBarNoBorder: true,
-            navBarButtonColor: 'white',
-        };
-    }
+const StartApp = async () => {
+    const isFirstRun = async () => {
+        try {
+            return await AsyncStorage.getItem('isFirstVisit');
+        } catch (error) {
+            console.error('AsyncStorage error: ', error.message);
+            // Todo: Figure out what to do here ???
+            return false;
+        }
+    };
 
-    return null;
-}
+	if (await isFirstRun()) {
+		Navigation.startSingleScreenApp({
+			screen: {
+				screen: screenNames.passcodeVerificationScreen,
+			},
+			appStyle: navigatorStyle,
+			animationType: 'fade'
+		});
+	} else {
+		Navigation.startSingleScreenApp({
+			screen: {
+				screen: screenNames.inviteScreen,
+			},
+			appStyle: navigatorStyle,
+			animationType: 'fade'
+		});
+	}
+};
 
-Navigation.startTabBasedApp({
-    tabs: [
-        {
-            title: 'Home Screen',
-            label: 'Today',
-            icon: Images.calendar,
-            screen: screenNames.homeScreen,
-            navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
-        },
-        {
-            title: 'Patients',
-            label: 'Patients',
-            icon: Images.person_ic,
-            screen: screenNames.patientList,
-            navigatorStyle: getLargeNavBarOrSubstitute()
-        },
-        {
-            label: 'More',
-            icon: Images.more,
-            screen: screenNames.moreScreen,
-            navigatorStyle: getLargeNavBarOrSubstitute()
-        },
-        // {
-        //     label: 'Welcome',
-        //     icon: Images.person_ic,
-        //     screen: screenNames.inviteScreen,
-        //     navigatorStyle: {navBarHidden: false}
-        // }
-    ],
-    appStyle: navigatorStyle,
-    tabsStyle: navigatorStyle
-});
+StartApp();
