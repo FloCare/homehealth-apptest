@@ -43,19 +43,19 @@ const RegisterScreens = () => {
     // }
     console.disableYellowBox = true;
 
-    Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
-    Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);
-    Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
+    Navigation.registerComponent(screenNames.addPatient, () => LockOnInActivity(AddPatientScreenContainer));
+    Navigation.registerComponent(screenNames.addNote, () => LockOnInActivity(AddNoteScreenContainer));
+    Navigation.registerComponent(screenNames.patientDetails, () => LockOnInActivity(PatientDetailScreenContainer));
     Navigation.registerComponent(screenNames.patientList, () => LockOnInActivity(PatientListScreenContainer));
-    Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
-    Navigation.registerComponent(screenNames.moreScreen, () => MoreScreen);
-    Navigation.registerComponent(screenNames.legal, () => LegalScreen);
-    Navigation.registerComponent(screenNames.visitListScreen, () => ScreenWithCalendarComponent(VisitListScreenContainer));
-    Navigation.registerComponent(screenNames.visitMapScreen, () => ScreenWithCalendarComponent(VisitMapScreenController));
-    Navigation.registerComponent(screenNames.addVisitScreen, () => ScreenWithCalendarComponent(AddVisitsScreenContainer));
-    Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
-    Navigation.registerComponent(screenNames.stopList, () => StopListScreenContainer);
-    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => AddVisitsForPatientScreen);
+    Navigation.registerComponent(screenNames.homeScreen, () => LockOnInActivity(HomeScreenContainer));
+    Navigation.registerComponent(screenNames.moreScreen, () => LockOnInActivity(MoreScreen));
+    Navigation.registerComponent(screenNames.legal, () => LockOnInActivity(LegalScreen));
+    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInActivity(ScreenWithCalendarComponent(VisitListScreenContainer)));
+    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInActivity(ScreenWithCalendarComponent(VisitMapScreenController)));
+    Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInActivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
+    Navigation.registerComponent(screenNames.addStop, () => LockOnInActivity(AddStopScreenContainer));
+    Navigation.registerComponent(screenNames.stopList, () => LockOnInActivity(StopListScreenContainer));
+    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => LockOnInActivity(AddVisitsForPatientScreen));
 };
 
 export {RegisterScreens};

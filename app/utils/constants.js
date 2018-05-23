@@ -64,7 +64,7 @@ const visitType = {
 };
 
 let inActivityTimer = null;
-const inActivityTime = 3000; // ms
+const inActivityTime = 10000; // ms
 let lastActiveTime = new Date();
 
 const setInActivityTimer = (f) => {
