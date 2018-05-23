@@ -15,22 +15,20 @@ const navigatorStyle = {
     keepStyleAcrossPush: false
 };
 
-const check = async() => {
-	try {
-		const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
-		return isFirstVisit;
-	} catch (error) {
-		console.error('AsyncStorage error: ', error.message);
-		// Todo: Figure out what to do here ???
-		return false;
-	}
-};
-
-const StartApp = async() => {
-	const res = await check();
+const StartApp = async () => {
+    const isFirstRun = await (async () => {
+        try {
+            const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
+            return isFirstVisit;
+        } catch (error) {
+            console.error('AsyncStorage error: ', error.message);
+            // Todo: Figure out what to do here ???
+            return false;
+        }
+    });
 
 	// Display Invite/PasscodeVerification Screen
-	if (res) {
+	if (isFirstRun) {
 		Navigation.startSingleScreenApp({
 			screen: {
 				screen: screenNames.passcodeVerificationScreen,
