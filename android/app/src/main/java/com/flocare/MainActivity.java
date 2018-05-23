@@ -1,4 +1,4 @@
-package com.mtp;
+package com.flocare;
 
 import com.reactnativenavigation.controllers.SplashActivity;
 
