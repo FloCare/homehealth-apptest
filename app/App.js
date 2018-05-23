@@ -16,7 +16,7 @@ const navigatorStyle = {
 };
 
 const StartApp = async () => {
-    const isFirstRun = await (async () => {
+    const isFirstRun = async () => {
         try {
             return await AsyncStorage.getItem('isFirstVisit');
         } catch (error) {
@@ -24,10 +24,9 @@ const StartApp = async () => {
             // Todo: Figure out what to do here ???
             return false;
         }
-    });
+    };
 
-	// Display Invite/PasscodeVerification Screen
-	if (isFirstRun) {
+	if (await isFirstRun()) {
 		Navigation.startSingleScreenApp({
 			screen: {
 				screen: screenNames.passcodeVerificationScreen,
