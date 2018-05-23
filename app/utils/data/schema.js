@@ -1,7 +1,6 @@
 import * as CollectionUtils from '../collectionUtils';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
-import {AppException} from '../AppException';
 
 const Realm = require('realm');
 
@@ -218,35 +217,22 @@ VisitOrder.schema = {
 };
 
 let floDB = null;
-let encKey = null;
 
-class FloDB {
-    static get floDB() {
+class FloDBProvider {
+    static get db() {
         return floDB;
     }
 
-    static set floDB(db) {
-        floDB = db;
-    }
-
-    static get encKey() { 
-        return encKey;
-    }
-
-    static set encKey(key) {
-        encKey = key;
-    }
-
-    static initialize() {
+    static initialize(key) {
         console.log('initializing the DB ...');
         const initialSchema = [Visit, Patient, Address, Episode, Place, VisitOrder];
         const schemas = [
             {
-                schema: initialSchema, 
+                schema: initialSchema,
                 schemaVersion: 1,
                 migration: () => { console.log('Migration function goes here'); },
                 path: 'database.realm',
-                encryptionKey: stringToArrayBuffer(encKey)
+                encryptionKey: stringToArrayBuffer(key)
             }
         ];
 
@@ -280,7 +266,7 @@ class FloDB {
             console.log('initialization done ...');
         } catch (err) {
             console.log('ERROR IN DB INITIALIZATION: ', err);
-            throw new AppException('Error', 'Unable to retrieve data');
+            throw err;
         }
     }
 }
@@ -353,4 +339,4 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {FloDB, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};
+export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};

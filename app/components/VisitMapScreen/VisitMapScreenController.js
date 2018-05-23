@@ -9,7 +9,7 @@ import {MapMarker} from './MapMarker';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
-import {Images} from "../../Images";
+import {Images} from '../../Images';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
@@ -21,10 +21,10 @@ class VisitMapScreenController extends Component {
                 id: 'list-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                 buttonColor: '#fffff'
             },
-            {
-                id: 'calendar-picker',
-                icon: Images.calendarSelected
-            }
+            // {
+            //     id: 'calendar-picker',
+            //     icon: Images.calendarSelected
+            // }
         ]
     };
 
@@ -154,6 +154,7 @@ function ControlPanel(props) {
                 date={props.date}
                 hideIncompleteAddress
                 renderWithCallback={VisitRow}
+                scrollEnabled={false}
                 isCompletedHidden={!props.showCompleted}
                 onOrderChange={props.onChangeOrder}
             />

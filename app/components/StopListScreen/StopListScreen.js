@@ -46,7 +46,7 @@ const StopListScreen = (props) => {
                             marginBottom: 20
                         }}
                     >
-                        <StyledText>When you add places, you'll see them here</StyledText>
+                        <StyledText style={{horizontalPadding: 20}}>When you add places, you'll see them here</StyledText>
                     </View>
                     <EmptyStateButton
                         onPress={onPressAddStop}
@@ -56,7 +56,7 @@ const StopListScreen = (props) => {
                 </View>
             </View>
         );
-    } else {
+    } 
         return (
             <View style={styles.container.container}>
                 <SearchBar
@@ -77,7 +77,6 @@ const StopListScreen = (props) => {
                 />
             </View>
         );
-    }
 };
 
 export {StopListScreen};

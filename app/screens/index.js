@@ -13,27 +13,29 @@ import {ScreenWithCalendarComponent} from '../components/common/screenWithCalend
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 import {todayMomentInUTCMidnight} from '../utils/utils';
-import {CreateAndSaveDummies, FloDB, Visit, VisitOrder} from '../utils/data/schema';
+import {CreateAndSaveDummies, Visit, VisitOrder} from '../utils/data/schema';
+import {MoreScreen} from '../components/MoreScreen/MoreScreen';
+import {LegalScreen} from '../components/LegalScreen';
+import LockOnInactivity from '../components/common/LockOnInactivity';
 
-
-const RegisterScreens = (key) => {
-    try {
-        FloDB.encKey = key;
-        FloDB.initialize();
-    } catch (err) {
-        console.log('Error in initializing DB: ', err);
-        throw err;
-    }
-
-    // Todo: Handle the case when DB initialization fails
-
+const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
     //     CreateAndSaveDummies();
-    //
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+    //     CreateAndSaveDummies();
+
     //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
     //     floDB.write(() => {
     //         visitOrder.visitList = floDB.objects(Visit);
@@ -41,17 +43,19 @@ const RegisterScreens = (key) => {
     // }
     console.disableYellowBox = true;
 
-    Navigation.registerComponent(screenNames.addPatient, () => AddPatientScreenContainer);
-    Navigation.registerComponent(screenNames.addNote, () => AddNoteScreenContainer);
-    Navigation.registerComponent(screenNames.patientDetails, () => PatientDetailScreenContainer);
-    Navigation.registerComponent(screenNames.patientList, () => PatientListScreenContainer);
-    Navigation.registerComponent(screenNames.homeScreen, () => HomeScreenContainer);
-    Navigation.registerComponent(screenNames.visitListScreen, () => ScreenWithCalendarComponent(VisitListScreenContainer));
-    Navigation.registerComponent(screenNames.visitMapScreen, () => ScreenWithCalendarComponent(VisitMapScreenController));
-    Navigation.registerComponent(screenNames.addVisitScreen, () => ScreenWithCalendarComponent(AddVisitsScreenContainer));
-    Navigation.registerComponent(screenNames.addStop, () => AddStopScreenContainer);
-    Navigation.registerComponent(screenNames.stopList, () => StopListScreenContainer);
-    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => AddVisitsForPatientScreen);
+    Navigation.registerComponent(screenNames.addPatient, () => LockOnInactivity(AddPatientScreenContainer));
+    Navigation.registerComponent(screenNames.addNote, () => LockOnInactivity(AddNoteScreenContainer));
+    Navigation.registerComponent(screenNames.patientDetails, () => LockOnInactivity(PatientDetailScreenContainer));
+    Navigation.registerComponent(screenNames.patientList, () => LockOnInactivity(PatientListScreenContainer));
+    Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer));
+    Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
+    Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
+    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitListScreenContainer)));
+    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitMapScreenController)));
+    Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInactivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
+    Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));
+    Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer));
+    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => LockOnInactivity(AddVisitsForPatientScreen));
 };
 
 export {RegisterScreens};

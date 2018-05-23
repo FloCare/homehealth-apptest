@@ -48,10 +48,10 @@ class AddVisitsScreenContainer extends Component {
                         showAsAction: 'never'
                     }]
             }),
-            {
-                id: 'calendar-picker',
-                icon: Images.calendarSelected,
-            }
+            // {
+            //     id: 'calendar-picker',
+            //     icon: Images.calendarSelected,
+            // }
         ]
     };
 

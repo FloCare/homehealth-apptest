@@ -96,18 +96,18 @@ export class InviteScreen extends Component {
   render() {
     return (
       <ScrollView>
-        <View style={styles.grayTextStyle}>
+        <View style={styles.textViewStyle}>
             <Text style={styles.grayTextStyle}> Welcome </Text>
         </View>  
-        <View style={styles.boldTextStyle}>
+        <View style={styles.boldTextViewStyle}>
             <Text style={styles.boldTextStyle}> Have an invite? </Text>
         </View>  
-        <View style={styles.grayTextStyle}>
+        <View style={styles.textViewStyle}>
             <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
         </View>  
         <View>
           <CodeInput
-            codeLength='4'
+            codeLength={4}
             ref="codeInputRef"
             secureTextEntry
             inputPosition='center'
@@ -119,7 +119,7 @@ export class InviteScreen extends Component {
             onFulfill={(code) => this._verifyInviteCode(code)}
           />
         </View>
-        <View style={styles.alertMessageStyle}>
+        <View style={styles.alertViewStyle}>
           {this.renderView()}
         </View>
       </ScrollView>
@@ -128,9 +128,19 @@ export class InviteScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  textViewStyle: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   grayTextStyle: {
     fontSize: 18,
     color: 'grey',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  boldTextViewStyle: {
+    marginTop: 20,
+    marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -141,8 +151,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  alertMessageStyle: {
+  alertViewStyle: {
     marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  alertMessageStyle: {
     fontSize: 12,
     color: 'red',
     justifyContent: 'center',

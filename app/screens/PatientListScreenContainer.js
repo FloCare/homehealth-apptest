@@ -16,7 +16,6 @@ class PatientListScreenContainer extends Component {
                 android: {
                     icon: Images.addButton, // for icon button, provide the local image asset name
                     id: 'add', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                    buttonColor: 'white'
                 },
                 ios: {
                     id: 'add',
@@ -190,7 +189,8 @@ class PatientListScreenContainer extends Component {
             title,
             passProps: props,
             navigatorStyle: {
-                tabBarHidden: true
+                tabBarHidden: true,
+                largeTitle: false
             }
         });
     }

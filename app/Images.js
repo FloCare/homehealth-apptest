@@ -20,10 +20,18 @@ export const Images = {
     time: require('../resources/time.png'),
     patient: require('../resources/patient.png'),
     pin: require('../resources/pin.png'),
-    secureAcessImage: require('../resources/secureAccessImg.png'),
+    secureAccessImage: require('../resources/secureAccessImg.png'),
     verificationCodeImage: require('../resources/verificationcodeImg.png'),
     secureImg: require('../resources/secureImg.png'),
     mapImg: require('../resources/mapImg.png'),
     planImg: require('../resources/planImg.png'),
-    welcomeScreenImg: require('../resources/welcomeScreenImg.png')
+    welcomeScreenImg: require('../resources/welcomeScreenImg.png'),
+    //MoreScreen
+    visitLog: require('../resources/visitLog.png'),
+    milesLog: require('../resources/milesLog.png'),
+    savedPlaces: require('../resources/savedPlaces.png'),
+    accessCode: require('../resources/accessCode.png'),
+    setting: require('../resources/setting.png'),
+    legal: require('../resources/legal.png'),
+    more: require('../resources/more.png'),
 };

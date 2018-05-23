@@ -1,8 +1,7 @@
 import {Navigation} from 'react-native-navigation';
-import {screenNames} from './utils/constants';
-import RegisterInitScreens from './init_screens';
 import {AsyncStorage} from 'react-native';
-import {PrimaryColor} from './utils/constants';
+import {screenNames, PrimaryColor} from './utils/constants';
+import RegisterInitScreens from './init_screens';
 
 RegisterInitScreens();
 
@@ -11,37 +10,40 @@ const navigatorStyle = {
     navBarTextColor: '#ffffff',
     navBarButtonColor: 'white',
     hideBackButtonTitle: true,
-    statusBarTextColorScheme: 'light'
+    statusBarTextColorScheme: 'light',
+    forceTitlesDisplay: true,
+    keepStyleAcrossPush: false
 };
 
-async function check() {
-	try {
-		const isFirstVisit = await AsyncStorage.getItem('isFirstVisit');
-		return isFirstVisit;
-	} catch (error) {
-		console.error('AsyncStorage error: ', error.message);
-		// Todo: Figure out what to do here ???
-		return false;
+const StartApp = async () => {
+    const isFirstRun = await (async () => {
+        try {
+            return await AsyncStorage.getItem('isFirstVisit');
+        } catch (error) {
+            console.error('AsyncStorage error: ', error.message);
+            // Todo: Figure out what to do here ???
+            return false;
+        }
+    });
+
+	// Display Invite/PasscodeVerification Screen
+	if (isFirstRun) {
+		Navigation.startSingleScreenApp({
+			screen: {
+				screen: screenNames.passcodeVerificationScreen,
+			},
+			appStyle: navigatorStyle,
+			animationType: 'fade'
+		});
+	} else {
+		Navigation.startSingleScreenApp({
+			screen: {
+				screen: screenNames.inviteScreen,
+			},
+			appStyle: navigatorStyle,
+			animationType: 'fade'
+		});
 	}
 };
 
-const res = check();
-
-// Display Invite/PasscodeVerification Screen
-if (!res) {
-	Navigation.startSingleScreenApp({
-		screen: {
-			screen: screenNames.passcodeVerificationScreen,
-		},
-		appStyle: navigatorStyle,
-        animationType: 'fade'
-	});
-} else {
-	Navigation.startSingleScreenApp({
-		screen: {
-			screen: screenNames.inviteScreen,
-		},
-		appStyle: navigatorStyle,
-        animationType: 'fade'
-	});
-}
+StartApp();
