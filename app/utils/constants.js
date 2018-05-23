@@ -63,4 +63,23 @@ const visitType = {
     place: 'place'
 };
 
-export {diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily};
+let inActivityTimer = null;
+const inActivityTime = 3000; // ms
+let lastActiveTime = new Date();
+
+const setInActivityTimer = (f) => {
+    if (inActivityTimer) {
+        clearInActivityTimer();
+    }
+    inActivityTimer = setTimeout(f, inActivityTime);
+    return inActivityTimer;
+};
+
+const clearInActivityTimer = () => {
+    if (inActivityTimer) {
+        clearTimeout(inActivityTimer);
+        inActivityTimer = null;
+    }
+};
+
+export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily};

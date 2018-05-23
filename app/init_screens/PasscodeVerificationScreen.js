@@ -29,6 +29,7 @@ class PasscodeVerificationScreen extends Component {
             this.props.navigator.dismissModal({
               animationType: 'none'
             });
+            console.log('reset the timer here');
             return;
           } else {
             RNSecureKeyStore.get('flokey')
