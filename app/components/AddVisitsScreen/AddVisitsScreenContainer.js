@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
+import firebase from 'react-native-firebase';
 import {Platform, View, ActionSheetIOS} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
 import {arrayToMap} from '../../utils/collectionUtils';
-import {screenNames, visitType, PrimaryColor} from '../../utils/constants';
+import {screenNames, visitType, PrimaryColor, eventNames} from '../../utils/constants';
 import {generateUUID} from '../../utils/utils';
 import {Images} from '../../Images';
 
@@ -270,6 +271,9 @@ class AddVisitsScreenContainer extends Component {
         newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
 
         console.log(`Visit length list updated from length ${visitOrderObject.visitList.length} to new length ${newVisitOrder.length}`);
+        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+            'VALUE': newVisitOrder.length
+        });
         floDB.write(() => {
             visitOrderObject.visitList = newVisitOrder;
         });

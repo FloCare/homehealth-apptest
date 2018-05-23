@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {Image, Text, View} from 'react-native';
+import firebase from 'react-native-firebase';
 import MapView, {Marker} from 'react-native-maps';
 import * as MapUtils from '../../utils/MapUtils';
 import {VisitRow} from './VisitRow';
 import {floDB, VisitOrder} from '../../utils/data/schema';
 import {MapMarker} from './MapMarker';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
 import {Images} from "../../Images";
 
@@ -112,6 +113,9 @@ class VisitMapScreenController extends Component {
     }
 
     onChangeOrder(nextOrder) {
+        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+            'type': parameterValues.DND
+        });
         this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder, this.props.showCompleted)}, this.getAllPolylines);
         this.props.onOrderChange(nextOrder);
     }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
+import firebase from 'react-native-firebase';
 import {Button} from 'react-native-elements';
 import t from 'tcomb-form-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -7,6 +8,7 @@ import {floDB, Place} from '../../utils/data/schema';
 import styles from './styles';
 import {Options} from './AddStopFormModel';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
+import {screenNames, eventNames} from '../../utils/constants';
 
 const Form = t.form.Form;
 
@@ -164,6 +166,7 @@ class AddStopFormContainer extends Component {
                     }
 
                 });
+                firebase.analytics().logEvent(eventNames.ADD_STOP, {});
                 console.log('Save to DB successful');
             } catch (err) {
                 console.log('Error on Stop addition: ', err);

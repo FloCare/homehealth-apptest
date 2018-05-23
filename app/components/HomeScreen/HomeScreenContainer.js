@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {View, Alert, NetInfo} from 'react-native';
+import firebase from 'react-native-firebase';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
-import {screenNames} from '../../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import Fab from '../common/Fab';
 import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
@@ -39,6 +40,8 @@ class HomeScreenContainer extends Component {
             'connectionChange',
             HandleConnectionChange
         );
+
+        firebase.analytics().setCurrentScreen(screenNames.HomeScreen, screenNames.HomeScreen);
     }
 
     onNavigatorEvent(event) {
@@ -57,20 +60,6 @@ class HomeScreenContainer extends Component {
                 //TODO fix this hard coding
                 this.navigateToVisitMapScreen(false);
             }
-        }
-        if(event.id === 'didAppear') {
-            this.timeout = setTimeout(() => {
-                this.props.navigator.showModal({
-                    screen: screenNames.passcodeVerificationScreen,
-                    backButtonHidden: true,
-                    passProps: {
-                        inactivity: true
-                    }
-                });
-            }, 3000);
-        }
-        if(event.id === 'didDisappear') {
-            clearTimeout(this.timeout);
         }
     }
 
@@ -101,6 +90,9 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToVisitListScreen() {
+        firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
+            'type': parameterValues.LIST
+        });
         this.props.navigator.push({
             screen: screenNames.visitListScreen,
             passProps: {
@@ -116,6 +108,9 @@ class HomeScreenContainer extends Component {
 
     navigateToVisitMapScreen(showCompleted) {
         console.log(`showc${showCompleted}`);
+                firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
+            'type': parameterValues.MAP
+        });
         const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
         if (visitOrderObject.visitList) {
             const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList, showCompleted);
@@ -139,6 +134,9 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToAddNote() {
+        firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
+            'type': parameterValues.ADD_NOTE
+        });
         this.props.navigator.push({
             screen: screenNames.addNote,
             title: 'Add Notes',
@@ -149,6 +147,9 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToAddPatient() {
+        firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
+            'type': parameterValues.ADD_PATIENT
+        });
         this.props.navigator.push({
             screen: screenNames.addPatient,
             title: 'Add Patient',
@@ -176,6 +177,9 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToAddVisitFAB() {
+        firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
+            'type': parameterValues.ADD_VISIT
+        });
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
             title: 'Add Visit',

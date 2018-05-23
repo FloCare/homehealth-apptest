@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import {floDB, Patient} from '../../utils/data/schema';
 import {AddNoteFormWithPatientTag} from './AddNoteFormWithPatientTag';
 import {AddNoteFormWithoutPatientTag} from './AddNoteFormWithoutPatientTag';
+import {screenNames, eventNames} from '../../utils/constants';
 
 class AddNoteFormContainer extends Component {
     constructor(props) {
@@ -97,6 +99,9 @@ class AddNoteFormContainer extends Component {
                 },
                 true
             );
+        });
+        firebase.analytics().logEvent(eventNames.ADD_NOTE, {
+            'length': this.state.note? this.state.note.length : 0
         });
         console.log('Saved ...');
 

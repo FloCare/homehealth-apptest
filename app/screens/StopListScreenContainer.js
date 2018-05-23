@@ -22,6 +22,7 @@ class StopListScreenContainer extends Component {
     componentDidMount() {
         this.getSectionData(null);
         floDB.addListener('change', this.handleListUpdate);
+        firebase.analytics().setCurrentScreen(screenNames.stopList, screenNames.stopList);
     }
 
     onSearch(query) {

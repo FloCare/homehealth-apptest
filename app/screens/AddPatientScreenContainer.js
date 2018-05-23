@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import {AddPatientScreen} from '../components/AddPatientScreen';
 import {screenNames} from '../utils/constants';
 
@@ -12,24 +13,10 @@ class AddPatientScreenContainer extends Component {
             nextScreen: props.nextScreen || null
         };
         this.onSubmit = this.onSubmit.bind(this);
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
-    onNavigatorEvent(event) {
-        if(event.id === 'didAppear') {
-            this.timeout = setTimeout(() => {
-                this.props.navigator.showModal({
-                    screen: screenNames.passcodeVerificationScreen,
-                    backButtonHidden: true,
-                    passProps: {
-                        inactivity: true
-                    }
-                });
-            }, 30000);
-        }
-        if(event.id === 'didDisappear') {
-            clearTimeout(this.timeout);
-        }
+    componentDidMount() {
+        firebase.analytics().setCurrentScreen(screenNames.addPatient, screenNames.addPatient);
     }
 
     onSubmit(patientId) {

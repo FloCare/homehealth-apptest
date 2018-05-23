@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Platform} from 'react-native';
+import firebase from 'react-native-firebase';
 import update from 'immutability-helper';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
-import {screenNames} from '../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {Images} from '../Images';
 
 class PatientDetailScreenContainer extends Component {
@@ -51,9 +52,13 @@ class PatientDetailScreenContainer extends Component {
     componentDidMount() {
         this.getPatientDetails(this.props.patientId);
         floDB.addListener('change', this.handleDBUpdate);
+        firebase.analytics().setCurrentScreen(screenNames.patientDetails, screenNames.patientDetails);
     }
 
     onPressAddVisit() {
+        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+                'VALUE': 1
+        });
         this.props.navigator.showLightBox({
             screen: screenNames.addVisitsForPatientScreen,
             style: {
@@ -68,6 +73,9 @@ class PatientDetailScreenContainer extends Component {
     }
 
     onPressAddNotes() {
+        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+            'type': parameterValues.EDIT_NOTES
+        });
         this.props.navigator.push({
             screen: screenNames.addNote,
             animated: true,
@@ -124,20 +132,6 @@ class PatientDetailScreenContainer extends Component {
             if (event.id === 'edit') {    // this is the same id field from the static navigatorButtons definition
                 this.onPressEditInfo();
             }
-        }
-        if (event.id === 'didAppear') {
-            this.timeout = setTimeout(() => {
-                this.props.navigator.showModal({
-                    screen: screenNames.passcodeVerificationScreen,
-                    backButtonHidden: true,
-                    passProps: {
-                        inactivity: true
-                    }
-                });
-            }, 30000);
-        }
-        if (event.id === 'didDisappear') {
-            clearTimeout(this.timeout);
         }
     }
 

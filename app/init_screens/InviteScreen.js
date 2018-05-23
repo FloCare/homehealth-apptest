@@ -1,15 +1,19 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import CodeInput from 'react-native-confirmation-code-input';
 import {StyleSheet, Text, ScrollView, View, AsyncStorage} from 'react-native';
-import {screenNames} from '../utils/constants';
+import {screenNames, userProperties, eventNames, parameterValues } from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
 const inviteCodes = ['9999', '5678', '2468', '7777'];
 
 export class InviteScreen extends Component {
 
-    state = {showMessage: false};
+  state = {showMessage: false};
 
+  componentDidMount() {
+      firebase.analytics().setCurrentScreen(screenNames.InviteScreen, screenNames.InviteScreen);
+  }
 // TODO will be used in the Sign In Page to figure out if it is a first time visit
   // async componentDidMount() {
   //   try {
@@ -56,10 +60,14 @@ export class InviteScreen extends Component {
   // };
 
   _verifyInviteCode(code) {
+    firebase.analytics().setUserProperty(userProperties.INVITE_CODE, code);
     if (code.length === 4) {
       if (inviteCodes.indexOf(code) >= 0) {
           try {
             AsyncStorage.setItem('isFirstVisit', 'false');
+            firebase.analytics().logEvent(eventNames.INVITE, {
+                'status': parameterValues.SUCCESS
+            });
             this.props.navigator.push({
               screen: screenNames.welcomeScreen,
               backButtonHidden: true,
@@ -67,11 +75,14 @@ export class InviteScreen extends Component {
           } catch (error) {
             console.error('AsyncStorage error: ', error.message);
           }
-        } else {
-        this.setState({ 
-          showMessage: true
-        });
-        this.refs.codeInputRef.clear();
+      } else {
+            firebase.analytics().logEvent(eventNames.INVITE, {
+                'status': parameterValues.FAILURE
+            });
+            this.setState({ 
+              showMessage: true
+            });
+            this.refs.codeInputRef.clear();
       }
     }
   }

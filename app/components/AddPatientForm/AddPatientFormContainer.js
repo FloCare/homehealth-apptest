@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import {View} from 'react-native';
 import {Button} from 'react-native-elements';
 import {floDB, Patient} from '../../utils/data/schema';
@@ -7,7 +8,7 @@ import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
 import {parsePhoneNumber} from '../../utils/lib';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
-import {PrimaryFontFamily} from '../../utils/constants';
+import {PrimaryFontFamily, eventNames, parameterValues} from '../../utils/constants';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -239,6 +240,8 @@ class AddPatientFormContainer extends Component {
                             diagnosis: []                                   // Todo: Add diagnosis
                         });
                     });
+                    console.log(this.state.value.notes);
+                    firebase.analytics().logEvent(eventNames.PATIENT_ADDED, {});
                 } catch (err) {
                     console.log('Error on Patient and Episode creation: ', err);
                     // Todo: Raise an error to the screen
