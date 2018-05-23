@@ -16,7 +16,7 @@ import {todayMomentInUTCMidnight} from '../utils/utils';
 import {CreateAndSaveDummies, Visit, VisitOrder} from '../utils/data/schema';
 import {MoreScreen} from '../components/MoreScreen/MoreScreen';
 import {LegalScreen} from '../components/LegalScreen';
-import LockOnInActivity from '../components/common/LockOnInActivity';
+import LockOnInactivity from '../components/common/LockOnInactivity';
 
 const RegisterScreens = () => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -43,19 +43,19 @@ const RegisterScreens = () => {
     // }
     console.disableYellowBox = true;
 
-    Navigation.registerComponent(screenNames.addPatient, () => LockOnInActivity(AddPatientScreenContainer));
-    Navigation.registerComponent(screenNames.addNote, () => LockOnInActivity(AddNoteScreenContainer));
-    Navigation.registerComponent(screenNames.patientDetails, () => LockOnInActivity(PatientDetailScreenContainer));
-    Navigation.registerComponent(screenNames.patientList, () => LockOnInActivity(PatientListScreenContainer));
-    Navigation.registerComponent(screenNames.homeScreen, () => LockOnInActivity(HomeScreenContainer));
-    Navigation.registerComponent(screenNames.moreScreen, () => LockOnInActivity(MoreScreen));
-    Navigation.registerComponent(screenNames.legal, () => LockOnInActivity(LegalScreen));
-    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInActivity(ScreenWithCalendarComponent(VisitListScreenContainer)));
-    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInActivity(ScreenWithCalendarComponent(VisitMapScreenController)));
-    Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInActivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
-    Navigation.registerComponent(screenNames.addStop, () => LockOnInActivity(AddStopScreenContainer));
-    Navigation.registerComponent(screenNames.stopList, () => LockOnInActivity(StopListScreenContainer));
-    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => LockOnInActivity(AddVisitsForPatientScreen));
+    Navigation.registerComponent(screenNames.addPatient, () => LockOnInactivity(AddPatientScreenContainer));
+    Navigation.registerComponent(screenNames.addNote, () => LockOnInactivity(AddNoteScreenContainer));
+    Navigation.registerComponent(screenNames.patientDetails, () => LockOnInactivity(PatientDetailScreenContainer));
+    Navigation.registerComponent(screenNames.patientList, () => LockOnInactivity(PatientListScreenContainer));
+    Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer));
+    Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
+    Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
+    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitListScreenContainer)));
+    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitMapScreenController)));
+    Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInactivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
+    Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));
+    Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer));
+    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => LockOnInactivity(AddVisitsForPatientScreen));
 };
 
 export {RegisterScreens};

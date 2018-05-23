@@ -2,16 +2,11 @@ import React, {Component} from 'react';
 import {View, PanResponder} from 'react-native';
 import {screenNames, setInActivityTimer} from '../../utils/constants';
 
-const LockOnInActivity = (ScreenComponent) => (
+const LockOnInactivity = (ScreenComponent) => (
 		class CompositeClass extends Component {
 			static navigatorButtons = ScreenComponent.navigatorButtons;
 			constructor(props) {
 				super(props);
-				this.state = {
-					//show: false
-				};
-				// this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
-				// this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
 				this.resetTimer = this.resetTimer.bind(this);
 				this.openLockScreenModal = this.openLockScreenModal.bind(this);
 				this._panResponder = {};
@@ -58,4 +53,4 @@ const LockOnInActivity = (ScreenComponent) => (
 		}
 	);
 
-export default LockOnInActivity;
+export default LockOnInactivity;
