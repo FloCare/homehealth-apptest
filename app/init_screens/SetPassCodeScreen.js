@@ -200,7 +200,7 @@ setPasscode(passcode) {
         <View>
         <Image
           style={styles.stretch}
-          source={Images.verificationCodeImage}
+          source={Images.verificationCode}
         />  
         </View>
         <View >

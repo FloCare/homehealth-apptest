@@ -27,27 +27,27 @@ export class WelcomePageScreen extends Component {
         <View>
           <Image
             style={styles.stretch}
-            source={Images.welcomeScreenImg}
+            source={Images.welcomeScreen}
           />  
         </View>  
         <View style={styles.instructionStyle}>
           <Image
             style={styles.sectionStretch}
-            source={Images.planImg}
+            source={Images.planDay}
           />
           <Text style={styles.bulletPointsStyle}>Plan your day better by having information at your tips</Text>
         </View>
         <View style={styles.instructionStyle}>
           <Image
             style={styles.sectionStretch}
-            source={Images.mapImg}
+            source={Images.viewMap}
           />
           <Text style={styles.bulletPointsStyle}>View your visits on map and map a better routing</Text>
         </View>
         <View style={styles.instructionStyle}>
           <Image
             style={styles.sectionStretch}
-            source={Images.secureImg}
+            source={Images.secureData}
           />
           <Text style={styles.bulletPointsStyle}>Be HIPAA compliant with 2 step verification and data encryption</Text>
         </View>
