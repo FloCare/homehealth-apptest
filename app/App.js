@@ -44,7 +44,6 @@ const StartApp = async () => {
 			animationType: 'fade'
 		});
 	}
-
 	SplashScreen.hide();
 };
 
