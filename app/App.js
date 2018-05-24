@@ -1,5 +1,6 @@
 import {Navigation} from 'react-native-navigation';
 import {AsyncStorage} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import {screenNames, PrimaryColor} from './utils/constants';
 import RegisterInitScreens from './init_screens';
 
@@ -43,6 +44,7 @@ const StartApp = async () => {
 			animationType: 'fade'
 		});
 	}
+	SplashScreen.hide();
 };
 
 StartApp();

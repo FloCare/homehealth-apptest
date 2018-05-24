@@ -38,8 +38,7 @@ public class MainApplication extends NavigationApplication {
             new ReactNativeConfigPackage(),
             new RNSecureKeyStorePackage(),
             new RNImmediatePhoneCallPackage(),
-            new SplashScreenReactPackage();
-
+            new SplashScreenReactPackage()
     );
   }
 
