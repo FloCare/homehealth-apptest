@@ -1,5 +1,6 @@
 import {Navigation} from 'react-native-navigation';
 import {AsyncStorage} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import {screenNames, PrimaryColor} from './utils/constants';
 import RegisterInitScreens from './init_screens';
 
@@ -16,7 +17,7 @@ const navigatorStyle = {
 };
 
 const StartApp = async () => {
-    const isFirstRun = await (async () => {
+    const isFirstRun = async () => {
         try {
             return await AsyncStorage.getItem('isFirstVisit');
         } catch (error) {
@@ -24,10 +25,9 @@ const StartApp = async () => {
             // Todo: Figure out what to do here ???
             return false;
         }
-    });
+    };
 
-	// Display Invite/PasscodeVerification Screen
-	if (isFirstRun) {
+	if (await isFirstRun()) {
 		Navigation.startSingleScreenApp({
 			screen: {
 				screen: screenNames.passcodeVerificationScreen,
@@ -44,6 +44,8 @@ const StartApp = async () => {
 			animationType: 'fade'
 		});
 	}
+
+	SplashScreen.hide();
 };
 
 StartApp();

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {View, Alert, NetInfo} from 'react-native';
 import firebase from 'react-native-firebase';
 import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
@@ -43,6 +43,8 @@ class HomeScreenContainer extends Component {
         );
 
         firebase.analytics().setCurrentScreen(screenNames.HomeScreen, screenNames.HomeScreen);
+        SplashScreen.hide();
+
     }
 
     onNavigatorEvent(event) {
