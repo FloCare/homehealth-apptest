@@ -43,7 +43,7 @@ target 'FloCare' do
   pod 'Google-Maps-iOS-Utils' # Remove this line if you don't want to support GoogleMaps on iOS
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
-  # pod 'react-native-config', :path => '../node_modules/react-native-config'
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
