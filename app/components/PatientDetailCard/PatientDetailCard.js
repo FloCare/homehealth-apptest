@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ScrollView, Image} from 'react-native';
+import {View, ScrollView, Image, Linking, Platform} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -118,7 +118,11 @@ const PatientDetailCard = (props) => {
                         }}
                         onPress={() => {
                             if (primaryContact) {
-                                RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${primaryContact}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
+                                }
                             }
                         }}
                     />
@@ -151,7 +155,11 @@ const PatientDetailCard = (props) => {
                         }}
                         onPress={() => {
                             if (emergencyContact) {
-                                RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${emergencyContact}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
+                                }
                             }
                         }}
                     />
