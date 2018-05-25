@@ -18,7 +18,7 @@ function VisitListScreen(props) {
                 onOrderChange={props.onOrderChange}
             />
             <SimpleButton
-                title='ADD VISIT'
+                title='Add Visits'
                 onPress={props.onAddVisitPress}
                 style={{height: 50}}
             />

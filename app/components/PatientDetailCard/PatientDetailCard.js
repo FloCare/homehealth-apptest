@@ -15,7 +15,7 @@ import ViewMore from '../common/ViewMore';
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
-        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPressAddNotes}>EDIT NOTES</Text>
+        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPressAddNotes}>Show Notes</Text>
     );
 };
 
