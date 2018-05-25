@@ -13,10 +13,14 @@ class AddPatientScreenContainer extends Component {
             nextScreen: props.nextScreen || null
         };
         this.onSubmit = this.onSubmit.bind(this);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     }
 
-    componentDidMount() {
-        firebase.analytics().setCurrentScreen(screenNames.addPatient, screenNames.addPatient);
+    onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.addPatient, screenNames.addPatient);
+        }
     }
 
     onSubmit(patientId) {

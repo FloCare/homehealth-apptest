@@ -5,7 +5,7 @@ import {StyleSheet, Text, ScrollView, View, AsyncStorage} from 'react-native';
 import {screenNames, userProperties, eventNames, parameterValues } from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
-const inviteCodes = ['9999', '5678', '2468', '7777'];
+const inviteCodes = ['1947', '2011', '1988', '2018', '7860', '3299', '5401', '1971', '1851', '2013', '8055', '1772', '9742', '6496', '1063'];
 
 export class InviteScreen extends Component {
 
@@ -70,6 +70,7 @@ export class InviteScreen extends Component {
             });
             this.props.navigator.push({
               screen: screenNames.welcomeScreen,
+              title: 'Welcome',
               backButtonHidden: true,
             });
           } catch (error) {
@@ -95,10 +96,7 @@ export class InviteScreen extends Component {
 
   render() {
     return (
-      <ScrollView>
-        <View style={styles.textViewStyle}>
-            <Text style={styles.grayTextStyle}> Welcome </Text>
-        </View>  
+      <ScrollView> 
         <View style={styles.boldTextViewStyle}>
             <Text style={styles.boldTextStyle}> Have an invite? </Text>
         </View>  

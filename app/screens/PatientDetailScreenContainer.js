@@ -52,7 +52,6 @@ class PatientDetailScreenContainer extends Component {
     componentDidMount() {
         this.getPatientDetails(this.props.patientId);
         floDB.addListener('change', this.handleDBUpdate);
-        firebase.analytics().setCurrentScreen(screenNames.patientDetails, screenNames.patientDetails);
     }
 
     onPressAddVisit() {
@@ -132,6 +131,10 @@ class PatientDetailScreenContainer extends Component {
             if (event.id === 'edit') {    // this is the same id field from the static navigatorButtons definition
                 this.onPressEditInfo();
             }
+        }
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.patientDetails, screenNames.patientDetails);
         }
     }
 

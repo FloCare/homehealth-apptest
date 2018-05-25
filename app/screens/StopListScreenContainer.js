@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import {Platform} from 'react-native';
 import {StopListScreen} from '../components/StopListScreen';
 import {floDB, Place} from '../utils/data/schema';
@@ -40,7 +41,6 @@ class StopListScreenContainer extends Component {
     componentDidMount() {
         this.getSectionData(null);
         floDB.addListener('change', this.handleListUpdate);
-        firebase.analytics().setCurrentScreen(screenNames.stopList, screenNames.stopList);
     }
 
     onSearch(query) {
@@ -60,6 +60,10 @@ class StopListScreenContainer extends Component {
             if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
                 this.onPressAddStop();
             }
+        }
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.stopList, screenNames.stopList);
         }
     }
 

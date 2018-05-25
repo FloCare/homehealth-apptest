@@ -50,7 +50,6 @@ class PatientListScreenContainer extends Component {
     componentDidMount() {
         this.getSectionData(null);
         floDB.addListener('change', this.handleListUpdate);
-        firebase.analytics().setCurrentScreen(screenNames.patientList, screenNames.patientList);
     }
 
     onSearch(query) {
@@ -80,6 +79,10 @@ class PatientListScreenContainer extends Component {
             if (event.id === 'add') {       // this is the same id field from the static navigatorButtons definition
                 this.navigateToAddPatient();
             }
+        }
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.patientList, screenNames.patientList);
         }
     }
 

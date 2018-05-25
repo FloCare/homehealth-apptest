@@ -12,10 +12,6 @@ import {screenNames, eventNames, parameterValues } from '../utils/constants';
 
 class SetPassCodeScreen extends Component {
 
-  componentDidMount() {
-      firebase.analytics().setCurrentScreen(screenNames.setPassCodeScreen, screenNames.setPassCodeScreen);
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -25,8 +21,16 @@ class SetPassCodeScreen extends Component {
     };
     this.setPasscode = this.setPasscode.bind(this);
     this.setKey = this.setKey.bind(this);
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     // this.savePatientObject = this.savePatientObject.bind(this);
   }
+
+  onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.setPassCodeScreen, screenNames.setPassCodeScreen);
+        }
+    }
 
 // TODO revisit when this screen is moved after a first patient is added. Commenting for now
 // savePatientObject(value) {

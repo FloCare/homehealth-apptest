@@ -69,7 +69,7 @@ export class WelcomePageScreen extends Component {
 
 const styles = StyleSheet.create({
   headerText: {  
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     margin: 10,
@@ -82,10 +82,10 @@ const styles = StyleSheet.create({
   bulletPointsStyle: {  
     fontSize: 16,
     textAlign: 'left',
-    marginLeft: 40,
-    marginBottom: 30,
+    marginLeft: 20,
+    marginBottom: 10,
     marginTop: 10,
-    marginRight: 20,
+    marginRight: 50,
     flexDirection: 'row',
   },
   stretch: {
@@ -95,11 +95,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionStretch: {
+    marginLeft: 20,
     width: 16,
     height: 24
   },
   instructionStyle: {
-    margin: 15,
+    marginRight: 10,
+    marginBottom: 5,
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },

@@ -155,7 +155,6 @@ dependencies {
     compile project(':react-native-immediate-phone-call')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-vector-icons')
-    compile project(':react-native-config')
     compile project(':react-native-secure-key-store')
     compile project(':realm')
     compile fileTree(dir: "libs", include: ["*.jar"])

@@ -42,7 +42,6 @@ class HomeScreenContainer extends Component {
             HandleConnectionChange
         );
 
-        firebase.analytics().setCurrentScreen(screenNames.HomeScreen, screenNames.HomeScreen);
         SplashScreen.hide();
 
     }
@@ -63,6 +62,10 @@ class HomeScreenContainer extends Component {
                 //TODO fix this hard coding
                 this.navigateToVisitMapScreen(false);
             }
+        }
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.HomeScreen, screenNames.HomeScreen);
         }
     }
 
