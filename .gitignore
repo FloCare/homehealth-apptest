@@ -30,6 +30,9 @@ build/
 local.properties
 *.iml
 
+# VS Code
+.vscode
+
 # node.js
 #
 node_modules/
@@ -62,9 +65,3 @@ buck-out/
 ios/Pods
 ios/Podfile.lock
 ios/Index
-ios/mtp.xcworkspace/
-ios/FloCare-tvOS/
-ios/FloCare-tvOSTests/
-ios/FloCare.xcodeproj/xcshareddata/
-ios/FloCare.xcworkspace/
-ios/FloCareTests/

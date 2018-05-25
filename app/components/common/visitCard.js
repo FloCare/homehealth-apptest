@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card, Text, Divider} from 'react-native-elements';
 import firebase from 'react-native-firebase';
-import {View, TouchableHighlight, Image, Linking, TouchableWithoutFeedback} from 'react-native';
+import {View, TouchableHighlight, Image, Linking, TouchableWithoutFeedback, Platform} from 'react-native';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
@@ -75,7 +75,11 @@ function VisitCard({isDoneToggle, navigator}) {
                                 });
                                 //TODO not working on iOS
                                 if (phoneNumber) {
-                                    RNImmediatePhoneCall.immediatePhoneCall(visit.getAssociatedNumber(phoneNumber));
+                                    if (Platform.OS === 'android') {
+                                        Linking.openURL(`tel: ${visit.getAssociatedNumber(phoneNumber)}`);
+                                    } else {
+                                        RNImmediatePhoneCall.immediatePhoneCall(visit.getAssociatedNumber(phoneNumber));
+                                    }
                                 }
                             }}
                         >

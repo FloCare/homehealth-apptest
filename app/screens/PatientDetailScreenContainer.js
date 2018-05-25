@@ -79,7 +79,7 @@ class PatientDetailScreenContainer extends Component {
             screen: screenNames.addNote,
             animated: true,
             animationType: 'slide-horizontal',
-            title: 'Add Notes',
+            title: 'Notes',
             passProps: {
                 patientId: this.state.patientDetail.patientID,
                 name: this.state.patientDetail.name

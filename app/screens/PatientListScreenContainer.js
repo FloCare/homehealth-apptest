@@ -110,7 +110,11 @@ class PatientListScreenContainer extends Component {
                     'type': parameterValues.CALL
                 });
                 if (item && item.primaryContact) {
-                    RNImmediatePhoneCall.immediatePhoneCall(item.primaryContact);
+                    if (Platform.OS === 'android') {
+                        Linking.openURL(`tel: ${item.primaryContact}`);
+                    } else {
+                        RNImmediatePhoneCall.immediatePhoneCall(item.primaryContact);
+                    }
                 } else {
                     Alert.alert('Warning', 'Please add a valid mobile number as the patient primary contact');
                 }

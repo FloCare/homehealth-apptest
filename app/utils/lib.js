@@ -9,7 +9,8 @@ const EmailField = t.refinement(t.String, (e) => {
     return reg.test(e);
 });
 
-const phoneValidationRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+//const phoneValidationRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+const phoneValidationRegex = /^\d{10}$/;
 
 const PhoneNumber = t.refinement(t.String, (n) => {
     // Todo Add a proper phone number validation function
@@ -24,7 +25,8 @@ const PhoneNumber = t.refinement(t.String, (n) => {
 });
 
 const parsePhoneNumber = (number) => {
-    return number.replace(phoneValidationRegex, '($1) $2-$3');
+    //return number.replace(phoneValidationRegex, '($1) $2-$3');
+    return number;
 };
 
 PhoneNumber.getValidationErrorMessage = function (value) {
@@ -32,6 +34,9 @@ PhoneNumber.getValidationErrorMessage = function (value) {
         return 'Required';
     }
     const s = value.toString();
+    if (isNaN(s)) {
+        return 'Contact Number can only contain numerics';
+    }
     if (s.length < 10) {
         return 'Contact Number incomplete';
     }

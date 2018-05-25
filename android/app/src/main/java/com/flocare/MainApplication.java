@@ -1,4 +1,4 @@
-package com.mtp;
+package com.flocare;
 
 import android.app.Application;
 
@@ -38,8 +38,7 @@ public class MainApplication extends NavigationApplication {
             new RNSecureKeyStorePackage(),
             new RNFirebasePackage(),
             new RNImmediatePhoneCallPackage(),
-            new SplashScreenReactPackage();
-
+            new SplashScreenReactPackage()
     );
   }
 

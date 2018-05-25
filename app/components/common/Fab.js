@@ -24,10 +24,10 @@ const Fab = (props) => {
             offsetY={'2%'}
             hideShadow
         >
-            <ActionButton.Item buttonColor={PrimaryColor} title="Add Note" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>
+            <ActionButton.Item buttonColor={PrimaryColor} title="Add Notes" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddNote}>
                 <Icon name="md-paper" style={styles.actionButtonIcon} />
             </ActionButton.Item>
-            <ActionButton.Item buttonColor={PrimaryColor} title="Add Visit" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddVisit}>
+            <ActionButton.Item buttonColor={PrimaryColor} title="Add Visits" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddVisit}>
                 <Icon name="md-calendar" style={styles.actionButtonIcon} />
             </ActionButton.Item>
             <ActionButton.Item buttonColor={PrimaryColor} title="Add Patient" textStyle={{fontWeight: '500', color: '#000'}} useNativeFeedback={false} onPress={onPressAddPatient}>

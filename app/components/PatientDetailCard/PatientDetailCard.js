@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'react-native-firebase';
-import {View, ScrollView, Image} from 'react-native';
+import {View, ScrollView, Image, Linking, Platform} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -16,7 +16,7 @@ import ViewMore from '../common/ViewMore';
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
-        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPressAddNotes}>EDIT NOTES</Text>
+        <Text style={{...styles.fontStyle, fontSize: 14, color: PrimaryColor}} onPress={onPressAddNotes}>Show Notes</Text>
     );
 };
 
@@ -122,7 +122,11 @@ const PatientDetailCard = (props) => {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     'type': parameterValues.CALL
                                 });
-                                RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${primaryContact}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
+                                }
                             }
                         }}
                     />
@@ -155,7 +159,11 @@ const PatientDetailCard = (props) => {
                         }}
                         onPress={() => {
                             if (emergencyContact) {
-                                RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${emergencyContact}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
+                                }
                             }
                         }}
                     />
