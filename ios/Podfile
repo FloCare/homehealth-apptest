@@ -5,6 +5,10 @@ target 'FloCare' do
   rn_path = '../node_modules/react-native'
   rn_maps_path = '../node_modules/react-native-maps'
 
+  # Required by RNFirebase
+  pod 'Firebase/Core'
+
+
   # See http://facebook.github.io/react-native/docs/integration-with-existing-apps.html#configuring-cocoapods-dependencies
   pod 'yoga', path: "#{rn_path}/ReactCommon/yoga/yoga.podspec"
   pod 'React', path: rn_path, subspecs: [
@@ -39,7 +43,7 @@ target 'FloCare' do
   pod 'Google-Maps-iOS-Utils' # Remove this line if you don't want to support GoogleMaps on iOS
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
-  # pod 'react-native-config', :path => '../node_modules/react-native-config'
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
@@ -56,17 +60,6 @@ post_install do |installer|
     end
     if target.name == "React"
       target.remove_from_project
-    end
-    if target.name == 'react-native-config'
-      phase = target.project.new(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
-      phase.shell_script = "cd ../../"\
-                           " && RNC_ROOT=./node_modules/react-native-config/"\
-                           " && export SYMROOT=$RNC_ROOT/ios/ReactNativeConfig"\
-                           " && export BUILD_DIR=$RNC_ROOT/ios/ReactNativeConfig"\
-                           " && ruby $RNC_ROOT/ios/ReactNativeConfig/BuildDotenvConfig.ruby"
-
-      target.build_phases << phase
-      target.build_phases.move(phase,0)
     end
   end
 end

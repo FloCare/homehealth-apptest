@@ -7,6 +7,7 @@
     "android-dev": "ENVFILE=.env.dev react-native run-android",
     "android-prod": "ENVFILE=.env.prod react-native run-android",
     "build-android-prod": "export ENVFILE=.env.prod && cd android && ./gradlew assembleRelease && cd ..",
+    "ios-dev": "ENVFILE=.env.dev react-native run-ios",
     "test": "jest"
   },
   "rnpm": {
@@ -24,11 +25,12 @@
     "lodash": "^4.17.5",
     "moment": "^2.22.1",
     "react": "16.3.1",
+    "react-native-firebase": "^4.1.0",
+    "react-native-confirmation-code-input": "FloCare/react-native-confirmation-code-input",
     "react-native": "^0.55.1",
     "react-native-action-button": "^2.8.4",
     "react-native-calendar-strip": "git+https://github.com/harshalbid271/react-native-calendar-strip.git",
     "react-native-config": "^0.11.5",
-    "react-native-confirmation-code-input": "FloCare/react-native-confirmation-code-input",
     "react-native-elements": "^0.19.1",
     "react-native-google-places-autocomplete": "FloCare/react-native-google-places-autocomplete",
     "react-native-immediate-phone-call": "^1.0.0",

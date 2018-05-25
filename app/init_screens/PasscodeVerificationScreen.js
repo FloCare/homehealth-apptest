@@ -75,7 +75,7 @@ class PasscodeVerificationScreen extends Component {
                 </View>
                 <Image
                     style={styles.stretch}
-                    source={Images.secureAccessImage}
+                    source={Images.secureAccess}
                 />
                 <View>
                     <CodeInput

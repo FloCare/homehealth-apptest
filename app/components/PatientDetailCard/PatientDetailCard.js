@@ -1,4 +1,5 @@
 import React from 'react';
+import firebase from 'react-native-firebase';
 import {View, ScrollView, Image, Linking, Platform} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
@@ -8,7 +9,7 @@ import {styles as componentStyles} from '../common/styles';
 
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
-import {PrimaryColor} from '../../utils/constants';
+import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import ViewMore from '../common/ViewMore';
@@ -118,6 +119,9 @@ const PatientDetailCard = (props) => {
                         }}
                         onPress={() => {
                             if (primaryContact) {
+                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                    'type': parameterValues.CALL
+                                });
                                 if (Platform.OS === 'android') {
                                     Linking.openURL(`tel: ${primaryContact}`);
                                 } else {

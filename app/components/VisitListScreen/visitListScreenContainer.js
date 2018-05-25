@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
+import firebase from 'react-native-firebase';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
-import {screenNames} from '../../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 
 class VisitListScreenContainer extends Component {
@@ -61,6 +62,9 @@ class VisitListScreenContainer extends Component {
 
     onOrderChange(newOrder) {
         // console.log('visitListScreen congainer callback');
+        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+            'type': parameterValues.DND
+        });
         this.forceUpdate();
         this.props.onOrderChange(newOrder);
     }

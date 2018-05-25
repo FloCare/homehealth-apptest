@@ -1,11 +1,12 @@
 import React from 'react';
 import {Card, Text, Divider} from 'react-native-elements';
+import firebase from 'react-native-firebase';
 import {View, TouchableHighlight, Image, Linking, TouchableWithoutFeedback, Platform} from 'react-native';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {Diagnosis} from './Diagnosis';
-import {screenNames, PrimaryColor} from '../../utils/constants';
+import {screenNames, PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 
@@ -69,6 +70,10 @@ function VisitCard({isDoneToggle, navigator}) {
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
+                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                    'type': parameterValues.CALL
+                                });
+                                //TODO not working on iOS
                                 if (phoneNumber) {
                                     if (Platform.OS === 'android') {
                                         Linking.openURL(`tel: ${visit.getAssociatedNumber(phoneNumber)}`);
@@ -94,6 +99,9 @@ function VisitCard({isDoneToggle, navigator}) {
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
+                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                    'type': parameterValues.NAVIGATION
+                                });
                                 if (coordinates !== null) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${visit.getAddress().getCommaSeperatedCoordinates()}`).catch(err => console.error('An error occurred', err)); }
                             }}
                         >

@@ -3,8 +3,8 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.RNFirebasePackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.github.wumke.RNImmediatePhoneCall.RNImmediatePhoneCallPackage;
 import com.reactlibrary.securekeystore.RNSecureKeyStorePackage;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -35,8 +35,8 @@ public class MainApplication extends NavigationApplication {
             new RealmReactPackage(),
             new MapsPackage(),
             new LinearGradientPackage(),
-            new ReactNativeConfigPackage(),
             new RNSecureKeyStorePackage(),
+            new RNFirebasePackage(),
             new RNImmediatePhoneCallPackage(),
             new SplashScreenReactPackage()
     );

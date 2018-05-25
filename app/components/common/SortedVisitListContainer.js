@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
+import firebase from 'react-native-firebase';
 import {TouchableWithoutFeedback} from 'react-native';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
-import {screenNames} from '../../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {arrayToMap, arrayToObjectByKey} from '../../utils/collectionUtils';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
@@ -223,6 +224,9 @@ class SortedVisitListContainer extends Component {
     }
 
     isDoneToggle(visit) {
+        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+            'type': parameterValues.TOGGLE
+        });
         console.log(`${visit.visitID} was changed`);
         if (!visit.isDone) {
             this.markVisitDone(visit);
@@ -248,6 +252,9 @@ class SortedVisitListContainer extends Component {
     }
 
     onPressRowSingleton() {
+        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+            'type': parameterValues.DETAILS
+        });
         if (this.props.tapForDetails) {
             const visit = floDB.objectForPrimaryKey(VisitOrder, this.props.date.valueOf()).visitList[0];
             if (visit.getPatient()) {
@@ -266,6 +273,9 @@ class SortedVisitListContainer extends Component {
 
     onPressRow(visitID) {
         console.log(visitID);
+        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+            'type': parameterValues.DETAILS
+        });
         if (this.props.tapForDetails) {
             const visit = floDB.objectForPrimaryKey(Visit, visitID);
             if (visit.getPatient()) {

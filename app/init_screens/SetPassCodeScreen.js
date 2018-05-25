@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
+import firebase from 'react-native-firebase';
 import CodeInput from 'react-native-confirmation-code-input';
 import {StyleSheet, Text, View, Image, Alert} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import StartApp from '../screens/App';
 import {Images} from '../Images';
+import {screenNames, eventNames, parameterValues } from '../utils/constants';
 
 //const Realm = require('realm');
 
@@ -19,8 +21,16 @@ class SetPassCodeScreen extends Component {
     };
     this.setPasscode = this.setPasscode.bind(this);
     this.setKey = this.setKey.bind(this);
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     // this.savePatientObject = this.savePatientObject.bind(this);
   }
+
+  onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.setPassCodeScreen, screenNames.setPassCodeScreen);
+        }
+    }
 
 // TODO revisit when this screen is moved after a first patient is added. Commenting for now
 // savePatientObject(value) {
@@ -107,6 +117,9 @@ setPasscode(passcode) {
     RNSecureKeyStore.set('passCode', passcode)
     .then((res) => {
       console.log('Updated the passcode to:', passcode);
+      firebase.analytics().logEvent(eventNames.PASSCODE, {
+          'status': parameterValues.SUCCESS
+      });
 
       // if key already set, use it
       console.log('Trying to get the key ...');
@@ -126,6 +139,9 @@ setPasscode(passcode) {
         });
     }, (err) => {
       console.log(err);
+      firebase.analytics().logEvent(eventNames.PASSCODE, {
+          'status': parameterValues.FAILURE
+      });
       Alert.alert('Error', 'Unable to update passcode');
       return;
     });
@@ -188,7 +204,7 @@ setPasscode(passcode) {
         <View>
         <Image
           style={styles.stretch}
-          source={Images.verificationCodeImage}
+          source={Images.verificationCode}
         />  
         </View>
         <View >

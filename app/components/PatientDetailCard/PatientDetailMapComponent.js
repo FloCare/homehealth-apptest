@@ -1,8 +1,10 @@
 import React from 'react';
 import MapView, {Marker, Callout} from 'react-native-maps';
+import firebase from 'react-native-firebase';
 import {Linking} from 'react-native';
 import {MapMarker} from '../common/PatientMap/MapMarker';
 import {CustomCallout} from '../common/PatientMap/CustomCallout';
+import {eventNames, parameterValues} from '../../utils/constants';
 
 export function PatientDetailMapComponent(props) {
     return (
@@ -25,6 +27,9 @@ export function PatientDetailMapComponent(props) {
                 ref={props.setMarkerRef}
                 onCalloutPress={() => { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err)); }}
                 onPress={() => {
+                    firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                        'type': parameterValues.NAVIGATION
+                    });
                     Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err));
                 }}
             >
