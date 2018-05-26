@@ -3,6 +3,7 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.github.wumke.RNImmediatePhoneCall.RNImmediatePhoneCallPackage;
