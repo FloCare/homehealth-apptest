@@ -148,7 +148,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-config')
     compile(project(':react-native-firebase')) {
         transitive = false
     }
@@ -171,5 +170,3 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
-
-apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
