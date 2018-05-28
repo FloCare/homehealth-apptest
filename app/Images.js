@@ -1,9 +1,9 @@
 export const Images = {
-    addButton: require('../resources/addButton.png'),
+    addButton: require('../resources/addPatient.png'),
     calendar: require('../resources/calendar.png'),
     calendarSelected: require('../resources/calendarSelected.png'),
     person_ic: require('../resources/person_ic.png'),
-    editButton: require('../resources/editButton.png'),
+    editButton: require('../resources/edit.png'),
     close: require('../resources/close.png'),
     call: require('../resources/call.png'),
     navigate: require('../resources/navigate.png'),
