@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Linking, Alert, Platform} from 'react-native';
+import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
-import {screenNames} from '../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
@@ -79,6 +80,10 @@ class PatientListScreenContainer extends Component {
                 this.navigateToAddPatient();
             }
         }
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.patientList, screenNames.patientList);
+        }
     }
 
     onPatientAdded(patientId) {
@@ -88,6 +93,9 @@ class PatientListScreenContainer extends Component {
     onPressPopupButton(buttonPressed, item) {
         switch (buttonPressed) {
             case 'Notes':
+                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                    'type': parameterValues.EDIT_NOTES
+                });
                 this.navigateTo(
                     screenNames.addNote,
                     'Add Notes',
@@ -98,6 +106,9 @@ class PatientListScreenContainer extends Component {
                 );
                 break;
             case 'Call':
+                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                    'type': parameterValues.CALL
+                });
                 if (item && item.primaryContact) {
                     if (Platform.OS === 'android') {
                         Linking.openURL(`tel: ${item.primaryContact}`);
@@ -110,6 +121,9 @@ class PatientListScreenContainer extends Component {
                 break;
             case 'Maps':
                 // Todo: Move boilerplate like this to a schema helper method
+                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                    'VALUE': 1
+                });
                 if (
                     item &&
                     item.address &&
@@ -124,6 +138,9 @@ class PatientListScreenContainer extends Component {
                 }
                 break;
             case 'Visits':
+                firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+                    'VALUE': 1
+                });
                 this.props.navigator.showLightBox({
                     screen: screenNames.addVisitsForPatientScreen,
                     style: {

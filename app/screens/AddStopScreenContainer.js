@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import {AddStopScreen} from '../components/AddStopScreen';
 import {screenNames} from '../utils/constants';
 
@@ -6,6 +7,14 @@ class AddStopScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+    }
+
+    onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.addStop, screenNames.addStop);
+        }
     }
 
     onSubmit() {

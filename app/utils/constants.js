@@ -63,6 +63,41 @@ const visitType = {
     place: 'place'
 };
 
+const userProperties = {
+    INVITE_CODE: 'invite_code'
+}
+
+const eventNames = {
+
+    INVITE: 'Invite',
+    PASSCODE: 'Passcode',
+    VISIT_ACTIONS: 'VisitActions',
+    PATIENT_ACTIONS: 'PatientActions',
+    VISIT_VIEW: 'VisitView',
+    ADD_NOTE: 'AddNote',
+    ADD_VISIT: 'AddVisit',
+    PATIENT_ADDED: 'PatientAdded',
+    FLOATING_BUTTON: 'FloatingButton',
+    ADD_STOP: 'StopAdded',
+}
+
+const parameterValues = {
+    SUCCESS : 'success',
+    FAILURE : 'failure',
+    CALL: 'call',
+    NAVIGATION: 'navigation',
+    EDIT_NOTES: 'edit_notes',
+    MAP: 'map',
+    LIST: 'list',
+    ADD_PATIENT: 'add_patient',
+    ADD_NOTE: 'add_note',
+    ADD_VISIT: 'add_visit',
+    TOGGLE: 'toggle',
+    DND: 'dnd',
+    DETAILS: 'details',
+
+}
+
 let inActivityTimer = null;
 const inActivityTime = 60000; // ms
 let lastActiveTime = new Date();
@@ -82,4 +117,4 @@ const clearInActivityTimer = () => {
     }
 };
 
-export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily};
+export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};
