@@ -17,10 +17,10 @@ export class WelcomePageScreen extends Component {
       backButtonHidden: true,
     });
 	}
-    
+
   render() {
     return (
-      <ScrollView >
+      <View style={{flex: 1, justifyContent: 'space-between'}}>
         <View>
           <Text style={styles.headerText}>Be more efficient and organized</Text>
         </View>
@@ -28,8 +28,8 @@ export class WelcomePageScreen extends Component {
           <Image
             style={styles.stretch}
             source={Images.welcomeScreen}
-          />  
-        </View>  
+          />
+        </View>
         <View style={styles.instructionStyle}>
           <Image
             style={styles.sectionStretch}
@@ -62,13 +62,13 @@ export class WelcomePageScreen extends Component {
         >
           Explore
         </Button>
-      </ScrollView> 
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  headerText: {  
+  headerText: {
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     marginRight: 100,
     flexDirection: 'row',
   },
-  bulletPointsStyle: {  
+  bulletPointsStyle: {
     fontSize: 16,
     textAlign: 'left',
     marginLeft: 20,
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    alignItems: 'center'
   },
   buttonStyle: {
     backgroundColor: '#45ceb1',
