@@ -63,5 +63,4 @@ buck-out/
 
 # IOS build related files
 ios/Pods
-ios/Podfile.lock
 ios/Index
