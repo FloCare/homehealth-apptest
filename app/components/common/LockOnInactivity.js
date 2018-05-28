@@ -31,7 +31,7 @@ const LockOnInactivity = (ScreenComponent) => (
 						onSuccessCallback: this.resetTimer
 					},
 					overrideBackPress: true,
-					animationType: 'none'
+					animationType: 'slide-up'
 				});
 			}
 
