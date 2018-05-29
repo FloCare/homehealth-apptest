@@ -74,8 +74,7 @@ const formOptions = {
         },
         apartmentNo: {
             label: 'Apt. No. (Optional)',
-            placeholder: '#482',
-            keyboardType: 'numeric',
+            placeholder: 'A-482',
             error: 'Please enter a valid apartment No'
         },
         city: {
