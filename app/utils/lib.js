@@ -41,7 +41,7 @@ PhoneNumber.getValidationErrorMessage = function (value) {
         return 'Contact Number incomplete';
     }
     if (s.length > 10) {
-        return 'Contact Number too large';
+        return 'Contact Number too long';
     }
 };
 

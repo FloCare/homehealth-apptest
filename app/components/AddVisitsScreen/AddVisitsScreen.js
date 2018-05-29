@@ -113,7 +113,7 @@ function getComponentToDisplayBasedOnProps(props) {
 function AddVisitsScreen(props) {
     //TODO theres inconsistencies in whether the button lable is in caps or not
     return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: '#ffffff'}}>
             {getComponentToDisplayBasedOnProps(props)}
             <SimpleButton
                 title='Done'

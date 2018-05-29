@@ -49,7 +49,7 @@ export class WelcomePageScreen extends Component {
             style={styles.sectionStretch}
             source={Images.secureData}
           />
-          <Text style={styles.bulletPointsStyle}>Be HIPAA compliant with 2 step verification and data encryption</Text>
+          <Text style={styles.bulletPointsStyle}>Be secure with auto lock and data encryption</Text>
         </View>
         <Button
             containerViewStyle={{marginLeft: 0, marginRight: 0}}
