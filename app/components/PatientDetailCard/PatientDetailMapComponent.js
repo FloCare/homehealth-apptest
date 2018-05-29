@@ -25,7 +25,6 @@ export function PatientDetailMapComponent(props) {
             <Marker
                 coordinate={props.patientCoordinates}
                 ref={props.setMarkerRef}
-                onCalloutPress={() => { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err)); }}
                 onPress={() => {
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         'type': parameterValues.NAVIGATION
@@ -34,7 +33,7 @@ export function PatientDetailMapComponent(props) {
                 }}
             >
                 <MapMarker />
-                <Callout style={{marginTop: 10}}>
+                <Callout onPress={() => Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err))} style={{marginTop: 10}}>
                     <CustomCallout address={props.patientAddress} />
                 </Callout>
             </Marker>
