@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, ScrollView, View, AsyncStorage} from 'react-native';
+import {StyleSheet, Text, ScrollView, View} from 'react-native';
 import {screenNames, userProperties, eventNames, parameterValues } from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
@@ -64,7 +64,6 @@ export class InviteScreen extends Component {
     if (code.length === 4) {
       if (inviteCodes.indexOf(code) >= 0) {
           try {
-            AsyncStorage.setItem('isFirstVisit', 'false');
             firebase.analytics().logEvent(eventNames.INVITE, {
                 'status': parameterValues.SUCCESS
             });

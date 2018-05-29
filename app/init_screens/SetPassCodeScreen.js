@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import firebase from 'react-native-firebase';
 import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, View, Image, Alert} from 'react-native';
+import {StyleSheet, Text, View, Image, Alert, AsyncStorage} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import StartApp from '../screens/App';
 import {Images} from '../Images';
@@ -117,6 +117,8 @@ setPasscode(passcode) {
     RNSecureKeyStore.set('passCode', passcode)
     .then((res) => {
       console.log('Updated the passcode to:', passcode);
+      // Open VerifyPasscode Screen next time
+      AsyncStorage.setItem('isFirstVisit', 'false');
       firebase.analytics().logEvent(eventNames.PASSCODE, {
           'status': parameterValues.SUCCESS
       });
