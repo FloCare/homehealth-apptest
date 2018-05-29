@@ -1,11 +1,13 @@
 import React from 'react';
-import {View, Dimensions, Image, TouchableHighlight, TouchableWithoutFeedback} from 'react-native';
+import {View, Dimensions, Image, TouchableWithoutFeedback} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {VisitCard} from '../common/visitCard';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
+import EmptyStateButton from '../common/EmptyStateButton';
 
 export function VisitSummary(props) {
     const primaryColor = PrimaryColor;
@@ -18,6 +20,7 @@ export function VisitSummary(props) {
                 alignItems: 'center',
                 backgroundColor: primaryColor,
                 margin: 0,
+                justifyContent: 'space-between'
                 // marginTop: 60,
                 // paddingTop: 10,
                 // paddingBottom: 30
@@ -31,7 +34,7 @@ export function VisitSummary(props) {
                         color: '#ffffff'
                     }}
                 >
-                    {`${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining`}
+                    {props.date.isSame(todayMomentInUTCMidnight()) ? `${props.remainingVisitsCount} of ${props.totalVisitsCount} visits remaining` : `${props.totalVisitsCount} visits planned`}
                 </StyledText>
             </View>
             <View style={{flex: 2}}>
@@ -69,35 +72,52 @@ export function VisitSummary(props) {
                     </TouchableWithoutFeedback>
                 </View>
             </View>
-            <View
-                style={{
-                    flex: 4,
-                    width: Dimensions.get('screen').width,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <StyledText
+            {props.date.isSame(todayMomentInUTCMidnight()) ?
+                <View
                     style={{
-                        fontSize: 14,
-                        color: '#ffffff',
+                        flex: 4,
+                        width: Dimensions.get('screen').width,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                     }}
                 >
-                    Next Visit
-                </StyledText>
-                {/*prefer to use VisitCard rather than VisitListContainer*/}
-                <SortedVisitListContainer
-                    navigator={props.navigator}
-                    style={{width: Dimensions.get('screen').width * 0.95}}
-                    date={props.date}
-                    singleEntry
-                    scrollEnabled={false}
-                    sortingEnabled={false}
-                    renderWithCallback={VisitCard}
-                    tapForDetails
-                    onOrderChange={props.onOrderChange}
-                />
-            </View>
+                    <StyledText
+                        style={{
+                            fontSize: 14,
+                            color: '#ffffff',
+                        }}
+                    >
+                        Next Visit
+                    </StyledText>
+                    {/*prefer to use VisitCard rather than VisitListContainer*/}
+                    <SortedVisitListContainer
+                        navigator={props.navigator}
+                        style={{width: Dimensions.get('screen').width * 0.95}}
+                        date={props.date}
+                        singleEntry
+                        scrollEnabled={false}
+                        sortingEnabled={false}
+                        renderWithCallback={VisitCard}
+                        tapForDetails
+                        onOrderChange={props.onOrderChange}
+                    />
+                </View>
+                :
+                <View
+                    style={{
+                        flex: 3,
+                        width: Dimensions.get('screen').width,
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                    }}
+                >
+                    <EmptyStateButton
+                        onPress={props.onPressAddVisit}
+                    >
+                        Add Visits
+                    </EmptyStateButton>
+                </View>
+            }
         </LinearGradient>
     );
 }
