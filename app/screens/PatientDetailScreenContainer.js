@@ -6,6 +6,7 @@ import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {Images} from '../Images';
+import {todayMomentInUTCMidnight} from '../utils/utils';
 
 class PatientDetailScreenContainer extends Component {
     static navigatorButtons = Platform.select({
@@ -154,9 +155,9 @@ class PatientDetailScreenContainer extends Component {
             //     'midnightEpochOfVisit==$0',
             //     todayMomentInUTCMidnight().valueOf()).sorted('isDone');
             // const visits = episode.visits.sorted([['midnightEpochOfVisit', true], ['miles', false])
-
-            const completedVisits = episode.visits.filtered('isDone = true').sorted('midnightEpochOfVisit');
-            const newVisits = episode.visits.filtered('isDone = false').sorted('midnightEpochOfVisit', false);
+            const today = todayMomentInUTCMidnight();
+            const completedVisits = episode.visits.filtered(`midnightEpochOfVisit <= ${today}`).filtered('isDone = true').sorted('midnightEpochOfVisit');
+            const newVisits = episode.visits.filtered(`midnightEpochOfVisit >= ${today}`).filtered('isDone = false').sorted('midnightEpochOfVisit', false);
             if (completedVisits.length > 0) {
                 this.setState({lastVisit: completedVisits[0]});
             }
