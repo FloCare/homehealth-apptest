@@ -11,19 +11,6 @@ const StopListScreen = (props) => {
     if (stopCount === 0) {
         return (
             <View style={styles.container.container}>
-                <SearchBar
-                    round
-                    lightTheme
-                    disabled
-                    value={searchText}
-                    onChangeText={(query) => {
-                        onSearch(query);
-                    }}
-                    onClear={() => {
-                        onSearch(null);
-                    }}
-                    placeholder='Search'
-                />
                 <View
                     style={{
                         flex: 1,
@@ -43,10 +30,10 @@ const StopListScreen = (props) => {
                             flexDirection: 'row',
                             flexWarp: 'wrap',
                             marginTop: 5,
-                            marginBottom: 20
+                            marginBottom: 20,
                         }}
                     >
-                        <StyledText style={{horizontalPadding: 20}}>When you add places, you'll see them here</StyledText>
+                        <StyledText style={{color: 'grey', paddingHorizontal: 40, textAlign: 'center'}}>When you add places, you'll see them here</StyledText>
                     </View>
                     <EmptyStateButton
                         onPress={onPressAddStop}
@@ -63,6 +50,7 @@ const StopListScreen = (props) => {
                     round
                     lightTheme
                     disabled
+                    value={searchText}
                     onChangeText={(query) => {
                         onSearch(query);
                     }}
@@ -70,6 +58,9 @@ const StopListScreen = (props) => {
                         onSearch(null);
                     }}
                     placeholder='Search'
+                    containerStyle={{backgroundColor: '#f8f8f8', borderBottomWidth: 0, borderTopWidth: 0}}
+                    inputStyle={{backgroundColor: 'white', color: 'black'}}
+                    clearIcon={{color: '#dddddd', name: 'cancel'}}
                 />
                 <SectionedStopList
                     stopList={stopList}

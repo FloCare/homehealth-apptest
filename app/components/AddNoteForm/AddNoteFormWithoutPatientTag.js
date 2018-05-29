@@ -55,10 +55,12 @@ const AddNoteFormWithoutPatientTag = (props) => {
                 value={searchText}
                 onChangeText={onChangeSearchText}
                 placeholder='Search a patient name'
-                clearIcon={{name: 'close'}}
                 onClear={setNoSearching}
                 round
                 lightTheme
+                containerStyle={{backgroundColor: '#f8f8f8', borderBottomWidth: 0, borderTopWidth: 0}}
+                inputStyle={{backgroundColor: 'white', color: 'black'}}
+                clearIcon={{color: '#dddddd', name: 'cancel'}}
             />
             {!searching && (name) &&
             <View style={styles.nameContainerStyle}>
