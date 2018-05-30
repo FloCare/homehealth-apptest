@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.github.wumke.RNImmediatePhoneCall.RNImmediatePhoneCallPackage;
 import com.reactlibrary.securekeystore.RNSecureKeyStorePackage;
@@ -38,7 +39,8 @@ public class MainApplication extends NavigationApplication {
             new RNSecureKeyStorePackage(),
             new RNFirebasePackage(),
             new RNImmediatePhoneCallPackage(),
-            new SplashScreenReactPackage()
+            new SplashScreenReactPackage(),
+            new RNFirebaseAnalyticsPackage() 
     );
   }
 

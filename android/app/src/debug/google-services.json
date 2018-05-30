@@ -1,0 +1,50 @@
+{
+  "project_info": {
+    "project_number": "367241570955",
+    "firebase_url": "https://flocare-b700a.firebaseio.com",
+    "project_id": "flocare-b700a",
+    "storage_bucket": "flocare-b700a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367241570955:android:2c16ad048326123f",
+        "android_client_info": {
+          "package_name": "com.flocare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "367241570955-sj0099tjhr6olde2uparga9k42bpijl1.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "367241570955-7tm5evsm2tp5j4c47gpdomi0t8eiduga.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "367241570955-7tm5evsm2tp5j4c47gpdomi0t8eiduga.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7SMI_hYTPOIR9rMKMvsbyXp8f6hwLmMU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
