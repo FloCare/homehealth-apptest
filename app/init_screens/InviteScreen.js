@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, ScrollView, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {screenNames, userProperties, eventNames, parameterValues } from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
@@ -95,14 +95,14 @@ export class InviteScreen extends Component {
 
   render() {
     return (
-      <ScrollView> 
+      <View style={{flex: 1, justifyContent: 'flex-start', marginTop: 100}}> 
         <View style={styles.boldTextViewStyle}>
-            <Text style={styles.boldTextStyle}> Have an invite? </Text>
-        </View>  
+            <Text style={styles.boldTextStyle}>Have an invite?</Text>
+        </View>
         <View style={styles.textViewStyle}>
-            <Text style={styles.grayTextStyle}> Enter the INVITE code </Text>
+            <Text style={styles.grayTextStyle}>Please enter the invite code</Text>
         </View>  
-        <View>
+        <View style={{marginBottom: 20}}>
           <CodeInput
             codeLength={4}
             ref="codeInputRef"
@@ -119,7 +119,7 @@ export class InviteScreen extends Component {
         <View style={styles.alertViewStyle}>
           {this.renderView()}
         </View>
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -143,13 +143,14 @@ const styles = StyleSheet.create({
   },
   boldTextStyle: {
     fontSize: 18,
+    fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center'
   },
   alertViewStyle: {
-    marginTop: 20,
+    marginTop: 30,
     justifyContent: 'center',
     alignItems: 'center'
   },

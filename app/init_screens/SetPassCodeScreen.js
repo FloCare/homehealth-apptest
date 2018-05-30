@@ -187,8 +187,8 @@ setPasscode(passcode) {
     return (
       <KeyboardAwareScrollView>
         <View>
-          <Text style={styles.topSectionStyle}>
-                Please secure the app
+          <Text style={styles.headerSectionStyle}>
+                Let's secure the app
           </Text>
         </View>  
         
@@ -199,8 +199,13 @@ setPasscode(passcode) {
           </Text>
         </View>*/}
         <View>
+          <Text style={styles.topSectionStyle}>
+            Set a Passcode
+          </Text>
+        </View>
+        <View>
           <Text style={styles.middleSectionStyle}>          
-          Note: Please keep the passcode handy.
+          Note: Please keep the passcode handy
           </Text>
         </View>
         <View>
@@ -227,12 +232,17 @@ setPasscode(passcode) {
 }
 
 const styles = StyleSheet.create({
+  headerSectionStyle: {  
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+    marginTop: 50,
+  },
   topSectionStyle: {  
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-    marginBottom: 10,
-    marginTop: 10,
+    marginBottom: 5,
   },
   middleSectionStyle: {  
     fontSize: 12,
@@ -243,8 +253,8 @@ const styles = StyleSheet.create({
   },
   stretch: {
     alignSelf: 'center',
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     marginBottom: 10,
   }
 });
