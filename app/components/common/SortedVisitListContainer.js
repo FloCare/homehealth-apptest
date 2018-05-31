@@ -224,7 +224,7 @@ class SortedVisitListContainer extends Component {
     }
 
     isDoneToggle(visit) {
-        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
             'type': parameterValues.TOGGLE
         });
         console.log(`${visit.visitID} was changed`);
