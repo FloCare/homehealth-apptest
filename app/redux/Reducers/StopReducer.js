@@ -1,4 +1,4 @@
-import StopActions from '../Actions';
+import {StopActions} from '../Actions';
 
 export default function StopReducer(stops = {}, action) {
     switch (action.type) {

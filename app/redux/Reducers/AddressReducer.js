@@ -1,4 +1,4 @@
-import AddressActions from '../Actions';
+import {AddressActions} from '../Actions';
 
 export default function AddressReducer(addresses = {}, action) {
     switch (action.type) {

@@ -1,4 +1,4 @@
-import PatientActions from '../Actions';
+import {PatientActions} from '../Actions';
 
 export default function PatientReducer(patients = {}, action) {
     switch (action.type) {

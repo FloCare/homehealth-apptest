@@ -1,4 +1,4 @@
-import VisitOrderActions from '../Actions';
+import {VisitOrderActions} from '../Actions';
 
 export default function VisitOrderReducer(visitOrder = [], action) {
     switch (action.type) {
