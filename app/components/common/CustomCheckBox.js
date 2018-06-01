@@ -3,19 +3,18 @@ import {CheckBox} from 'react-native-elements';
 import {PrimaryColor} from '../../utils/constants';
 
 const CustomCheckBox = (props) => {
+    const checkBoxContainerStyle = {...styles.checkBoxContainerStyle};
     let onPress = props.onPress;
     if (props.disabled) {
-        styles.checkBoxContainerStyle.opacity = 0.3;
+        checkBoxContainerStyle.opacity = 0.3;
         onPress = null;
-    } else {
-        styles.checkBoxContainerStyle.opacity = 1;
     }
     return (
         <CheckBox
             checked={props.checked}
             checkedColor={PrimaryColor}
             uncheckedColor='#525252'
-            containerStyle={{...styles.checkBoxContainerStyle, ...props.checkBoxContainerStyle}}
+            containerStyle={{...checkBoxContainerStyle, ...props.checkBoxContainerStyle}}
             title={'Done'}
             iconRight
             textStyle={[styles.textStyle, props.textStyle]}
@@ -33,7 +32,6 @@ const styles = {
         color: '#999999'
     },
     checkBoxContainerStyle: {
-        opacity: 1,
         padding: 0,
         margin: 0,
         backgroundColor: 'transparent',
