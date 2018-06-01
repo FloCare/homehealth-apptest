@@ -1,6 +1,6 @@
 import StopActions from '../Actions';
 
-export function StopReducer(stops = {}, action) {
+export default function StopReducer(stops = {}, action) {
     switch (action.type) {
         case StopActions.ADD_STOPS:
             return {...stops, ...action.stopList};

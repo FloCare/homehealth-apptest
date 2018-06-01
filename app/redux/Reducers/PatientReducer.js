@@ -1,6 +1,6 @@
 import PatientActions from '../Actions';
 
-export function PatientReducer(patients = {}, action) {
+export default function PatientReducer(patients = {}, action) {
     switch (action.type) {
         case PatientActions.ADD_PATIENTS:
             return {...patients, ...action.patientList};

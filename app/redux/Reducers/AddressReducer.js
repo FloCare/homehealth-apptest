@@ -1,6 +1,6 @@
 import AddressActions from '../Actions';
 
-export function AddressReducer(addresses = {}, action) {
+export default function AddressReducer(addresses = {}, action) {
     switch (action.type) {
         case AddressActions.ADD_ADDRESSES:
             return {...addresses, ...action.addressList};
