@@ -252,13 +252,9 @@ class FloDBProvider {
                 migration: (oldRealm, newRealm) => {
                     if (oldRealm.schemaVersion < 2) {
                         const newPatientObjects = newRealm.objects(Patient.schema.name);
-                        for (let i = 0; i < newPatientObjects.length; i++) {
-                            newPatientObjects[i].archived = false;
-                        }
+                        newPatientObjects.update('archived', false);
                         const newPlaceObjects = newRealm.objects(Place.schema.name);
-                        for (let i = 0; i < newPlaceObjects.length; i++) {
-                            newPlaceObjects[i].archived = false;
-                        }
+                        newPlaceObjects.update('archived', false);
                     }
                 },
                 path: 'database.realm',
