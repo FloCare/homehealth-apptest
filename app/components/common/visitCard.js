@@ -30,6 +30,12 @@ function VisitCard({isDoneToggle, navigator}) {
         const visit = props.data;
         const phoneNumber = visit.getAssociatedNumber();
         const coordinates = visit.getAddress().coordinates;
+        let ownerArchived = false;
+        if (visit.getPatient() && visit.getPatient().archived) {
+            ownerArchived = true;
+        }
+        const phoneNumberActive = (phoneNumber && (!ownerArchived));
+        const navigationActive = (coordinates && (!ownerArchived));
 
         const onSelectionToggle = () => {
             if (isDoneToggle) {
@@ -58,6 +64,7 @@ function VisitCard({isDoneToggle, navigator}) {
                         <CustomCheckBox
                             checked={visit.isDone}
                             onPress={onSelectionToggle}
+                            disabled={ownerArchived}
                         />
                     </View>
                     <Diagnosis diagnosis={visit.getDiagnosis()} />
@@ -74,7 +81,7 @@ function VisitCard({isDoneToggle, navigator}) {
                                     'type': parameterValues.CALL
                                 });
                                 //TODO not working on iOS
-                                if (phoneNumber) {
+                                if (phoneNumberActive) {
                                     if (Platform.OS === 'android') {
                                         Linking.openURL(`tel: ${visit.getAssociatedNumber(phoneNumber)}`);
                                     } else {
@@ -83,10 +90,10 @@ function VisitCard({isDoneToggle, navigator}) {
                                 }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: phoneNumber ? 1 : 0.4}}>
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: phoneNumberActive ? 1 : 0.4}}>
                                 <Image
                                     source={Images.call}
-                                    style={!phoneNumber ? {tintColor: 'black'} : {}}
+                                    style={(!phoneNumberActive) ? {tintColor: 'black'} : {}}
                                 />
                                 <StyledText
                                     style={{fontSize: 14, color: '#222222'}}
@@ -102,13 +109,13 @@ function VisitCard({isDoneToggle, navigator}) {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     'type': parameterValues.NAVIGATION
                                 });
-                                if (coordinates !== null) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${visit.getAddress().getCommaSeperatedCoordinates()}`).catch(err => console.error('An error occurred', err)); }
+                                if (navigationActive) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${visit.getAddress().getCommaSeperatedCoordinates()}`).catch(err => console.error('An error occurred', err)); }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: coordinates ? 1 : 0.4}}>
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: navigationActive ? 1 : 0.4}}>
                                 <Image
                                     source={Images.navigate}
-                                    style={!coordinates ? {tintColor: 'black'} : {}}
+                                    style={!navigationActive ? {tintColor: 'black'} : {}}
                                 />
                                 <StyledText
                                     style={{fontSize: 14, color: '#222222'}}

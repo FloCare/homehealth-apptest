@@ -67,6 +67,9 @@ class SectionedPatientList extends Component {
                                 <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
                                     <StyledText style={styles.menuOptionsStyle}>Add Visit</StyledText>
                                 </MenuOption>
+                                <MenuOption onSelect={() => onPressPopupButton('DeletePatient', item)} >
+                                    <StyledText style={styles.menuOptionsStyle}>Remove Patient</StyledText>
+                                </MenuOption>
                             </MenuOptions>
                         </Menu>
                     </View>

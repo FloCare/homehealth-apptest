@@ -5,6 +5,9 @@ import {stringToArrayBuffer} from '../encryptionUtils';
 const Realm = require('realm');
 
 class Patient extends Realm.Object {
+    getFirstEpisode() {
+        return CollectionUtils.getFirstElement(this.episodes);
+    }
 }
 
 Patient.schema = {
@@ -18,7 +21,8 @@ Patient.schema = {
         emergencyContact: 'string?',
         notes: 'string?',
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
-        timestamp: 'int'
+        timestamp: 'int',
+        archived: {type: 'bool', default: false}
     }
 };
 

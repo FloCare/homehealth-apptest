@@ -62,7 +62,7 @@ class AddVisitsScreenContainer extends Component {
             selectedItems: Map()
         };
         this.placeResultObject = floDB.objects(Place.schema.name).sorted('name');
-        this.patientsResultObject = floDB.objects(Patient.schema.name).sorted('name');
+        this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').sorted('name');
 
         this.onChangeText = this.onChangeText.bind(this);
         this.onItemToggle = this.onItemToggle.bind(this);
@@ -123,7 +123,7 @@ class AddVisitsScreenContainer extends Component {
 
     onChangeText(text) {
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
-        this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('name CONTAINS[c] $0', text).sorted('name');
+        this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').filtered('name CONTAINS[c] $0', text).sorted('name');
 
         this.setState({searchText: text});
     }

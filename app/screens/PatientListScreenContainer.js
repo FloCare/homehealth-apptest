@@ -8,6 +8,7 @@ import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
+import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -153,6 +154,33 @@ class PatientListScreenContainer extends Component {
                     },
                 });
                 break;
+            case 'DeletePatient':
+                const archivePatient = (id) => {
+                    console.log('Archiving patient');
+                    try {
+                        floDB.write(() => {
+                            const today = todayMomentInUTCMidnight();
+                            const patient = floDB.objectForPrimaryKey(Patient.schema.name, id);
+                            patient.archived = true;
+                            const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+                            floDB.delete(visits);
+                        });
+                        Alert.alert('Success', 'Patient deleted successfully');
+                        makeCallbacks();
+                    } catch (err) {
+                        console.log('ERROR while archiving patient:', err);
+                        Alert.alert('Error', 'Unable to delete patient. Please try again later');
+                    }
+                };
+                Alert.alert(
+                    'Caution',
+                    'All your patient related data (except your past visits) will be deleted. Do you wish to continue?',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                        {text: 'OK', onPress: () => archivePatient(item.patientID)},
+                    ]
+                );
+                break;
             default:
                 console.log('Invalid option pressed');
                 break;
@@ -161,7 +189,7 @@ class PatientListScreenContainer extends Component {
 
     getSectionData(query) {
         if (!query) {
-            const patientList = floDB.objects(Patient.schema.name);
+            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false');
             const sortedPatientList = patientList.sorted('name');
             const patientCount = sortedPatientList.length;
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
@@ -174,7 +202,7 @@ class PatientListScreenContainer extends Component {
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
             const queryStr = `name CONTAINS[c] "${query.toString()}"`;
-            const patientList = floDB.objects(Patient.schema.name).filtered(queryStr);
+            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false').filtered(queryStr);
             const sortedPatientList = patientList.sorted('name');
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
