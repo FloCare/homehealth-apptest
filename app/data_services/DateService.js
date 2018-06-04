@@ -9,7 +9,7 @@ class DateService {
 
     setDate(date) {
         this.store.dispatch({type: DateActions.SET_DATE, date});
-        visitDataService.loadVisitsForTheDay(date);
+        visitDataService.loadVisitsForTheDayToRedux(date);
     }
 }
 

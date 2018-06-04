@@ -38,11 +38,18 @@ class VisitDataService {
         placeDataService.addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
     }
 
-    loadVisitsForTheDay(date) {
-        const visitsOfDay = this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${date}`);
+    loadVisitsForTheDayToRedux(midnightEpoch) {
+        const visitsOfDay = this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
         this.addVisitsToRedux(visitsOfDay);
-        const visitOrder = this.floDB.objectForPrimaryKey(VisitOrder, date);
-        if (visitOrder) { this.setVisitOrderInRedux(visitOrder.visitList); }
+
+        let visitOrder = this.floDB.objectForPrimaryKey(VisitOrder, midnightEpoch);
+        if (!visitOrder) {
+            this.floDB.write(() => {
+                visitOrder = this.floDB.create(VisitOrder, {midnightEpoch, visitList: []});
+            });
+        }
+
+        this.setVisitOrderInRedux(visitOrder.visitList);
     }
 
     markVisitCompleted(visitID) {
@@ -50,6 +57,69 @@ class VisitDataService {
             this.getVisitByID(visitID).isDone = true;
         });
         this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitDataService.getFlatVisitMap([this.getVisitByID(visitID)])});
+    }
+
+    updateVisitOrderToReduxIfLive(visitOrder) {
+        if (this.store.getState().date === visitOrder.midnightEpoch) {
+            this.setVisitOrderInRedux(visitOrder);
+        }
+    }
+
+    markVisitDone(visitID) {
+        const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
+
+        const newOrderedVisitList = [];
+        const currentVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visit.midnightEpoch);
+
+        for (let i = 0; i < currentVisitOrder.visitList.length; i++) {
+            if (visitID === currentVisitOrder.visitList[i].visitID) {
+                newOrderedVisitList.push(...currentVisitOrder.visitList.slice(0, i));
+                if (currentVisitOrder.visitList.length !== i + 1) {
+                    newOrderedVisitList.push(...currentVisitOrder.visitList.slice(i + 1, currentVisitOrder.visitList.length));
+                }
+                newOrderedVisitList.push(currentVisitOrder.visitList[i]);
+            }
+        }
+        this.floDB.write(() => {
+            visit.isDone = true;
+            currentVisitOrder.visitList = newOrderedVisitList;
+        });
+
+        this.updateVisitOrderToReduxIfLive(currentVisitOrder);
+    }
+
+    //TODO verify correctness
+    markVisitUndone(visitID) {
+        const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
+
+        const newOrderedVisitList = [];
+        const currentVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visit.midnightEpoch);
+
+        let i;
+        for (i = 0; i < currentVisitOrder.visitList.length; i++) {
+            if (currentVisitOrder.visitList[i].isDone) {
+                newOrderedVisitList.push(...currentVisitOrder.visitList.slice(0, i));
+                newOrderedVisitList.push(visit);
+                break;
+            }
+        }
+
+        if (currentVisitOrder.visitList.length !== i + 1) {
+            for (let j = i; j < currentVisitOrder.visitList.length; j++) {
+                if (visit.visitID === currentVisitOrder.visitList[j].visitID) {
+                    newOrderedVisitList.push(...currentVisitOrder.visitList.slice(i, j));
+                    if (currentVisitOrder.visitList.length !== j + 1) {
+                        newOrderedVisitList.push(...currentVisitOrder.visitList.slice(j + 1, currentVisitOrder.visitList.length));
+                    }
+                }
+            }
+        }
+        this.floDB.write(() => {
+            visit.isDone = false;
+            currentVisitOrder.visitList = newOrderedVisitList;
+        });
+
+        this.updateVisitOrderToReduxIfLive(currentVisitOrder);
     }
 
     insertToOrderedVisits(visits, midnightEpoch) {
