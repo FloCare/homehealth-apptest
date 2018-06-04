@@ -8,7 +8,7 @@ import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
 import {parsePhoneNumber} from '../../utils/lib';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
-import {PrimaryFontFamily, eventNames, parameterValues} from '../../utils/constants';
+import {PrimaryFontFamily, eventNames} from '../../utils/constants';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {

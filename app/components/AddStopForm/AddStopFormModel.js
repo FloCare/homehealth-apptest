@@ -4,21 +4,23 @@ import stylesheet from './formStyleSheet';
 const formOptions = {
     stylesheet,
     fields: {
-        address: {
+        streetAddress: {
             label: 'Street Address',
             error: 'Please enter a valid street address',
             template: AddressAutoComplete,
             config: {
                 onPress: null,
                 onChangeAddressText: null,
-                refName: null
+                refName: null,
+                getDefaultValue: null,
             }
         },
         primaryContact: {
             label: 'Contact No (Optional)',
-            placeholder: '5417543010'
+            placeholder: '5417543010',
+            keyboardType: 'numeric'
         },
-        stopname: {
+        stopName: {
             label: 'Give it a name',
             placeholder: 'Eg. Office',
             error: 'Please enter a valid stop name'
@@ -41,27 +43,35 @@ class Options {
     }
 
     get OnPress() {
-        return this._options.fields.address.config.onPress;
+        return this._options.fields.streetAddress.config.onPress;
     }
 
     set OnPress(onPress) {
-        this._options.fields.address.config.onPress = onPress;
+        this._options.fields.streetAddress.config.onPress = onPress;
     }
 
     get OnChangeAddressText() {
-        return this._options.fields.address.config.onChangeAddressText;
+        return this._options.fields.streetAddress.config.onChangeAddressText;
     }
 
     set OnChangeAddressText(onChangeAddressText) {
-        this._options.fields.address.config.onChangeAddressText = onChangeAddressText;
+        this._options.fields.streetAddress.config.onChangeAddressText = onChangeAddressText;
     }
 
     get RefName() {
-        return this._options.fields.address.config.refName;
+        return this._options.fields.streetAddress.config.refName;
     }
 
     set RefName(refName) {
-        this._options.fields.address.config.refName = refName;
+        this._options.fields.streetAddress.config.refName = refName;
+    }
+
+    get GetDefaultValue() {
+        return this._options.fields.streetAddress.config.getDefaultValue;
+    }
+
+    set GetDefaultValue(getDefaultValue) {
+        this._options.fields.streetAddress.config.getDefaultValue = getDefaultValue;
     }
 }
 

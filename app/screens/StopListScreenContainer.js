@@ -94,7 +94,17 @@ class StopListScreenContainer extends Component {
                     },
                     passProps: {
                         values: {
-
+                            placeID: item.key,
+                            addressID: item.address.addressID,
+                            streetAddress: item.address.streetAddress,
+                            lat: item.address.lat,
+                            long: item.address.long,
+                            zip: item.address.zipCode,
+                            city: item.address.city,
+                            state: item.address.state,
+                            country: item.address.country,
+                            stopName: item.name,
+                            primaryContact: item.primaryContact,
                         },
                         edit: true
                     }

@@ -8,7 +8,8 @@ import {floDB, Place} from '../../utils/data/schema';
 import styles from './styles';
 import {Options} from './AddStopFormModel';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
-import {screenNames, eventNames} from '../../utils/constants';
+import {eventNames} from '../../utils/constants';
+import {parsePhoneNumber} from '../../utils/lib';
 
 const Form = t.form.Form;
 
@@ -17,18 +18,21 @@ class AddStopFormContainer extends Component {
         super(props);
         this.state = {
             value: {
-                address: null,
-                lat: null,
-                long: null,
-                zip: null,
-                city: null,
-                state: null,
-                country: null,
-                stopName: null,
-                primaryContact: null,
+                placeID: props.placeID || null,
+                addressID: props.addressID || null,
+                streetAddress: props.streetAddress || null,
+                lat: props.lat || null,
+                long: props.long || null,
+                zip: props.zip || null,
+                city: props.city || null,
+                state: props.state || null,
+                country: props.country || null,
+                stopName: props.stopName || null,
+                primaryContact: props.primaryContact || null,
             },
-            modelType: this.getType(),
+            modelType: this.getType(props.streetAddress),
         };
+        this.edit = props.edit || false;
         this.onChangeAddressText = this.onChangeAddressText.bind(this);
         this.clearForm = this.clearForm.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -36,22 +40,23 @@ class AddStopFormContainer extends Component {
         this.onChange = this.onChange.bind(this);
         this.getType = this.getType.bind(this);
         this.onAddressSelect = this.onAddressSelect.bind(this);
-        this.setAddressForm = this.setAddressForm.bind(this);
+        this.getDefaultValue = this.getDefaultValue.bind(this);
 
         this.options = new Options();
         this.options.OnPress = this.onAddressSelect;
         this.options.OnChangeAddressText = this.onChangeAddressText;
-        this.options.RefName = this.setAddressForm;
+        this.options.RefName = this.setForm;
+        this.options.GetDefaultValue = this.getDefaultValue;
     }
 
     onChange(value, path) {
         console.log('value:', value, 'path:', path);
-        console.log('value.address: ', value.address);
+        console.log('value.streetAddress: ', value.streetAddress);
 
         // Change type and options if address changed
-        if (path.indexOf('address') > -1) {
-            const type = this.getType(value.address);
-            //const options = this.getOptions(value.address);
+        if (path.indexOf('streetAddress') > -1) {
+            const type = this.getType(value.streetAddress);
+            //const options = this.getOptions(value.streetAddress);
             this.setState({
                 modelType: type
             });
@@ -64,7 +69,7 @@ class AddStopFormContainer extends Component {
 
     onChangeAddressText(value) {
         console.log('Address Text Changed:', value);
-        const val = Object.assign({}, this.state.value, {address: value});
+        const val = Object.assign({}, this.state.value, {streetAddress: value});
         const type = this.getType(value);
         this.setState({
             value: val,
@@ -77,7 +82,7 @@ class AddStopFormContainer extends Component {
         const resp = ParseGooglePlacesAPIResponse(data, details);
         const {streetAddress, city, stateName, zip, country, lat, long} = resp;
 
-        const value = Object.assign({}, this.state.value, {address: streetAddress, zip, city, state: stateName, country, lat, long});
+        const value = Object.assign({}, this.state.value, {streetAddress, zip, city, state: stateName, country, lat, long});
         this.setState({value});
     }
 
@@ -86,29 +91,28 @@ class AddStopFormContainer extends Component {
         return this.addStopForm;
     }
 
-    setAddressForm(element) {
-        this.addressForm = element;
-        return this.addressForm;
-    }
-
-    getType(address) {
-        if (address && address.length > 0) {
+    getType(streetAddress) {
+        if (streetAddress && streetAddress.length > 0) {
             return t.struct({
-                address: t.String,
+                streetAddress: t.String,
                 primaryContact: t.maybe(t.String),
                 stopName: t.String
             });
         } else {
             return t.struct({
-                address: t.String
+                streetAddress: t.String
             });
         }
+    }
+
+    getDefaultValue() {
+        return this.state.value.streetAddress;
     }
 
     clearForm() {
         this.setState({
             value: {
-                address: null,
+                streetAddress: null,
                 lat: null,
                 long: null,
                 zip: null,
@@ -120,7 +124,7 @@ class AddStopFormContainer extends Component {
             },
             modelType: this.getType()
         });
-        this.addressForm.setAddressText('');
+        //this.addStopForm.setAddressText('');
     }
 
     handleSubmit(e, onSubmit) {
@@ -128,49 +132,100 @@ class AddStopFormContainer extends Component {
 
         // Todo Doesn't make sense for the remember me currently, hence removing it
         if (value) {
-            const placeId = Math.random().toString();
-            const addressId = Math.random().toString();
-
-            try {
-                floDB.write(() => {
-                    const stop = floDB.create(Place.schema.name, {
-                        placeID: placeId,
-                        name: this.state.value.stopName,
-                        primaryContact: this.state.value.primaryContact
+            let placeId = null;
+            if (this.edit) {
+                placeId = this.state.value.placeID;
+                console.log('Editing not adding the place with ID:', placeId);
+                try {
+                    floDB.write(() => {
+                        // find the stop to update
+                        const place = floDB.objectForPrimaryKey(Place.schema.name, placeId);
+                        // Edit the corresponding address info
+                        if (this.state.value.lat && this.state.value.long) {
+                            place.address = {
+                                addressID: this.state.value.addressID,
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
+                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
+                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
+                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
+                                isValidated: true
+                            };
+                            place.address.coordinates = {
+                                latitude: this.state.value.lat,
+                                longitude: this.state.value.long
+                            };
+                        } else {
+                            place.address = {
+                                addressID: this.state.value.addressID,
+                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
+                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
+                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
+                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
+                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
+                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
+                                isValidated: false
+                            };
+                        }
+                        // Edit the stop info
+                        floDB.create(Place.schema.name, {
+                            placeID: placeId,
+                            name: this.state.value.stopName ? this.state.value.stopName.toString().trim() : '',
+                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString().trim()) : '',
+                        }, this.edit);
                     });
+                } catch (err) {
+                    console.log('Error on stop editing: ', err);
+                    // Todo: Raise an error to the screen
+                    return;
+                }
+            } else {
+                console.log('Adding, not editing');
+                placeId = Math.random().toString();
+                const addressId = Math.random().toString();
 
-                    if (this.state.value.lat && this.state.value.long) {
-                        stop.address = {
-                            addressID: addressId,
-                            streetAddress: this.state.value.address,
-                            zipCode: this.state.value.zip,
-                            city: this.state.value.city,
-                            state: this.state.value.state,
-                            country: this.state.value.country,
-                            isValidated: true
-                        };
-                        stop.address.coordinates = {
-                            latitude: this.state.value.lat,
-                            longitude: this.state.value.long
-                        };
-                    } else {
-                        stop.address = {
-                            addressID: addressId,
-                            streetAddress: this.state.value.address,
-                            zipCode: this.state.value.zip,
-                            city: this.state.value.city,
-                            state: this.state.value.state,
-                            country: this.state.value.country,
-                            isValidated: false
-                        };
-                    }
+                try {
+                    floDB.write(() => {
+                        const stop = floDB.create(Place.schema.name, {
+                            placeID: placeId,
+                            name: this.state.value.stopName,
+                            primaryContact: this.state.value.primaryContact
+                        });
 
-                });
-                firebase.analytics().logEvent(eventNames.ADD_STOP, {});
-                console.log('Save to DB successful');
-            } catch (err) {
-                console.log('Error on Stop addition: ', err);
-                // Todo Don't fail silently, raise and alarm
+                        if (this.state.value.lat && this.state.value.long) {
+                            stop.address = {
+                                addressID: addressId,
+                                streetAddress: this.state.value.streetAddress,
+                                zipCode: this.state.value.zip,
+                                city: this.state.value.city,
+                                state: this.state.value.state,
+                                country: this.state.value.country,
+                                isValidated: true
+                            };
+                            stop.address.coordinates = {
+                                latitude: this.state.value.lat,
+                                longitude: this.state.value.long
+                            };
+                        } else {
+                            stop.address = {
+                                addressID: addressId,
+                                streetAddress: this.state.value.streetAddress,
+                                zipCode: this.state.value.zip,
+                                city: this.state.value.city,
+                                state: this.state.value.state,
+                                country: this.state.value.country,
+                                isValidated: false
+                            };
+                        }
+
+                    });
+                    firebase.analytics().logEvent(eventNames.ADD_STOP, {});
+                    console.log('Save to DB successful');
+                } catch (err) {
+                    console.log('Error on Stop addition: ', err);
+                    // Todo Don't fail silently, raise an alarm
+                }
             }
         }
         // const places = floDB.objects(Place.schema.name)
@@ -197,7 +252,7 @@ class AddStopFormContainer extends Component {
                     />
                 </KeyboardAwareScrollView>
                 <Button
-                    disabled={(!(this.state.value.address)) || (!(this.state.value.stopName))}
+                    disabled={(!(this.state.value.streetAddress)) || (!(this.state.value.stopName))}
                     containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
                     title='Done'
