@@ -26,11 +26,32 @@ class AddStopScreenContainer extends Component {
     }
 
     render() {
-        return (
-            <AddStopScreen
-                onSubmit={this.onSubmit}
-            />
-        );
+        const {edit, values} = this.props;
+        if (values) {
+            return (
+                <AddStopScreen
+                    onSubmit={this.onSubmit}
+                    edit={edit}
+                    placeID={values.placeID}
+                    addressID={values.addressID}
+                    streetAddress={values.streetAddress}
+                    lat={values.lat}
+                    long={values.long}
+                    zip={values.zip}
+                    city={values.city}
+                    state={values.state}
+                    country={values.country}
+                    stopName={values.stopName}
+                    primaryContact={values.primaryContact}
+                />
+            );
+        } else {
+            return (
+                <AddStopScreen
+                    onSubmit={this.onSubmit}
+                />
+            );
+        }
     }
 }
 
