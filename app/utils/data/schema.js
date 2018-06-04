@@ -5,6 +5,13 @@ import {stringToArrayBuffer} from '../encryptionUtils';
 const Realm = require('realm');
 
 class Patient extends Realm.Object {
+    get key() {
+        return this.patientID;
+    }
+
+    getFirstEpisode() {
+        return CollectionUtils.getFirstElement(this.episodes);
+    }
 }
 
 Patient.schema = {
@@ -18,7 +25,8 @@ Patient.schema = {
         emergencyContact: 'string?',
         notes: 'string?',
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
-        timestamp: 'int'
+        timestamp: 'int',
+        archived: {type: 'bool', default: false}
     }
 };
 
@@ -121,6 +129,9 @@ Episode.schema = {
 };
 
 class Place extends Realm.Object {
+    get key() {
+        return this.placeID;
+    }
 }
 
 Place.schema = {
@@ -131,7 +142,8 @@ Place.schema = {
         name: 'string',
         address: 'Address',
         primaryContact: 'string?',
-        visits: {type: 'Visit[]', default: []}
+        visits: {type: 'Visit[]', default: []},
+        archived: {type: 'bool', default: false}
     }
 };
 
@@ -186,6 +198,15 @@ class Visit extends Realm.Object {
         }
         throw new Error('Visit belongs to neither place nor patient');
     }
+
+    isOwnerArchived() {
+        if ((this.getPatient() && this.getPatient().archived) ||
+            (this.getPlace() && this.getPlace().archived)
+        ) {
+            return true;
+        }
+        return false;
+    }
 }
 
 Visit.schema = {
@@ -233,25 +254,38 @@ class FloDBProvider {
                 migration: () => { console.log('Migration function goes here'); },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key)
+            },
+            {
+                schema: initialSchema,
+                schemaVersion: 2,
+                migration: (oldRealm, newRealm) => {
+                    if (oldRealm.schemaVersion < 2) {
+                        const newPatientObjects = newRealm.objects(Patient.schema.name);
+                        newPatientObjects.update('archived', false);
+                        const newPlaceObjects = newRealm.objects(Place.schema.name);
+                        newPlaceObjects.update('archived', false);
+                    }
+                },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key)
             }
         ];
 
-        // Todo: Use when migrations needed
-        // let nextSchemaIndex = Realm.schemaVersion(Realm.defaultPath);
-        // if (nextSchemaIndex < 0) {
-        //     nextSchemaIndex = 0;
-        // }
-        // while (nextSchemaIndex < schemas.length) {
-        //     const migratedRealm = new Realm({
-        //         schema: schemas[nextSchemaIndex].schema,
-        //         schemaVersion: schemas[nextSchemaIndex].schemaVersion,
-        //         encryptionKey: schemas[nextSchemaIndex].encryptionKey,
-        //         path: schemas[nextSchemaIndex].path,
-        //         migration: schemas[nextSchemaIndex].migration
-        //     });
-        //     migratedRealm.close();
-        //     nextSchemaIndex++;
-        // }
+        let nextSchemaIndex = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
+        if (nextSchemaIndex < 0) {
+            nextSchemaIndex = 0;
+        }
+        while (nextSchemaIndex < schemas.length - 1) {
+            const migratedRealm = new Realm({
+                schema: schemas[nextSchemaIndex].schema,
+                schemaVersion: schemas[nextSchemaIndex].schemaVersion,
+                encryptionKey: schemas[nextSchemaIndex].encryptionKey,
+                path: schemas[nextSchemaIndex].path,
+                migration: schemas[nextSchemaIndex].migration
+            });
+            migratedRealm.close();
+            nextSchemaIndex++;
+        }
 
         const lastIndex = schemas.length - 1;
         try {

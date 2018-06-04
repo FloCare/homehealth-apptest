@@ -7,34 +7,33 @@ import {
     MenuTrigger
 } from 'react-native-popup-menu';
 import styles from './styles';
-import {TransparentPrimaryColor} from '../../utils/constants';
-import StyledText from '../common/StyledText';
-import {Images} from '../../Images';
-import CustomMenuRenderer from '../common/CustomMenuRenderer';
+import {TransparentPrimaryColor} from '../../../utils/constants';
+import StyledText from '../../common/StyledText';
+import {Images} from '../../../Images';
+import CustomMenuRenderer from '../CustomMenuRenderer';
 
-// const CustomMenu = (props) => {
-//     const {style, children, layouts, ...other} = props;
-//     //const position = {top: layouts.triggerLayout.y, left: layouts.triggerLayout.x};
-//     const position = {top: layouts.optionsLayout.height, left: layouts.optionsLayout.width};
-//     console.log('position:', position);
-//     return (
-//         <View {...other} style={[style, position]}>
-//             {children}
-//         </View>
-//     );
-// };
-
-class SectionedPatientList extends Component {
+class SectionedList extends Component {
     constructor(props) {
         super(props);
         this.renderItem = this.renderItem.bind(this);
         this.renderSectionHeader = this.renderSectionHeader.bind(this);
         this.renderSeparator = this.renderSeparator.bind(this);
+        this._renderMenu = this._renderMenu.bind(this);
     }
 
-    renderItem(item, selectedPatient, onPressPopupButton) {
+    _renderMenu(item, onPressPopupButton, menuItems) {
+        return (
+            menuItems.map((menuItem) => (
+                <MenuOption onSelect={() => onPressPopupButton(menuItem.id, item)}>
+                    <StyledText style={styles.menuOptionsStyle}>{menuItem.title}</StyledText>
+                </MenuOption>
+            ))
+        );
+    }
+
+    renderItem(item, selectedItem, onPressPopupButton, menu) {
         let backgroundColor = '#ffffff';
-        if (item.patientID === selectedPatient) {
+        if (item.key === selectedItem) {
             backgroundColor = TransparentPrimaryColor(0.3);
         }
         return (
@@ -55,18 +54,7 @@ class SectionedPatientList extends Component {
                                 children={<Image source={Images.threeDotButton} />}
                             />
                             <MenuOptions>
-                                <MenuOption onSelect={() => onPressPopupButton('Notes', item)} >
-                                    <StyledText style={styles.menuOptionsStyle}>Add Notes</StyledText>
-                                </MenuOption>
-                                <MenuOption onSelect={() => onPressPopupButton('Call', item)} >
-                                    <StyledText style={styles.menuOptionsStyle}>Call</StyledText>
-                                </MenuOption>
-                                <MenuOption onSelect={() => onPressPopupButton('Maps', item)} >
-                                    <StyledText style={styles.menuOptionsStyle}>Show on maps</StyledText>
-                                </MenuOption>
-                                <MenuOption onSelect={() => onPressPopupButton('Visits', item)} >
-                                    <StyledText style={styles.menuOptionsStyle}>Add Visit</StyledText>
-                                </MenuOption>
+                                {this._renderMenu(item, onPressPopupButton, menu)}
                             </MenuOptions>
                         </Menu>
                     </View>
@@ -88,11 +76,11 @@ class SectionedPatientList extends Component {
     }
 
     render() {
-        const {selectedPatient, onPressPopupButton} = this.props;
+        const {selectedItem, onPressPopupButton, menu} = this.props;
         return (
             <SectionList
-                sections={this.props.patientList}
-                renderItem={({item}) => this.renderItem(item, selectedPatient, onPressPopupButton)}
+                sections={this.props.itemList}
+                renderItem={({item}) => this.renderItem(item, selectedItem, onPressPopupButton, menu)}
                 renderSectionHeader={this.renderSectionHeader}
                 ItemSeparatorComponent={this.renderSeparator}
                 keyExtractor={(item, index) => index}
@@ -101,4 +89,4 @@ class SectionedPatientList extends Component {
     }
 }
 
-export {SectionedPatientList};
+export {SectionedList};

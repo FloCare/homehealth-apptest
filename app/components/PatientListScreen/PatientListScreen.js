@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {MenuProvider} from 'react-native-popup-menu';
 import styles from './styles';
-import {SectionedPatientList} from '../SectionedPatientList';
+import {SectionedList} from '../common/SectionedList/SectionedList';
 import EmptyStateButton from '../common/EmptyStateButton';
 import StyledText from '../common/StyledText';
 
@@ -16,7 +16,8 @@ const PatientListScreen = (props) => {
         onItemPressed,
         patientCount,
         onPressAddPatient,
-        onPressPopupButton
+        onPressPopupButton,
+        menu
     } = props;
     if (patientCount === 0) {
         return (
@@ -55,11 +56,12 @@ const PatientListScreen = (props) => {
                     clearIcon={{color: '#dddddd', name: 'cancel'}}
                 />
                 <MenuProvider>
-                    <SectionedPatientList
-                        patientList={patientList}
-                        selectedPatient={selectedPatient}
+                    <SectionedList
+                        itemList={patientList}
+                        selectedItem={selectedPatient}
                         onItemPressed={onItemPressed}
                         onPressPopupButton={onPressPopupButton}
+                        menu={menu}
                     />
                 </MenuProvider>
             </View>

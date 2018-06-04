@@ -257,7 +257,7 @@ class SortedVisitListContainer extends Component {
         });
         if (this.props.tapForDetails) {
             const visit = floDB.objectForPrimaryKey(VisitOrder, this.props.date.valueOf()).visitList[0];
-            if (visit.getPatient()) {
+            if (visit.getPatient() && !visit.getPatient().archived) {
                 this.props.navigator.push({
                     screen: screenNames.patientDetails,
                     passProps: {
@@ -278,7 +278,7 @@ class SortedVisitListContainer extends Component {
         });
         if (this.props.tapForDetails) {
             const visit = floDB.objectForPrimaryKey(Visit, visitID);
-            if (visit.getPatient()) {
+            if (visit.getPatient() && !visit.getPatient().archived) {
                 this.props.navigator.push({
                     screen: screenNames.patientDetails,
                     passProps: {

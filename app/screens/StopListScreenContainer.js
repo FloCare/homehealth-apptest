@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
-import {Platform} from 'react-native';
+import {Platform, Alert} from 'react-native';
 import {StopListScreen} from '../components/StopListScreen';
-import {floDB, Place} from '../utils/data/schema';
+import {floDB, Place, VisitOrder} from '../utils/data/schema';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
 import {Images} from '../Images';
+import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
 
 class StopListScreenContainer extends Component {
     static navigatorButtons = {
@@ -36,6 +37,11 @@ class StopListScreenContainer extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.handleListUpdate = this.handleListUpdate.bind(this);
         this.onPressAddStop = this.onPressAddStop.bind(this);
+        this.onPressPopupButton = this.onPressPopupButton.bind(this);
+        this.stopMoreMenu = [
+            {id: 'Edit', title: 'Edit Stop'},
+            {id: 'DeleteStop', title: 'Remove Stop'},
+        ];
     }
 
     componentDidMount() {
@@ -62,7 +68,7 @@ class StopListScreenContainer extends Component {
             }
         }
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.stopList, screenNames.stopList);
         }
     }
@@ -77,9 +83,72 @@ class StopListScreenContainer extends Component {
         });
     }
 
+    onPressPopupButton(buttonPressed, item) {
+        switch (buttonPressed) {
+            case 'Edit': 
+                this.props.navigator.push({
+                    screen: screenNames.addStop,
+                    title: 'Edit Stops',
+                    navigatorStyle: {
+                        tabBarHidden: true
+                    },
+                    passProps: {
+                        values: {
+
+                        },
+                        edit: true
+                    }
+                });
+                break;
+            case 'DeleteStop':
+                const archiveStop = (id) => {
+                    console.log('Archiving Stop');
+                    try {
+                        const today = todayMomentInUTCMidnight();
+                        floDB.write(() => {
+                            const stop = floDB.objectForPrimaryKey(Place.schema.name, id);
+                            stop.archived = true;
+                            const visits = stop.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+
+                            const visitOrders = floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
+                            // TODO: Only iterate over dates where visit for that Stop is actually present
+                            for (let i = 0; i < visitOrders.length; i++) {
+                                const visitList = [];
+                                for (let j = 0; j < visitOrders[i].visitList.length; j++) {
+                                    const visit = visitOrders[i].visitList[j];
+                                    if (!(visit.isOwnerArchived())) {
+                                        visitList.push(visit);
+                                    }
+                                }
+                                visitOrders[i].visitList = visitList;
+                            }
+                            floDB.delete(visits);
+                        });
+                        Alert.alert('Success', 'Stop deleted successfully');
+                        makeCallbacks();
+                    } catch (err) {
+                        console.log('ERROR while archiving place:', err);
+                        Alert.alert('Error', 'Unable to delete stop. Please try again later');
+                    }
+                };
+                Alert.alert(
+                    'Caution',
+                    'All your stops related data will be deleted. Do you wish to continue?',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                        {text: 'OK', onPress: () => archiveStop(item.placeID)},
+                    ]
+                );
+                break;
+            default:
+                console.log('Invalid option pressed');
+                break;
+        }
+    }
+
     getSectionData(query) {
         if (!query) {
-            const stopList = floDB.objects(Place.schema.name);
+            const stopList = floDB.objects(Place.schema.name).filtered('archived = false');
             const sortedStopList = stopList.sorted('name');
             const stopCount = sortedStopList.length;
             const sectionedStopList = createSectionedListFromRealmObject(sortedStopList);
@@ -92,7 +161,7 @@ class StopListScreenContainer extends Component {
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
             const queryStr = `name CONTAINS[c] "${query.toString()}"`;
-            const stopList = floDB.objects(Place.schema.name).filtered(queryStr);
+            const stopList = floDB.objects(Place.schema.name).filtered('archived = false').filtered(queryStr);
             const sortedStopList = stopList.sorted('name');
             const sectionedStopList = createSectionedListFromRealmObject(sortedStopList);
             this.setState({stopList: sectionedStopList});
@@ -118,6 +187,8 @@ class StopListScreenContainer extends Component {
                 onSearch={this.onSearch}
                 selectedStop={selectedStop}
                 onPressAddStop={this.onPressAddStop}
+                menu={this.stopMoreMenu}
+                onPressPopupButton={this.onPressPopupButton}
             />
         );
     }

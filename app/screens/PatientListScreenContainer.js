@@ -3,11 +3,12 @@ import {Linking, Alert, Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {PatientListScreen} from '../components/PatientListScreen';
-import {floDB, Patient} from '../utils/data/schema';
+import {floDB, Patient, VisitOrder} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
+import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -36,6 +37,13 @@ class PatientListScreenContainer extends Component {
             patientCount: 0,      // not always a count of patientList
             selectedPatient: props.selectedPatient,
         };
+        this.patientMoreMenu = [
+            {id: 'Notes', title: 'Add Notes'},
+            {id: 'Call', title: 'Call'},
+            {id: 'Maps', title: 'Show on maps'},
+            {id: 'Visits', title: 'Add Visit'},
+            {id: 'DeletePatient', title: 'Remove Patient'},
+        ];
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.onItemPressed = this.onItemPressed.bind(this);
@@ -153,6 +161,45 @@ class PatientListScreenContainer extends Component {
                     },
                 });
                 break;
+            case 'DeletePatient':
+                const archivePatient = (id) => {
+                    console.log('Archiving patient');
+                    try {
+                        const today = todayMomentInUTCMidnight();
+                        floDB.write(() => {
+                            const patient = floDB.objectForPrimaryKey(Patient.schema.name, id);
+                            patient.archived = true;
+                            const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+                            const visitOrders = floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
+                            // TODO: Only iterate over dates where visit for that patient is actually present
+                            for (let i = 0; i < visitOrders.length; i++) {
+                                const visitList = [];
+                                for (let j = 0; j < visitOrders[i].visitList.length; j++) {
+                                    const visit = visitOrders[i].visitList[j];
+                                    if (!(visit.isOwnerArchived())) {
+                                        visitList.push(visit);
+                                    }
+                                }
+                                visitOrders[i].visitList = visitList;
+                            }
+                            floDB.delete(visits);
+                        });
+                        Alert.alert('Success', 'Patient deleted successfully');
+                        makeCallbacks();
+                    } catch (err) {
+                        console.log('ERROR while archiving patient:', err);
+                        Alert.alert('Error', 'Unable to delete patient. Please try again later');
+                    }
+                };
+                Alert.alert(
+                    'Caution',
+                    'All your patient related data will be deleted. Do you wish to continue?',
+                    [
+                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                        {text: 'OK', onPress: () => archivePatient(item.patientID)},
+                    ]
+                );
+                break;
             default:
                 console.log('Invalid option pressed');
                 break;
@@ -161,7 +208,7 @@ class PatientListScreenContainer extends Component {
 
     getSectionData(query) {
         if (!query) {
-            const patientList = floDB.objects(Patient.schema.name);
+            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false');
             const sortedPatientList = patientList.sorted('name');
             const patientCount = sortedPatientList.length;
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
@@ -174,7 +221,7 @@ class PatientListScreenContainer extends Component {
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
             const queryStr = `name CONTAINS[c] "${query.toString()}"`;
-            const patientList = floDB.objects(Patient.schema.name).filtered(queryStr);
+            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false').filtered(queryStr);
             const sortedPatientList = patientList.sorted('name');
             const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
             this.setState({patientList: sectionedPatientList});
@@ -221,6 +268,7 @@ class PatientListScreenContainer extends Component {
                 onItemPressed={this.onItemPressed}
                 onPressAddPatient={this.navigateToAddPatient}
                 onPressPopupButton={this.onPressPopupButton}
+                menu={this.patientMoreMenu}
             />
         );
     }
