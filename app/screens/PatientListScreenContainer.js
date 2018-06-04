@@ -37,6 +37,13 @@ class PatientListScreenContainer extends Component {
             patientCount: 0,      // not always a count of patientList
             selectedPatient: props.selectedPatient,
         };
+        this.patientMoreMenu = [
+            {id: 'Notes', title: 'Add Notes'},
+            {id: 'Call', title: 'Call'},
+            {id: 'Maps', title: 'Show on maps'},
+            {id: 'Visits', title: 'Add Visit'},
+            {id: 'DeletePatient', title: 'Remove Patient'},
+        ];
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
         this.onItemPressed = this.onItemPressed.bind(this);
@@ -164,12 +171,12 @@ class PatientListScreenContainer extends Component {
                             patient.archived = true;
                             const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
                             const visitOrders = floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
+                            // TODO: Only iterate over dates where visit for that patient is actually present
                             for (let i = 0; i < visitOrders.length; i++) {
                                 const visitList = [];
                                 for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                                     const visit = visitOrders[i].visitList[j];
-                                    if (visit.getPlace() || (visit.getPatient() && (!(visit.getPatient().archived)))) {
-                                        console.log('keeping visit for:', visit.getPatient().name);
+                                    if (!(visit.isOwnerArchived())) {
                                         visitList.push(visit);
                                     }
                                 }
@@ -186,7 +193,7 @@ class PatientListScreenContainer extends Component {
                 };
                 Alert.alert(
                     'Caution',
-                    'All your patient related data (except your past visits) will be deleted. Do you wish to continue?',
+                    'All your patient related data will be deleted. Do you wish to continue?',
                     [
                         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                         {text: 'OK', onPress: () => archivePatient(item.patientID)},
@@ -261,6 +268,7 @@ class PatientListScreenContainer extends Component {
                 onItemPressed={this.onItemPressed}
                 onPressAddPatient={this.navigateToAddPatient}
                 onPressPopupButton={this.onPressPopupButton}
+                menu={this.patientMoreMenu}
             />
         );
     }

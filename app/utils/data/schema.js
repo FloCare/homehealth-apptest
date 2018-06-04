@@ -198,6 +198,15 @@ class Visit extends Realm.Object {
         }
         throw new Error('Visit belongs to neither place nor patient');
     }
+
+    isOwnerArchived() {
+        if ((this.getPatient() && this.getPatient().archived) ||
+            (this.getPlace() && this.getPlace().archived)
+        ) {
+            return true;
+        }
+        return false;
+    }
 }
 
 Visit.schema = {

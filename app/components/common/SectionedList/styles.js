@@ -1,5 +1,5 @@
 import {Platform} from 'react-native';
-import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
+import {PrimaryColor, PrimaryFontFamily} from '../../../utils/constants';
 
 const styles = {
     sectionHeader: {

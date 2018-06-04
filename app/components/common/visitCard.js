@@ -31,7 +31,7 @@ function VisitCard({isDoneToggle, navigator}) {
         const phoneNumber = visit.getAssociatedNumber();
         const coordinates = visit.getAddress().coordinates;
         let ownerArchived = false;
-        if (visit.getPatient() && visit.getPatient().archived) {
+        if (visit.isOwnerArchived()) {
             ownerArchived = true;
         }
         const phoneNumberActive = (phoneNumber && (!ownerArchived));
