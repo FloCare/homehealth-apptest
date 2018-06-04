@@ -3,7 +3,7 @@ import {Linking, Alert, Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {PatientListScreen} from '../components/PatientListScreen';
-import {floDB, Patient} from '../utils/data/schema';
+import {floDB, Patient, VisitOrder} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
@@ -158,11 +158,23 @@ class PatientListScreenContainer extends Component {
                 const archivePatient = (id) => {
                     console.log('Archiving patient');
                     try {
+                        const today = todayMomentInUTCMidnight();
                         floDB.write(() => {
-                            const today = todayMomentInUTCMidnight();
                             const patient = floDB.objectForPrimaryKey(Patient.schema.name, id);
                             patient.archived = true;
                             const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+                            const visitOrders = floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
+                            for (let i = 0; i < visitOrders.length; i++) {
+                                const visitList = [];
+                                for (let j = 0; j < visitOrders[i].visitList.length; j++) {
+                                    const visit = visitOrders[i].visitList[j];
+                                    if (visit.getPlace() || (visit.getPatient() && (!(visit.getPatient().archived)))) {
+                                        console.log('keeping visit for:', visit.getPatient().name);
+                                        visitList.push(visit);
+                                    }
+                                }
+                                visitOrders[i].visitList = visitList;
+                            }
                             floDB.delete(visits);
                         });
                         Alert.alert('Success', 'Patient deleted successfully');
