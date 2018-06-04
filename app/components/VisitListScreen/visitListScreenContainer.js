@@ -29,7 +29,7 @@ class VisitListScreenContainer extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
-        this.onOrderChange = this.onOrderChange.bind(this);
+        // this.onOrderChange = this.onOrderChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -89,7 +89,7 @@ class VisitListScreenContainer extends Component {
                 // showCalendar={this.state.showCalendar}
                 // visitResultObject={this.generateVisitResultObject(this.state.date)}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
-                onOrderChange={this.onOrderChange}
+                // onOrderChange={this.onOrderChange}
             />
         );
     }

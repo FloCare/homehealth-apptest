@@ -101,7 +101,7 @@ class HomeScreenContainer extends Component {
         this.props.navigator.push({
             screen: screenNames.visitListScreen,
             passProps: {
-                date: this.props.date,
+                date: moment(this.props.date).utc(),
                 // onOrderChange: this.onOrderChange.bind(this),
                 // onNavigationEvent: this.onNavigatorEvent
             },
@@ -123,7 +123,7 @@ class HomeScreenContainer extends Component {
                     screen: screenNames.visitMapScreen,
                     passProps: {
                         date: moment(this.props.date).utc(),
-                        onOrderChange: this.onOrderChange.bind(this),
+                        // onOrderChange: this.onOrderChange.bind(this),
                         onNavigationEvent: this.onNavigatorEvent,
                         showCompleted
                     },
