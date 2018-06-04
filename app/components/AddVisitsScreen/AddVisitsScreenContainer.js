@@ -1,14 +1,12 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
-import firebase from 'react-native-firebase';
 import {Platform, View, ActionSheetIOS} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import {AddVisitsScreen} from './AddVisitsScreen';
-import {floDB, Patient, Place, Visit, VisitOrder} from '../../utils/data/schema';
-import {arrayToMap} from '../../utils/collectionUtils';
-import {screenNames, visitType, PrimaryColor, eventNames} from '../../utils/constants';
-import {generateUUID} from '../../utils/utils';
+import {floDB, Patient, Place} from '../../utils/data/schema';
+import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
+import {visitDataService} from '../../data_services/VisitDataService';
 
 const newStop = 'Add new Stop';
 const newPatient = 'Add new Patient';
@@ -79,7 +77,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     componentWillUnMount() {
-        floDB.addListener('change', this.handleListUpdate);
+        floDB.removeListener('change', this.handleListUpdate);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -137,16 +135,23 @@ class AddVisitsScreenContainer extends Component {
         this.setState(
             (prevState) => {
                 if (prevState.selectedItems.has(item.key)) {
-                    console.log(`adding one${item.key}`);
                     return {selectedItems: prevState.selectedItems.delete(item.key)};
                 }
-                console.log('removing one');
-                return {selectedItems: prevState.selectedItems.set(item.key, item)};
+                return {selectedItems: prevState.selectedItems.set(item.key, item.object)};
             }
         );
     }
 
-    getFlatListWithAllItems() {
+    createItem(object) {
+        const key = object instanceof Patient ? object.patientID : object.placeID;
+        return {
+            key,
+            isSelected: this.state.selectedItems.has(key),
+            object,
+        };
+    }
+
+    getListWithAllItems() {
         const placeIterator = this.placeResultObject.values();
         const patientIterator = this.patientsResultObject.values();
 
@@ -158,60 +163,31 @@ class AddVisitsScreenContainer extends Component {
                 break;
             } else if (nextPlace.done === true) {
                 // console.log(`->${this.getFlatPatientItem(nextPatient.value)}`);
-                allItems.push(this.getFlatPatientItem(nextPatient.value));
+                allItems.push(this.createItem(nextPatient.value));
                 nextPatient = patientIterator.next();
             } else if (nextPatient.done === true) {
-                allItems.push(this.getFlatPlaceItem(nextPlace.value));
+                allItems.push(this.createItem(nextPlace.value));
                 nextPlace = placeIterator.next();
             } else if (nextPatient.value.name.toLowerCase().localeCompare(nextPlace.value.name.toLowerCase()) < 0) {
-                allItems.push(this.getFlatPatientItem(nextPatient.value));
+                allItems.push(this.createItem(nextPatient.value));
                 nextPatient = patientIterator.next();
             } else {
-                allItems.push(this.getFlatPlaceItem(nextPlace.value));
+                allItems.push(this.createItem(nextPlace.value));
                 nextPlace = placeIterator.next();
             }
         } while (!(nextPlace.done && nextPatient.done));
         return allItems;
     }
 
-    getFlatAddress(addressObject) {
-        return addressObject.formattedAddress;
-    }
-
-    getFlatPatientItem(patient) {
-        const key = `patient_${patient.patientID}`;
-        return {
-            key,
-            type: visitType.patient,
-            id: patient.patientID,
-            name: patient.name,
-            address: this.getFlatAddress(patient.address),
-            isSelected: this.state.selectedItems.has(key)
-        };
-    }
-
-    getFlatPlaceItem(place) {
-        const key = `place_${place.placeID}`;
-        return {
-            key,
-            type: visitType.place,
-            id: place.placeID,
-            name: place.name,
-            address: this.getFlatAddress(place.address),
-            isSelected: this.state.selectedItems.has(key)
-        };
-    }
-
     createListItemComponent({item}) {
         const avatar = item.type === 'patient' ? Images.person_ic : Images.location;
         const rightIcon = item.isSelected ? {name: 'check', color: PrimaryColor} : <View />;
-        // console.log(item);
-        // console.log([item.type + item.id, item.name, item.address, avatar, rightIcon].join(', '));
+
         return (
             <ListItem
                 key={item.key}
-                title={item.name}
-                subtitle={item.address}
+                title={item.object.name}
+                subtitle={item.object.address.formattedAddress}
                 avatar={avatar}
                 avatarStyle={{resizeMode: 'contain'}}
                 rightIcon={rightIcon}
@@ -224,64 +200,66 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onDone() {
-        //TODO improve efficiency by not having to query for patient object
-
+        visitDataService.createVisits(this.state.selectedItems.values(), this.state.date.valueOf());
         //This is the part where we create the new visit items
-        floDB.write(() => {
-            for (const selectedItem of this.state.selectedItems.values()) {
-                if (selectedItem.type === visitType.patient) {
-                    //TODO what happens when patients have multiple cases
-                    const patient = floDB.objectForPrimaryKey(Patient, selectedItem.id);
-                    patient.episodes[0].visits.push({
-                        visitID: generateUUID(),
-                        midnightEpochOfVisit: this.state.date.valueOf()
-                    });
-                } else if (selectedItem.type === visitType.place) {
-                    const place = floDB.objectForPrimaryKey(Place, selectedItem.id);
-                    place.visits.push({
-                        visitID: generateUUID(),
-                        midnightEpochOfVisit: this.state.date.valueOf()
-                    });
-                }
-            }
-        });
+        // floDB.write(() => {
+        //     for (const selectedItem of this.state.selectedItems.values()) {
+        //         if (selectedItem.type === visitType.patient) {
+        //             //TODO what happens when patients have multiple cases
+        //             const patient = floDB.objectForPrimaryKey(Patient, selectedItem.id);
+        //             patient.episodes[0].visits.push({
+        //                 visitID: generateUUID(),
+        //                 midnightEpochOfVisit: this.state.date.valueOf()
+        //             });
+        //         } else if (selectedItem.type === visitType.place) {
+        //             const place = floDB.objectForPrimaryKey(Place, selectedItem.id);
+        //             place.visits.push({
+        //                 visitID: generateUUID(),
+        //                 midnightEpochOfVisit: this.state.date.valueOf()
+        //             });
+        //         }
+        //     }
+        // });
 
         //this is the part where we modify the day's visitOrderList
-        const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
-        let visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
-        if (!visitOrderObject) {
-            floDB.write(() => {
-                visitOrderObject = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
-            });
-        }
-        const visitListByID = arrayToMap(visitOrderObject.visitList, 'visitID');
+        // const allVisits = floDB.objects(Visit).filtered('midnightEpochOfVisit=$0', this.state.date.valueOf());
+        // let visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
+        // if (!visitOrderObject) {
+        //     floDB.write(() => {
+        //         visitOrderObject = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
+        //     });
+        // }
+        // const visitListByID = arrayToMap(visitOrderObject.visitList, 'visitID');
+        //
+        // let indexOfFirstDoneVisit;
+        // for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObject.visitList.length && !visitOrderObject.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {
+        //
+        // }
 
-        let indexOfFirstDoneVisit;
-        for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObject.visitList.length && !visitOrderObject.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {
+        // const newVisitOrder = [];
+        // newVisitOrder.push(...visitOrderObject.visitList.slice(0, indexOfFirstDoneVisit));
+        // for (let j = 0; j < allVisits.length; j++) {
+        //     if (!visitListByID.has(allVisits[j].visitID)) {
+        //         newVisitOrder.push(allVisits[j]);
+        //     }
+        // }
+        // newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
 
-        }
+        //TODO put this analytics elsewhere
+        // console.log(`Visit length list updated from length ${visitOrderObject.visitList.length} to new length ${newVisitOrder.length}`);
+        // firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+        //     'VALUE': newVisitOrder.length
+        // });
+        // floDB.write(() => {
+        //     visitOrderObject.visitList = newVisitOrder;
+        // });
 
-        const newVisitOrder = [];
-        newVisitOrder.push(...visitOrderObject.visitList.slice(0, indexOfFirstDoneVisit));
-        for (let j = 0; j < allVisits.length; j++) {
-            if (!visitListByID.has(allVisits[j].visitID)) {
-                newVisitOrder.push(allVisits[j]);
-            }
-        }
-        newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
-
-        console.log(`Visit length list updated from length ${visitOrderObject.visitList.length} to new length ${newVisitOrder.length}`);
-        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-            'VALUE': newVisitOrder.length
-        });
-        floDB.write(() => {
-            visitOrderObject.visitList = newVisitOrder;
-        });
-
+        console.log('add visits container calling onDone prop');
         if (this.props.onDone) {
             this.props.onDone(this.state.selectedItems);
         }
         this.props.navigator.pop();
+        console.log('add visits container all done');
     }
 
     render() {
@@ -295,7 +273,7 @@ class AddVisitsScreenContainer extends Component {
                 // onItemToggle={this.onItemToggle}
                 selectedItems={Array.from(this.state.selectedItems.values())}
                 //TODO is this costing us in terms of efficiency
-                listItems={this.getFlatListWithAllItems()}
+                listItems={this.getListWithAllItems()}
                 renderItem={this.createListItemComponent}
                 onDone={this.onDone}
             />

@@ -1,21 +1,21 @@
 export const PatientActions = {
     ADD_PATIENTS: 'ADD_PATIENTS',
-    EDIT_PATIENT: 'EDIT_PATIENT',
+    EDIT_PATIENTS: 'EDIT_PATIENTS',
 };
 
-export const StopActions = {
-    ADD_STOPS: 'ADD_STOPS',
-    EDIT_STOP: 'EDIT_STOP',
+export const PlaceActions = {
+    ADD_PLACES: 'ADD_PLACES',
+    EDIT_PLACES: 'EDIT_PLACES',
 };
 
 export const AddressActions = {
     ADD_ADDRESSES: 'ADD_ADDRESSES',
-    EDIT_ADDRESS: 'EDIT_ADDRESS',
+    EDIT_ADDRESSES: 'EDIT_ADDRESSES',
 };
 
 export const VisitActions = {
     ADD_VISITS: 'ADD_VISITS',
-    EDIT_VISIT: 'EDIT_VISIT',
+    EDIT_VISITS: 'EDIT_VISITS',
 };
 
 export const VisitOrderActions = {

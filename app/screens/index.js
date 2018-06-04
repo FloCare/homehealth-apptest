@@ -4,7 +4,7 @@ import AddPatientScreenContainer from './AddPatientScreenContainer';
 import PatientDetailScreenContainer from './PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
-import {HomeScreenContainer} from '../components/HomeScreen/HomeScreenContainer';
+import HomeScreenContainer from '../components/HomeScreen/HomeScreenContainer';
 import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
@@ -13,41 +13,41 @@ import {ScreenWithCalendarComponent} from '../components/common/screenWithCalend
 import StopListScreenContainer from './StopListScreenContainer';
 import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
 import {todayMomentInUTCMidnight} from '../utils/utils';
-import {CreateAndSaveDummies, Visit, VisitOrder} from '../utils/data/schema';
+import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {MoreScreen} from '../components/MoreScreen/MoreScreen';
 import {LegalScreen} from '../components/LegalScreen';
 import LockOnInactivity from '../components/common/LockOnInactivity';
 
-const RegisterScreens = () => {
-    // if (floDB.objects(Visit.schema.name).length === 0) {
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
-    //     CreateAndSaveDummies();
+const RegisterScreens = (store, Provider) => {
+    if (floDB.objects(Visit.schema.name).length === 0) {
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
+        CreateAndSaveDummies();
 
-    //     const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
-    //     floDB.write(() => {
-    //         visitOrder.visitList = floDB.objects(Visit);
-    //     });
-    // }
+        const visitOrder = floDB.objectForPrimaryKey(VisitOrder, todayMomentInUTCMidnight().valueOf());
+        floDB.write(() => {
+            visitOrder.visitList = floDB.objects(Visit);
+        });
+    }
     console.disableYellowBox = true;
 
     Navigation.registerComponent(screenNames.addPatient, () => LockOnInactivity(AddPatientScreenContainer));
     Navigation.registerComponent(screenNames.addNote, () => LockOnInactivity(AddNoteScreenContainer));
     Navigation.registerComponent(screenNames.patientDetails, () => LockOnInactivity(PatientDetailScreenContainer));
     Navigation.registerComponent(screenNames.patientList, () => LockOnInactivity(PatientListScreenContainer));
-    Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer));
+    Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
     Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
     Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitListScreenContainer)));

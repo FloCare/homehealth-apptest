@@ -1,9 +1,18 @@
 import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux';
 import {RegisterScreens} from '.';
 import {screenNames, PrimaryColor} from '../utils/constants';
 import {Images} from '../Images';
 import {FloDBProvider} from '../utils/data/schema';
+import {RootReducer} from '../redux/RootReducer';
+
+import {initialiseService as initialisePatientService} from '../data_services/PatientDataService';
+import {initialiseService as initialiseStopService} from '../data_services/StopDataService';
+import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
+import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
+import {todayMomentInUTCMidnight} from '../utils/utils';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -40,8 +49,16 @@ const StartApp = (key) => {
         throw err;
     }
 
+    const store = createStore(RootReducer);
+    initialiseVisitService(FloDBProvider.db, store);
+    initialiseStopService(FloDBProvider.db, store);
+    initialisePatientService(FloDBProvider.db, store);
+    initialiseDate(FloDBProvider.db, store);
+
+    dateService.setDate(todayMomentInUTCMidnight().valueOf());
+
     try {
-        RegisterScreens();
+        RegisterScreens(store, Provider);
     } catch (err) {
         console.log('Error in registering screens: ', err);
         throw err;

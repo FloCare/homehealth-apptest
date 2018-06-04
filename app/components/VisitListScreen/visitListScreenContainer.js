@@ -46,7 +46,7 @@ class VisitListScreenContainer extends Component {
             screen: screenNames.addVisitScreen,
             passProps: {
                 date: this.state.date,
-                onDone: this.onOrderChange
+                // onDone: this.onOrderChange
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -60,14 +60,14 @@ class VisitListScreenContainer extends Component {
         }
     }
 
-    onOrderChange(newOrder) {
-        // console.log('visitListScreen congainer callback');
-        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
-            'type': parameterValues.DND
-        });
-        this.forceUpdate();
-        this.props.onOrderChange(newOrder);
-    }
+    // onOrderChange(newOrder) {
+    //     // console.log('visitListScreen congainer callback');
+    //     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+    //         'type': parameterValues.DND
+    //     });
+    //     // this.forceUpdate();
+    //     // this.props.onOrderChange(newOrder);
+    // }
 
     generateVisitResultObject(date) {
         return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', this.state.date.valueOf()).sorted('isDone');//date);//.sorted('isDone');
