@@ -8,7 +8,7 @@ import {Images} from '../../Images';
 function removeButton(onPress) {
     if (onPress) {
         return (
-            <TouchableHighlight style={{alignSelf: 'center', underlayColor: 'white'}} onPress={onPress}>
+            <TouchableHighlight onPress={onPress} underlayColor={'white'}>
                 <Image source={Images.close} />
             </TouchableHighlight>
         );
@@ -21,7 +21,7 @@ function Tag(props) {
         <Badge
             containerStyle={[styles.badgeContainerStyle, {margin: 4, padding: 2}, props.badgeContainerStyle]}
             children={
-                <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Text style={[styles.badgeTextStyle, {margin: 4}, props.badgeTextStyle]}> {props.text} </Text>
                     {removeButton(props.onPress)}
                 </View>

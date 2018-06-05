@@ -127,8 +127,8 @@ class AddVisitsScreenContainer extends Component {
     }
 
 
-    onTagPress(item) {
-        this.onItemToggle(item);
+    onTagPress(object) {
+        this.onItemToggle({key: object instanceof Patient ? object.patientID : object.placeID, object});
     }
 
     onItemToggle(item) {
