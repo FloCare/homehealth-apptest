@@ -14,7 +14,7 @@ class PlaceDataService {
     }
 
     static getFlatPlaceMap(places) {
-        arrayToObjectByKey(places.map(place => PlaceDataService.getFlatPlace(place)), 'placeID');
+        return arrayToObjectByKey(places.map(place => PlaceDataService.getFlatPlace(place)), 'placeID');
     }
 
     constructor(floDB, store) {
@@ -27,7 +27,7 @@ class PlaceDataService {
     }
 
     addPlacesToRedux(places) {
-        this.store.dispatch({type: PlaceActions.ADD_PLACES, place: PlaceDataService.getFlatPlaceMap(places)});
+        this.store.dispatch({type: PlaceActions.ADD_PLACES, placeList: PlaceDataService.getFlatPlaceMap(places)});
     }
 }
 

@@ -5,7 +5,7 @@ import PatientDetailScreenContainer from './PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
 import HomeScreenContainer from '../components/HomeScreen/HomeScreenContainer';
-import {VisitListScreenContainer} from '../components/VisitListScreen/visitListScreenContainer';
+import VisitListScreenContainer from '../components/VisitListScreen/visitListScreenContainer';
 import {AddVisitsScreenContainer} from '../components/AddVisitsScreen/AddVisitsScreenContainer';
 import AddStopScreenContainer from './AddStopScreenContainer';
 import {VisitMapScreenController} from '../components/VisitMapScreen/VisitMapScreenController';
@@ -50,7 +50,7 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
     Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
-    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitListScreenContainer)));
+    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(VisitListScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitMapScreenController)));
     Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInactivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
     Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));

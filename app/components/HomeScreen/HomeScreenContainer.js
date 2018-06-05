@@ -212,11 +212,12 @@ class HomeScreenContainer extends Component {
                     })]}
             >
                 <HomeScreen
+                    visitID={[this.props.nextVisitID]}
                     navigator={this.props.navigator}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}
                     date={moment(this.props.date).utc()}
-                    totalVisitsCount={this.props.visitOrder.length}
+                    totalVisitsCount={this.props.totalVisits}
                     remainingVisitsCount={this.props.remainingVisits}
                     onDateSelected={this.onDateSelected}
                     // onOrderChange={this.onOrderChange}
@@ -248,9 +249,10 @@ function getTabBarHeight() {
 
 function stateToProps(state) {
     return {
-        visitOrder: state.visitOrder,
+        nextVisitID: state.visitOrder[0],
         date: state.date,
-        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (state.visits[visitID].isDone ? 0 : 1), 0)
+        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (state.visits[visitID].isDone ? 0 : 1), 0),
+        totalVisits: state.visitOrder.length,
     };
 }
 

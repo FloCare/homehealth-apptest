@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Dimensions, Image, TouchableWithoutFeedback} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {VisitCard} from '../common/visitCard';
+import {VisitCardGenerator} from '../common/visitCardGenerator';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
@@ -97,7 +97,8 @@ export function VisitSummary(props) {
                         singleEntry
                         scrollEnabled={false}
                         sortingEnabled={false}
-                        renderWithCallback={VisitCard}
+                        orderedVisitID={props.visitID}
+                        renderFunctionGenerator={VisitCardGenerator}
                         tapForDetails
                         onOrderChange={props.onOrderChange}
                     />

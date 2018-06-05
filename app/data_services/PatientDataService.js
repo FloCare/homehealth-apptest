@@ -17,7 +17,7 @@ class PatientDataService {
     }
 
     static getFlatPatientMap(patients) {
-        arrayToObjectByKey(patients.map(patient => PatientDataService.getFlatPatient(patient)), 'patientID');
+        return arrayToObjectByKey(patients.map(patient => PatientDataService.getFlatPatient(patient)), 'patientID');
     }
     
     constructor(floDB, store) {
@@ -30,7 +30,7 @@ class PatientDataService {
     }
 
     addPatientsToRedux(patients) {
-        this.store.dispatch({type: PatientActions.ADD_PATIENTS, patient: PatientDataService.getFlatPatientMap(patients)});
+        this.store.dispatch({type: PatientActions.ADD_PATIENTS, patientList: PatientDataService.getFlatPatientMap(patients)});
     }
 }
 

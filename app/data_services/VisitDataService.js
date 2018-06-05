@@ -3,15 +3,18 @@ import {VisitActions, VisitOrderActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey} from '../utils/collectionUtils';
 import {generateUUID} from '../utils/utils';
 import {patientDataService} from './PatientDataService';
-import {placeDataService} from './StopDataService';
+import {placeDataService} from './PlaceDataService';
 
 class VisitDataService {
     static getFlatVisit(visit) {
+        const isPatientVisit = visit.getPatient() !== undefined;
+
         return {
             visitID: visit.visitID,
-            patientID: visit.getPatient() ? visit.getPatient().patientID : null,
-            place: visit.getPlace() ? visit.getPlace().placeID : null,
+            patientID: isPatientVisit ? visit.getPatient().patientID : null,
+            place: !isPatientVisit ? visit.getPlace().placeID : null,
             isDone: visit.isDone,
+            isPatientVisit
         };
     }
 
@@ -30,6 +33,10 @@ class VisitDataService {
 
     setVisitOrderInRedux(visitOrder) {
         this.store.dispatch({type: VisitOrderActions.SET_ORDER, visitOrder: visitOrder.map(visit => visit.visitID)});
+    }
+
+    updateVisitToRedux(visit) {
+        this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitDataService.getFlatVisitMap([visit])});
     }
 
     addVisitsToRedux(visits) {
@@ -52,27 +59,28 @@ class VisitDataService {
         this.setVisitOrderInRedux(visitOrder.visitList);
     }
 
-    markVisitCompleted(visitID) {
-        this.floDB.write(() => {
-            this.getVisitByID(visitID).isDone = true;
-        });
-        this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitDataService.getFlatVisitMap([this.getVisitByID(visitID)])});
-    }
-
     updateVisitOrderToReduxIfLive(visitOrder) {
         if (this.store.getState().date === visitOrder.midnightEpoch) {
-            this.setVisitOrderInRedux(visitOrder);
+            this.setVisitOrderInRedux(visitOrder.visitList);
         }
     }
 
-    markVisitDone(visitID) {
+    toggleVisitDone(visitID) {
         const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
 
+        if (!visit.isDone) {
+            this.markVisitDone(visit);
+        } else {
+            this.markVisitUndone(visit);
+        }
+    }
+
+    markVisitDone(visit) {
         const newOrderedVisitList = [];
-        const currentVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visit.midnightEpoch);
+        const currentVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visit.midnightEpochOfVisit);
 
         for (let i = 0; i < currentVisitOrder.visitList.length; i++) {
-            if (visitID === currentVisitOrder.visitList[i].visitID) {
+            if (visit.visitID === currentVisitOrder.visitList[i].visitID) {
                 newOrderedVisitList.push(...currentVisitOrder.visitList.slice(0, i));
                 if (currentVisitOrder.visitList.length !== i + 1) {
                     newOrderedVisitList.push(...currentVisitOrder.visitList.slice(i + 1, currentVisitOrder.visitList.length));
@@ -85,15 +93,14 @@ class VisitDataService {
             currentVisitOrder.visitList = newOrderedVisitList;
         });
 
+        this.updateVisitToRedux(visit);
         this.updateVisitOrderToReduxIfLive(currentVisitOrder);
     }
 
     //TODO verify correctness
-    markVisitUndone(visitID) {
-        const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
-
+    markVisitUndone(visit) {
         const newOrderedVisitList = [];
-        const currentVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visit.midnightEpoch);
+        const currentVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visit.midnightEpochOfVisit);
 
         let i;
         for (i = 0; i < currentVisitOrder.visitList.length; i++) {
@@ -119,6 +126,7 @@ class VisitDataService {
             currentVisitOrder.visitList = newOrderedVisitList;
         });
 
+        this.updateVisitToRedux(visit);
         this.updateVisitOrderToReduxIfLive(currentVisitOrder);
     }
 

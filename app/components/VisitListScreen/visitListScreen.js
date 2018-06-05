@@ -1,6 +1,6 @@
 import {View} from 'react-native';
 import React from 'react';
-import {VisitCard} from '../common/visitCard';
+import {VisitCardGenerator} from '../common/visitCardGenerator';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {SimpleButton} from '../common/SimpleButton';
 
@@ -13,7 +13,8 @@ function VisitListScreen(props) {
                 navigator={props.navigator}
                 style={{flex: 1}}
                 date={props.date}
-                renderWithCallback={VisitCard}
+                orderedVisitID={props.orderedVisitID}
+                renderFunctionGenerator={VisitCardGenerator}
                 tapForDetails
                 onOrderChange={props.onOrderChange}
             />

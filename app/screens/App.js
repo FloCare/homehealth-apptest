@@ -9,7 +9,7 @@ import {FloDBProvider} from '../utils/data/schema';
 import {RootReducer} from '../redux/RootReducer';
 
 import {initialiseService as initialisePatientService} from '../data_services/PatientDataService';
-import {initialiseService as initialiseStopService} from '../data_services/StopDataService';
+import {initialiseService as initialiseStopService} from '../data_services/PlaceDataService';
 import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
 import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
 import {todayMomentInUTCMidnight} from '../utils/utils';

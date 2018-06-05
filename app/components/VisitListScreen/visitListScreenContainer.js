@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
 import firebase from 'react-native-firebase';
+import {connect} from 'react-redux';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
+import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 
 class VisitListScreenContainer extends Component {
     static navigatorButtons = {
@@ -79,15 +81,7 @@ class VisitListScreenContainer extends Component {
             <VisitListScreen
                 navigator={this.props.navigator}
                 date={this.state.date}
-                // calendarComponent={<CalendarStrip
-                //     style={{height: 100, paddingTop: 20, paddingBottom: 10}}
-                //     calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
-                //     // highlightDateNumberStyle={{fontWeight: '800'}}
-                //     onDateSelected={this.onDayPress}
-                //     selectedDate={this.state.date}
-                // />}
-                // showCalendar={this.state.showCalendar}
-                // visitResultObject={this.generateVisitResultObject(this.state.date)}
+                orderedVisitID={this.props.orderedVisitID}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
                 // onOrderChange={this.onOrderChange}
             />
@@ -95,4 +89,10 @@ class VisitListScreenContainer extends Component {
     }
 }
 
-export {VisitListScreenContainer};
+function mapStateToProps(state) {
+    return {
+        orderedVisitID: state.visitOrder,
+    };
+}
+
+export default connect(mapStateToProps)(ScreenWithCalendarComponent(VisitListScreenContainer));
