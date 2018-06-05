@@ -1,13 +1,14 @@
 import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToObjectByKey} from '../utils/collectionUtils';
+import {addressDataService} from './AddressDataService';
 
 class PatientDataService {
     static getFlatPatient(patient) {
         return {
             patientID: patient.patientID,
             name: patient.name,
-            address: patient.address.addressID,
+            addressID: patient.address.addressID,
             primaryContact: patient.primaryContact,
             emergencyContact: patient.emergencyContact,
             notes: patient.notes,
@@ -19,7 +20,7 @@ class PatientDataService {
     static getFlatPatientMap(patients) {
         return arrayToObjectByKey(patients.map(patient => PatientDataService.getFlatPatient(patient)), 'patientID');
     }
-    
+
     constructor(floDB, store) {
         this.floDB = floDB;
         this.store = store;
@@ -30,7 +31,11 @@ class PatientDataService {
     }
 
     addPatientsToRedux(patients) {
-        this.store.dispatch({type: PatientActions.ADD_PATIENTS, patientList: PatientDataService.getFlatPatientMap(patients)});
+        this.store.dispatch({
+            type: PatientActions.ADD_PATIENTS,
+            patientList: PatientDataService.getFlatPatientMap(patients)
+        });
+        addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
     }
 }
 

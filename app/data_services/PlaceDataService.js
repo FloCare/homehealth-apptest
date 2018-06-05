@@ -1,6 +1,7 @@
 import {Place} from '../utils/data/schema';
 import {PlaceActions} from '../redux/Actions';
 import {arrayToObjectByKey} from '../utils/collectionUtils';
+import {addressDataService} from './AddressDataService';
 
 class PlaceDataService {
     static getFlatPlace(place) {
@@ -28,6 +29,7 @@ class PlaceDataService {
 
     addPlacesToRedux(places) {
         this.store.dispatch({type: PlaceActions.ADD_PLACES, placeList: PlaceDataService.getFlatPlaceMap(places)});
+        addressDataService.updateAddressesInRedux(places.map(place => place.address));
     }
 }
 

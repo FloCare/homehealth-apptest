@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Image, Text, View} from 'react-native';
 import firebase from 'react-native-firebase';
 import MapView, {Marker} from 'react-native-maps';
+import {connect} from 'react-redux';
 import * as MapUtils from '../../utils/MapUtils';
 import {VisitRow} from './VisitRow';
 import {floDB, VisitOrder} from '../../utils/data/schema';
@@ -207,4 +208,10 @@ function MapPanel(props) {
     );
 }
 
-export {VisitMapScreenController};
+function mapStateToProps(state) {
+    return {
+
+    };
+}
+
+export default connect(mapStateToProps)(VisitMapScreenController);

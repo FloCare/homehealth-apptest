@@ -11,6 +11,7 @@ import {RootReducer} from '../redux/RootReducer';
 import {initialiseService as initialisePatientService} from '../data_services/PatientDataService';
 import {initialiseService as initialiseStopService} from '../data_services/PlaceDataService';
 import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
+import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
 import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 
@@ -53,6 +54,7 @@ const StartApp = (key) => {
     initialiseVisitService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialisePatientService(FloDBProvider.db, store);
+    initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());

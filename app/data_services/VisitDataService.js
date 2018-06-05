@@ -170,7 +170,7 @@ class VisitDataService {
         }
     }
     
-    createVisits(visitOwners, midnightEpoch) {
+    createNewVisits(visitOwners, midnightEpoch) {
         const newVisits = [];
         this.floDB.write(() => {
             for (const visitSubject of visitOwners) {

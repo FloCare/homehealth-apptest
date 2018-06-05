@@ -200,7 +200,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onDone() {
-        visitDataService.createVisits(this.state.selectedItems.values(), this.state.date.valueOf());
+        visitDataService.createNewVisits(this.state.selectedItems.values(), this.state.date.valueOf());
         //This is the part where we create the new visit items
         // floDB.write(() => {
         //     for (const selectedItem of this.state.selectedItems.values()) {

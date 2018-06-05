@@ -31,28 +31,25 @@ const mapStateToProps = (state, ownProps) => {
     props.name = visitOwner.name;
     props.primaryContact = visitOwner.primaryContact;
 
+    const address = state.addresses[visitOwner.addressID];
+    props.coordinates = {
+        latitude: address.latitude,
+        longitude: address.longitude
+    };
+    props.formattedAddress = address.formattedAddress;
+
     return props;
 };
 
 function VisitCardGenerator({onDoneTogglePress}) {
     class RenderRow extends PureComponent {
-        constructor(props) {
-            super(props);
-
-            this.visitID = props.data;
-            this.phoneNumber = props.primaryContact;
-            // this.coordinates = this.visit.getAddress().coordinates;
-
-            this.safeOnDoneTogglePress = () => {
+        render() {
+            console.log('- - - - - - VisitCard Render- - - - - - - - ');
+            const safeOnDoneTogglePress = () => {
                 if (onDoneTogglePress) {
                     onDoneTogglePress(this.visitID);
                 }
             };
-        }
-
-        render() {
-            console.log('- - - - - - VisitCard Render- - - - - - - - ');
-
             return (
                 <Card
                     containerStyle={
@@ -69,7 +66,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                         </View>
                         <CustomCheckBox
                             checked={this.props.isDone}
-                            onPress={this.safeOnDoneTogglePress}
+                            onPress={safeOnDoneTogglePress}
                         />
                     </View>
                     <Divider style={{marginBottom: 4, marginRight: 15, height: 1.5, backgroundColor: '#dddddd'}} />
@@ -94,10 +91,10 @@ function VisitCardGenerator({onDoneTogglePress}) {
                                 }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.phoneNumber ? 1 : 0.4}}>
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.props.primaryContact ? 1 : 0.4}}>
                                 <Image
                                     source={Images.call}
-                                    style={!this.phoneNumber ? {tintColor: 'black'} : {}}
+                                    style={!this.props.primaryContact ? {tintColor: 'black'} : {}}
                                 />
                                 <StyledText
                                     style={{fontSize: 14, color: '#222222'}}
@@ -113,15 +110,13 @@ function VisitCardGenerator({onDoneTogglePress}) {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     type: parameterValues.NAVIGATION
                                 });
-                                if (this.props.coordinates !== null) {
-                                    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates}`).catch(err => console.error('An error occurred', err));
-                                }
+                                if (this.props.coordinates !== null) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`).catch(err => console.error('An error occurred', err)); }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.coordinates ? 1 : 0.4}}>
+                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.props.coordinates ? 1 : 0.4}}>
                                 <Image
                                     source={Images.navigate}
-                                    style={!this.coordinates ? {tintColor: 'black'} : {}}
+                                    style={!this.props.coordinates ? {tintColor: 'black'} : {}}
                                 />
                                 <StyledText
                                     style={{fontSize: 14, color: '#222222'}}
