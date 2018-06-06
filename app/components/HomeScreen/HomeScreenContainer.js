@@ -11,6 +11,7 @@ import Fab from '../common/Fab';
 // import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
+import {dateService} from '../../data_services/DateService';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -69,8 +70,8 @@ class HomeScreenContainer extends Component {
     }
 
     onDateSelected(date) {
-        if (!date.isSame(this.state.date, 'day')) {
-            this.setState({date});
+        if (!date.isSame(this.props.date, 'day')) {
+            dateService.setDate(date.valueOf());
         }
         console.log(date.format());
     }
