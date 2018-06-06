@@ -12,7 +12,7 @@ class VisitDataService {
         return {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
-            place: !isPatientVisit ? visit.getPlace().placeID : null,
+            placeID: !isPatientVisit ? visit.getPlace().placeID : null,
             isDone: visit.isDone,
             isPatientVisit
         };
