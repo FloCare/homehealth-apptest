@@ -4,12 +4,11 @@ import firebase from 'react-native-firebase';
 import {Button} from 'react-native-elements';
 import t from 'tcomb-form-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {floDB, Place} from '../../utils/data/schema';
 import styles from './styles';
 import {Options} from './AddStopFormModel';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {eventNames} from '../../utils/constants';
-import {parsePhoneNumber} from '../../utils/lib';
+import {placeDataService} from '../../data_services/PlaceDataService';
 
 const Form = t.form.Form;
 
@@ -132,100 +131,13 @@ class AddStopFormContainer extends Component {
 
         // Todo Doesn't make sense for the remember me currently, hence removing it
         if (value) {
-            let placeId = null;
-            if (this.edit) {
-                placeId = this.state.value.placeID;
-                console.log('Editing not adding the place with ID:', placeId);
-                try {
-                    floDB.write(() => {
-                        // find the stop to update
-                        const place = floDB.objectForPrimaryKey(Place.schema.name, placeId);
-                        // Edit the corresponding address info
-                        if (this.state.value.lat && this.state.value.long) {
-                            place.address = {
-                                addressID: this.state.value.addressID,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
-                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
-                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
-                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
-                                isValidated: true
-                            };
-                            place.address.coordinates = {
-                                latitude: this.state.value.lat,
-                                longitude: this.state.value.long
-                            };
-                        } else {
-                            place.address = {
-                                addressID: this.state.value.addressID,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
-                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
-                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
-                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
-                                isValidated: false
-                            };
-                        }
-                        // Edit the stop info
-                        floDB.create(Place.schema.name, {
-                            placeID: placeId,
-                            name: this.state.value.stopName ? this.state.value.stopName.toString().trim() : '',
-                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString().trim()) : '',
-                        }, this.edit);
-                    });
-                } catch (err) {
-                    console.log('Error on stop editing: ', err);
-                    // Todo: Raise an error to the screen
-                    return;
-                }
-            } else {
-                console.log('Adding, not editing');
-                placeId = Math.random().toString();
-                const addressId = Math.random().toString();
-
-                try {
-                    floDB.write(() => {
-                        const stop = floDB.create(Place.schema.name, {
-                            placeID: placeId,
-                            name: this.state.value.stopName,
-                            primaryContact: this.state.value.primaryContact
-                        });
-
-                        if (this.state.value.lat && this.state.value.long) {
-                            stop.address = {
-                                addressID: addressId,
-                                streetAddress: this.state.value.streetAddress,
-                                zipCode: this.state.value.zip,
-                                city: this.state.value.city,
-                                state: this.state.value.state,
-                                country: this.state.value.country,
-                                isValidated: true
-                            };
-                            stop.address.coordinates = {
-                                latitude: this.state.value.lat,
-                                longitude: this.state.value.long
-                            };
-                        } else {
-                            stop.address = {
-                                addressID: addressId,
-                                streetAddress: this.state.value.streetAddress,
-                                zipCode: this.state.value.zip,
-                                city: this.state.value.city,
-                                state: this.state.value.state,
-                                country: this.state.value.country,
-                                isValidated: false
-                            };
-                        }
-
-                    });
-                    firebase.analytics().logEvent(eventNames.ADD_STOP, {});
-                    console.log('Save to DB successful');
-                } catch (err) {
-                    console.log('Error on Stop addition: ', err);
-                    // Todo Don't fail silently, raise an alarm
-                }
+            try {
+                placeDataService.createNewPlace(this.state.value);
+                firebase.analytics().logEvent(eventNames.ADD_STOP, {});
+                console.log('Save to DB successful');
+            } catch (err) {
+                console.log('Error on Stop addition: ', err);
+                // Todo Don't fail silently, raise and alarm
             }
         }
         // const places = floDB.objects(Place.schema.name)

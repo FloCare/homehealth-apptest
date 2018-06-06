@@ -31,6 +31,22 @@ class PlaceDataService {
         this.store.dispatch({type: PlaceActions.ADD_PLACES, placeList: PlaceDataService.getFlatPlaceMap(places)});
         addressDataService.updateAddressesInRedux(places.map(place => place.address));
     }
+
+    createNewPlace(place) {
+        // Todo: Add proper ID generators
+        const placeId = Math.random().toString();
+        const addressId = Math.random().toString();
+
+        this.floDB.write(() => {
+            const stop = this.floDB.create(Place.schema.name, {
+                placeID: placeId,
+                name: place.stopName,
+                primaryContact: place.primaryContact
+            });
+
+            addressDataService.addAddressToTransaction(stop, place, addressId);
+        });
+    }
 }
 
 export let placeDataService;
