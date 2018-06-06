@@ -2,6 +2,7 @@ import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToObjectByKey} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
+import {parsePhoneNumber} from '../utils/lib';
 
 class PatientDataService {
     static getFlatPatient(patient) {
@@ -28,6 +29,51 @@ class PatientDataService {
 
     getPatientByID(patientID) {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
+    }
+
+    createNewPatient(patient) {
+        // Todo: Add proper ID generators
+        // Create a patient, create & add an address, and create & add an episode
+        const patientId = Math.random().toString();
+        const episodeId = Math.random().toString();
+        const addressId = Math.random().toString();
+
+        this.floDB.write(() => {
+            // Add the patient
+            const newPatient = this.floDB.create(Patient.schema.name, {
+                patientID: patientId,
+                name: patient.name ? patient.name.toString().trim() : '',
+                primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
+                emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
+                notes: patient.notes ? patient.notes.toString().trim() : '',
+                timestamp: 0,                                   // Todo: Add a timestmap
+            });
+
+            addressDataService.addAddressToTransaction(newPatient, patient, addressId);
+
+            // Todo: Add an episode, Move this to its own Data Service
+            newPatient.episodes.push({
+                episodeID: episodeId,
+                diagnosis: []
+            });
+        });
+    }
+
+    editExistingPatient(patientId, patient) {
+        const oldPatient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
+
+        // Edit the corresponding address info
+        addressDataService.addAddressToTransaction(oldPatient, patient, patient.addressID);
+
+        // Edit the patient info
+        this.floDB.create(Patient.schema.name, {
+            patientID: patient.patientID,
+            name: patient.name ? patient.name.toString().trim() : '',
+            primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
+            emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
+            notes: patient.notes ? patient.notes.toString().trim() : '',
+            timestamp: 0,                                   // Todo: Add a timestmap
+        }, true);
     }
 
     addPatientsToRedux(patients) {

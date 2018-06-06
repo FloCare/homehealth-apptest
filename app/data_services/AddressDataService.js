@@ -33,6 +33,40 @@ class AddressDataService {
     updateAddressesInRedux(addresses) {
         this.store.dispatch({type: AddressActions.EDIT_ADDRESSES, addressList: AddressDataService.getFlatAddressMap(addresses)});
     }
+
+    // Todo: Complete this
+    // Should be a part of a realm write transaction
+    addAddressToTransaction(owner, address, addressId) {
+        if (owner) {
+            if (address.lat && address.long) {
+                owner.address = {
+                    addressID: addressId,
+                    streetAddress: address.streetAddress ? address.streetAddress.toString().trim() : '',
+                    apartmentNo: address.apartmentNo ? address.apartmentNo.toString().trim() : '',
+                    zipCode: address.zip ? address.zip.toString().trim() : '',
+                    city: address.city ? address.city.toString().trim() : '',
+                    state: address.state ? address.state.toString().trim() : '',
+                    country: address.country ? address.country.toString().trim() : 'US',
+                    isValidated: true
+                };
+                owner.address.coordinates = {
+                    latitude: address.lat,
+                    longitude: address.long
+                };
+            } else {
+                owner.address = {
+                    addressID: addressId,
+                    streetAddress: address.streetAddress ? address.streetAddress.toString().trim() : '',
+                    apartmentNo: address.apartmentNo ? address.apartmentNo.toString().trim() : '',
+                    zipCode: address.zip ? address.zip.toString().trim() : '',
+                    city: address.city ? address.city.toString().trim() : '',
+                    state: address.state ? address.state.toString().trim() : '',
+                    country: address.country ? address.country.toString().trim() : 'US',
+                    isValidated: false
+                };
+            }
+        }
+    }
 }
 
 export let addressDataService;

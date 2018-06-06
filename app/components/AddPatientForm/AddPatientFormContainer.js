@@ -2,13 +2,14 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {View} from 'react-native';
 import {Button} from 'react-native-elements';
-import {floDB, Patient} from '../../utils/data/schema';
+//import {floDB, Patient} from '../../utils/data/schema';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
-import {parsePhoneNumber} from '../../utils/lib';
+//import {parsePhoneNumber} from '../../utils/lib';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {PrimaryFontFamily, eventNames} from '../../utils/constants';
+import {patientDataService} from '../../data_services/PatientDataService';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -137,110 +138,15 @@ class AddPatientFormContainer extends Component {
                 patientId = this.state.value.patientID;
 
                 try {
-                    floDB.write(() => {
-                        // find the patient to update
-                        const patient = floDB.objectForPrimaryKey(Patient.schema.name, patientId);
-
-                        // Edit the corresponding address info
-                        if (this.state.value.lat && this.state.value.long) {
-                            patient.address = {
-                                addressID: this.state.value.addressID,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
-                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
-                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
-                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
-                                isValidated: true
-                            };
-                            patient.address.coordinates = {
-                                latitude: this.state.value.lat,
-                                longitude: this.state.value.long
-                            };
-                        } else {
-                            patient.address = {
-                                addressID: this.state.value.addressID,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
-                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
-                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
-                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
-                                isValidated: false
-                            };
-                        }
-
-                        // Edit the patient info
-                        floDB.create(Patient.schema.name, {
-                            patientID: this.state.value.patientID,
-                            name: this.state.value.name ? this.state.value.name.toString().trim() : '',
-                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString().trim()) : '',
-                            emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString().trim()) : '',
-                            notes: this.state.value.notes ? this.state.value.notes.toString().trim() : '',
-                            timestamp: 0,                                   // Todo: Add a timestmap
-                        }, this.edit);
-                    });
+                    patientDataService.editExistingPatient(patientId, this.state.value);
                 } catch (err) {
                     console.log('Error on Patient and Episode creation: ', err);
                     // Todo: Raise an error to the screen
                     return;
                 }
-
-                // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
             } else {
-                // Todo: Add proper ID generators
-                patientId = Math.random().toString();
-                const episodeId = Math.random().toString();
-                const addressId = Math.random().toString();
-
                 try {
-                    floDB.write(() => {
-                        // Add the patient
-                        const patient = floDB.create(Patient.schema.name, {
-                            patientID: patientId,
-                            name: this.state.value.name ? this.state.value.name.toString().trim() : '',
-                            primaryContact: this.state.value.primaryContact ? parsePhoneNumber(this.state.value.primaryContact.toString().trim()) : '',
-                            emergencyContact: this.state.value.emergencyContact ? parsePhoneNumber(this.state.value.emergencyContact.toString().trim()) : '',
-                            notes: this.state.value.notes ? this.state.value.notes.toString().trim() : '',
-                            timestamp: 0,                                   // Todo: Add a timestmap
-                        });
-
-                        // Add the corresponding address
-                        if (this.state.value.lat && this.state.value.long) {
-                            patient.address = {
-                                addressID: addressId,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
-                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
-                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
-                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
-                                isValidated: true
-                            };
-                            patient.address.coordinates = {
-                                latitude: this.state.value.lat,
-                                longitude: this.state.value.long
-                            };
-                        } else {
-                            patient.address = {
-                                addressID: addressId,
-                                streetAddress: this.state.value.streetAddress ? this.state.value.streetAddress.toString().trim() : '',
-                                apartmentNo: this.state.value.apartmentNo ? this.state.value.apartmentNo.toString().trim() : '',
-                                zipCode: this.state.value.zip ? this.state.value.zip.toString().trim() : '',
-                                city: this.state.value.city ? this.state.value.city.toString().trim() : '',
-                                state: this.state.value.state ? this.state.value.state.toString().trim() : '',
-                                country: this.state.value.country ? this.state.value.country.toString().trim() : 'US',
-                                isValidated: false
-                            };
-                        }
-
-                        // Add an Episode
-                        patient.episodes.push({
-                            episodeID: episodeId,
-                            diagnosis: []                                   // Todo: Add diagnosis
-                        });
-                    });
-                    console.log(this.state.value.notes);
+                    patientDataService.createNewPatient(this.state.value);
                     firebase.analytics().logEvent(eventNames.PATIENT_ADDED, {});
                 } catch (err) {
                     console.log('Error on Patient and Episode creation: ', err);

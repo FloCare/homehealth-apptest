@@ -50,7 +50,10 @@ const StartApp = (key) => {
         throw err;
     }
 
+    // Initialize the Redux Store
     const store = createStore(RootReducer);
+
+    // Initialize Data Services, pass it the db and store instances
     initialiseVisitService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialisePatientService(FloDBProvider.db, store);
@@ -59,6 +62,7 @@ const StartApp = (key) => {
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
 
+    // Register the screens
     try {
         RegisterScreens(store, Provider);
     } catch (err) {
