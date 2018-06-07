@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View, Platform} from 'react-native';
+import moment from 'moment';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
 import {CalendarStripStyled} from './CalendarStripStyled';
 
@@ -13,7 +14,7 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 this.getNavigatorButtons = this.getNavigatorButtons.bind(this);
 
                 this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
-                this.props.navigator.setTitle({title: props.date.format('MMMM Do')});
+                this.props.navigator.setTitle({title: moment(props.date).utc().format('MMMM Do')});
 
                 this.state = {
                     date: props.date,

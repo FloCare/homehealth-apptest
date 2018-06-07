@@ -91,6 +91,7 @@ class VisitListScreenContainer extends Component {
 
 function mapStateToProps(state) {
     return {
+        date: state.date,
         orderedVisitID: state.visitOrder,
     };
 }

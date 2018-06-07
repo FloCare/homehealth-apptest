@@ -51,7 +51,7 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
     Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
     Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(VisitListScreenContainer), store, Provider);
-    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(ScreenWithCalendarComponent(VisitMapScreenController)));
+    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(VisitMapScreenController), store, Provider);
     Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInactivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
     Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));
     Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer), store, Provider);

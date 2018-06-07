@@ -6,7 +6,6 @@ import {TouchableWithoutFeedback} from 'react-native';
 
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
-import {arrayToObjectByKey} from '../../utils/collectionUtils';
 import {visitDataService} from '../../data_services/VisitDataService';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
@@ -17,26 +16,28 @@ class SortedVisitListContainer extends Component {
         renderFunctionGenerator: PropTypes.func.isRequired,
     };
 
-    static performValidityCheck(orderedVisitList) {
-        let doneFlag;
-        for (const visit of orderedVisitList) {
-            if (!visit.isDone) {
-                if (doneFlag === undefined) {
-                    doneFlag = false;
-                } else if (doneFlag === true) {
-                    return false;
-                }
-            } else doneFlag = true;
-        }
-        return true;
-    }
+    // static performValidityCheck(orderedVisitList) {
+    //     let doneFlag;
+    //     for (const visit of orderedVisitList) {
+    //         if (!visit.isDone) {
+    //             if (doneFlag === undefined) {
+    //                 doneFlag = false;
+    //             } else if (doneFlag === true) {
+    //                 return false;
+    //             }
+    //         } else doneFlag = true;
+    //     }
+    //     return true;
+    // }
 
     constructor(props) {
         super(props);
         this.orderIndexMovingCache = undefined;
         // this.orderIndexCache = undefined;
 
-        // this.state = this.getStateFromDate(props.date);
+        this.state = {
+            visitData: this.plainVisitIDArrayToMap(props.orderedVisitID),
+        };
 
         this.onOrderChange = this.onOrderChange.bind(this);
         this.onReleaseRow = this.onReleaseRow.bind(this);
@@ -56,16 +57,13 @@ class SortedVisitListContainer extends Component {
     //     });
     // }
 
+    plainVisitIDArrayToMap(visitList) {
+        return visitList.reduce((accumulator, currentID) => { accumulator[currentID] = currentID; return accumulator; }, {});
+    }
+
     componentWillReceiveProps(nextProps) {
-        //TODO avoid this many rerenders
-
-        this.orderedVisitID = nextProps.orderedVisitID.reduce((accumulator, currentID) => { accumulator[currentID] = currentID; return accumulator; }, {});
-
         console.log('SortedVisitListHasReceivedProps');
-        console.log(nextProps.orderedVisitID);
-        // const nextState = this.getStateFromDate(nextProps.date);
-        // this.setState(nextState);
-        this.forceUpdate();
+        this.setState({visitData: this.plainVisitIDArrayToMap(nextProps.orderedVisitID)});
     }
 
     // appendCompletedVisits(order) {
@@ -113,41 +111,10 @@ class SortedVisitListContainer extends Component {
             //     console.log('failed validity check');
             // }
 
-            if (this.props.onOrderChange) { this.props.onOrderChange(this.orderIndexMovingCache.map(index => this.props.orderedVisitID[index])); }
+            if (this.props.onOrderChange) { this.props.onOrderChange(this.orderIndexMovingCache); }
         }
         this.orderIndexMovingCache = undefined;
     }
-
-    tweakVisitListOrder(visitList) {
-        //TODO make this process cleaner
-        let tweakedVisitList = [];
-        if (this.props.hideIncompleteAddress) {
-            for (let i = 0; i < visitList.length; i++) {
-                if (visitList[i].getAddress().coordinates) {
-                    //TODO review this
-                    tweakedVisitList.push(visitList[i]);
-                }
-            }
-        } else tweakedVisitList.push(...visitList);
-        //TODO delicate logic here, make it more robust
-        if (this.props.isCompletedHidden) {
-            console.log('here');
-            for (let i = 0; i < tweakedVisitList.length; i++) {
-                if (tweakedVisitList[i].isDone) {
-                    tweakedVisitList = tweakedVisitList.slice(0, i);
-                    break;
-                }
-            }
-        }
-        tweakedVisitList = this.props.singleEntry ? tweakedVisitList.slice(0, 1) : tweakedVisitList;
-
-        // if (this.props.onOrderChange) {
-        //     this.props.onOrderChange(tweakedVisitList);
-        // }
-
-        return tweakedVisitList;
-    }
-
 
     getAugmentedRenderFunction(renderFunctionGenerator) {
         const renderFunctionWithCallbacks = renderFunctionGenerator({
@@ -198,10 +165,10 @@ class SortedVisitListContainer extends Component {
     }
 
     render() {
-        return (
+       return (
             <SortableList
                 style={this.props.style}
-                data={this.props.orderedVisitID}
+                data={this.state.visitData}
                 onPressRow={this.onPressRow.bind(this)}
                 renderRow={this.renderRow}
                 scrollEnabled={this.props.scrollEnabled}

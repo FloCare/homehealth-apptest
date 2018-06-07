@@ -47,7 +47,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
             console.log('- - - - - - VisitCard Render- - - - - - - - ');
             const safeOnDoneTogglePress = () => {
                 if (onDoneTogglePress) {
-                    onDoneTogglePress(this.visitID);
+                    onDoneTogglePress(this.props.visitID);
                 }
             };
             return (

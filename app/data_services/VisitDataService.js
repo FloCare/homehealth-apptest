@@ -1,6 +1,6 @@
 import {Patient, Visit, VisitOrder} from '../utils/data/schema';
 import {VisitActions, VisitOrderActions} from '../redux/Actions';
-import {arrayToMap, arrayToObjectByKey} from '../utils/collectionUtils';
+import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {generateUUID} from '../utils/utils';
 import {patientDataService} from './PatientDataService';
 import {placeDataService} from './PlaceDataService';
@@ -35,6 +35,27 @@ class VisitDataService {
         this.store.dispatch({type: VisitOrderActions.SET_ORDER, visitOrder: visitOrder.map(visit => visit.visitID)});
     }
 
+    updateVisitOrderToReduxIfLive(visitList, midnightEpoch) {
+        // console.log('checking to see if visit order date matches state date');
+        if (this.store.getState().date === midnightEpoch) {
+            // console.log('checking to see if visit order date matches state date');
+            this.setVisitOrderInRedux(visitList);
+        }
+    }
+
+    setVisitOrderByID(orderedVisitID, midnightEpoch) {
+        const allVisits = this.floDB.objects(Visit);
+        const currentVisitListByID = arrayToObjectByKey(filterResultObjectByListMembership(allVisits, 'visitID', orderedVisitID), 'visitID');
+
+        const visitOrder = this.floDB.objectForPrimaryKey(VisitOrder, midnightEpoch);
+        this.floDB.write(() => {
+            visitOrder.visitList = orderedVisitID.map(visitID => currentVisitListByID[visitID]);
+        });
+
+        // console.log(visitOrder);
+        this.updateVisitOrderToReduxIfLive(visitOrder.visitList, midnightEpoch);
+    }
+
     updateVisitToRedux(visit) {
         this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitDataService.getFlatVisitMap([visit])});
     }
@@ -59,13 +80,8 @@ class VisitDataService {
         this.setVisitOrderInRedux(visitOrder.visitList);
     }
 
-    updateVisitOrderToReduxIfLive(visitOrder) {
-        if (this.store.getState().date === visitOrder.midnightEpoch) {
-            this.setVisitOrderInRedux(visitOrder.visitList);
-        }
-    }
-
     toggleVisitDone(visitID) {
+        console.log(`${visitID}toggled`);
         const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
 
         if (!visit.isDone) {
@@ -94,7 +110,7 @@ class VisitDataService {
         });
 
         this.updateVisitToRedux(visit);
-        this.updateVisitOrderToReduxIfLive(currentVisitOrder);
+        this.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
     //TODO verify correctness
@@ -127,7 +143,7 @@ class VisitDataService {
         });
 
         this.updateVisitToRedux(visit);
-        this.updateVisitOrderToReduxIfLive(currentVisitOrder);
+        this.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
     insertToOrderedVisits(visits, midnightEpoch) {
@@ -157,8 +173,6 @@ class VisitDataService {
         this.floDB.write(() => {
                     visitOrderObject.visitList = newVisitOrder;
                 });
-
-        // TODO write order to realm
 
         //TELLING REDUX ABOUT IT
         if (midnightEpoch === this.store.getState().date) {

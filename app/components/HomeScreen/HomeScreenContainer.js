@@ -4,12 +4,10 @@ import {connect} from 'react-redux';
 import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
-import {floDB, VisitOrder} from '../../utils/data/schema';
 import {HomeScreen} from './HomeScreen';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import Fab from '../common/Fab';
 // import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
-import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
 import {dateService} from '../../data_services/DateService';
 
@@ -112,30 +110,16 @@ class HomeScreenContainer extends Component {
         });
     }
 
-    navigateToVisitMapScreen(showCompleted) {
+    navigateToVisitMapScreen() {
         firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
             type: parameterValues.MAP
         });
-        const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.props.date.valueOf());
-        if (visitOrderObject.visitList) {
-            const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList, showCompleted);
-            if (visitOrderList.length > 0) {
-                this.props.navigator.push({
-                    screen: screenNames.visitMapScreen,
-                    passProps: {
-                        date: moment(this.props.date).utc(),
-                        // onOrderChange: this.onOrderChange.bind(this),
-                        onNavigationEvent: this.onNavigatorEvent,
-                        showCompleted
-                    },
-                    navigatorStyle: {
-                        tabBarHidden: true
-                    }
-                });
-            } else {
-                //TODO display an error message here
+        this.props.navigator.push({
+            screen: screenNames.visitMapScreen,
+            navigatorStyle: {
+                tabBarHidden: true
             }
-        }
+        });
     }
 
     navigateToAddNote() {
