@@ -38,9 +38,10 @@ class PatientDataService {
         const episodeId = Math.random().toString();
         const addressId = Math.random().toString();
 
+        let newPatient = null;
         this.floDB.write(() => {
             // Add the patient
-            const newPatient = this.floDB.create(Patient.schema.name, {
+            newPatient = this.floDB.create(Patient.schema.name, {
                 patientID: patientId,
                 name: patient.name ? patient.name.toString().trim() : '',
                 primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
@@ -57,23 +58,40 @@ class PatientDataService {
                 diagnosis: []
             });
         });
+        if (newPatient) {
+            this.addPatientsToRedux([newPatient]);
+        }
     }
 
     editExistingPatient(patientId, patient) {
-        const oldPatient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
+        let patientObj = null;
+        this.floDB.write(() => {
+            patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
-        // Edit the corresponding address info
-        addressDataService.addAddressToTransaction(oldPatient, patient, patient.addressID);
+            // Edit the corresponding address info
+            addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID);
 
-        // Edit the patient info
-        this.floDB.create(Patient.schema.name, {
-            patientID: patient.patientID,
-            name: patient.name ? patient.name.toString().trim() : '',
-            primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
-            emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
-            notes: patient.notes ? patient.notes.toString().trim() : '',
-            timestamp: 0,                                   // Todo: Add a timestmap
-        }, true);
+            // Edit the patient info
+            this.floDB.create(Patient.schema.name, {
+                patientID: patient.patientID,
+                name: patient.name ? patient.name.toString().trim() : '',
+                primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
+                emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
+                notes: patient.notes ? patient.notes.toString().trim() : '',
+                timestamp: 0,                                   // Todo: Add a timestmap
+            }, true);
+        });
+        if (patientObj) {
+            this.updatePatientsInRedux([patientObj]);
+        }
+    }
+
+    updatePatientsInRedux(patients) {
+        this.store.dispatch({
+            type: PatientActions.EDIT_PATIENTS,
+            patientList: PatientDataService.getFlatPatientMap(patients)
+        });
+        addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
     }
 
     addPatientsToRedux(patients) {

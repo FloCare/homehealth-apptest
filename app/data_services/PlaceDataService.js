@@ -27,6 +27,14 @@ class PlaceDataService {
         return this.floDB.objectForPrimaryKey(Place, placeID);
     }
 
+    updatePlacesInRedux(places) {
+        this.store.dispatch({
+            type: PlaceActions.EDIT_PLACES,
+            patientList: PlaceActions.getFlatPlaceMap(places)
+        });
+        addressDataService.updateAddressesInRedux(places.map(place => place.address));
+    }
+
     addPlacesToRedux(places) {
         this.store.dispatch({type: PlaceActions.ADD_PLACES, placeList: PlaceDataService.getFlatPlaceMap(places)});
         addressDataService.updateAddressesInRedux(places.map(place => place.address));
@@ -37,15 +45,19 @@ class PlaceDataService {
         const placeId = Math.random().toString();
         const addressId = Math.random().toString();
 
+        let newPlace = null;
         this.floDB.write(() => {
-            const stop = this.floDB.create(Place.schema.name, {
+            newPlace = this.floDB.create(Place.schema.name, {
                 placeID: placeId,
                 name: place.stopName,
                 primaryContact: place.primaryContact
             });
 
-            addressDataService.addAddressToTransaction(stop, place, addressId);
+            addressDataService.addAddressToTransaction(newPlace, place, addressId);
         });
+        if (newPlace) {
+            this.addPlacesToRedux([newPlace]);
+        }
     }
 }
 

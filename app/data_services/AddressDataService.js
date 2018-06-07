@@ -34,7 +34,6 @@ class AddressDataService {
         this.store.dispatch({type: AddressActions.EDIT_ADDRESSES, addressList: AddressDataService.getFlatAddressMap(addresses)});
     }
 
-    // Todo: Complete this
     // Should be a part of a realm write transaction
     addAddressToTransaction(owner, address, addressId) {
         if (owner) {
