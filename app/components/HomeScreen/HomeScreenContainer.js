@@ -98,11 +98,9 @@ class HomeScreenContainer extends Component {
             type: parameterValues.LIST
         });
         this.props.navigator.push({
-            screen: screenNames.visitListScreen,
+            screen: screenNames.visitDayViewScreen,
             passProps: {
-                date: moment(this.props.date).utc(),
-                // onOrderChange: this.onOrderChange.bind(this),
-                // onNavigationEvent: this.onNavigatorEvent
+                selectedScreen: 'list',
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -115,7 +113,10 @@ class HomeScreenContainer extends Component {
             type: parameterValues.MAP
         });
         this.props.navigator.push({
-            screen: screenNames.visitMapScreen,
+            screen: screenNames.visitDayViewScreen,
+            passProps: {
+                selectedScreen: 'map',
+            },
             navigatorStyle: {
                 tabBarHidden: true
             }

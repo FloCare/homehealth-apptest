@@ -13,20 +13,6 @@ import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
 class VisitMapScreenContainer extends Component {
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                icon: Images.listView,
-                id: 'list-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                buttonColor: '#fffff'
-            },
-            // {
-            //     id: 'calendar-picker',
-            //     icon: Images.calendarSelected
-            // }
-        ]
-    };
-
     static getViewportFromVisitCoordinates(visitList) {
         const coordinatesList = [];
         for (const visit of visitList) {

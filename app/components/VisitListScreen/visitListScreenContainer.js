@@ -10,26 +10,13 @@ import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent
 import {visitDataService} from '../../data_services/VisitDataService';
 
 class VisitListScreenContainer extends Component {
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                id: 'map-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                icon: Images.mapView
-            },
-            // {
-            //     id: 'calendar-picker',
-            //     icon: Images.calendarSelected
-            // }
-        ]
-    };
-
     constructor(props) {
         super(props);
         this.state = {
             date: props.date,
             // showCalendar: false
         };
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
@@ -55,12 +42,6 @@ class VisitListScreenContainer extends Component {
                 tabBarHidden: true
             }
         });
-    }
-
-    onNavigatorEvent(event) {
-        if (this.props.onNavigatorEvent) {
-            this.props.onNavigatorEvent(event);
-        }
     }
 
     onOrderChange(newOrder) {

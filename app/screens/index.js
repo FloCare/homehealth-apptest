@@ -17,6 +17,7 @@ import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/sche
 import {MoreScreen} from '../components/MoreScreen/MoreScreen';
 import {LegalScreen} from '../components/LegalScreen';
 import LockOnInactivity from '../components/common/LockOnInactivity';
+import {VisitDayViewScreen} from '../components/VisitDayViewScreen';
 
 const RegisterScreens = (store, Provider) => {
     if (floDB.objects(Visit.schema.name).length === 0) {
@@ -50,8 +51,9 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
     Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
-    Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(VisitListScreenContainer), store, Provider);
-    Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(VisitMapScreenController), store, Provider);
+    // Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(VisitListScreenContainer), store, Provider);
+    // Navigation.registerComponent(screenNames.visitMapScreen, () => LockOnInactivity(VisitMapScreenController), store, Provider);
+    Navigation.registerComponent(screenNames.visitDayViewScreen, () => LockOnInactivity(VisitDayViewScreen), store, Provider);
     Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInactivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
     Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));
     Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer), store, Provider);
