@@ -12,7 +12,6 @@ function VisitListScreen(props) {
             <SortedVisitListContainer
                 navigator={props.navigator}
                 style={{flex: 1}}
-                date={props.date}
                 orderedVisitID={props.orderedVisitID}
                 renderFunctionGenerator={VisitCardGenerator}
                 tapForDetails

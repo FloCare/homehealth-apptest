@@ -37,6 +37,7 @@ class SortedVisitListContainer extends Component {
 
         this.state = {
             visitData: this.plainVisitIDArrayToMap(props.orderedVisitID),
+            order: props.orderedVisitID
         };
 
         this.onOrderChange = this.onOrderChange.bind(this);
@@ -63,7 +64,7 @@ class SortedVisitListContainer extends Component {
 
     componentWillReceiveProps(nextProps) {
         console.log('SortedVisitListHasReceivedProps');
-        this.setState({visitData: this.plainVisitIDArrayToMap(nextProps.orderedVisitID)});
+        this.setState({visitData: this.plainVisitIDArrayToMap(nextProps.orderedVisitID), order: nextProps.orderedVisitID});
     }
 
     // appendCompletedVisits(order) {
@@ -169,6 +170,7 @@ class SortedVisitListContainer extends Component {
             <SortableList
                 style={this.props.style}
                 data={this.state.visitData}
+                order={this.state.order}
                 onPressRow={this.onPressRow.bind(this)}
                 renderRow={this.renderRow}
                 scrollEnabled={this.props.scrollEnabled}

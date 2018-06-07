@@ -7,6 +7,7 @@ import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schem
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
+import {visitDataService} from '../../data_services/VisitDataService';
 
 class VisitListScreenContainer extends Component {
     static navigatorButtons = {
@@ -31,7 +32,7 @@ class VisitListScreenContainer extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
-        // this.onOrderChange = this.onOrderChange.bind(this);
+        this.onOrderChange = this.onOrderChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -62,14 +63,12 @@ class VisitListScreenContainer extends Component {
         }
     }
 
-    // onOrderChange(newOrder) {
-    //     // console.log('visitListScreen congainer callback');
-    //     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
-    //         'type': parameterValues.DND
-    //     });
-    //     // this.forceUpdate();
-    //     // this.props.onOrderChange(newOrder);
-    // }
+    onOrderChange(newOrder) {
+        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+            type: parameterValues.DND
+        });
+        visitDataService.setVisitOrderByID(newOrder, this.props.date);
+    }
 
     generateVisitResultObject(date) {
         return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', this.state.date.valueOf()).sorted('isDone');//date);//.sorted('isDone');
@@ -80,10 +79,9 @@ class VisitListScreenContainer extends Component {
         return (
             <VisitListScreen
                 navigator={this.props.navigator}
-                date={this.state.date}
                 orderedVisitID={this.props.orderedVisitID}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
-                // onOrderChange={this.onOrderChange}
+                onOrderChange={this.onOrderChange}
             />
         );
     }
