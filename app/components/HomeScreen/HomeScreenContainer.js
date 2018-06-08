@@ -178,11 +178,11 @@ class HomeScreenContainer extends Component {
             },
             passProps: {
                 date: moment(this.props.date).utc(),
-                // onDone: () => {
+                onDone: () => {
                 //     // this.onOrderChange();
                 //     // this.props.navigator.pop();
-                //     this.navigateToVisitListScreen();
-                // }
+                    this.navigateToVisitListScreen();
+                }
             }
         });
     }
