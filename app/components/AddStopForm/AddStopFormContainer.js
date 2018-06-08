@@ -105,7 +105,7 @@ class AddStopFormContainer extends Component {
     }
 
     getDefaultValue() {
-        return this.state.value.streetAddress;
+        return this.state.value.streetAddress || '';
     }
 
     clearForm() {
@@ -131,18 +131,30 @@ class AddStopFormContainer extends Component {
 
         // Todo Doesn't make sense for the remember me currently, hence removing it
         if (value) {
-            try {
-                placeDataService.createNewPlace(this.state.value);
-                firebase.analytics().logEvent(eventNames.ADD_STOP, {});
-                console.log('Save to DB successful');
-            } catch (err) {
-                console.log('Error on Stop addition: ', err);
-                // Todo Don't fail silently, raise and alarm
+            let placeId = null;
+            if (this.edit) {
+                // update the changed fields in the database
+                console.log('Updating fields in the db');
+                placeId = this.state.value.placeID;
+
+                try {
+                    placeDataService.editExistingPlace(placeId, this.state.value);
+                } catch (err) {
+                    console.log('Error on Stop editing: ', err);
+                    // Todo: Raise an error to the screen
+                    return;
+                }
+            } else {
+                try {
+                    placeDataService.createNewPlace(this.state.value);
+                    firebase.analytics().logEvent(eventNames.ADD_STOP, {});
+                    console.log('Save to DB successful');
+                } catch (err) {
+                    console.log('Error on Stop addition: ', err);
+                    // Todo Don't fail silently, raise and alarm
+                }
             }
         }
-        // const places = floDB.objects(Place.schema.name)
-        // console.log('All places in DB:', places);
-
         this.clearForm();
         onSubmit();
     }

@@ -1,4 +1,4 @@
-import {Patient, Visit, VisitOrder} from '../utils/data/schema';
+import {Patient, Visit, VisitOrder, Place} from '../utils/data/schema';
 import {VisitActions, VisitOrderActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {generateUUID, todayMomentInUTCMidnight} from '../utils/utils';
@@ -210,13 +210,21 @@ class VisitDataService {
     }
 
     // Should be a part of a write transaction
-    deleteVisits(patient) {
+    deleteVisits(owner) {
         console.log('Deleting visits from realm');
         const today = todayMomentInUTCMidnight();
-        const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        let visits = null;
+        // Todo: Check if this works
+        if (owner instanceof Patient) {
+            console.log('Deleting patient');
+            visits = owner.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        } else if (owner instanceof Place) {
+            console.log('Deleting Place');
+            visits = owner.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        }
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
-        // TODO: Only iterate over dates where visit for that patient is actually present
+        // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {

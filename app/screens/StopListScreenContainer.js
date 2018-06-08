@@ -7,6 +7,7 @@ import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
+import {placeDataService} from "../data_services/PlaceDataService";
 
 class StopListScreenContainer extends Component {
     static navigatorButtons = {
@@ -114,28 +115,8 @@ class StopListScreenContainer extends Component {
                 const archiveStop = (id) => {
                     console.log('Archiving Stop');
                     try {
-                        const today = todayMomentInUTCMidnight();
-                        floDB.write(() => {
-                            const stop = floDB.objectForPrimaryKey(Place.schema.name, id);
-                            stop.archived = true;
-                            const visits = stop.visits.filtered(`midnightEpochOfVisit >= ${today}`);
-
-                            const visitOrders = floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
-                            // TODO: Only iterate over dates where visit for that Stop is actually present
-                            for (let i = 0; i < visitOrders.length; i++) {
-                                const visitList = [];
-                                for (let j = 0; j < visitOrders[i].visitList.length; j++) {
-                                    const visit = visitOrders[i].visitList[j];
-                                    if (!(visit.isOwnerArchived())) {
-                                        visitList.push(visit);
-                                    }
-                                }
-                                visitOrders[i].visitList = visitList;
-                            }
-                            floDB.delete(visits);
-                        });
+                        placeDataService.archivePlace(id);
                         Alert.alert('Success', 'Stop deleted successfully');
-                        makeCallbacks();
                     } catch (err) {
                         console.log('ERROR while archiving place:', err);
                         Alert.alert('Error', 'Unable to delete stop. Please try again later');

@@ -138,7 +138,7 @@ class AddPatientFormContainer extends Component {
                 try {
                     patientDataService.editExistingPatient(patientId, this.state.value);
                 } catch (err) {
-                    console.log('Error on Patient and Episode creation: ', err);
+                    console.log('Error on Patient and Episode edit: ', err);
                     // Todo: Raise an error to the screen
                     return;
                 }

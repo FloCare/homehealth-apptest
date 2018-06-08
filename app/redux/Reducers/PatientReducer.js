@@ -9,11 +9,16 @@ export default function PatientReducer(patients = {}, action) {
             return {...patients, ...action.patientList};
         case PatientActions.ARCHIVE_PATIENTS:
             const newPatients = {...patients};
-            Object.keys(action.patientList).map(
-                key => {
-                    newPatients[key].archived = true;
-                    return newPatients[key];
-                });
+            if (newPatients && action.patientList) {
+                Object.keys(action.patientList).map(
+                    key => {
+                        if (key in newPatients) {
+                            newPatients[key].archived = true;
+                            return newPatients[key];
+                        }
+                        return null;
+                    });
+            }
             return newPatients;
         default:
             return patients;

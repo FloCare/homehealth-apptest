@@ -32,6 +32,8 @@ const mapStateToProps = (state, ownProps) => {
     props.primaryContact = visitOwner.primaryContact;
 
     const address = state.addresses[visitOwner.addressID];
+    //console.log('Owner', visitOwner.name);
+    //console.log('Address:', address);
     props.coordinates = {
         latitude: address.latitude,
         longitude: address.longitude
@@ -110,7 +112,9 @@ function VisitCardGenerator({onDoneTogglePress}) {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     type: parameterValues.NAVIGATION
                                 });
-                                if (this.props.coordinates !== null) { Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`).catch(err => console.error('An error occurred', err)); }
+                                if (this.props.coordinates !== null) {
+                                    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`).catch(err => console.error('An error occurred', err));
+                                }
                             }}
                         >
                             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.props.coordinates ? 1 : 0.4}}>
