@@ -180,7 +180,7 @@ class HomeScreenContainer extends Component {
                 date: moment(this.props.date).utc(),
                 onDone: () => {
                 //     // this.onOrderChange();
-                //     // this.props.navigator.pop();
+                    this.props.navigator.pop();
                     this.navigateToVisitListScreen();
                 }
             }

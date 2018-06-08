@@ -102,7 +102,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                 navigateToVisitListScreen={props.navigateToVisitListScreen}
                 navigateToVisitMapScreen={props.navigateToVisitMapScreen}
                 onOrderChange={props.onOrderChange}
-                onPressAddVisit={props.onPressAddVisit}
+                onPressAddVisit={props.onPressAddVisitZeroState}
             />
         </View>
     );
