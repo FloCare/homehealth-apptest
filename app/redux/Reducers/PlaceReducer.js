@@ -3,20 +3,18 @@ import {PlaceActions} from '../Actions';
 export default function PlaceReducer(places = {}, action) {
     switch (action.type) {
         case PlaceActions.ADD_PLACES:
-            if (action.placeList) { return {...action.placeList, ...places}; }
+            if (action.placeMap) { return {...action.placeMap, ...places}; }
             return places;
         case PlaceActions.EDIT_PLACES:
-            return {...places, ...action.placeList};
+            return {...places, ...action.placeMap};
         case PlaceActions.ARCHIVE_PLACES:
             const newPlaces = {...places};
             if (newPlaces && action.placeList) {
-                Object.keys(action.placeList).map(
-                    key => {
-                        if (key in newPlaces) {
-                            newPlaces[key].archived = true;
-                            return newPlaces[key];
+                action.placeList.forEach(
+                    placeID => {
+                        if (newPlaces[placeID]) {
+                            newPlaces[placeID].archived = true;
                         }
-                        return null;
                     });
             }
             return newPlaces;
