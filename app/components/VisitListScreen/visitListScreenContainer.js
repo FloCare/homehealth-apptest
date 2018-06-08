@@ -1,32 +1,22 @@
 import React, {Component} from 'react';
 import CalendarStrip from 'react-native-calendar-strip';
 import firebase from 'react-native-firebase';
+import {connect} from 'react-redux';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
+import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
+import {visitDataService} from '../../data_services/VisitDataService';
 
 class VisitListScreenContainer extends Component {
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                id: 'map-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                icon: Images.mapView
-            },
-            // {
-            //     id: 'calendar-picker',
-            //     icon: Images.calendarSelected
-            // }
-        ]
-    };
-
     constructor(props) {
         super(props);
         this.state = {
             date: props.date,
             // showCalendar: false
         };
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
@@ -46,7 +36,7 @@ class VisitListScreenContainer extends Component {
             screen: screenNames.addVisitScreen,
             passProps: {
                 date: this.state.date,
-                onDone: this.onOrderChange
+                // onDone: this.onOrderChange
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -54,19 +44,11 @@ class VisitListScreenContainer extends Component {
         });
     }
 
-    onNavigatorEvent(event) {
-        if (this.props.onNavigatorEvent) {
-            this.props.onNavigatorEvent(event);
-        }
-    }
-
     onOrderChange(newOrder) {
-        // console.log('visitListScreen congainer callback');
         firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
-            'type': parameterValues.DND
+            type: parameterValues.DND
         });
-        this.forceUpdate();
-        this.props.onOrderChange(newOrder);
+        visitDataService.setVisitOrderByID(newOrder, this.props.date);
     }
 
     generateVisitResultObject(date) {
@@ -78,16 +60,7 @@ class VisitListScreenContainer extends Component {
         return (
             <VisitListScreen
                 navigator={this.props.navigator}
-                date={this.state.date}
-                // calendarComponent={<CalendarStrip
-                //     style={{height: 100, paddingTop: 20, paddingBottom: 10}}
-                //     calendarHeaderStyle={{fontWeight: 'bold', fontSize: 24}}
-                //     // highlightDateNumberStyle={{fontWeight: '800'}}
-                //     onDateSelected={this.onDayPress}
-                //     selectedDate={this.state.date}
-                // />}
-                // showCalendar={this.state.showCalendar}
-                // visitResultObject={this.generateVisitResultObject(this.state.date)}
+                orderedVisitID={this.props.orderedVisitID}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
                 onOrderChange={this.onOrderChange}
             />
@@ -95,4 +68,11 @@ class VisitListScreenContainer extends Component {
     }
 }
 
-export {VisitListScreenContainer};
+function mapStateToProps(state) {
+    return {
+        date: state.date,
+        orderedVisitID: state.visitOrder,
+    };
+}
+
+export default connect(mapStateToProps)(ScreenWithCalendarComponent(VisitListScreenContainer));

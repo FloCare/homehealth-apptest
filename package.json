@@ -23,6 +23,7 @@
     "immutable": "^3.8.2",
     "lodash": "^4.17.5",
     "moment": "^2.22.1",
+    "prop-types": "^15.6.1",
     "react": "16.3.1",
     "react-native": "^0.55.1",
     "react-native-action-button": "^2.8.4",
@@ -42,7 +43,9 @@
     "react-native-sortable-list": "git+https://github.com/FloCare/react-native-sortable-list.git",
     "react-native-splash-screen": "3.0.6",
     "react-native-vector-icons": "^4.6.0",
+    "react-redux": "^5.0.7",
     "realm": "2.4.0",
+    "redux": "^4.0.0",
     "tcomb-form-native": "^0.6.11",
     "uuid": "^3.2.1"
   },

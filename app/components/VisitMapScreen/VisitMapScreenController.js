@@ -1,84 +1,60 @@
 import React, {Component} from 'react';
 import {Image, Text, View} from 'react-native';
 import firebase from 'react-native-firebase';
-import MapView, {Marker} from 'react-native-maps';
+import {connect} from 'react-redux';
 import * as MapUtils from '../../utils/MapUtils';
-import {VisitRow} from './VisitRow';
-import {floDB, VisitOrder} from '../../utils/data/schema';
-import {MapMarker} from './MapMarker';
-import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
-import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
-import {RenderIf} from '../../utils/data/syntacticHelpers';
 import {Images} from '../../Images';
+import {MapPanel} from './MapPanel';
+import {ControlPanel} from './ControlPanel';
+import {eventNames, parameterValues} from '../../utils/constants';
+import {visitDataService} from '../../data_services/VisitDataService';
+import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
 
-class VisitMapScreenController extends Component {
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                icon: Images.listView,
-                id: 'list-view', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                buttonColor: '#fffff'
-            },
-            // {
-            //     id: 'calendar-picker',
-            //     icon: Images.calendarSelected
-            // }
-        ]
-    };
+class VisitMapScreenContainer extends Component {
+    static getViewportFromVisitCoordinates(visitList) {
+        const coordinatesList = [];
+        for (const visit of visitList) {
+            const coordinates = visit.coordinates;
+            if (!coordinates) {
+                //TODO what to do in this case?
+                console.log(visit);
+                console.error(`visit:${visit} doesn't have an associated address or address coordinates`);
+            }
+            coordinatesList.push([coordinates.latitude, coordinates.longitude]);
+        }
+        return MapUtils.getViewPortFromBounds(coordinatesList);
+    }
 
     constructor(props) {
         super(props);
-        this.visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, props.date.valueOf());
-        const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(this.visitOrderObject.visitList, props.showCompleted);
         this.state = {
-            date: props.date,
-            visitOrderList,
-            viewport: this.getInitialViewport(visitOrderList),
+            viewport: this.getCurrentViewport(props.filteredVisits),
             polylines: [],
         };
-        this.onChangeOrder = this.onChangeOrder.bind(this);
+        this.onOrderChange = this.onOrderChange.bind(this);
+        this.getCurrentViewport = this.getCurrentViewport.bind(this);
         this.getAllPolylines = this.getAllPolylines.bind(this);
-
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.getAllPolylines();
     }
 
-    onNavigatorEvent(event) {
-        if (this.props.onNavigatorEvent) {
-            this.props.onNavigatorEvent(event);
-        }
-    }
-
     componentWillReceiveProps(nextProps) {
-        console.log('component received props');
-        const orderedVisits = floDB.objectForPrimaryKey(VisitOrder, nextProps.date.valueOf());
-        if (!orderedVisits || orderedVisits.visitList.length === 0) {
-            console.log('component did 0');
-            this.props.navigator.pop();
-        } else this.setState({date: nextProps.date});
+        console.log('VisitMapScreenContainer received props');
+
+        this.getAllPolylines(nextProps.filteredVisits.map(visit => visit.coordinates));
     }
 
-    getInitialViewport(visitOrderList) {
-        const coordinates = [];
-        for (const visit of visitOrderList) {
-            const address = visit.getAddress();
-            if (!address || !address.latitude || !address.latitude) {
-                //TODO what to do in this case?
-                console.log(address);
-                console.error(`visit:${visit} doesn't have an associated address or address coordinates`);
-            }
-            coordinates.push([address.latitude, address.longitude]);
-        }
-        return MapUtils.getViewPortFromBounds(coordinates);
+    getCurrentViewport(visitList) {
+        if (visitList.length === 0) { return this.props.defaultViewport; }
+        return VisitMapScreenContainer.getViewportFromVisitCoordinates(visitList);
     }
 
-    async getAllPolylines() {
-        console.log(`attempting polyline fetch${this.state.visitOrderList.length}`);
+    async getAllPolylines(coordinatesList) {
+        console.log('attempting polyline fetch');
+        if (coordinatesList.length < 2) { return; }
 
-        if (this.state.visitOrderList.length < 2) { return; }
         const newPolylines = [];
         const boundsCoordinates = [];
         let totalDistance;
@@ -86,7 +62,7 @@ class VisitMapScreenController extends Component {
         //TODO safety checks
 
         try {
-            const geoDataObject = await MapUtils.getProcessedDataForOrderedList(this.state.visitOrderList.map(visit => visit.getAddress().coordinates));
+            const geoDataObject = await MapUtils.getProcessedDataForOrderedList(coordinatesList);
 
             newPolylines.push(geoDataObject.polyline);
             boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
@@ -103,21 +79,16 @@ class VisitMapScreenController extends Component {
         }
     }
 
-    static getUpdateOrderedVisitList(visitList, showCompleted) {
-        const updatedList = [];
-        for (let i = 0; i < visitList.length; i++) {
-            if (visitList[i].getAddress().coordinates && (!visitList[i].isDone || showCompleted)) updatedList.push(visitList[i]);
-        }
-        console.log(`${updatedList.length},${showCompleted}`);
-        return updatedList;
-    }
-
-    onChangeOrder(nextOrder) {
+    onOrderChange(nextOrder) {
         firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
-            'type': parameterValues.DND
+            type: parameterValues.DND
         });
-        this.setState({visitOrderList: VisitMapScreenController.getUpdateOrderedVisitList(nextOrder, this.props.showCompleted)}, this.getAllPolylines);
-        this.props.onOrderChange(nextOrder);
+
+        const mutableNextOrder = Array.from(nextOrder);
+        this.props.orderedVisitID.forEach(visitID => {
+            if (!nextOrder.includes(visitID)) mutableNextOrder.push(visitID);
+        });
+        visitDataService.setVisitOrderByID(mutableNextOrder, this.props.date);
     }
 
     render() {
@@ -126,11 +97,11 @@ class VisitMapScreenController extends Component {
             <View style={{flex: 1}}>
                 <MapPanel
                     viewport={this.state.viewport}
-                    markerData={this.state.visitOrderList.map((visit, index) =>
+                    markerData={this.props.filteredVisits.map((visit, index) =>
                         ({
-                            coordinates: visit.getAddress().coordinates,
-                            name: visit.getAssociatedName(),
-                            type: visit.getPatient() ? 'patient' : 'place',
+                            coordinates: visit.coordinates,
+                            name: visit.name,
+                            type: visit.isPatientVisit ? 'patient' : 'place',
                             label: `${String.fromCharCode('A'.charCodeAt(0) + index)}`
                         })
                     )}
@@ -138,73 +109,47 @@ class VisitMapScreenController extends Component {
                     totalDistance={this.state.totalDistance}
                 />
                 <ControlPanel
-                    date={this.state.date}
-                    onChangeOrder={this.onChangeOrder}
-                    showCompleted={this.props.showCompleted}
+                    onOrderChange={this.onOrderChange}
+                    orderedVisitID={this.props.filteredVisits.map(visit => visit.visitID)}
                 />
             </View>
         );
     }
 }
 
-function ControlPanel(props) {
-    return (
-        <View style={{backgroundColor: PrimaryColor, paddingTop: 10, paddingBottom: 10}}>
-            <SortedVisitListContainer
-                date={props.date}
-                hideIncompleteAddress
-                renderWithCallback={VisitRow}
-                scrollEnabled={false}
-                isCompletedHidden={!props.showCompleted}
-                onOrderChange={props.onChangeOrder}
-            />
-        </View>
-    );
+function mapStateToProps(state) {
+    const todaysVisits = state.visitOrder.map(visitID => {
+        const visit = state.visits[visitID];
+        let visitOwner;
+        if (visit.isPatientVisit) {
+            const patientID = visit.patientID;
+            visitOwner = state.patients[patientID];
+        } else {
+            const placeID = visit.placeID;
+            visitOwner = state.places[placeID];
+        }
+        const address = state.addresses[visitOwner.addressID];
+        const coordinates = address.latitude && address.latitude ? {
+            latitude: address.latitude,
+            longitude: address.longitude,
+        } : undefined;
+
+        return {
+            visitID: visit.visitID,
+            name: visitOwner.name,
+            coordinates,
+            isDone: visit.isDone,
+            isPatientVisit: visit.isPatientVisit
+        };
+    });
+    const defaultViewport = VisitMapScreenContainer.getViewportFromVisitCoordinates(todaysVisits);
+
+    return {
+        date: state.date,
+        orderedVisitID: state.visitOrder,
+        filteredVisits: todaysVisits.filter(visit => !visit.isDone),
+        defaultViewport
+    };
 }
 
-function MapPanel(props) {
-    return (
-        <View style={{flex: 1}}>
-            <MapView
-                provider={'google'}
-                style={{flex: 1}}
-                region={props.viewport}
-                loadingEnabled
-            >
-                {props.markerData.map((markerData) =>
-                    <Marker coordinate={markerData.coordinates} anchor={{x: 0.25, y: 1}}>
-                        <MapMarker type={markerData.type} label={markerData.label} />
-                    </Marker>)}
-                {props.polylines.map((polylineCoordinate) =>
-                    // console.log('once');
-                    // console.log(polylineCoordinate);
-                    (<MapView.Polyline
-                        coordinates={polylineCoordinate}
-                        strokeWidth={3}
-                        strokeColor={PrimaryColor}
-                    />))}
-            </MapView>
-            {RenderIf(
-                <View
-                    style={{
-                        height: 29,
-                        backgroundColor: '#50a391',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingLeft: 25
-                    }}
-                >
-                    <Image
-                        source={Images.time}
-                    />
-                    <Text style={{paddingLeft: 20, color: 'white'}}>
-                        {props.totalDistance}
-                    </Text>
-                </View>,
-                props.totalDistance
-            )}
-        </View>
-    );
-}
-
-export {VisitMapScreenController};
+export default connect(mapStateToProps)(ScreenWithCalendarComponent(VisitMapScreenContainer));

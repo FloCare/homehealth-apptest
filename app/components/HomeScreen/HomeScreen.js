@@ -28,7 +28,7 @@ function getComponentToDisplayBasedOnVisitCount(props) {
                         // alignSelf: 'stretch',
                     }}
                 >
-                    <TouchableWithoutFeedback onPress={() => props.navigateToVisitMapScreen(true)}>
+                    <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
                         {/*// underlayColor={primaryColor}>*/}
                         <Image
                             style={{resizeMode: 'contain'}}
@@ -94,12 +94,13 @@ function getComponentToDisplayBasedOnVisitCount(props) {
     return (
         <View style={{flex: 4, marginTop: -3}}>
             <VisitSummary
+                visitID={props.visitID}
                 navigator={props.navigator}
                 date={props.date}
                 totalVisitsCount={props.totalVisitsCount}
                 remainingVisitsCount={props.remainingVisitsCount}
                 navigateToVisitListScreen={props.navigateToVisitListScreen}
-                navigateToVisitMapScreen={() => props.navigateToVisitMapScreen(false)}
+                navigateToVisitMapScreen={props.navigateToVisitMapScreen}
                 onOrderChange={props.onOrderChange}
                 onPressAddVisit={props.onPressAddVisit}
             />

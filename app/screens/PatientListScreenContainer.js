@@ -3,12 +3,12 @@ import {Linking, Alert, Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {PatientListScreen} from '../components/PatientListScreen';
-import {floDB, Patient, VisitOrder} from '../utils/data/schema';
+import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
-import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
+import {patientDataService} from '../data_services/PatientDataService';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -165,27 +165,8 @@ class PatientListScreenContainer extends Component {
                 const archivePatient = (id) => {
                     console.log('Archiving patient');
                     try {
-                        const today = todayMomentInUTCMidnight();
-                        floDB.write(() => {
-                            const patient = floDB.objectForPrimaryKey(Patient.schema.name, id);
-                            patient.archived = true;
-                            const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
-                            const visitOrders = floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
-                            // TODO: Only iterate over dates where visit for that patient is actually present
-                            for (let i = 0; i < visitOrders.length; i++) {
-                                const visitList = [];
-                                for (let j = 0; j < visitOrders[i].visitList.length; j++) {
-                                    const visit = visitOrders[i].visitList[j];
-                                    if (!(visit.isOwnerArchived())) {
-                                        visitList.push(visit);
-                                    }
-                                }
-                                visitOrders[i].visitList = visitList;
-                            }
-                            floDB.delete(visits);
-                        });
+                        patientDataService.archivePatient(id);
                         Alert.alert('Success', 'Patient deleted successfully');
-                        makeCallbacks();
                     } catch (err) {
                         console.log('ERROR while archiving patient:', err);
                         Alert.alert('Error', 'Unable to delete patient. Please try again later');

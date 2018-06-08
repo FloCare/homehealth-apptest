@@ -41,19 +41,6 @@ class AddPatientScreenContainer extends Component {
             this.props.navigator.pop();
         } else {
             this.props.navigator.pop();
-
-            // console.log('Switching the TAB');
-            // this.props.navigator.switchToTab({
-            //     tabIndex: 1,
-            // });
-            // console.log('Resetting screen navigation');
-            // this.props.navigator.resetTo({
-            //     screen: this.state.nextScreen,
-            //     title: 'Patients',
-            //     passProps: {
-            //         selectedPatient: patientId
-            //     },
-            // });
         }
     }
 

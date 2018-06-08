@@ -1,25 +1,24 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
+import {connect} from 'react-redux';
 import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
+import moment from 'moment';
 import {HomeScreen} from './HomeScreen';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import Fab from '../common/Fab';
-import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
-import {VisitMapScreenController} from '../VisitMapScreen/VisitMapScreenController';
+// import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
+import {dateService} from '../../data_services/DateService';
 
 class HomeScreenContainer extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            date: todayMomentInUTCMidnight()
-        };
+
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
         this.onDateSelected = this.onDateSelected.bind(this);
-        this.onOrderChange = this.onOrderChange.bind(this);
+        // this.onOrderChange = this.onOrderChange.bind(this);
         this.onPatientAdded = this.onPatientAdded.bind(this);
 
         this.navigateToAddNote = this.navigateToAddNote.bind(this);
@@ -29,7 +28,7 @@ class HomeScreenContainer extends Component {
 
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
-        addListener(this.onOrderChange);
+        // addListener(this.onOrderChange);
     }
 
     componentDidMount() {
@@ -43,43 +42,42 @@ class HomeScreenContainer extends Component {
         );
 
         SplashScreen.hide();
-
     }
 
     onNavigatorEvent(event) {
-        if (event.type === 'DeepLink') {
-            if (event.link === 'date') {
-                this.setState({date: event.payload});
-            }
-        }
-        if (event.type === 'NavBarButtonPress') {
-            if (event.id === 'list-view') {
-                this.props.navigator.pop();
-                this.navigateToVisitListScreen();
-            }
-            if (event.id === 'map-view') {
-                this.props.navigator.pop();
-                //TODO fix this hard coding
-                this.navigateToVisitMapScreen(false);
-            }
-        }
+        // if (event.type === 'DeepLink') {
+        //     if (event.link === 'date') {
+        //         this.setState({date: event.payload});
+        //     }
+        // }
+        // if (event.type === 'NavBarButtonPress') {
+        //     if (event.id === 'list-view') {
+        //         this.props.navigator.pop();
+        //         this.navigateToVisitListScreen();
+        //     }
+        //     if (event.id === 'map-view') {
+        //         this.props.navigator.pop();
+        //         //TODO fix this hard coding
+        //         this.navigateToVisitMapScreen(false);
+        //     }
+        // }
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.HomeScreen, screenNames.HomeScreen);
         }
     }
 
     onDateSelected(date) {
-        if (!date.isSame(this.state.date, 'day')) {
-            this.setState({date});
+        if (!date.isSame(this.props.date, 'day')) {
+            dateService.setDate(date.valueOf());
         }
         console.log(date.format());
     }
 
-    onOrderChange() {
-        this.forceUpdate();
-        console.log('Home screen force update');
-    }
+    // onOrderChange() {
+    //     this.forceUpdate();
+    //     console.log('Home screen force update');
+    // }
 
     onPatientAdded() {
         Alert.alert(
@@ -97,14 +95,12 @@ class HomeScreenContainer extends Component {
 
     navigateToVisitListScreen() {
         firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
-            'type': parameterValues.LIST
+            type: parameterValues.LIST
         });
         this.props.navigator.push({
-            screen: screenNames.visitListScreen,
+            screen: screenNames.visitDayViewScreen,
             passProps: {
-                date: this.state.date,
-                onOrderChange: this.onOrderChange.bind(this),
-                onNavigationEvent: this.onNavigatorEvent
+                selectedScreen: 'list',
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -112,36 +108,24 @@ class HomeScreenContainer extends Component {
         });
     }
 
-    navigateToVisitMapScreen(showCompleted) {
-        console.log(`showc${showCompleted}`);
-                firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
-            'type': parameterValues.MAP
+    navigateToVisitMapScreen() {
+        firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
+            type: parameterValues.MAP
         });
-        const visitOrderObject = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
-        if (visitOrderObject.visitList) {
-            const visitOrderList = VisitMapScreenController.getUpdateOrderedVisitList(visitOrderObject.visitList, showCompleted);
-            if (visitOrderList.length > 0) {
-                this.props.navigator.push({
-                    screen: screenNames.visitMapScreen,
-                    passProps: {
-                        date: this.state.date,
-                        onOrderChange: this.onOrderChange.bind(this),
-                        onNavigationEvent: this.onNavigatorEvent,
-                        showCompleted
-                    },
-                    navigatorStyle: {
-                        tabBarHidden: true
-                    }
-                });
-            } else {
-                //TODO display an error message here
+        this.props.navigator.push({
+            screen: screenNames.visitDayViewScreen,
+            passProps: {
+                selectedScreen: 'map',
+            },
+            navigatorStyle: {
+                tabBarHidden: true
             }
-        }
+        });
     }
 
     navigateToAddNote() {
         firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
-            'type': parameterValues.ADD_NOTE
+            type: parameterValues.ADD_NOTE
         });
         this.props.navigator.push({
             screen: screenNames.addNote,
@@ -154,7 +138,7 @@ class HomeScreenContainer extends Component {
 
     navigateToAddPatient() {
         firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
-            'type': parameterValues.ADD_PATIENT
+            type: parameterValues.ADD_PATIENT
         });
         this.props.navigator.push({
             screen: screenNames.addPatient,
@@ -176,15 +160,15 @@ class HomeScreenContainer extends Component {
                 tabBarHidden: true
             },
             passProps: {
-                date: this.state.date,
-                onDone: this.onOrderChange
+                date: moment(this.props.date).utc(),
+                // onDone: this.onOrderChange
             }
         });
     }
 
     navigateToAddVisitFAB() {
         firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
-            'type': parameterValues.ADD_VISIT
+            type: parameterValues.ADD_VISIT
         });
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
@@ -193,19 +177,17 @@ class HomeScreenContainer extends Component {
                 tabBarHidden: true
             },
             passProps: {
-                date: this.state.date,
-                onDone: () => {
-                    this.onOrderChange();
-                    this.props.navigator.pop();
-                    this.navigateToVisitListScreen();
-                }
+                date: moment(this.props.date).utc(),
+                // onDone: () => {
+                //     // this.onOrderChange();
+                //     // this.props.navigator.pop();
+                //     this.navigateToVisitListScreen();
+                // }
             }
         });
     }
 
     render() {
-        const visitResultObject = floDB.objects(Visit.schema.name)
-            .filtered('midnightEpochOfVisit==$0', this.state.date.valueOf());
         return (
             <View
                 style={[
@@ -216,14 +198,15 @@ class HomeScreenContainer extends Component {
                     })]}
             >
                 <HomeScreen
+                    visitID={[this.props.nextVisitID]}
                     navigator={this.props.navigator}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}
-                    date={this.state.date}
-                    totalVisitsCount={visitResultObject.length}
-                    remainingVisitsCount={visitResultObject.filtered('isDone==false').length}
+                    date={moment(this.props.date).utc()}
+                    totalVisitsCount={this.props.totalVisits}
+                    remainingVisitsCount={this.props.remainingVisits}
                     onDateSelected={this.onDateSelected}
-                    onOrderChange={this.onOrderChange}
+                    // onOrderChange={this.onOrderChange}
                     onPressAddVisit={this.navigateToAddVisit}
                     onPressAddVisitZeroState={this.navigateToAddVisitFAB}
                 />
@@ -250,4 +233,13 @@ function getTabBarHeight() {
     return 70; //android portrait navbar height;
 }
 
-export {HomeScreenContainer};
+function stateToProps(state) {
+    return {
+        nextVisitID: state.visitOrder[0],
+        date: state.date,
+        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (state.visits[visitID].isDone ? 0 : 1), 0),
+        totalVisits: state.visitOrder.length,
+    };
+}
+
+export default connect(stateToProps)(HomeScreenContainer);

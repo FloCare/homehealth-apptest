@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View, Platform} from 'react-native';
+import moment from 'moment';
 import {RenderIf} from '../../utils/data/syntacticHelpers';
 import {CalendarStripStyled} from './CalendarStripStyled';
 
@@ -9,11 +10,11 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
             static navigatorButtons = BaseScreenComponent.navigatorButtons;
             constructor(props) {
                 super(props);
-                this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
+                // this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
                 this.getNavigatorButtons = this.getNavigatorButtons.bind(this);
 
-                this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
-                this.props.navigator.setTitle({title: props.date.format('MMMM Do')});
+                // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+                this.props.navigator.setTitle({title: moment(props.date).utc().format('MMMM Do')});
 
                 this.state = {
                     date: props.date,
@@ -24,29 +25,29 @@ function ScreenWithCalendarComponent(BaseScreenComponent) {
                 this.broadcastDeepLinkForDateChange = this.broadcastDeepLinkForDateChange.bind(this);
             }
 
-            //TODO unpredictable
-            onNavigatorEvent(event) {
-                console.log('Navigator Event received by ScreenWithCalendarComponent');
-                // if (event.type === 'NavBarButtonPress') {
-                //     if (event.id === 'calendar-picker') {
-                //         if (Platform.OS === 'android') { this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown}); }
-                //         this.props.navigator.setButtons(this.getNavigatorButtons());
-                //         this.setState((prevState) => ({shown: !prevState.shown}));
-                //         console.log('Date change triggered by calendar-picker');
-                //         // Animated.timing(
-                //         //     this.state.calendarStripHeight,
-                //         //     {
-                //         //         toValue: this.state.shown ? 0 : 200,
-                //         //         duration: 1000,
-                //         //     }
-                //         // ).start();
-                //     }
-                // }
-
-                if (this.props.onNavigationEvent) {
-                    this.props.onNavigationEvent(event);
-                }
-            }
+            // //TODO unpredictable
+            // onNavigatorEvent(event) {
+            //     console.log('Navigator Event received by ScreenWithCalendarComponent');
+            //     // if (event.type === 'NavBarButtonPress') {
+            //     //     if (event.id === 'calendar-picker') {
+            //     //         if (Platform.OS === 'android') { this.props.navigator.setStyle({topBarElevationShadowEnabled: this.state.shown}); }
+            //     //         this.props.navigator.setButtons(this.getNavigatorButtons());
+            //     //         this.setState((prevState) => ({shown: !prevState.shown}));
+            //     //         console.log('Date change triggered by calendar-picker');
+            //     //         // Animated.timing(
+            //     //         //     this.state.calendarStripHeight,
+            //     //         //     {
+            //     //         //         toValue: this.state.shown ? 0 : 200,
+            //     //         //         duration: 1000,
+            //     //         //     }
+            //     //         // ).start();
+            //     //     }
+            //     // }
+            //
+            //     if (this.props.onNavigationEvent) {
+            //         this.props.onNavigationEvent(event);
+            //     }
+            // }
 
             getNavigatorButtons() {
                 return {

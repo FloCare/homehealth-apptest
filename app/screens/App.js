@@ -1,9 +1,19 @@
 import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux';
 import {RegisterScreens} from '.';
 import {screenNames, PrimaryColor} from '../utils/constants';
 import {Images} from '../Images';
 import {FloDBProvider} from '../utils/data/schema';
+import {RootReducer} from '../redux/RootReducer';
+
+import {initialiseService as initialisePatientService} from '../data_services/PatientDataService';
+import {initialiseService as initialiseStopService} from '../data_services/PlaceDataService';
+import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
+import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
+import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
+import {todayMomentInUTCMidnight} from '../utils/utils';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -40,8 +50,21 @@ const StartApp = (key) => {
         throw err;
     }
 
+    // Initialize the Redux Store
+    const store = createStore(RootReducer);
+
+    // Initialize Data Services, pass it the db and store instances
+    initialiseVisitService(FloDBProvider.db, store);
+    initialiseStopService(FloDBProvider.db, store);
+    initialisePatientService(FloDBProvider.db, store);
+    initialiseAddressService(FloDBProvider.db, store);
+    initialiseDate(FloDBProvider.db, store);
+
+    dateService.setDate(todayMomentInUTCMidnight().valueOf());
+
+    // Register the screens
     try {
-        RegisterScreens();
+        RegisterScreens(store, Provider);
     } catch (err) {
         console.log('Error in registering screens: ', err);
         throw err;

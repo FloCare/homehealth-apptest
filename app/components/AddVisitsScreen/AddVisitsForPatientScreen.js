@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import {View, Image, TouchableHighlight, Dimensions} from 'react-native';
 import {Button, Divider} from 'react-native-elements';
-import moment from 'moment';
 import CalendarStrip from 'react-native-calendar-strip';
-import {floDB, Patient, Visit, VisitOrder} from '../../utils/data/schema';
-import {arrayToMap} from '../../utils/collectionUtils';
-import {makeCallbacks, todayMomentInUTCMidnight} from '../../utils/utils';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
+import {visitDataService} from '../../data_services/VisitDataService';
+import {patientDataService} from '../../data_services/PatientDataService';
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -30,52 +29,16 @@ class AddVisitsForPatientScreen extends Component {
     onSubmit() {
         const patientId = this.props.patientId;
         console.log('Adding visit for: ', patientId);
-        const patient = floDB.objectForPrimaryKey(Patient, patientId);
+        const patient = patientDataService.getPatientByID(patientId);
         // console.log('Patient episodes are: ', patient.episodes);
         console.log('Date is:', this.state.date.valueOf());
 
         try {
             // Add a visit object
-            let newVisit;
-            floDB.write(() => {
-                // For this patient, for that episode, push a new visit
-                const visitID = `${Math.random().toString()}_Visit`;
-                newVisit = floDB.create(Visit, {
-                    visitID,
-                    midnightEpochOfVisit: this.state.date.valueOf()
-                });
-                patient.episodes[0].visits.push(newVisit);
-            });
-
-            // Todo: Check if this can be improved
-            // Todo: Visit and visitOrder should be inserted in same transaction
-            let visitOrderObj = floDB.objectForPrimaryKey(VisitOrder, this.state.date.valueOf());
-            // console.log('VisitOrderObj: ', visitOrderObj);
-            if (!visitOrderObj) {
-                floDB.write(() => {
-                    visitOrderObj = floDB.create(VisitOrder, {midnightEpoch: this.state.date.valueOf(), visitList: []});
-                });
-            }
-
-            let indexOfFirstDoneVisit;
-            for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObj.visitList.length && !visitOrderObj.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {}
-
-            // Copy the visits till indexOfFirstDoneVisit into newvisitOrder
-            const newVisitOrder = [];
-            newVisitOrder.push(...visitOrderObj.visitList.slice(0, indexOfFirstDoneVisit));
-
-            newVisitOrder.push(newVisit);
-
-            newVisitOrder.push(...visitOrderObj.visitList.slice(indexOfFirstDoneVisit, visitOrderObj.visitList.length));
-
-            floDB.write(() => {
-                visitOrderObj.visitList = newVisitOrder;
-            });
+            visitDataService.createNewVisits([patient], this.state.date.valueOf());
         } catch (e) {
             console.log('Error during Adding Visit: ', e);
         }
-        //TODO implement redux and remove this hack
-        makeCallbacks();
         this.props.navigator.dismissLightBox();
     }
 
@@ -84,8 +47,8 @@ class AddVisitsForPatientScreen extends Component {
         return (
             <View
                 style={{
-                    height: height*0.3,
-                    width: width*0.8,
+                    height: height * 0.3,
+                    width: width * 0.8,
                     backgroundColor: '#eeeeee',
                     borderRadius: 10,
                 }}

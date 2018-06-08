@@ -56,6 +56,7 @@ const screenNames = {
     addVisitsForPatientScreen: 'AddVisitsForPatientScreen',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
+    visitDayViewScreen: 'VisitDayViewScreen',
 };
 
 const visitType = {
@@ -99,7 +100,7 @@ const parameterValues = {
 }
 
 let inActivityTimer = null;
-const inActivityTime = 60000; // ms
+const inActivityTime = 120000; // ms
 let lastActiveTime = new Date();
 
 const setInActivityTimer = (f) => {
