@@ -37,7 +37,7 @@ class VisitMapScreenContainer extends Component {
         this.getCurrentViewport = this.getCurrentViewport.bind(this);
         this.getAllPolylines = this.getAllPolylines.bind(this);
 
-        this.getAllPolylines();
+        this.getAllPolylines(props.filteredVisits.map(visit => visit.coordinates));
     }
 
     componentWillReceiveProps(nextProps) {
