@@ -98,7 +98,7 @@ class PatientDataService {
             obj = visitDataService.deleteVisits(patient);
         });
         if (patient) {
-            this.archivePatientsInRedux([patient]);
+            this.archivePatientsInRedux([patientId]);
         }
         if (obj && obj.visits) {
             visitDataService.deleteVisitsFromRedux(obj.visits);
@@ -114,7 +114,7 @@ class PatientDataService {
     updatePatientsInRedux(patients) {
         this.store.dispatch({
             type: PatientActions.EDIT_PATIENTS,
-            patientList: PatientDataService.getFlatPatientMap(patients)
+            patientMap: PatientDataService.getFlatPatientMap(patients)
         });
         addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
     }
@@ -122,7 +122,7 @@ class PatientDataService {
     addPatientsToRedux(patients) {
         this.store.dispatch({
             type: PatientActions.ADD_PATIENTS,
-            patientList: PatientDataService.getFlatPatientMap(patients)
+            patientMap: PatientDataService.getFlatPatientMap(patients)
         });
         addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
     }

@@ -32,13 +32,13 @@ class PlaceDataService {
     updatePlacesInRedux(places) {
         this.store.dispatch({
             type: PlaceActions.EDIT_PLACES,
-            placeList: PlaceDataService.getFlatPlaceMap(places)
+            placeMap: PlaceDataService.getFlatPlaceMap(places)
         });
         addressDataService.updateAddressesInRedux(places.map(place => place.address));
     }
 
     addPlacesToRedux(places) {
-        this.store.dispatch({type: PlaceActions.ADD_PLACES, placeList: PlaceDataService.getFlatPlaceMap(places)});
+        this.store.dispatch({type: PlaceActions.ADD_PLACES, placeMap: PlaceDataService.getFlatPlaceMap(places)});
         addressDataService.updateAddressesInRedux(places.map(place => place.address));
     }
 
@@ -92,7 +92,7 @@ class PlaceDataService {
             obj = visitDataService.deleteVisits(place);
         });
         if (place) {
-            this.archivePlacesInRedux([place]);
+            this.archivePlacesInRedux([placeId]);
         }
         if (obj && obj.visits) {
             visitDataService.deleteVisitsFromRedux(obj.visits);
@@ -109,7 +109,7 @@ class PlaceDataService {
         console.log('Archiving places in Redux');
         this.store.dispatch({
             type: PlaceActions.ARCHIVE_PLACES,
-            placeList: PlaceDataService.getFlatPlaceMap(places)
+            placeList: places
         });
     }
 }

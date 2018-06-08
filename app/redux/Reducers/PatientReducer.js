@@ -3,10 +3,10 @@ import {PatientActions} from '../Actions';
 export default function PatientReducer(patients = {}, action) {
     switch (action.type) {
         case PatientActions.ADD_PATIENTS:
-            if (action.patientList) { return {...action.patientList, ...patients}; }
+            if (action.patientMap) { return {...action.patientMap, ...patients}; }
             return patients;
         case PatientActions.EDIT_PATIENTS:
-            return {...patients, ...action.patientList};
+            return {...patients, ...action.patientMap};
         case PatientActions.ARCHIVE_PATIENTS:
             const newPatients = {...patients};
             if (newPatients && action.patientList) {
