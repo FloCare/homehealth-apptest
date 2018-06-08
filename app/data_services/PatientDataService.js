@@ -131,7 +131,7 @@ class PatientDataService {
         console.log('Archiving patient in Redux');
         this.store.dispatch({
             type: PatientActions.ARCHIVE_PATIENTS,
-            patientList: PatientDataService.getFlatPatientMap(patients)
+            patientList: patients
         });
     }
 }
