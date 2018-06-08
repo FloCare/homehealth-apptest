@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
-import {TouchableWithoutFeedback} from 'react-native';
+import {TouchableHighlight} from 'react-native';
 
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
@@ -118,17 +118,17 @@ class SortedVisitListContainer extends Component {
     }
 
     getAugmentedRenderFunction(renderFunctionGenerator) {
-        const renderFunctionWithCallbacks = renderFunctionGenerator({
+        const RenderFunctionWithCallbacks = renderFunctionGenerator({
             onDoneTogglePress: this.onDoneTogglePress.bind(this),
         });
         //TODO hackey
-        // if (this.props.singleEntry) {
-        //     return ((props) => <TouchableWithoutFeedback onPress={this.onPressRowSingleton.bind(this)}>
-        //                 {renderFunctionWithCallbacks(props)}
-        //             </TouchableWithoutFeedback>
-        //     );
-        // }
-        return renderFunctionWithCallbacks;
+        if (this.props.singleEntry) {
+            return ((props) => <TouchableHighlight underlayColor={'clear'} onPress={this.onPressRowSingleton.bind(this)}>
+                        <RenderFunctionWithCallbacks {...props} />
+                    </TouchableHighlight>
+            );
+        }
+        return RenderFunctionWithCallbacks;
     }
 
 
