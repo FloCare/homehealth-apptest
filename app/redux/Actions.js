@@ -1,13 +1,13 @@
 export const PatientActions = {
     ADD_PATIENTS: 'ADD_PATIENTS',
     EDIT_PATIENTS: 'EDIT_PATIENTS',
-    DELETE_PATIENTS: 'DELETE_PATIENTS',
+    ARCHIVE_PATIENTS: 'ARCHIVE_PATIENTS',
 };
 
 export const PlaceActions = {
     ADD_PLACES: 'ADD_PLACES',
     EDIT_PLACES: 'EDIT_PLACES',
-    DELETE_PLACES: 'DELETE_PLACES',
+    ARCHIVE_PLACES: 'ARCHIVE_PLACES',
 };
 
 export const AddressActions = {
@@ -18,6 +18,7 @@ export const AddressActions = {
 export const VisitActions = {
     ADD_VISITS: 'ADD_VISITS',
     EDIT_VISITS: 'EDIT_VISITS',
+    DELETE_VISITS: 'DELETE_VISITS',
 };
 
 export const VisitOrderActions = {

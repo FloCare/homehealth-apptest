@@ -2,11 +2,9 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {View} from 'react-native';
 import {Button} from 'react-native-elements';
-//import {floDB, Patient} from '../../utils/data/schema';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
-//import {parsePhoneNumber} from '../../utils/lib';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {PrimaryFontFamily, eventNames} from '../../utils/constants';
 import {patientDataService} from '../../data_services/PatientDataService';
@@ -153,7 +151,6 @@ class AddPatientFormContainer extends Component {
                     // Todo: Raise an error to the screen
                     return;
                 }
-                // console.log('The new patient is:', floDB.objects(Patient.schema.name).filtered('patientID = $0', patientId));
             }
            this.clearForm();
            // Call Screen Container's onSubmit() hook

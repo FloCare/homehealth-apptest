@@ -1,7 +1,7 @@
 import {Patient, Visit, VisitOrder} from '../utils/data/schema';
 import {VisitActions, VisitOrderActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
-import {generateUUID} from '../utils/utils';
+import {generateUUID, todayMomentInUTCMidnight} from '../utils/utils';
 import {patientDataService} from './PatientDataService';
 import {placeDataService} from './PlaceDataService';
 
@@ -37,6 +37,7 @@ class VisitDataService {
 
     updateVisitOrderToReduxIfLive(visitList, midnightEpoch) {
         // console.log('checking to see if visit order date matches state date');
+        console.log('Updating visit order in Redux for date:', midnightEpoch);
         if (this.store.getState().date === midnightEpoch) {
             // console.log('checking to see if visit order date matches state date');
             this.setVisitOrderInRedux(visitList);
@@ -64,6 +65,14 @@ class VisitDataService {
         this.store.dispatch({type: VisitActions.ADD_VISITS, visitList: VisitDataService.getFlatVisitMap(visits)});
         patientDataService.addPatientsToRedux(visits.map(visit => visit.getPatient()).filter(patient => patient));
         placeDataService.addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
+    }
+
+    deleteVisitsFromRedux(visits) {
+        console.log('Deleting visits from Redux');
+        this.store.dispatch({
+            type: VisitActions.DELETE_VISITS,
+            visitList: VisitDataService.getFlatVisitMap(visits)
+        });
     }
 
     loadVisitsForTheDayToRedux(midnightEpoch) {
@@ -198,6 +207,29 @@ class VisitDataService {
         });
 
         this.insertToOrderedVisits(newVisits, midnightEpoch);
+    }
+
+    // Should be a part of a write transaction
+    deleteVisits(patient) {
+        console.log('Deleting visits from realm');
+        const today = todayMomentInUTCMidnight();
+        const visits = patient.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
+
+        // TODO: Only iterate over dates where visit for that patient is actually present
+        for (let i = 0; i < visitOrders.length; i++) {
+            const visitList = [];
+            for (let j = 0; j < visitOrders[i].visitList.length; j++) {
+                const visit = visitOrders[i].visitList[j];
+                if (!(visit.isOwnerArchived())) {
+                    visitList.push(visit);
+                }
+            }
+            visitOrders[i].visitList = visitList;
+        }
+        this.floDB.delete(visits);
+        const obj = {visits, visitOrders};
+        return obj;
     }
 }
 

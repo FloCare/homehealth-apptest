@@ -3,6 +3,7 @@ import {PatientActions} from '../redux/Actions';
 import {arrayToObjectByKey} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
+import {visitDataService} from './VisitDataService';
 
 class PatientDataService {
     static getFlatPatient(patient) {
@@ -15,6 +16,7 @@ class PatientDataService {
             notes: patient.notes,
             //TODO this will need work if more than one episode per patient
             visits: patient.episodes[0].visits.map(visit => visit.visitID),
+            archived: patient.archived
         };
     }
 
@@ -86,6 +88,29 @@ class PatientDataService {
         }
     }
 
+    archivePatient(patientId) {
+        console.log('Archiving Patient from realm');
+        let patient = null;
+        let obj = null;
+        this.floDB.write(() => {
+            patient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
+            patient.archived = true;
+            obj = visitDataService.deleteVisits(patient);
+        });
+        if (patient) {
+            this.archivePatientsInRedux([patient]);
+        }
+        if (obj && obj.visits) {
+            visitDataService.deleteVisitsFromRedux(obj.visits);
+        }
+        if (obj && obj.visitOrders) {
+            for (let i = 0; i < obj.visitOrders.length; i++) {
+                visitDataService.updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
+            }
+        }
+        console.log('Patient archived. His visits Deleted');
+    }
+
     updatePatientsInRedux(patients) {
         this.store.dispatch({
             type: PatientActions.EDIT_PATIENTS,
@@ -100,6 +125,14 @@ class PatientDataService {
             patientList: PatientDataService.getFlatPatientMap(patients)
         });
         addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
+    }
+
+    archivePatientsInRedux(patients) {
+        console.log('Archiving patient in Redux');
+        this.store.dispatch({
+            type: PatientActions.ARCHIVE_PATIENTS,
+            patientList: PatientDataService.getFlatPatientMap(patients)
+        });
     }
 }
 
