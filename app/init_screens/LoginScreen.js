@@ -7,6 +7,8 @@ import { Card } from '../components/common/Card';
 import { Spinner } from '../components/common/Spinner';
 import {screenNames, PrimaryFontFamily } from '../utils/constants';
 
+const API_URL = 'https://fathomless-harbor-75587.herokuapp.com/get-token/';
+
 class LoginScreen extends Component {
   state = { email: '', password: '', error: '', loading: false };
 
@@ -16,7 +18,7 @@ class LoginScreen extends Component {
       loading: true
     });
 
-    fetch('https://fathomless-harbor-75587.herokuapp.com/get-token/', {
+    fetch(API_URL, {
           method: 'POST',
           headers: {
             Accept: 'application/json',
