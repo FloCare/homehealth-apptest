@@ -66,7 +66,7 @@ const visitType = {
 
 const userProperties = {
     INVITE_CODE: 'invite_code'
-}
+};
 
 const eventNames = {
 
@@ -80,11 +80,11 @@ const eventNames = {
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
-}
+};
 
 const parameterValues = {
-    SUCCESS : 'success',
-    FAILURE : 'failure',
+    SUCCESS: 'success',
+    FAILURE: 'failure',
     CALL: 'call',
     NAVIGATION: 'navigation',
     EDIT_NOTES: 'edit_notes',
@@ -97,11 +97,11 @@ const parameterValues = {
     DND: 'dnd',
     DETAILS: 'details',
 
-}
+};
 
 let inActivityTimer = null;
 const inActivityTime = 120000; // ms
-let lastActiveTime = new Date();
+const lastActiveTime = new Date();
 
 const setInActivityTimer = (f) => {
     if (inActivityTimer) {

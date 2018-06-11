@@ -29,12 +29,12 @@ const mapStateToProps = (state, ownProps) => {
     }
 
     props.name = visitOwner.name;
-    props.primaryContact = visitOwner.primaryContact;
+    props.primaryContact = !visitOwner.archived && visitOwner.primaryContact;
 
     const address = state.addresses[visitOwner.addressID];
     //console.log('Owner', visitOwner.name);
     //console.log('Address:', address);
-    props.coordinates = {
+    props.coordinates = !visitOwner.archived && {
         latitude: address.latitude,
         longitude: address.longitude
     };
@@ -76,7 +76,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                         style={{flexDirection: 'row', flex: 1, justifyContent: 'space-around', margin: 0, padding: 0}}
                     >
                         <TouchableHighlight
-                            activeOpacity={0.5}
+                            activeOpacity={0.4}
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
@@ -105,14 +105,14 @@ function VisitCardGenerator({onDoneTogglePress}) {
                         </TouchableHighlight>
                         <Divider style={{width: 1.5, height: '60%', marginTop: 8, backgroundColor: '#dddddd'}} />
                         <TouchableHighlight
-                            activeOpacity={0.5}
+                            activeOpacity={0.4}
                             underlayColor={'white'}
                             style={{flex: 1, padding: 5}}
                             onPress={() => {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     type: parameterValues.NAVIGATION
                                 });
-                                if (this.props.coordinates !== null) {
+                                if (this.props.coordinates) {
                                     Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`).catch(err => console.error('An error occurred', err));
                                 }
                             }}
