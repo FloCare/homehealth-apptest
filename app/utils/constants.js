@@ -39,6 +39,7 @@ const screenNames = {
     homeScreen: 'HomeScreen',
     patientList: 'PatientList',
     moreScreen: 'MoreScreen',
+    loginScreen: 'LoginScreen',
     welcomeScreen: 'WelcomeScreen',
     inviteScreen: 'InviteScreen',
     setPassCodeScreen: 'SetPassCodeScreen',
