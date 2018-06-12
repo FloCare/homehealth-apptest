@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TextInput } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity } from 'react-native';
 import {Button} from 'react-native-elements';
 import { Input } from '../components/common/Input';
 import { CardSection } from '../components/common/CardSection';
@@ -29,7 +29,6 @@ class LoginScreen extends Component {
             password: password,
           }),
         }).then(response => {
-          console.log('WOHOOO');
             if (response.status < 200 || response.status >= 300) {
               this.setState({ 
                 email: '',
@@ -74,6 +73,13 @@ class LoginScreen extends Component {
     );
   }
 
+  onPress = () => {
+    this.props.navigator.push({
+                screen: screenNames.inviteScreen,
+                backButtonHidden: true,
+    });
+  }
+
   render() {
     return (
       <View style={{marginBottom: 80}}>
@@ -106,6 +112,13 @@ class LoginScreen extends Component {
         <View>
           {this.renderButton()}
         </View>
+        <View style={styles.alertMessageStyle}>
+        <TouchableOpacity
+         onPress={this.onPress}
+            >
+          <Text> No Login yet? </Text>
+       </TouchableOpacity>
+       </View>
       </View>
     );
   }
@@ -130,7 +143,14 @@ const styles = {
     marginLeft: 0,
     marginRight: 0,
     height: 50
-  }
+  },
+  alertMessageStyle: {
+      marginTop: 20,
+      fontSize: 12,
+      color: 'red',
+      justifyContent: 'center',
+      alignItems: 'center'
+  },
 };
 
 
