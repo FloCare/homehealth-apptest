@@ -1,20 +1,19 @@
-import React, { Component } from 'react';
-import { Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, {Component} from 'react';
+import {Text, View, TouchableOpacity} from 'react-native';
 import {Button} from 'react-native-elements';
-import { Input } from '../components/common/Input';
-import { CardSection } from '../components/common/CardSection';
-import { Card } from '../components/common/Card';
-import { Spinner } from '../components/common/Spinner';
-import {screenNames, PrimaryFontFamily } from '../utils/constants';
+import RNSecureKeyStore from 'react-native-secure-key-store';
+import {Input} from '../components/common/Input';
+import {Spinner} from '../components/common/Spinner';
+import {screenNames, PrimaryFontFamily} from '../utils/constants';
 
 // TODO Change to the endpoint on Aptible
-const API_URL = 'https://fathomless-harbor-75587.herokuapp.com/get-token/';
+const API_URL = 'http://app-9707.on-aptible.com/get-token/';
 
 class LoginScreen extends Component {
-  state = { email: '', password: '', error: '', loading: false };
+  state = {email: '', password: '', error: '', loading: false};
 
   onButtonPress() {
-    const { email, password } = this.state;
+    const {email, password} = this.state;
     this.setState({
       loading: true
     });
@@ -27,7 +26,7 @@ class LoginScreen extends Component {
           },
           body: JSON.stringify({
             username: email,
-            password: password,
+            password,
           }),
         }).then(response => {
             if (response.status < 200 || response.status >= 300) {
@@ -37,8 +36,7 @@ class LoginScreen extends Component {
                 loading: false,
                 error: 'Authentication Failed.'
               });
-            }
-            else {
+            } else {
               this.props.navigator.push({
                 screen: screenNames.welcomeScreen,
                 title: 'Welcome',
@@ -47,10 +45,9 @@ class LoginScreen extends Component {
               return response.json();
             }
         })
-        .then(({ token }) => {
+        .then(({token}) => {
           console.log('token set');
-          // TODO
-          localStorage.setItem('access_token', token);
+          RNSecureKeyStore.set('accessToken', token);
     });
   }
 
@@ -78,7 +75,7 @@ class LoginScreen extends Component {
     this.props.navigator.push({
       screen: screenNames.inviteScreen
     });
-  }
+  };
 
   render() {
     return (
@@ -91,7 +88,7 @@ class LoginScreen extends Component {
           <Input 
             placeholder="user@email.com"
             value={this.state.email}
-            onChangeText={(text) => this.setState({ email: text })}
+            onChangeText={(text) => this.setState({email: text})}
             autoFocus
           />
         </View>
@@ -101,7 +98,7 @@ class LoginScreen extends Component {
             secureTextEntry
             placeholder="password"
             value={this.state.password}
-            onChangeText={(text) => this.setState({ password: text })}
+            onChangeText={(text) => this.setState({password: text})}
           />
         </View>
 
@@ -114,7 +111,8 @@ class LoginScreen extends Component {
         </View>
         <View style={styles.alertMessageStyle}>
           <TouchableOpacity
-              onPress={this.onPress}>
+              onPress={this.onPress}
+          >
           <Text style={{fontSize: 10}}> No Login yet? </Text>
           </TouchableOpacity>
         </View>
