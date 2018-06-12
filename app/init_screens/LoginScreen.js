@@ -7,6 +7,7 @@ import { Card } from '../components/common/Card';
 import { Spinner } from '../components/common/Spinner';
 import {screenNames, PrimaryFontFamily } from '../utils/constants';
 
+// TODO Change to the endpoint on Aptible
 const API_URL = 'https://fathomless-harbor-75587.herokuapp.com/get-token/';
 
 class LoginScreen extends Component {
@@ -75,8 +76,7 @@ class LoginScreen extends Component {
 
   onPress = () => {
     this.props.navigator.push({
-                screen: screenNames.inviteScreen,
-                backButtonHidden: true,
+      screen: screenNames.inviteScreen
     });
   }
 
@@ -113,12 +113,11 @@ class LoginScreen extends Component {
           {this.renderButton()}
         </View>
         <View style={styles.alertMessageStyle}>
-        <TouchableOpacity
-         onPress={this.onPress}
-            >
-          <Text> No Login yet? </Text>
-       </TouchableOpacity>
-       </View>
+          <TouchableOpacity
+              onPress={this.onPress}>
+          <Text style={{fontSize: 10}}> No Login yet? </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
