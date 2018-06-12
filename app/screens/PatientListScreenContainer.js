@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Linking, Alert, Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
@@ -37,6 +38,8 @@ class PatientListScreenContainer extends Component {
             patientCount: 0,      // not always a count of patientList
             selectedPatient: props.selectedPatient,
             refreshing: false,
+            isTeamVersion: RNSecureKeyStore.get('accessToken')
+
         };
         this.patientMoreMenu = [
             {id: 'Notes', title: 'Add Notes'},
@@ -247,7 +250,7 @@ class PatientListScreenContainer extends Component {
     render() {
         return (
             <PatientListScreen
-                onRefresh={this.onRefresh.bind(this)}
+                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
                 refreshing={this.state.refreshing}
                 patientList={this.state.patientList}
                 patientCount={this.state.patientCount}

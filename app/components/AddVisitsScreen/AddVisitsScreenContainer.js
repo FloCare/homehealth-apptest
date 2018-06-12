@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Map} from 'immutable';
 import {Platform, View, ActionSheetIOS} from 'react-native';
 import {ListItem} from 'react-native-elements';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
 import {screenNames, PrimaryColor} from '../../utils/constants';
@@ -60,6 +61,7 @@ class AddVisitsScreenContainer extends Component {
             date: props.date,
             selectedItems: Map(),
             refreshing: false,
+            isTeamVersion: RNSecureKeyStore.get('accessToken')
         };
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
         this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').sorted('name');
@@ -273,7 +275,7 @@ class AddVisitsScreenContainer extends Component {
     render() {
         return (
             <AddVisitsScreen
-                onRefresh={this.onRefresh.bind(this)}
+                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
                 refreshing={this.state.refreshing}
                 isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
