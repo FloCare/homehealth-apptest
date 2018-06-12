@@ -29,6 +29,7 @@ class LoginScreen extends Component {
             password: password,
           }),
         }).then(response => {
+          console.log('WOHOOO');
             if (response.status < 200 || response.status >= 300) {
               this.setState({ 
                 email: '',
@@ -80,19 +81,18 @@ class LoginScreen extends Component {
           <Text style={styles.boldTextStyle}> Login </Text>
 
         </View>
-        <View style={{marginBottom: 20}}>
+        <View >
           <Input 
-            label="Email"
             placeholder="user@email.com"
             value={this.state.email}
             onChangeText={(text) => this.setState({ email: text })}
+            autoFocus
           />
         </View>
 
         <View>
           <Input 
             secureTextEntry
-            label="Password"
             placeholder="password"
             value={this.state.password}
             onChangeText={(text) => this.setState({ password: text })}
@@ -118,7 +118,7 @@ const styles = {
     color: 'red'
   },
     boldTextStyle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
