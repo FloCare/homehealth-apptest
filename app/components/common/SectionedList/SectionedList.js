@@ -79,6 +79,8 @@ class SectionedList extends Component {
         const {selectedItem, onPressPopupButton, menu} = this.props;
         return (
             <SectionList
+                onRefresh={this.props.onRefresh}
+                refreshing={this.props.refreshing}
                 sections={this.props.itemList}
                 renderItem={({item}) => this.renderItem(item, selectedItem, onPressPopupButton, menu)}
                 renderSectionHeader={this.renderSectionHeader}

@@ -1,9 +1,11 @@
 import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
-import {arrayToObjectByKey} from '../utils/collectionUtils';
+import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
 import {visitDataService} from './VisitDataService';
+
+import * as PatientAPI from '../utils/PatientAPI';
 
 class PatientDataService {
     static getFlatPatient(patient) {
@@ -109,6 +111,57 @@ class PatientDataService {
             }
         }
         console.log('Patient archived. His visits Deleted');
+    }
+
+    updatePatientListFromServer() {
+        return PatientAPI.getPatientIDList()
+            .then(json => {
+                console.log('here');
+                const serverPatientIDs = json.patients;
+                const existingPatients = this.floDB.objects(Patient);
+                const intersectingPatients = filterResultObjectByListMembership(existingPatients, 'patientID', serverPatientIDs);
+
+                const intersectingPatientsByID = arrayToMap(filterResultObjectByListMembership(intersectingPatients, 'patientID', serverPatientIDs), 'patientID');
+
+                const deletedPatients = [];
+                existingPatients.forEach(patient => {
+                    if (!intersectingPatientsByID.has(patient.patientID)) {
+                        deletedPatients.push(patient);
+                        //TODO batch process it
+                        // this.archivePatient(patient.patientID);
+                    }
+                });
+
+                const newPatientIDs = [];
+                serverPatientIDs.forEach(patientID => {
+                    if (!intersectingPatientsByID.has(patientID)) {
+                        newPatientIDs.push(patientID);
+                        //TODO batch it
+                    }
+                });
+
+                return {
+                    deletedPatients,
+                    newPatientIDs
+                };
+        })
+        .then(({deletedPatients, newPatientIDs}) => {
+            console.log('here2');
+            return this._fetchAndSavePatientsByID(newPatientIDs);
+        });
+    }
+
+    _fetchAndSavePatientsByID(newPatientIDs) {
+        return PatientAPI.getPatientsByID(newPatientIDs)
+            .then(json => {
+                console.log('here5');
+
+                const successfulObjects = json.success;
+                for (const patientID in successfulObjects) {
+                    this.createNewPatient(successfulObjects[patientID]);
+                }
+                return successfulObjects.length;
+            });
     }
 
     updatePatientsInRedux(patients) {

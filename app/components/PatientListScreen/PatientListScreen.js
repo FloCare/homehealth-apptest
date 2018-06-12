@@ -36,37 +36,38 @@ const PatientListScreen = (props) => {
                 </EmptyStateButton>
             </View>
         );
-    } else {
-        return (
-            <View style={styles.container.container}>
-                <SearchBar
-                    round
-                    lightTheme
-                    disabled
-                    value={searchText}
-                    onChangeText={(query) => {
-                        onSearch(query);
-                    }}
-                    onClear={() => {
-                        onSearch(null);
-                    }}
-                    placeholder='Search'
-                    containerStyle={{backgroundColor: '#f8f8f8', borderBottomWidth: 0, borderTopWidth: 0}}
-                    inputStyle={{backgroundColor: 'white', color: 'black'}}
-                    clearIcon={{color: '#dddddd', name: 'cancel'}}
-                />
-                <MenuProvider>
-                    <SectionedList
-                        itemList={patientList}
-                        selectedItem={selectedPatient}
-                        onItemPressed={onItemPressed}
-                        onPressPopupButton={onPressPopupButton}
-                        menu={menu}
-                    />
-                </MenuProvider>
-            </View>
-        );
     }
+    return (
+        <View style={styles.container.container}>
+            <SearchBar
+                round
+                lightTheme
+                disabled
+                value={searchText}
+                onChangeText={(query) => {
+                    onSearch(query);
+                }}
+                onClear={() => {
+                    onSearch(null);
+                }}
+                placeholder='Search'
+                containerStyle={{backgroundColor: '#f8f8f8', borderBottomWidth: 0, borderTopWidth: 0}}
+                inputStyle={{backgroundColor: 'white', color: 'black'}}
+                clearIcon={{color: '#dddddd', name: 'cancel'}}
+            />
+            <MenuProvider>
+                <SectionedList
+                    onRefresh={props.onRefresh}
+                    refreshing={props.refreshing}
+                    itemList={patientList}
+                    selectedItem={selectedPatient}
+                    onItemPressed={onItemPressed}
+                    onPressPopupButton={onPressPopupButton}
+                    menu={menu}
+                />
+            </MenuProvider>
+        </View>
+    );
 };
 
 export {PatientListScreen};

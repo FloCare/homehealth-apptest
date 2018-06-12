@@ -7,6 +7,7 @@ import {floDB, Patient, Place} from '../../utils/data/schema';
 import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import {visitDataService} from '../../data_services/VisitDataService';
+import {patientDataService} from '../../data_services/PatientDataService';
 
 const newStop = 'Add new Stop';
 const newPatient = 'Add new Patient';
@@ -57,7 +58,8 @@ class AddVisitsScreenContainer extends Component {
         super(props);
         this.state = {
             date: props.date,
-            selectedItems: Map()
+            selectedItems: Map(),
+            refreshing: false,
         };
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
         this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').sorted('name');
@@ -146,6 +148,7 @@ class AddVisitsScreenContainer extends Component {
         const key = object instanceof Patient ? object.patientID : object.placeID;
         return {
             key,
+            type: object instanceof Patient ? 'patient' : 'place',
             isSelected: this.state.selectedItems.has(key),
             object,
         };
@@ -262,9 +265,16 @@ class AddVisitsScreenContainer extends Component {
         console.log('add visits container all done');
     }
 
+    onRefresh() {
+        patientDataService.updatePatientListFromServer().then(() => this.setState({refreshing: false})).catch(error => console.log(`wow${error}`));
+        this.setState({refreshing: true});
+    }
+
     render() {
         return (
             <AddVisitsScreen
+                onRefresh={this.onRefresh.bind(this)}
+                refreshing={this.state.refreshing}
                 isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
                 searchText={this.state.searchText}
