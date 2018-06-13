@@ -40,6 +40,9 @@ const StartApp = async () => {
 		Navigation.startSingleScreenApp({
 			screen: {
 				screen: screenNames.loginScreen,
+                navigatorStyle: {
+                    navBarHidden: true,
+                },
 			},
 			appStyle: navigatorStyle,
 			animationType: 'fade'
