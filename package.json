@@ -43,6 +43,7 @@
     "react-native-sortable-list": "git+https://github.com/FloCare/react-native-sortable-list.git",
     "react-native-splash-screen": "3.0.6",
     "react-native-vector-icons": "^4.6.0",
+    "react-native-virtual-keyboard": "FloCare/React-Native-Virtual-Keyboard",
     "react-redux": "^5.0.7",
     "realm": "2.4.0",
     "redux": "^4.0.0",
