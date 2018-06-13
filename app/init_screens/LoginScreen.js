@@ -46,7 +46,7 @@ class LoginScreen extends Component {
             }
         })
         .then(({token}) => {
-          console.log('token set');
+          console.log(`token set to ${token}`);
           RNSecureKeyStore.set('accessToken', token);
     });
   }

@@ -61,8 +61,9 @@ class AddVisitsScreenContainer extends Component {
             date: props.date,
             selectedItems: Map(),
             refreshing: false,
-            isTeamVersion: RNSecureKeyStore.get('accessToken')
+            isTeamVersion: undefined
         };
+        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
         this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').sorted('name');
 
@@ -268,7 +269,12 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onRefresh() {
-        patientDataService.updatePatientListFromServer().then(() => this.setState({refreshing: false})).catch(error => console.log(`wow${error}`));
+        patientDataService.updatePatientListFromServer()
+            .then(() => this.setState({refreshing: false}))
+            .catch(error => {
+                this.setState({refreshing: false});
+                console.log(error);
+            });
         this.setState({refreshing: true});
     }
 

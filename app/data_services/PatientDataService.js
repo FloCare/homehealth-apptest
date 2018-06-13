@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
@@ -35,10 +36,10 @@ class PatientDataService {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
     }
 
-    createNewPatient(patient) {
+    createNewPatient(patient, isLocallyOwned = true) {
         // Todo: Add proper ID generators
         // Create a patient, create & add an address, and create & add an episode
-        const patientId = Math.random().toString();
+        const patientId = patient.id ? patient.id : Math.random().toString();
         const episodeId = Math.random().toString();
         const addressId = Math.random().toString();
 
@@ -51,10 +52,10 @@ class PatientDataService {
                 primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
                 emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
-                timestamp: 0,                                   // Todo: Add a timestmap
+                timestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
             });
 
-            addressDataService.addAddressToTransaction(newPatient, patient, addressId);
+            if (isLocallyOwned) { addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id); } else addressDataService.addAddressToTransaction(newPatient, patient, addressId);
 
             // Todo: Add an episode, Move this to its own Data Service
             newPatient.episodes.push({
@@ -117,8 +118,10 @@ class PatientDataService {
         return PatientAPI.getPatientIDList()
             .then(json => {
                 console.log('here');
+                console.log(json);
+
                 const serverPatientIDs = json.patients;
-                const existingPatients = this.floDB.objects(Patient);
+                const existingPatients = this.floDB.objects(Patient).filtered('isLocallyOwned = false');
                 const intersectingPatients = filterResultObjectByListMembership(existingPatients, 'patientID', serverPatientIDs);
 
                 const intersectingPatientsByID = arrayToMap(filterResultObjectByListMembership(intersectingPatients, 'patientID', serverPatientIDs), 'patientID');
@@ -158,7 +161,7 @@ class PatientDataService {
 
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
-                    this.createNewPatient(successfulObjects[patientID]);
+                    this.createNewPatient(successfulObjects[patientID], false);
                 }
                 return successfulObjects.length;
             });
@@ -177,7 +180,7 @@ class PatientDataService {
             type: PatientActions.ADD_PATIENTS,
             patientMap: PatientDataService.getFlatPatientMap(patients)
         });
-        addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
+        addressDataService.addAddressesToRedux(patients.map(patient => patient.address));
     }
 
     archivePatientsInRedux(patients) {

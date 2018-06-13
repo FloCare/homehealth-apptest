@@ -12,9 +12,8 @@ export function getPatientIDList() {
         })
         .then(response => {
             console.log('here3');
-
             if (response.ok) {
-                return response.json;
+                return response.json();
             }
             throw new Error('HTTP request not OK');
         });
@@ -39,8 +38,9 @@ export function getPatientsByID(patientIDs) {
         })
         .then(response => {
             console.log('here4');
+            console.log(response.json());
             if (response.ok) {
-                return response.json;
+                return response.json();
             }
             throw new Error('HTTP request not OK');
         });

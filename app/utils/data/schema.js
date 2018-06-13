@@ -26,7 +26,8 @@ Patient.schema = {
         notes: 'string?',
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
         timestamp: 'int',
-        archived: {type: 'bool', default: false}
+        archived: {type: 'bool', default: false},
+        isLocallyOwned: {type: 'bool', default: true},
     }
 };
 
@@ -268,6 +269,18 @@ class FloDBProvider {
                 },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key)
+            },
+            {
+                schema: initialSchema,
+                schemaVersion: 3,
+                migration: (oldRealm, newRealm) => {
+                    if (oldRealm.schemaVersion < 2) {
+                        const newPatientObjects = newRealm.objects(Patient);
+                        newPatientObjects.update('isLocallyOwned', true);
+                    }
+                },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
