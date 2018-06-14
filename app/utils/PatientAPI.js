@@ -3,15 +3,18 @@
 import RNSecureKeyStore from 'react-native-secure-key-store';
 
 export function getPatientIDList() {
-    return fetch('http://app-9707.on-aptible.com/phi/v1.0/my-patients/?format=json',
-        {
-            method: 'GET',
-            headers: {
-                Authorization: RNSecureKeyStore.get('accessToken'),
-            },
-        })
+    return RNSecureKeyStore.get('accessToken').catch(error => {
+        console.log('error in getting access token');
+        throw error;
+    })
+        .then(token => fetch('http://app-9707.on-aptible.com/phi/v1.0/my-patients/?format=json',
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Token ${token}`,
+                },
+            }))
         .then(response => {
-            console.log('here3');
             if (response.ok) {
                 return response.json();
             }
@@ -25,20 +28,22 @@ export function getPatientIDList() {
 }
 
 export function getPatientsByID(patientIDs) {
-    return fetch('http://app-9707.on-aptible.com/phi/v1.0/my-patients-details/',
-        {
-            method: 'POST',
-            headers: {
-                Authorization: RNSecureKeyStore.get('accessToken'),
-            },
-            'Content-Type': 'application/json',
-            body: {
-                patients: patientIDs
-            }
-        })
+    return RNSecureKeyStore.get('accessToken').catch(error => {
+        console.log('error in getting access token');
+        throw error;
+    })
+        .then(token => fetch('http://app-9707.on-aptible.com/phi/v1.0/my-patients-details/',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    patients: patientIDs
+                })
+            }))
         .then(response => {
-            console.log('here4');
-            console.log(response.json());
             if (response.ok) {
                 return response.json();
             }

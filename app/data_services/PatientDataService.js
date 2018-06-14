@@ -53,9 +53,12 @@ class PatientDataService {
                 emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
                 timestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
+                isLocallyOwned
             });
 
-            if (isLocallyOwned) { addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id); } else addressDataService.addAddressToTransaction(newPatient, patient, addressId);
+            if (isLocallyOwned) {
+                addressDataService.addAddressToTransaction(newPatient, patient, addressId);
+            } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id);
 
             // Todo: Add an episode, Move this to its own Data Service
             newPatient.episodes.push({
@@ -117,9 +120,6 @@ class PatientDataService {
     updatePatientListFromServer() {
         return PatientAPI.getPatientIDList()
             .then(json => {
-                console.log('here');
-                console.log(json);
-
                 const serverPatientIDs = json.patients;
                 const existingPatients = this.floDB.objects(Patient).filtered('isLocallyOwned = false');
                 const intersectingPatients = filterResultObjectByListMembership(existingPatients, 'patientID', serverPatientIDs);
@@ -137,7 +137,7 @@ class PatientDataService {
 
                 const newPatientIDs = [];
                 serverPatientIDs.forEach(patientID => {
-                    if (!intersectingPatientsByID.has(patientID)) {
+                    if (!intersectingPatientsByID.has(patientID.toString())) {
                         newPatientIDs.push(patientID);
                         //TODO batch it
                     }
@@ -147,21 +147,23 @@ class PatientDataService {
                     deletedPatients,
                     newPatientIDs
                 };
-        })
-        .then(({deletedPatients, newPatientIDs}) => {
-            console.log('here2');
-            return this._fetchAndSavePatientsByID(newPatientIDs);
-        });
+            })
+            .then(({newPatientIDs}) => {
+                if (newPatientIDs.length > 0) {
+                    return this._fetchAndSavePatientsByID(newPatientIDs);
+                }
+            });
     }
 
     _fetchAndSavePatientsByID(newPatientIDs) {
         return PatientAPI.getPatientsByID(newPatientIDs)
             .then(json => {
-                console.log('here5');
-
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
-                    this.createNewPatient(successfulObjects[patientID], false);
+                    const patientObject = successfulObjects[patientID];
+                    patientObject.id = patientObject.id.toString();
+                    patientObject.address.id = patientObject.address.id.toString();
+                    this.createNewPatient(patientObject, false);
                 }
                 return successfulObjects.length;
             });
