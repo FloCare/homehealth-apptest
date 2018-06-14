@@ -12,7 +12,7 @@ export class WelcomePageScreen extends Component {
   }
 
   onButtonPress() {
-    this.props.navigator.push({
+    this.props.navigator.resetTo({
       screen: screenNames.setPassCodeScreen,
       backButtonHidden: true,
     });

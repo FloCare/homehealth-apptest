@@ -67,7 +67,7 @@ export class InviteScreen extends Component {
             firebase.analytics().logEvent(eventNames.INVITE, {
                 'status': parameterValues.SUCCESS
             });
-            this.props.navigator.push({
+            this.props.navigator.resetTo({
               screen: screenNames.welcomeScreen,
               title: 'Welcome',
               backButtonHidden: true,

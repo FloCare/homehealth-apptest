@@ -1,24 +1,31 @@
 import React, {Component} from 'react';
-import {TextInput, View, ActivityIndicator, Dimensions} from 'react-native';
+import {TextInput, View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Button} from 'react-native-elements';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {screenNames, PrimaryFontFamily, PrimaryColor} from '../utils/constants';
 import StyledText from '../components/common/StyledText';
+import {SimpleButton} from '../components/common/SimpleButton';
 
 // TODO Change to the endpoint on Aptible
-const API_URL = 'http://app-9707.on-aptible.com/get-token/';
+const API_URL = 'https://app-9707.on-aptible.com/get-token/';
 
 class LoginScreen extends Component {
-    state = {email: undefined, password: undefined, passwordPlaceholder: 'Password', loading: false};
+    state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
 
     emailField = React.createRef();
     passwordField = React.createRef();
 
+    onUseInviteCode = () => {
+        this.props.navigator.push({
+            screen: screenNames.inviteScreen
+        });
+    };
+
     onSubmit() {
         const {email, password} = this.state;
         this.setState({
-            loading: true
+            loading: true,
+            authSubtitle: ' '
         });
 
         fetch(API_URL, {
@@ -35,12 +42,12 @@ class LoginScreen extends Component {
             if (response.status < 200 || response.status >= 300) {
                 this.setState({
                     password: undefined,
-                    passwordPlaceholder: 'Authentication Failed',
+                    authSubtitle: 'Authentication Failed',
                     loading: false,
                     error: 'Login failed.'
                 });
             } else {
-                this.props.navigator.push({
+                this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,
                     title: 'Welcome',
                     backButtonHidden: true,
@@ -51,6 +58,14 @@ class LoginScreen extends Component {
             .then(({token}) => {
                 console.log(`token set to ${token}`);
                 RNSecureKeyStore.set('accessToken', token);
+            })
+            .catch(() => {
+                this.setState({
+                    password: undefined,
+                    authSubtitle: 'Authentication Failed',
+                    loading: false,
+                    error: 'Login failed.'
+                });
             });
     }
 
@@ -60,26 +75,17 @@ class LoginScreen extends Component {
         }
 
         return (
-            <Button
-                containerViewStyle={{marginVertical: 20}}
-                buttonStyle={styles.buttonStyle}
+            <SimpleButton
+                style={{backgroundColor: 'white', borderRadius: 25, flex: 1, marginLeft: 20}}
                 textStyle={{
                     fontFamily: PrimaryFontFamily,
-                    fontSize: 16,
+                    fontSize: 12,
                     color: PrimaryColor
                 }}
                 title='Sign-in' onPress={this.onSubmit.bind(this)}
-            >
-                Explore
-            </Button>
+            />
         );
     }
-
-    onPress = () => {
-        this.props.navigator.push({
-            screen: screenNames.inviteScreen
-        });
-    };
 
     render() {
         const primaryColor = PrimaryColor;
@@ -93,32 +99,74 @@ class LoginScreen extends Component {
                     justifyContent: 'flex-start',
                 }}
             >
-                <StyledText
-                    style={{color: 'white', fontSize: 24, fontWeight: '500', marginVertical: 40}}
+                <KeyboardAvoidingView
+                    style={{flex: 1}}
+                    keyboardVerticalOffset={0}
+                    behavior={'padding'}
                 >
-                    Login
-                </StyledText>
-                <InputField
-                    ref={this.emailField}
-                    keyboardType={'email-address'}
-                    title={'Email'}
-                    placeholder={'Email'}
-                    autoFocus
-                    value={this.state.email}
-                    onChangeText={(text) => this.setState({email: text})}
-                    onSubmitEditing={() => this.passwordField.current.focus()}
-                />
-                <InputField
-                    ref={this.passwordField}
-                    someShit={this.someShit}
-                    title={'Password'}
-                    placeholder={this.state.passwordPlaceholder}
-                    secureTextEntry
-                    value={this.state.password}
-                    onChangeText={(text) => this.setState({password: text})}
-                    onSubmitEditing={this.onSubmit.bind(this)}
-                />
-                {this.renderButton()}
+                    <SafeAreaView
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly',
+                            bottomMargin: 30
+                        }}
+                    >
+                        <StyledText
+                            style={{color: 'white', fontSize: 24, fontWeight: '500'}}
+                        >
+                            Login
+                        </StyledText>
+                        <View>
+                            <InputField
+                                ref={this.emailField}
+                                keyboardType={'email-address'}
+                                title={'Email'}
+                                placeholder={'Email'}
+                                autoFocus
+                                value={this.state.email}
+                                onChangeText={(text) => this.setState({email: text})}
+                                onSubmitEditing={() => this.passwordField.current.focus()}
+                            />
+                            <InputField
+                                ref={this.passwordField}
+                                title={'Password'}
+                                placeholder={'Password'}
+                                secureTextEntry
+                                value={this.state.password}
+                                onChangeText={(text) => this.setState({password: text, authSubtitle: ' '})}
+                                onSubmitEditing={this.onSubmit.bind(this)}
+                            />
+                        </View>
+                        <StyledText
+                            style={styles.errorTextStyle}
+                        >
+                            {this.state.authSubtitle}
+                        </StyledText>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                width: Dimensions.get('window').width * 0.7,
+                                marginVertical: 20,
+                            }}
+                        >
+                            <SimpleButton
+                                style={{backgroundColor: 'transparent', height: 50}}
+                                textStyle={{
+                                    fontFamily: PrimaryFontFamily,
+                                    fontSize: 12,
+                                    color: 'rgba(255,255,255,1)'
+                                }}
+                                title='Use Invite Code' onPress={this.onUseInviteCode.bind(this)}
+                            />
+                            <View
+                                style={{flex: 1, height: 50, }}
+                            >
+                                {this.renderButton()}
+                            </View>
+                        </View>
+                    </SafeAreaView>
+                </KeyboardAvoidingView>
             </LinearGradient>
         );
     }
@@ -129,7 +177,7 @@ const InputField = React.forwardRef((props, ref) => (
             style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
         >
             <StyledText
-                style={{color: 'white'}}
+                style={{color: 'white', textAlign: 'left'}}
             >
                 {props.title}
             </StyledText>
@@ -143,6 +191,7 @@ const InputField = React.forwardRef((props, ref) => (
                 onChangeText={props.onChangeText}
                 onSubmitEditing={props.onSubmitEditing}
 
+                autoCapitalize={'none'}
                 selectionColor={'rgba(255,255,255,0.5)'}
                 underlineColorAndroid={'white'}
                 autoCorrect={false}
@@ -157,7 +206,7 @@ const styles = {
     errorTextStyle: {
         fontSize: 14,
         alignSelf: 'center',
-        color: 'red'
+        color: 'rgba(255,0,0,0.7)'
     },
     boldTextStyle: {
         fontSize: 20,
@@ -168,10 +217,11 @@ const styles = {
         alignItems: 'center'
     },
     buttonStyle: {
+        marginLeft: 0,
+        marginRight: 0,
         backgroundColor: 'white',
         borderRadius: 25,
         height: 50,
-        width: Dimensions.get('window').width * 0.5
     },
     alertMessageStyle: {
         marginTop: 20,

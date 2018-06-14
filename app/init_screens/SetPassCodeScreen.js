@@ -5,13 +5,9 @@ import firebase from 'react-native-firebase';
 import VirtualKeyboard from 'react-native-virtual-keyboard';
 import {StyleSheet, Text, View, Image, Alert, AsyncStorage, Dimensions} from 'react-native';
 import StartApp from '../screens/App';
-import {Images} from '../Images';
 import {screenNames, eventNames, parameterValues, PrimaryColor, PrimaryFontFamily} from '../utils/constants';
 
-//const Realm = require('realm');
-
 class SetPassCodeScreen extends Component {
-
     static navigatorStyle = {
         navBarHidden: true
     };
@@ -128,7 +124,7 @@ class SetPassCodeScreen extends Component {
                 style={{
                     flex: 1,
                     alignItems: 'center',
-                    justifyContent: 'flex-start',
+                    justifyContent: 'space-evenly',
                 }}
             >
                 {/*<KeyboardAwareScrollView>*/}
@@ -179,7 +175,7 @@ class SetPassCodeScreen extends Component {
                                     flex: 1
                                 },
                                 number: {
-                                    fontFamily: 'SFProText',
+                                    fontFamily: PrimaryFontFamily,
                                     fontSize: 35,
                                 }
                             }}
