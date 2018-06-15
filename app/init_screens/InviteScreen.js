@@ -5,7 +5,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import {screenNames, userProperties, eventNames, parameterValues } from '../utils/constants';
 
 // TODO Provide actual invite codes , move it to a backend later
-const inviteCodes = ['1947', '2011', '1988', '2018', '7860', '3299', '5401', '1971', '1851', '2013', '8055', '1772', '9742', '6496', '1063'];
+const inviteCodes = ['1947', '2011', '1988', '2018', '7860', '3299', '5401', '1971', '1851', '2013', '8055', '1772', '9742', '6496', '1063', '4977', '8341', '5297', '6312', '2750', '1649', '1347', '9403', '8591', '1084', '7059', '9275', '3958', '7107', '9558', '5107'];
 
 export class InviteScreen extends Component {
 
