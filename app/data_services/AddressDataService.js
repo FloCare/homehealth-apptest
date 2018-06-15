@@ -108,6 +108,7 @@ class AddressDataService {
             console.log(result.status);
             console.log(result.results[0].geometry.location);
         }
+        this.updateAddressesInRedux([address]);
     };
 
     attemptFetchForPendingAddresses() {
