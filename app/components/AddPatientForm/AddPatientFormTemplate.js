@@ -15,7 +15,7 @@ const PatientFormTemplate = (locals) => {
                     {locals.inputs.apartmentNo}
                 </View>
                 <View style={styles.field}>
-                    {locals.inputs.zip}
+                    {locals.inputs.zipCode}
                 </View>
             </View>
             <View style={{...styles.container, ...styles.margin}}>

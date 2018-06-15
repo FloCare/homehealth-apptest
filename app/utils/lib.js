@@ -45,7 +45,7 @@ PhoneNumber.getValidationErrorMessage = function (value) {
     }
 };
 
-const zipCode = t.refinement(t.String, (z) => {
+const zipCodeType = t.refinement(t.String, (z) => {
     if (z !== null) {
         const isValid = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(z);
         return isValid;
@@ -53,4 +53,4 @@ const zipCode = t.refinement(t.String, (z) => {
     return false;
 });
 
-export {EmailField, PhoneNumber, zipCode, parsePhoneNumber};
+export {EmailField, PhoneNumber, zipCodeType, parsePhoneNumber};

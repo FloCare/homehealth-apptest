@@ -22,7 +22,7 @@ class AddStopFormContainer extends Component {
                 streetAddress: props.streetAddress || null,
                 lat: props.lat || null,
                 long: props.long || null,
-                zip: props.zip || null,
+                zipCode: props.zipCode || null,
                 city: props.city || null,
                 state: props.state || null,
                 country: props.country || null,
@@ -79,9 +79,9 @@ class AddStopFormContainer extends Component {
     onAddressSelect(data, details) {
         // Todo: Handle OFFLINE flow
         const resp = ParseGooglePlacesAPIResponse(data, details);
-        const {streetAddress, city, stateName, zip, country, lat, long} = resp;
+        const {streetAddress, city, stateName, zipCode, country, lat, long} = resp;
 
-        const value = Object.assign({}, this.state.value, {streetAddress, zip, city, state: stateName, country, lat, long});
+        const value = Object.assign({}, this.state.value, {streetAddress, zipCode, city, state: stateName, country, lat, long});
         this.setState({value});
     }
 
@@ -114,7 +114,7 @@ class AddStopFormContainer extends Component {
                 streetAddress: null,
                 lat: null,
                 long: null,
-                zip: null,
+                zipCode: null,
                 city: null,
                 state: null,
                 country: null,

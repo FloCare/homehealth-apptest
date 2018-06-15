@@ -83,7 +83,7 @@ class PatientDetailScreenContainer extends Component {
                     addressID: this.state.patientDetail.address.addressID,
                     streetAddress: this.state.patientDetail.address.streetAddress,
                     apartmentNo: this.state.patientDetail.address.apartmentNo,
-                    zip: this.state.patientDetail.address.zipCode,
+                    zipCode: this.state.patientDetail.address.zipCode,
                     city: this.state.patientDetail.address.city,
                     state: this.state.patientDetail.address.state,
                     primaryContact: this.state.patientDetail.primaryContact,

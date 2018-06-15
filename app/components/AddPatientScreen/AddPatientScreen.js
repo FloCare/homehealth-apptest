@@ -15,7 +15,7 @@ class AddPatientScreen extends Component {
             addressID,
             name,
             streetAddress,
-            zip,
+            zipCode,
             city,
             state,
             country,
@@ -36,7 +36,7 @@ class AddPatientScreen extends Component {
                     name={name}
                     streetAddress={streetAddress}
                     apartmentNo={apartmentNo}
-                    zip={zip}
+                    zipCode={zipCode}
                     city={city}
                     state={state}
                     country={country}
