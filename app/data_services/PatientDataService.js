@@ -174,6 +174,8 @@ class PatientDataService {
                     const patientObject = successfulObjects[patientID];
                     patientObject.id = patientObject.id.toString();
                     patientObject.address.id = patientObject.address.id.toString();
+                    patientObject.address.lat = patientObject.address.latitude;
+                    patientObject.address.long = patientObject.address.longitude;
                     this.createNewPatient(patientObject, false);
                 }
                 addressDataService.attemptFetchForPendingAddresses();
