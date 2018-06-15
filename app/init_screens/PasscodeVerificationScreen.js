@@ -10,7 +10,7 @@ class PasscodeVerificationScreen extends Component {
     static navigatorStyle = {
         navBarHidden: true
     };
-    
+
     constructor(props) {
         super(props);
         this.state = {
@@ -21,7 +21,7 @@ class PasscodeVerificationScreen extends Component {
         this.verifyCode = this.verifyCode.bind(this);
     }
 
-    verifyCode(code) {
+    async verifyCode(code) {
         RNSecureKeyStore.get('passCode')
             .then((res) => {
                 if (res === code) {
@@ -36,38 +36,46 @@ class PasscodeVerificationScreen extends Component {
                         }
                         return;
                     }
-                        RNSecureKeyStore.get('flokey')
-                            .then((k) => {
-                                // Connect to realm, Register new screens
-                                // Navigate to the Tab Based App
-                                try {
-                                    StartApp(k);
-                                } catch (e) {
-                                    console.log('Error in starting app:', e);
-                                    Alert.alert('Error', 'Unable to retrieve data');
-                                }
-                            }, (err) => {
-                                console.log(err);
-                                Alert.alert('Error', 'Unable to retrieve data');
-                            });
-                } else {
+                    return RNSecureKeyStore.get('flokey');
+                } 
                     this.setState({
                         showMessage: true,
                         code: '',
                     });
+                    return null;
+            }, error => {
+                console.log(error);
+                Alert.alert('Error', 'Unable to verify passcode');
+            })
+            .then((k) => {
+                if (k) {
+                    // Connect to realm, Register new screens
+                    // Navigate to the Tab Based App
+                    try {
+                        StartApp(k);
+                    } catch (e) {
+                        console.log('Error in starting app:', e);
+                        Alert.alert('Error', 'Unable to start the app');
+                    }
                 }
             }, (err) => {
                 console.log(err);
+                Alert.alert('Error', 'Unable to unlock your data');
             });
     }
 
     onKeyPress(char) {
         let code = this.state.code;
-        if (char === 'back') { code = code.slice(0, -1); } else {
+        if (char === 'back') {
+            code = code.slice(0, -1);
+        } else {
             code += char;
         }
         this.setState({code, showMessage: false});
-        if (code.length === 4) { this.verifyCode(code); }
+        this.forceUpdate();
+        if (code.length === 4) {
+            setTimeout(() => this.verifyCode(code));
+        }
     }
 
     render() {
