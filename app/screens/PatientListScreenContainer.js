@@ -46,7 +46,7 @@ class PatientListScreenContainer extends Component {
             {id: 'Call', title: 'Call'},
             {id: 'Maps', title: 'Show on maps'},
             {id: 'Visits', title: 'Add Visit'},
-            {id: 'DeletePatient', title: 'Remove Patient'},
+            {id: 'DeletePatient', title: 'Remove Patient', localOnly: true},
         ];
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
@@ -218,6 +218,10 @@ class PatientListScreenContainer extends Component {
     }
 
     handleListUpdate() {
+        this.props.navigator.setTitle({
+            title: `Patients (${floDB.objects(Patient).filtered('archived = false').length})`
+        });
+
         // Todo: Don't query again
         this.getSectionData(null);
     }
@@ -244,10 +248,19 @@ class PatientListScreenContainer extends Component {
 
     onRefresh() {
         patientDataService.updatePatientListFromServer()
-            .then(() => this.setState({refreshing: false}))
+            .then((result) => {
+                this.setState({refreshing: false});
+                Alert.alert(
+                    'Refresh Completed',
+                    (result.additions !== 0 ? `${result.additions} new patients added` : '') + (result.deletions !== 0 ? `${result.additions !== 0 ? ', and ' : ''}${result.deletions} existing patients removed` : '')
+                );
+            })
             .catch(error => {
                 this.setState({refreshing: false});
                 console.log(error);
+                Alert.alert(
+                    'Refresh Failed',
+                );
             });
         this.setState({refreshing: true});
     }

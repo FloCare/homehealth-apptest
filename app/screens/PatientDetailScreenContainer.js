@@ -9,28 +9,6 @@ import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 
 class PatientDetailScreenContainer extends Component {
-    static navigatorButtons = Platform.select({
-            ios: {
-                rightButtons: [
-                    {
-                        id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                        buttonColor: '#fffff',
-                        systemItem: 'edit' //iOS only
-                    }
-                ]
-            },
-            android: {
-                rightButtons: [
-                    {
-                        icon: Images.editButton,
-                        id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                        buttonColor: '#fffff',
-                    }
-                ]
-            }
-        }
-    );
-
     constructor(props) {
         super(props);
         this.state = {
@@ -57,7 +35,7 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddVisit() {
         firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-                'VALUE': 1
+            VALUE: 1
         });
         this.props.navigator.showLightBox({
             screen: screenNames.addVisitsForPatientScreen,
@@ -74,7 +52,7 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddNotes() {
         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-            'type': parameterValues.EDIT_NOTES
+            type: parameterValues.EDIT_NOTES
         });
         this.props.navigator.push({
             screen: screenNames.addNote,
@@ -134,7 +112,7 @@ class PatientDetailScreenContainer extends Component {
             }
         }
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.patientDetails, screenNames.patientDetails);
         }
     }
@@ -149,6 +127,9 @@ class PatientDetailScreenContainer extends Component {
             this.setState({patientDetail: {}, lastVisit: null, nextVisit: null});
         } else {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
+            if (patientDetails && patientDetails.isLocallyOwned) {
+                this.showEditNavButton();
+            }
             this.setState({patientDetail: patientDetails});
             const episode = patientDetails.episodes[0];
             // const visits = episode.visits.filtered(
@@ -182,6 +163,31 @@ class PatientDetailScreenContainer extends Component {
                 }
             }
         }
+    }
+
+    showEditNavButton() {
+        this.props.navigator.setButtons(
+            Platform.select({
+                ios: {
+                    rightButtons: [
+                        {
+                            id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                            buttonColor: '#fffff',
+                            systemItem: 'edit' //iOS only
+                        }
+                    ]
+                },
+                android: {
+                    rightButtons: [
+                        {
+                            icon: Images.editButton,
+                            id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                            buttonColor: '#fffff',
+                        }
+                    ]
+                }
+            })
+        );
     }
 
     setMarkerRef(element) {
@@ -246,15 +252,15 @@ class PatientDetailScreenContainer extends Component {
 
     render() {
         return (
-          <PatientDetailScreen
-              patientDetail={this.state.patientDetail}
-              nextVisit={this.state.nextVisit}
-              lastVisit={this.state.lastVisit}
-              onPressAddVisit={this.onPressAddVisit}
-              onPressAddNotes={this.onPressAddNotes}
-              showCallout={this.onRegionChangeComplete}
-              setMarkerRef={this.setMarkerRef}
-          />
+            <PatientDetailScreen
+                patientDetail={this.state.patientDetail}
+                nextVisit={this.state.nextVisit}
+                lastVisit={this.state.lastVisit}
+                onPressAddVisit={this.onPressAddVisit}
+                onPressAddNotes={this.onPressAddNotes}
+                showCallout={this.onRegionChangeComplete}
+                setMarkerRef={this.setMarkerRef}
+            />
         );
     }
 }

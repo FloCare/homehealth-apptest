@@ -22,13 +22,16 @@ class SectionedList extends Component {
     }
 
     _renderMenu(item, onPressPopupButton, menuItems) {
-        return (
-            menuItems.map((menuItem) => (
+        const menu = [];
+        menuItems.forEach((menuItem) => {
+            if (menuItem.localOnly && !item.isLocallyOwned) { return; }
+            menu.push(
                 <MenuOption onSelect={() => onPressPopupButton(menuItem.id, item)}>
                     <StyledText style={styles.menuOptionsStyle}>{menuItem.title}</StyledText>
                 </MenuOption>
-            ))
-        );
+            );
+        });
+        return menu;
     }
 
     renderItem(item, selectedItem, onPressPopupButton, menu) {

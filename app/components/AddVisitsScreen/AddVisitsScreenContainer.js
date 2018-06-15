@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
-import {Platform, View, ActionSheetIOS} from 'react-native';
+import {Platform, View, ActionSheetIOS, Alert} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {AddVisitsScreen} from './AddVisitsScreen';
@@ -270,10 +270,19 @@ class AddVisitsScreenContainer extends Component {
 
     onRefresh() {
         patientDataService.updatePatientListFromServer()
-            .then(() => this.setState({refreshing: false}))
+            .then((result) => {
+                this.setState({refreshing: false});
+                Alert.alert(
+                    'Refresh Completed',
+                    (result.additions !== 0 ? `${result.additions} new patients added` : '') + (result.deletions !== 0 ? `${result.additions !== 0 ? ', and ' : ''}${result.deletions} existing patients removed` : '')
+                );
+            })
             .catch(error => {
                 this.setState({refreshing: false});
                 console.log(error);
+                Alert.alert(
+                    'Refresh Failed',
+                );
             });
         this.setState({refreshing: true});
     }
