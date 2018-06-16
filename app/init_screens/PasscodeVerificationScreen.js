@@ -92,7 +92,7 @@ class PasscodeVerificationScreen extends Component {
                 }}
             >
                 <SafeAreaView
-                    style={{flex: 1, justifyContent: 'space-evenly'}}
+                    style={{flex: 1, justifyContent: 'space-evenly', alignItems: 'center',}}
                 >
                     <View>
                         <Text style={styles.headerSectionStyle}>
@@ -100,7 +100,7 @@ class PasscodeVerificationScreen extends Component {
                         </Text>
                     </View>
                     <View
-                        style={{flexDirection: 'row'}}
+                        style={{flexDirection: 'row', justifyContent: 'center'}}
                     >
                         <Text style={{color: this.state.code.length > 0 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
                         <Text style={{color: this.state.code.length > 1 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>

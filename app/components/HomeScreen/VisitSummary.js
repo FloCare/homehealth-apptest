@@ -1,15 +1,37 @@
 import React from 'react';
-import {View, Dimensions, Image, TouchableWithoutFeedback} from 'react-native';
+import {View, Dimensions, Image, TouchableWithoutFeedback, TouchableHighlight} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase';
 import {VisitCardGenerator} from '../common/visitCardGenerator';
-import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
-import {PrimaryColor} from '../../utils/constants';
+import {eventNames, parameterValues, PrimaryColor, screenNames} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
 import EmptyStateButton from '../common/EmptyStateButton';
+import {visitDataService} from '../../data_services/VisitDataService';
+import {floDB, Visit} from '../../utils/data/schema';
+
+function onPressCard(visitID, navigator) {
+    firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+        type: parameterValues.DETAILS
+    });
+    const visit = floDB.objectForPrimaryKey(Visit, visitID);
+    if (visit.getPatient() && !visit.getPatient().archived) {
+        navigator.push({
+            screen: screenNames.patientDetails,
+            passProps: {
+                patientId: visit.getPatient().patientID
+            },
+            navigatorStyle: {
+                tabBarHidden: true
+            }
+        });
+    }
+}
 
 function visitSummaryToday(props) {
+    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => visitDataService.toggleVisitDone(visitID)});
+
     const primaryColor = PrimaryColor;
     const secondary = '#34da92';
     return (
@@ -88,19 +110,11 @@ function visitSummaryToday(props) {
                 >
                     Next Visit
                 </StyledText>
-                {/*prefer to use VisitCard rather than VisitListContainer*/}
-                <SortedVisitListContainer
-                    navigator={props.navigator}
-                    style={{width: Dimensions.get('screen').width * 0.95}}
-                    date={props.date}
-                    singleEntry
-                    scrollEnabled={false}
-                    sortingEnabled={false}
-                    orderedVisitID={props.visitID}
-                    renderFunctionGenerator={VisitCardGenerator}
-                    tapForDetails
-                    onOrderChange={props.onOrderChange}
-                />
+                <TouchableHighlight underlayColor={'clear'} onPress={() => onPressCard(props.visitID, props.navigator)}>
+                    <VisitCard
+                        data={props.visitID}
+                    />
+                </TouchableHighlight>
             </View>
         </LinearGradient>
     );

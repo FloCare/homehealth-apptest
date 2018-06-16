@@ -94,7 +94,7 @@ class SetPassCodeScreen extends Component {
 
     onChangeCode(code) {
         this.setState({code});
-        if (code.length === 4) { this.setPasscode(code); }
+        if (code.length === 4) { setTimeout(() => this.setPasscode(code)); }
     }
 
     generateCodeDisplayArea() {
