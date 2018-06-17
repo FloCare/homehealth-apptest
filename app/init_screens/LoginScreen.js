@@ -47,17 +47,19 @@ class LoginScreen extends Component {
                     error: 'Login failed.'
                 });
             } else {
-                this.props.navigator.resetTo({
-                    screen: screenNames.welcomeScreen,
-                    title: 'Welcome',
-                    backButtonHidden: true,
-                });
                 return response.json();
             }
         })
             .then(({token}) => {
                 console.log(`token set to ${token}`);
-                RNSecureKeyStore.set('accessToken', token);
+                RNSecureKeyStore.set('accessToken', token)
+                    .then(() => {
+                        this.props.navigator.resetTo({
+                            screen: screenNames.welcomeScreen,
+                            title: 'Welcome',
+                            backButtonHidden: true,
+                        });
+                    });
             })
             .catch(() => {
                 this.setState({
