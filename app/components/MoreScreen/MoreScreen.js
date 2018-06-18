@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {View, Image} from 'react-native';
 import {Divider, List, ListItem} from 'react-native-elements';
 import {Images} from '../../Images';
@@ -50,53 +50,67 @@ const list = [
     },
 ];
 
-function MoreScreen(props) {
-    props.navigator.setTitle({title: 'More'});
+class MoreScreen extends Component {
+    constructor(props) {
+        super(props);
 
-    return (
-        <View
-            style={{
-                paddingHorizontal: 15,
-                backgroundColor: 'white',
-                flex: 1
-            }}
-        >
-            <List
-                containerStyle={{
-                    borderTopWidth: 0,
-                    borderBottomWidth: 0
+        props.navigator.setTitle({title: 'More'});
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    }
+
+    onNavigatorEvent(event) {
+        if (event.id === 'willAppear') {
+            this.props.navigator.setTitle({
+                title: 'More'
+            });
+        }
+    }
+        render() {
+        return (
+            <View
+                style={{
+                    paddingHorizontal: 15,
+                    backgroundColor: 'white',
+                    flex: 1
                 }}
             >
-                {
-                    list.map((listItem) => {
-                        if (listItem === 'div') {
-                            return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
-                        }
+                <List
+                    containerStyle={{
+                        borderTopWidth: 0,
+                        borderBottomWidth: 0
+                    }}
+                >
+                    {
+                        list.map((listItem) => {
+                            if (listItem === 'div') {
+                                return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
+                            }
 
-                        return (<ListItem
-                            containerStyle={{
-                                borderTopWidth: 0,
-                                borderBottomWidth: 0,
-                                paddingTop: 10,
-                                paddingBottom: 10
-                            }}
-                            avatarOverlayContainerStyle={{
-                                backgroundColor: 'white',
-                            }}
-                            titleContainerStyle={{
-                                paddingLeft: 15
-                            }}
-                            avatar={listItem.icon}
-                            avatarStyle={{resizeMode: Image.resizeMode.contain}}
-                            title={listItem.title}
-                            disabled={listItem.onPress === undefined}
-                            onPress={() => props.navigator.push(listItem.onPress)}
-                        />);
-                    })
-                }
-            </List>
-        </View>
-    );
+                            return (<ListItem
+                                containerStyle={{
+                                    borderTopWidth: 0,
+                                    borderBottomWidth: 0,
+                                    paddingTop: 10,
+                                    paddingBottom: 10
+                                }}
+                                avatarOverlayContainerStyle={{
+                                    backgroundColor: 'white',
+                                }}
+                                titleContainerStyle={{
+                                    paddingLeft: 15
+                                }}
+                                avatar={listItem.icon}
+                                avatarStyle={{resizeMode: Image.resizeMode.contain}}
+                                title={listItem.title}
+                                disabled={listItem.onPress === undefined}
+                                onPress={() => this.props.navigator.push(listItem.onPress)}
+                            />);
+                        })
+                    }
+                </List>
+            </View>
+        );
+    }
 }
 
 export {MoreScreen};
