@@ -59,29 +59,29 @@ class SetPassCodeScreen extends Component {
         // Save the passcode to keystore
         RNSecureKeyStore.set('passCode', passcode)
             .then((res) => {
-                console.log('Updated the passcode to:', passcode);
                 // Open VerifyPasscode Screen next time
                 AsyncStorage.setItem('isFirstVisit', 'false');
                 firebase.analytics().logEvent(eventNames.PASSCODE, {
                     status: parameterValues.SUCCESS
                 });
 
-                // if key already set, use it
-                console.log('Trying to get the key ...');
-                RNSecureKeyStore.get('flokey')
-                    .then((k) => {
-                        // Connect to realm, Register new screens
-                        // Navigate to the Tab Based App
-                        try {
-                            StartApp(k);
-                        } catch (e) {
-                            console.log('Error in starting app:', e);
-                            Alert.alert('Error', 'Unable to retrieve data');
-                        }
-                    }, (err) => {
-                        console.log('Key not already set', err);
-                        this.setKey();
-                    });
+                this.setKey();
+                // // if key already set, use it
+                // console.log('Trying to get the key ...');
+                // RNSecureKeyStore.get('flokey')
+                //     .then((k) => {
+                //         // Connect to realm, Register new screens
+                //         // Navigate to the Tab Based App
+                //         try {
+                //             StartApp(k);
+                //         } catch (e) {
+                //             console.log('Error in starting app:', e);
+                //             Alert.alert('Error', 'Unable to retrieve data');
+                //         }
+                //     }, (err) => {
+                //         console.log('Key not already set', err);
+                //         this.setKey();
+                //     });
             }, (err) => {
                 console.log(err);
                 firebase.analytics().logEvent(eventNames.PASSCODE, {
@@ -97,22 +97,22 @@ class SetPassCodeScreen extends Component {
         if (code.length === 4) { setTimeout(() => this.setPasscode(code)); }
     }
 
-    generateCodeDisplayArea() {
-        const dotArray = [];
-        for (let i = 0; i < 4; i++) {
-            if (this.state.code.length > i) { dotArray.push(<Text style={{color: 'white', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>); } else dotArray.push(<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>);
-        }
-        return (
-            <View
-                style={{flexDirection: 'row'}}
-            >
-                {dotArray[0]}
-                {dotArray[1]}
-                {dotArray[2]}
-                {dotArray[3]}
-            </View>
-        );
-    }
+    // generateCodeDisplayArea() {
+    //     const dotArray = [];
+    //     for (let i = 0; i < 4; i++) {
+    //         if (this.state.code.length > i) { dotArray.push(<Text style={{color: 'white', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>); } else dotArray.push(<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>);
+    //     }
+    //     return (
+    //         <View
+    //             style={{flexDirection: 'row'}}
+    //         >
+    //             <Text style={{color: this.state.code.length > 0 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //             <Text style={{color: this.state.code.length > 1 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //             <Text style={{color: this.state.code.length > 2 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //             <Text style={{color: this.state.code.length > 3 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //         </View>
+    //     );
+    // }
 
     render() {
         const primaryColor = PrimaryColor;
