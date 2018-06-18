@@ -32,6 +32,9 @@ class PatientDataService {
         this.store = store;
     }
 
+    getTotalPatientCount() {
+        return this.floDB.objects(Patient).length;
+    }
     getPatientByID(patientID) {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
     }

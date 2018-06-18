@@ -62,7 +62,7 @@ const StartApp = (key) => {
     initialiseDate(FloDBProvider.db, store);
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
-    RNSecureKeyStore.get('accessToken').then(() => patientDataService.updatePatientListFromServer());
+    RNSecureKeyStore.get('accessToken').then(() => { if (patientDataService.getTotalPatientCount() === 0) patientDataService.updatePatientListFromServer(); });
 
     // Register the screens
     try {
