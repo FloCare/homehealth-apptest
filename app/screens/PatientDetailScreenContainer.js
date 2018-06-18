@@ -26,6 +26,11 @@ class PatientDetailScreenContainer extends Component {
         this.setMarkerRef = this.setMarkerRef.bind(this);
         this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
+
+        const patientDetails = floDB.objectForPrimaryKey(Patient, props.patientID);
+        if (patientDetails && patientDetails.isLocallyOwned) {
+            this.showEditNavButton();
+        }
     }
 
     componentDidMount() {
@@ -127,9 +132,6 @@ class PatientDetailScreenContainer extends Component {
             this.setState({patientDetail: {}, lastVisit: null, nextVisit: null});
         } else {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
-            if (patientDetails && patientDetails.isLocallyOwned) {
-                this.showEditNavButton();
-            }
             this.setState({patientDetail: patientDetails});
             const episode = patientDetails.episodes[0];
             // const visits = episode.visits.filtered(

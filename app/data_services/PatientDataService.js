@@ -39,7 +39,7 @@ class PatientDataService {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
     }
 
-    createNewPatient(patient, isLocallyOwned = true) {
+    createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false) {
         // Todo: Add proper ID generators
         // Create a patient, create & add an address, and create & add an episode
         const patientId = !isLocallyOwned && patient.id ? patient.id : Math.random().toString();
@@ -56,8 +56,9 @@ class PatientDataService {
                 emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
                 timestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
-                isLocallyOwned
-            });
+                isLocallyOwned,
+                archived: false
+            }, updateIfExisting);
 
             if (isLocallyOwned) {
                 addressDataService.addAddressToTransaction(newPatient, patient, addressId);
@@ -97,12 +98,12 @@ class PatientDataService {
         }
     }
 
-    archivePatient(patientId) {
+    archivePatient(patientId, deletedOnServer = false) {
         console.log('Archiving Patient from realm');
         const patient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
         if (patient) {
-            this._checkPermissionForEditing([patient]);
+            if (!deletedOnServer) { this._checkPermissionForEditing([patient]); }
 
             let obj = null;
             this.floDB.write(() => {
@@ -110,7 +111,7 @@ class PatientDataService {
                 obj = visitDataService.deleteVisits(patient);
             });
             if (patient) {
-                this.archivePatientsInRedux([patientId]);
+                this._archivePatientsInRedux([patientId]);
             }
             if (obj && obj.visits) {
                 visitDataService.deleteVisitsFromRedux(obj.visits);
@@ -128,6 +129,10 @@ class PatientDataService {
         return PatientAPI.getPatientIDList()
             .then(json => {
                 const serverPatientIDs = json.patients;
+
+                console.log('server patient ids');
+                console.log(serverPatientIDs);
+
                 const existingPatients = this.floDB.objects(Patient).filtered('isLocallyOwned = false && archived = false');
                 const intersectingPatients = filterResultObjectByListMembership(existingPatients, 'patientID', serverPatientIDs);
 
@@ -137,8 +142,6 @@ class PatientDataService {
                 existingPatients.forEach(patient => {
                     if (!intersectingPatientsByID.has(patient.patientID.toString())) {
                         deletedPatients.push(patient);
-                        //TODO batch process it
-                        this.archivePatient(patient.patientID.toString());
                     }
                 });
 
@@ -155,13 +158,14 @@ class PatientDataService {
                     newPatientIDs
                 };
             })
-            .then(async ({newPatientIDs}) => {
+            .then(async ({deletedPatients, newPatientIDs}) => {
                 let additions = 0;
-                const deletions = 0;
+                const deletions = deletedPatients.length;
 
                 if (newPatientIDs.length > 0) {
                     additions = await this._fetchAndSavePatientsByID(newPatientIDs);
                 }
+                deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 return {
                     additions,
                     deletions
@@ -179,7 +183,7 @@ class PatientDataService {
                     patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
-                    this.createNewPatient(patientObject, false);
+                    this.createNewPatient(patientObject, false, true);
                 }
                 addressDataService.attemptFetchForPendingAddresses();
                 return successfulObjects.length;
@@ -204,9 +208,7 @@ class PatientDataService {
         addressDataService.addAddressesToRedux(patients.map(patient => patient.address));
     }
 
-    archivePatientsInRedux(patients) {
-        this._checkPermissionForEditing(patients);
-
+    _archivePatientsInRedux(patients) {
         this.store.dispatch({
             type: PatientActions.ARCHIVE_PATIENTS,
             patientList: patients

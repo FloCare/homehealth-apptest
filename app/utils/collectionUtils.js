@@ -19,10 +19,13 @@ function arrayToObjectByKey(array, keyProperty) {
 }
 
 function filterResultObjectByListMembership(object, property, membershipList) {
-    return object.filtered(membershipList
+    let filterPredicate = membershipList
         .map((membershipItem) => `${property}=="${membershipItem}"`)
-        .join(' OR ')
-    );
+        .join(' OR ');
+    if (!membershipList || membershipList.length === 0) {
+        filterPredicate = 'falsePredicate';
+    }
+    return object.filtered(filterPredicate);
 }
 
 function getFirstElement(object) {

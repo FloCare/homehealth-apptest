@@ -81,10 +81,11 @@ class LoginScreen extends Component {
                 style={{backgroundColor: 'white', borderRadius: 25, flex: 1, marginLeft: 20}}
                 textStyle={{
                     fontFamily: PrimaryFontFamily,
-                    fontSize: 12,
+                    fontSize: 14,
+                    fontWeight: '500',
                     color: PrimaryColor
                 }}
-                title='Sign-in' onPress={this.onSubmit.bind(this)}
+                title='SIGN-IN' onPress={this.onSubmit.bind(this)}
             />
         );
     }
@@ -162,7 +163,7 @@ class LoginScreen extends Component {
                                 title='Use Invite Code' onPress={this.onUseInviteCode.bind(this)}
                             />
                             <View
-                                style={{flex: 1, height: 50, }}
+                                style={{flex: 1, height: 50}}
                             >
                                 {this.renderButton()}
                             </View>
