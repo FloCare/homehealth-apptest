@@ -250,9 +250,17 @@ class PatientListScreenContainer extends Component {
         patientDataService.updatePatientListFromServer()
             .then((result) => {
                 this.setState({refreshing: false});
+
+                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
+                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
+
+                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
+                if (!newPatientsCount && !deletedPatientsCount) {
+                    subtitle = 'No new changes';
+                }
                 Alert.alert(
                     'Refresh Completed',
-                    (result.additions !== 0 ? `${result.additions} new patients added` : '') + (result.deletions !== 0 ? `${result.additions !== 0 ? ', and ' : ''}${result.deletions} existing patients removed` : '')
+                    subtitle
                 );
             })
             .catch(error => {
