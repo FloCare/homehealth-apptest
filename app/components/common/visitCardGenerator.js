@@ -90,7 +90,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                             onPress={safeOnDoneTogglePress}
                         />
                     </View>
-                    <Divider style={{marginBottom: 4, marginRight: 15, height: 1.5, backgroundColor: '#dddddd'}} />
+                    <Divider style={{marginVertical: 4, marginRight: 15, height: 1.5, backgroundColor: '#dddddd'}} />
                     <View
                         style={{flexDirection: 'row', justifyContent: 'space-around', height: 35}}
                     >
