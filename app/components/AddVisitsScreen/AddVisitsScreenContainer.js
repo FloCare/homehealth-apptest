@@ -81,7 +81,7 @@ class AddVisitsScreenContainer extends Component {
         floDB.addListener('change', this.handleListUpdate);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         floDB.removeListener('change', this.handleListUpdate);
     }
 

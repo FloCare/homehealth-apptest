@@ -159,7 +159,7 @@ class StopListScreenContainer extends Component {
         }
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         floDB.addListener('change', this.handleListUpdate);
     }
 

@@ -213,7 +213,7 @@ class PatientListScreenContainer extends Component {
         }
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         floDB.removeListener('change', this.handleListUpdate);
     }
 

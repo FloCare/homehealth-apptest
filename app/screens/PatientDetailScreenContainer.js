@@ -27,7 +27,7 @@ class PatientDetailScreenContainer extends Component {
         this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
 
-        const patientDetails = floDB.objectForPrimaryKey(Patient, props.patientID);
+        const patientDetails = floDB.objectForPrimaryKey(Patient, props.patientId);
         if (patientDetails && patientDetails.isLocallyOwned) {
             this.showEditNavButton();
         }
@@ -196,8 +196,8 @@ class PatientDetailScreenContainer extends Component {
         this.marker = element;
     }
 
-    componentWillUnMount() {
-        floDB.removeListener('change', this.handleListUpdate);
+    componentWillUnmount() {
+        floDB.removeListener('change', this.handleDBUpdate);
     }
 
     handleDBUpdate() {

@@ -86,7 +86,7 @@ class HomeScreenContainer extends Component {
         );
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         NetInfo.removeEventListener(
             'connectionChange',
             HandleConnectionChange
