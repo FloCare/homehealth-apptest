@@ -71,7 +71,7 @@ class PatientDataService {
             });
         });
         if (newPatient) {
-            this.addPatientsToRedux([newPatient]);
+            this.addPatientsToRedux([newPatient], true);
         }
     }
 
@@ -200,10 +200,11 @@ class PatientDataService {
         addressDataService.updateAddressesInRedux(patients.map(patient => patient.address));
     }
 
-    addPatientsToRedux(patients) {
+    addPatientsToRedux(patients, updateExisting = false) {
         this.store.dispatch({
             type: PatientActions.ADD_PATIENTS,
-            patientMap: PatientDataService.getFlatPatientMap(patients)
+            patientMap: PatientDataService.getFlatPatientMap(patients),
+            updateExisting
         });
         addressDataService.addAddressesToRedux(patients.map(patient => patient.address));
     }
