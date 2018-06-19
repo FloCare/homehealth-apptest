@@ -4,8 +4,13 @@ import {View} from 'react-native';
 const PatientFormTemplate = (locals) => {
     return (
         <View>
-            <View style={styles.margin}>
-                {locals.inputs.name}
+            <View style={{...styles.container, ...styles.margin}}>
+                <View style={styles.field}>
+                    {locals.inputs.firstName}
+                </View>
+                <View style={styles.field}>
+                    {locals.inputs.lastName}
+                </View>
             </View>
             <View style={styles.margin}>
                 {locals.inputs.streetAddress}

@@ -54,7 +54,8 @@ class AddPatientScreenContainer extends Component {
                     edit={edit}
                     patientID={values.patientID}
                     addressID={values.addressID}
-                    name={values.name}
+                    firstName={values.firstName}
+                    lastName={values.lastName}
                     streetAddress={values.streetAddress}
                     apartmentNo={values.apartmentNo}
                     zipCode={values.zipCode}

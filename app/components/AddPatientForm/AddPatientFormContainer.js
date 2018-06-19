@@ -15,7 +15,8 @@ class AddPatientFormContainer extends Component {
         this.state = {
             value: {
                 patientID: props.patientID || null,
-                name: props.name || null,
+                firstName: props.firstName || null,
+                lastName: props.lastName || null,
                 addressID: props.addressID || null,
                 streetAddress: props.streetAddress || '',
                 apartmentNo: props.apartmentNo || null,
@@ -102,7 +103,8 @@ class AddPatientFormContainer extends Component {
     clearForm() {
         this.setState({
             value: {
-                name: null,
+                firstName: null,
+                lastName: null,
                 streetAddress: null,
                 zipCode: null,
                 city: null,

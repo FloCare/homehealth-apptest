@@ -6,7 +6,8 @@ import stylesheet from './formStyleSheet';
 import PatientFormTemplate from './AddPatientFormTemplate';
 
 const AddPatientModel = t.struct({
-    name: t.String,
+    firstName: t.String,
+    lastName: t.String,
     streetAddress: t.String,
     apartmentNo: t.maybe(t.String),
     zipCode: zipCodeType,
@@ -28,10 +29,17 @@ const formOptions = {
     stylesheet,
     template: PatientFormTemplate,
     fields: {
-        name: {
-            label: 'Patient Name',
+        firstName: {
+            label: 'First Name',
             error: nameError,
-            placeholder: 'John Doe',
+            placeholder: 'John',
+            returnKeyType: 'next',
+            autoCapitalize: 'words',
+        },
+        lastName: {
+            label: 'Last Name',
+            error: nameError,
+            placeholder: 'Doe',
             returnKeyType: 'next',
             autoCapitalize: 'words',
         },
