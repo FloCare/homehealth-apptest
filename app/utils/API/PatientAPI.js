@@ -7,7 +7,7 @@ export function getPatientIDList() {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch('https://app-9707.on-aptible.com/phi/v1.0/my-patients/?format=json',
+        .then(token => fetch('https://app-9781.on-aptible.com/phi/v1.0/my-patients/?format=json',
             {
                 method: 'GET',
                 headers: {
@@ -32,7 +32,7 @@ export function getPatientsByID(patientIDs) {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch('https://app-9707.on-aptible.com/phi/v1.0/my-patients-details/',
+        .then(token => fetch('https://app-9781.on-aptible.com/phi/v1.0/my-patients-details/',
             {
                 method: 'POST',
                 headers: {

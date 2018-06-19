@@ -5,7 +5,7 @@ export function getUserProps() {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch('https://app-9707.on-aptible.com/users/v1.0/profile/?format=json',
+        .then(token => fetch('https://app-9781.on-aptible.com/users/v1.0/profile/?format=json',
             {
                 method: 'GET',
                 headers: {

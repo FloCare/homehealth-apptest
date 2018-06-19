@@ -3,13 +3,13 @@ import {TextInput, View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAv
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import {screenNames, PrimaryFontFamily, PrimaryColor} from '../utils/constants';
+import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties} from '../utils/constants';
 import StyledText from '../components/common/StyledText';
 import {SimpleButton} from '../components/common/SimpleButton';
 import {getUserProps} from '../utils/API/UserAPI';
 
 // TODO Change to the endpoint on Aptible
-const API_URL = 'https://app-9707.on-aptible.com/get-token/';
+const API_URL = 'https://app-9781.on-aptible.com/get-token/';
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -59,8 +59,8 @@ class LoginScreen extends Component {
             .then(() => getUserProps())
             .then(userPropsJson => {
                 firebase.analytics().setUserId(userPropsJson.id.toString());
-                firebase.analytics().setUserProperty('role', userPropsJson.roles[0].role);
-                firebase.analytics().setUserProperty('organisation', userPropsJson.roles[0].org);
+                firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.roles[0].role);
+                firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.roles[0].org);
 
                 this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,
