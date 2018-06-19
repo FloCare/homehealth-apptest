@@ -51,16 +51,16 @@ class SectionedList extends Component {
                         <StyledText style={styles.nameStyle}>{item.name}</StyledText>
                         <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
                     </TouchableOpacity>
-                    <View style={{flex: 1, marginVertical: 15}}>
-                        <Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>
-                            <MenuTrigger
-                                children={<Image source={Images.threeDotButton} />}
-                            />
-                            <MenuOptions>
-                                {this._renderMenu(item, onPressPopupButton, menu)}
-                            </MenuOptions>
-                        </Menu>
-                    </View>
+                    {/*<View style={{flex: 1, marginVertical: 15}}>*/}
+                        {/*<Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>*/}
+                            {/*<MenuTrigger*/}
+                                {/*children={<Image source={Images.threeDotButton} />}*/}
+                            {/*/>*/}
+                            {/*<MenuOptions>*/}
+                                {/*{this._renderMenu(item, onPressPopupButton, menu)}*/}
+                            {/*</MenuOptions>*/}
+                        {/*</Menu>*/}
+                    {/*</View>*/}
                 </View>
             </View>
         );
