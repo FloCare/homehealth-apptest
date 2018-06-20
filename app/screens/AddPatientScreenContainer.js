@@ -11,15 +11,6 @@ class AddPatientScreenContainer extends Component {
         Container Component - has states
      */
 
-    static navigatorButtons = {
-        rightButtons: [
-            {
-                id: 'deletePatient',
-                icon: Images.delete
-            }
-        ]
-    };
-
     constructor(props) {
         super(props);
         this.state = {

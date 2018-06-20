@@ -81,6 +81,14 @@ class PatientDetailScreenContainer extends Component {
             navigatorStyle: {
                 tabBarHidden: true
             },
+            navigatorButtons: {
+                rightButtons: [
+                    {
+                        id: 'deletePatient',
+                        icon: Images.delete
+                    }
+                ]
+            },
             passProps: {
                 values: {
                     patientID: this.state.patientDetail.patientID,
