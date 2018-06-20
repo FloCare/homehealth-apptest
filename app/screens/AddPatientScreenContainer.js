@@ -11,24 +11,6 @@ class AddPatientScreenContainer extends Component {
         Container Component - has states
      */
 
-    static deletePatientId = 'deletePatient';
-
-    static navigatorButtons = {
-        rightButtons: [
-            Platform.select({
-                android: {
-                    id: AddPatientScreenContainer.deletePatientId,
-                    icon: Images.trash
-                },
-                ios: {
-                    id: AddPatientScreenContainer.deletePatientId,
-                    icon: Images.trash
-                }
-            })
-
-        ]
-    };
-
     constructor(props) {
         super(props);
         this.state = {
@@ -69,7 +51,7 @@ class AddPatientScreenContainer extends Component {
             firebase.analytics().setCurrentScreen(screenNames.addPatient, screenNames.addPatient);
         }
         if (event.type === 'NavBarButtonPress') {
-            if (event.id === AddPatientScreenContainer.deletePatientId) {
+            if (event.id === 'deletePatient') {
                 this.confirmAndDeletePatient();
             }
         }
