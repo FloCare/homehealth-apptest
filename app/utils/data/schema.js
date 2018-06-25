@@ -1,6 +1,7 @@
 import * as CollectionUtils from '../collectionUtils';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
+import {PatientDataService} from "../../data_services/PatientDataService";
 
 const Realm = require('realm');
 
@@ -14,7 +15,7 @@ class Patient extends Realm.Object {
     }
 
     get name() {
-        return this.firstName + " " + this.lastName;
+        return PatientDataService.constructName(this.firstName, this.lastName);
     }
 
 }
