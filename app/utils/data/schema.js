@@ -299,9 +299,15 @@ class FloDBProvider {
                         const newPatientObjects = newRealm.objects(Patient.schema.name);
 
                         for (let i = 0; i < oldPatientObjects.length; i++) {
-                            let namesList = oldPatientObjects[i].split(" ");
-                            newPatientObjects[i].firstName = namesList[0];
-                            newPatientObjects[i].lastName = namesList.length > 1 ? namesList[1] : " ";
+                            const separatorIndex = oldPatientObjects[i].name.indexOf(" ");
+                            if (separatorIndex < 0){
+                                newPatientObjects[i].firstName = oldPatientObjects[i].name;
+                                newPatientObjects[i].lastName = "";
+                            }
+                            else{
+                                newPatientObjects[i].firstName = oldPatientObjects[i].name.substr(0, separatorIndex);
+                                newPatientObjects[i].lastName = oldPatientObjects[i].name.substr(separatorIndex + 1);
+                            }
                         }
                     }
                 },
