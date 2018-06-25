@@ -68,8 +68,8 @@ export class PatientDataService {
 
     getPatientsFilteredByName(queryString) {
         if (queryString === "") return this.getAllPatients();
-        let searchTerms = queryString.toString().split(" ");
-        let searchTerm = searchTerms.shift(1);
+        const searchTerms = queryString.toString().split(" ");
+        const searchTerm = searchTerms.shift(1);
         let queryStr = QueryHelper.nameContainsQuery(searchTerm);
         searchTerms.forEach(searchTerm => {
             queryStr = QueryHelper.andQuery(queryStr,
@@ -80,9 +80,11 @@ export class PatientDataService {
 
     getPatientsSortedByName(patientList){
         if (patientList.length === 0) return patientList;
-        let seedArray = [];
-        patientList.forEach(patient => seedArray.push({sortIndex: patient.name.toString().toLowerCase(), data: patient}));
-        let sortedSeedArray = seedArray.sort(function(item1, item2) {return item1.sortIndex.localeCompare(item2.sortIndex);})
+        let patientDataArray = [];
+        patientList.forEach(patient => patientDataArray.push({sortIndex: patient.name.toString().toLowerCase(), data: patient}));
+        const sortedSeedArray = patientDataArray.sort(function(patientData1, patientData2) {
+            return patientData1.sortIndex.localeCompare(patientData2.sortIndex);
+        });
         return sortedSeedArray.map(seedData => seedData.data);
     }
 

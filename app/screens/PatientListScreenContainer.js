@@ -199,11 +199,7 @@ class PatientListScreenContainer extends Component {
         flatPatientList.forEach(patient => {
             patient.address = {formattedAddress : addressDataService.getAddressByID(patient.addressID).formattedAddress}
         });
-        return flatPatientList.sort(
-            function (patient1, patient2) {
-                return patient1.name.toLowerCase().localeCompare(patient2.name.toLowerCase());
-            }
-        );
+        return flatPatientList
     };
 
     getSectionData(query) {

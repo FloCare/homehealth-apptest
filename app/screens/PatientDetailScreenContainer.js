@@ -60,7 +60,7 @@ class PatientDetailScreenContainer extends Component {
         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
             type: parameterValues.EDIT_NOTES
         });
-        let {firstName, lastName} = this.state.patientDetail;
+        const {firstName, lastName} = this.state.patientDetail;
         this.props.navigator.push({
             screen: screenNames.addNote,
             animated: true,
