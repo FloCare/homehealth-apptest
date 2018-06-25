@@ -39,6 +39,7 @@ export class PatientDataService {
     }
 
     static constructName (firstName, lastName) {
+        if (lastName === null) return firstName;
         return firstName + " " + lastName;
     }
 
@@ -66,15 +67,12 @@ export class PatientDataService {
         return this.floDB.objects(Patient.schema.name).filtered('archived = false');
     }
 
-    getPatientsFilteredByName(queryString) {
-        if (queryString === "") return this.getAllPatients();
-        const searchTerms = queryString.toString().split(" ");
-        const searchTerm = searchTerms.shift(1);
-        let queryStr = QueryHelper.nameContainsQuery(searchTerm);
-        searchTerms.forEach(searchTerm => {
-            queryStr = QueryHelper.andQuery(queryStr,
-                                            QueryHelper.nameContainsQuery(searchTerm))
-        });
+    getPatientsFilteredByName(searchTerm) {
+        if (searchTerm === "") return this.getAllPatients();
+        const searchTerms = searchTerm.toString().split(" ");
+        let queryStr = QueryHelper.nameContainsQuery(searchTerms.shift());
+        queryStr = searchTerms.reduce((queryAccumulator, searchTerm) =>
+            QueryHelper.andQuery(queryAccumulator, QueryHelper.nameContainsQuery(searchTerm)), queryStr);
         return this.getAllPatients().filtered(queryStr);
     }
 

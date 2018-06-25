@@ -25,8 +25,8 @@ export const PatientSchema = {
     primaryKey: 'patientID',
     properties: {
         patientID: 'string',
-        firstName: {type: 'string', default: 'blaD1'},
-        lastName: {type: 'string', default: 'blaD2'},
+        firstName: 'string',
+        lastName: 'string?',
         address: 'Address',                                                      // optional by default
         primaryContact: 'string',
         emergencyContact: 'string?',
@@ -303,7 +303,7 @@ class FloDBProvider {
                             const separatorIndex = oldPatientObjects[i].name.indexOf(" ");
                             if (separatorIndex < 0){
                                 newPatientObjects[i].firstName = oldPatientObjects[i].name;
-                                newPatientObjects[i].lastName = "";
+                                newPatientObjects[i].lastName = null;
                             }
                             else{
                                 newPatientObjects[i].firstName = oldPatientObjects[i].name.substr(0, separatorIndex);
@@ -413,6 +413,9 @@ function CreateAndSaveDummies() {
         //     midnightEpochOfVisit: midnightEpoch
         // });
     });
+
+    console.log("with undefined");
+    console.log(floDB.objects(Patient.schema.name).filtered('archived = false'));
 
     console.log('==========================================');
     console.log('Done Creating Realm objects');
