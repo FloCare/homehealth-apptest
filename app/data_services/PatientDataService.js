@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Patient} from '../utils/data/schema';
+import {floDB, Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
@@ -7,12 +7,27 @@ import {parsePhoneNumber} from '../utils/lib';
 import {visitDataService} from './VisitDataService';
 
 import * as PatientAPI from '../utils/PatientAPI';
+import {QueryHelper} from "../utils/data/queryHelper";
 
-class PatientDataService {
+export class PatientDataService {
+    static patientDataService;
+
+    static initialiseService(floDB, store) {
+        PatientDataService.patientDataService = new PatientDataService(floDB, store);
+    }
+
+    static getInstance() {
+        if(!PatientDataService.patientDataService) {
+            throw new Error('padient data service requested before being initialised');
+        }
+
+        return PatientDataService.patientDataService;
+    }
+
     static getFlatPatient(patient) {
         return {
             patientID: patient.patientID,
-            name: patient.name,
+            name: PatientDataService.constructName(patient.firstName, patient.lastName),
             addressID: patient.address.addressID,
             primaryContact: patient.primaryContact,
             emergencyContact: patient.emergencyContact,
@@ -23,8 +38,16 @@ class PatientDataService {
         };
     }
 
+    static constructName (firstName, lastName) {
+        return firstName + " " + lastName;
+    }
+
+    static getFlatPatientList(patientList) {
+        return patientList.map(patient => PatientDataService.getFlatPatient(patient));
+    }
+
     static getFlatPatientMap(patients) {
-        return arrayToObjectByKey(patients.map(patient => PatientDataService.getFlatPatient(patient)), 'patientID');
+        return arrayToObjectByKey(PatientDataService.getFlatPatientList(patients), 'patientID');
     }
 
     constructor(floDB, store) {
@@ -39,6 +62,30 @@ class PatientDataService {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
     }
 
+    getAllPatients(){
+        return this.floDB.objects(Patient.schema.name).filtered('archived = false');
+    }
+
+    getPatientsFilteredByName(queryString) {
+        if (queryString === "") return this.getAllPatients();
+        let searchTerms = queryString.toString().split(" ");
+        let searchTerm = searchTerms.shift(1);
+        let queryStr = QueryHelper.nameContainsQuery(searchTerm);
+        searchTerms.forEach(searchTerm => {
+            queryStr = QueryHelper.andQuery(queryStr,
+                                            QueryHelper.nameContainsQuery(searchTerm))
+        });
+        return this.getAllPatients().filtered(queryStr);
+    }
+
+    getPatientsSortedByName(patientList){
+        if (patientList.length === 0) return patientList;
+        let seedArray = [];
+        patientList.forEach(patient => seedArray.push({sortIndex: patient.name.toString().toLowerCase(), data: patient}));
+        let sortedSeedArray = seedArray.sort(function(item1, item2) {return item1.sortIndex.localeCompare(item2.sortIndex);})
+        return sortedSeedArray.map(seedData => seedData.data);
+    }
+
     createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false) {
         // Todo: Add proper ID generators
         // Create a patient, create & add an address, and create & add an episode
@@ -51,7 +98,8 @@ class PatientDataService {
             // Add the patient
             newPatient = this.floDB.create(Patient.schema.name, {
                 patientID: patientId,
-                name: patient.name ? patient.name.toString().trim() : '',
+                firstName: patient.firstName.toString().trim(),
+                lastName: patient.lastName.toString().trim(),
                 primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
                 emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
@@ -87,7 +135,8 @@ class PatientDataService {
                 // Edit the patient info
                 this.floDB.create(Patient.schema.name, {
                     patientID: patient.patientID,
-                    name: patient.name ? patient.name.toString().trim() : '',
+                    firstName: patient.firstName ? patient.firstName.toString().trim() : ' ',
+                    lastName: patient.lastName ? patient.lastName.toString().trim() : ' ',
                     primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
                     emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                     notes: patient.notes ? patient.notes.toString().trim() : '',
@@ -224,10 +273,4 @@ class PatientDataService {
             }
         });
     }
-}
-
-export let patientDataService;
-
-export function initialiseService(floDB, store) {
-    patientDataService = new PatientDataService(floDB, store);
 }

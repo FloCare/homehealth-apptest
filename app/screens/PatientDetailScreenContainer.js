@@ -7,6 +7,7 @@ import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
+import {PatientDataService} from "../data_services/PatientDataService";
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
@@ -59,6 +60,7 @@ class PatientDetailScreenContainer extends Component {
         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
             type: parameterValues.EDIT_NOTES
         });
+        let {firstName, lastName} = this.state.patientDetail;
         this.props.navigator.push({
             screen: screenNames.addNote,
             animated: true,
@@ -66,7 +68,7 @@ class PatientDetailScreenContainer extends Component {
             title: 'Notes',
             passProps: {
                 patientId: this.state.patientDetail.patientID,
-                name: this.state.patientDetail.name
+                name: PatientDataService.constructName(firstName, lastName)
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -84,7 +86,8 @@ class PatientDetailScreenContainer extends Component {
             passProps: {
                 values: {
                     patientID: this.state.patientDetail.patientID,
-                    name: this.state.patientDetail.name,
+                    firstName: this.state.patientDetail.firstName,
+                    lastName: this.state.patientDetail.lastName,
                     addressID: this.state.patientDetail.address.addressID,
                     streetAddress: this.state.patientDetail.address.streetAddress,
                     apartmentNo: this.state.patientDetail.address.apartmentNo,
@@ -106,7 +109,8 @@ class PatientDetailScreenContainer extends Component {
     // this is the onPress handler for the navigation header 'Edit' button
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
-            const title = `${this.state.patientDetail.name}`;
+            let {firstName, lastName} = this.state.patientDetail;
+            const title = PatientDataService.constructName(firstName, lastName);
             this.props.navigator.setTitle({
                 title
             });
