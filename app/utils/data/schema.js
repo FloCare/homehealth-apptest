@@ -414,9 +414,6 @@ function CreateAndSaveDummies() {
         // });
     });
 
-    console.log("with undefined");
-    console.log(floDB.objects(Patient.schema.name).filtered('archived = false'));
-
     console.log('==========================================');
     console.log('Done Creating Realm objects');
     console.log('Total time taken for insertions:', Date.now() - timeNow);
