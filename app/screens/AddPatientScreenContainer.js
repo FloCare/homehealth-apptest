@@ -2,24 +2,58 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {AddPatientScreen} from '../components/AddPatientScreen';
 import {screenNames} from '../utils/constants';
+import {Images} from "../Images";
+import {Alert, Platform} from 'react-native';
+import {patientDataService} from "../data_services/PatientDataService";
 
 class AddPatientScreenContainer extends Component {
     /*
         Container Component - has states
      */
+
     constructor(props) {
         super(props);
         this.state = {
             nextScreen: props.nextScreen || null
         };
         this.onSubmit = this.onSubmit.bind(this);
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    }
+
+    archivePatientAndNavigateToRoot = (id) => {
+        try {
+            patientDataService.archivePatient(id);
+            Alert.alert('Success',
+                'Patient deleted successfully',
+                [{text: 'OK', onPress: () => this.props.navigator.popToRoot()}],
+                {cancelable: false}
+            );
+        } catch (err) {
+            console.log('ERROR while archiving patient:', err);
+            Alert.alert('Error', 'Unable to delete patient. Please try again later');
+        }
+    };
+
+    confirmAndDeletePatient = () => {
+        Alert.alert(
+            'Caution',
+            'All your patient related data will be deleted. Do you wish to continue?',
+            [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'OK', onPress: () => this.archivePatientAndNavigateToRoot(this.props.values.patientID)},
+            ]
+        );
     }
 
     onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
         if(event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.addPatient, screenNames.addPatient);
+        }
+        if (event.type === 'NavBarButtonPress') {
+            if (event.id === 'deletePatient') {
+                this.confirmAndDeletePatient();
+            }
         }
     }
 

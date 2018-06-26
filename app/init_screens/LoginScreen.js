@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import {TextInput, View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import {screenNames, PrimaryFontFamily, PrimaryColor} from '../utils/constants';
+import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties} from '../utils/constants';
 import StyledText from '../components/common/StyledText';
 import {SimpleButton} from '../components/common/SimpleButton';
+import {getUserProps} from '../utils/API/UserAPI';
 
 // TODO Change to the endpoint on Aptible
-const API_URL = 'https://app-9707.on-aptible.com/get-token/';
+const API_URL = 'https://app-9781.on-aptible.com/get-token/';
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -52,16 +54,22 @@ class LoginScreen extends Component {
         })
             .then(({token}) => {
                 console.log(`token set to ${token}`);
-                RNSecureKeyStore.set('accessToken', token)
-                    .then(() => {
-                        this.props.navigator.resetTo({
-                            screen: screenNames.welcomeScreen,
-                            title: 'Welcome',
-                            backButtonHidden: true,
-                        });
-                    });
+                RNSecureKeyStore.set('accessToken', token);
             })
-            .catch(() => {
+            .then(() => getUserProps())
+            .then(userPropsJson => {
+                firebase.analytics().setUserId(userPropsJson.id.toString());
+                firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.roles[0].role);
+                firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.roles[0].org);
+
+                this.props.navigator.resetTo({
+                    screen: screenNames.welcomeScreen,
+                    title: 'Welcome',
+                    backButtonHidden: true,
+                });
+            })
+            .catch((error) => {
+                console.log(error);
                 this.setState({
                     password: undefined,
                     authSubtitle: 'Authentication Failed',
@@ -78,7 +86,7 @@ class LoginScreen extends Component {
 
         return (
             <SimpleButton
-                style={{backgroundColor: 'white', borderRadius: 25, flex: 1, marginLeft: 20}}
+                style={{backgroundColor: 'white', borderRadius: 25, flex: 1}}
                 textStyle={{
                     fontFamily: PrimaryFontFamily,
                     fontSize: 14,
@@ -153,15 +161,15 @@ class LoginScreen extends Component {
                                 marginVertical: 20,
                             }}
                         >
-                            <SimpleButton
-                                style={{backgroundColor: 'transparent', height: 50}}
-                                textStyle={{
-                                    fontFamily: PrimaryFontFamily,
-                                    fontSize: 12,
-                                    color: 'rgba(255,255,255,1)'
-                                }}
-                                title='Use Invite Code' onPress={this.onUseInviteCode.bind(this)}
-                            />
+                            {/*<SimpleButton*/}
+                                {/*style={{backgroundColor: 'transparent', height: 50}}*/}
+                                {/*textStyle={{*/}
+                                    {/*fontFamily: PrimaryFontFamily,*/}
+                                    {/*fontSize: 12,*/}
+                                    {/*color: 'rgba(255,255,255,1)'*/}
+                                {/*}}*/}
+                                {/*title='Use Invite Code' onPress={this.onUseInviteCode.bind(this)}*/}
+                            {/*/>*/}
                             <View
                                 style={{flex: 1, height: 50}}
                             >

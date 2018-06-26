@@ -130,7 +130,7 @@ class PasscodeVerificationScreen extends Component {
                             number: {
                                 fontFamily: PrimaryFontFamily,
                                 fontSize: 35,
-                                fontWeight: '450'
+                                fontWeight: '400'
                             }
                         }}
                     />

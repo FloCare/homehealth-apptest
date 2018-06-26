@@ -6,7 +6,7 @@ import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
 import {visitDataService} from './VisitDataService';
 
-import * as PatientAPI from '../utils/PatientAPI';
+import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from "../utils/data/queryHelper";
 
 export class PatientDataService {

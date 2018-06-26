@@ -66,7 +66,10 @@ const visitType = {
 };
 
 const userProperties = {
-    INVITE_CODE: 'invite_code'
+    INVITE_CODE: 'invite_code',
+    USER_ID: 'user_id',
+    ROLE: 'role',
+    ORG: 'org',
 };
 
 const eventNames = {

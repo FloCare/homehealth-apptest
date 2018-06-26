@@ -83,6 +83,14 @@ class PatientDetailScreenContainer extends Component {
             navigatorStyle: {
                 tabBarHidden: true
             },
+            navigatorButtons: {
+                rightButtons: [
+                    {
+                        id: 'deletePatient',
+                        icon: Images.delete
+                    }
+                ]
+            },
             passProps: {
                 values: {
                     patientID: this.state.patientDetail.patientID,
@@ -136,20 +144,27 @@ class PatientDetailScreenContainer extends Component {
             this.setState({patientDetail: {}, lastVisit: null, nextVisit: null});
         } else {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
-            this.setState({patientDetail: patientDetails});
-            const episode = patientDetails.episodes[0];
-            // const visits = episode.visits.filtered(
-            //     'midnightEpochOfVisit==$0',
-            //     todayMomentInUTCMidnight().valueOf()).sorted('isDone');
-            // const visits = episode.visits.sorted([['midnightEpochOfVisit', true], ['miles', false])
-            const today = todayMomentInUTCMidnight();
-            const completedVisits = episode.visits.filtered(`midnightEpochOfVisit <= ${today}`).filtered('isDone = true').sorted('midnightEpochOfVisit');
-            const newVisits = episode.visits.filtered(`midnightEpochOfVisit >= ${today}`).filtered('isDone = false').sorted('midnightEpochOfVisit', false);
-            if (completedVisits.length > 0) {
-                this.setState({lastVisit: completedVisits[0]});
-            }
-            if (newVisits && newVisits.length > 0) {
-                this.setState({nextVisit: newVisits[0]});
+            try {
+                const newState = {patientDetail: patientDetails};
+                const episode = patientDetails.episodes[0];
+                const today = todayMomentInUTCMidnight();
+                const completedVisits = episode.visits.filtered(`midnightEpochOfVisit <= ${today}`).filtered('isDone = true').sorted('midnightEpochOfVisit');
+                const newVisits = episode.visits.filtered(`midnightEpochOfVisit >= ${today}`).filtered('isDone = false').sorted('midnightEpochOfVisit', false);
+
+                if (completedVisits.length > 0) {
+                    newState.lastVisit = completedVisits[0];
+                } else {
+                    newState.lastVisit = null;
+                }
+                if (newVisits && newVisits.length > 0) {
+                    newState.nextVisit = newVisits[0];
+                } else {
+                    newState.nextVisit = null;
+                }
+
+                this.setState(newState);
+            } catch (err) {
+                console.log('Error while setting state: ', err);
             }
 
             if (patientDetails) {
