@@ -7,7 +7,7 @@ import {PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {visitDataService} from '../../data_services/VisitDataService';
-import {patientDataService} from '../../data_services/PatientDataService';
+import {PatientDataService} from '../../data_services/PatientDataService';
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -29,8 +29,7 @@ class AddVisitsForPatientScreen extends Component {
     onSubmit() {
         const patientId = this.props.patientId;
         console.log('Adding visit for: ', patientId);
-        const patient = patientDataService.getPatientByID(patientId);
-        // console.log('Patient episodes are: ', patient.episodes);
+        const patient = this.patientDataService().getPatientByID(patientId);
         console.log('Date is:', this.state.date.valueOf());
 
         try {
@@ -116,6 +115,12 @@ class AddVisitsForPatientScreen extends Component {
             </View>
         );
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
 }
 
 export default AddVisitsForPatientScreen;

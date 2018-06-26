@@ -4,6 +4,7 @@ import {floDB, Patient} from '../../utils/data/schema';
 import {AddNoteFormWithPatientTag} from './AddNoteFormWithPatientTag';
 import {AddNoteFormWithoutPatientTag} from './AddNoteFormWithoutPatientTag';
 import {screenNames, eventNames} from '../../utils/constants';
+import {PatientDataService} from "../../data_services/PatientDataService";
 
 class AddNoteFormContainer extends Component {
     constructor(props) {
@@ -42,10 +43,9 @@ class AddNoteFormContainer extends Component {
             this.setState({searching: true});
             try {
                 // Todo: Revisit query logic
-                const queryStr = `name CONTAINS[c] "${query.toString()}"`;
-                const patientList = floDB.objects(Patient.schema.name).filtered(queryStr).sorted('name');
-                console.log(patientList);
-                this.setState({patientList});
+                const filteredPatientList = this.patientDataService().getPatientsFilteredByName(query);
+                const sortedPatientList = this.patientDataService().getPatientsSortedByName(filteredPatientList);
+                this.setState({patientList: sortedPatientList});
             } catch (e) {
                 console.log('Error in fetching patients:', e);
             }
@@ -153,6 +153,12 @@ class AddNoteFormContainer extends Component {
             );
         }
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
 }
 
 export {AddNoteFormContainer};

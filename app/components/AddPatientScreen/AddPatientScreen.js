@@ -13,7 +13,8 @@ class AddPatientScreen extends Component {
             edit,
             patientID,
             addressID,
-            name,
+            firstName,
+            lastName,
             streetAddress,
             zipCode,
             city,
@@ -33,7 +34,8 @@ class AddPatientScreen extends Component {
                     edit={edit}
                     patientID={patientID}
                     addressID={addressID}
-                    name={name}
+                    firstName={firstName}
+                    lastName={lastName}
                     streetAddress={streetAddress}
                     apartmentNo={apartmentNo}
                     zipCode={zipCode}

@@ -9,7 +9,8 @@ import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
-import {patientDataService} from '../data_services/PatientDataService';
+import {PatientDataService} from '../data_services/PatientDataService';
+import {addressDataService} from "../data_services/AddressDataService";
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -36,7 +37,7 @@ class PatientListScreenContainer extends Component {
             searchText: null,
             patientList: [],
             patientCount: 0,      // not always a count of patientList
-            selectedPatient: props.selectedPatient,
+            selectedPatient: props.selectedPatient || null,
             refreshing: false,
             isTeamVersion: undefined
         };
@@ -102,6 +103,8 @@ class PatientListScreenContainer extends Component {
         this.setState({selectedPatient: patientId});
     }
 
+    //TODO the notion of item has changed from being a Realm object to being a plain JS object
+    //TODO changed to this function pending.
     onPressPopupButton(buttonPressed, item) {
         switch (buttonPressed) {
             case 'Notes':
@@ -169,7 +172,7 @@ class PatientListScreenContainer extends Component {
                 const archivePatient = (id) => {
                     console.log('Archiving patient');
                     try {
-                        patientDataService.archivePatient(id);
+                        this.patientDataService().archivePatient(id);
                         Alert.alert('Success', 'Patient deleted successfully');
                     } catch (err) {
                         console.log('ERROR while archiving patient:', err);
@@ -191,12 +194,21 @@ class PatientListScreenContainer extends Component {
         }
     }
 
+    getFormattedPatientList = (patientList) => {
+        const flatPatientList = PatientDataService.getFlatPatientList(patientList);
+        flatPatientList.forEach(patient => {
+            patient.address = {formattedAddress : addressDataService.getAddressByID(patient.addressID).formattedAddress}
+        });
+        return flatPatientList
+    };
+
     getSectionData(query) {
         if (!query) {
-            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false');
-            const sortedPatientList = patientList.sorted('name');
-            const patientCount = sortedPatientList.length;
-            const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
+            const patientList = this.patientDataService().getAllPatients();
+            const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
+            const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
+            const patientCount = formattedPatientList.length;
+            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
             this.setState({
                 patientList: sectionedPatientList,
                 patientCount
@@ -205,10 +217,9 @@ class PatientListScreenContainer extends Component {
             // Todo: Can improve querying Logic:
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
-            const queryStr = `name CONTAINS[c] "${query.toString()}"`;
-            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false').filtered(queryStr);
-            const sortedPatientList = patientList.sorted('name');
-            const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
+            const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
+            const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
+            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
     }
@@ -247,7 +258,7 @@ class PatientListScreenContainer extends Component {
     }
 
     onRefresh() {
-        patientDataService.updatePatientListFromServer()
+        this.patientDataService().updatePatientListFromServer()
             .then((result) => {
                 this.setState({refreshing: false});
 
@@ -290,6 +301,12 @@ class PatientListScreenContainer extends Component {
             />
         );
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
 }
 
 export default PatientListScreenContainer;

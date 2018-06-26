@@ -7,7 +7,7 @@ import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {PrimaryFontFamily, eventNames} from '../../utils/constants';
-import {patientDataService} from '../../data_services/PatientDataService';
+import {PatientDataService} from '../../data_services/PatientDataService';
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -15,7 +15,8 @@ class AddPatientFormContainer extends Component {
         this.state = {
             value: {
                 patientID: props.patientID || null,
-                name: props.name || null,
+                firstName: props.firstName || null,
+                lastName: props.lastName || null,
                 addressID: props.addressID || null,
                 streetAddress: props.streetAddress || '',
                 apartmentNo: props.apartmentNo || null,
@@ -102,7 +103,8 @@ class AddPatientFormContainer extends Component {
     clearForm() {
         this.setState({
             value: {
-                name: null,
+                firstName: null,
+                lastName: null,
                 streetAddress: null,
                 zipCode: null,
                 city: null,
@@ -136,7 +138,7 @@ class AddPatientFormContainer extends Component {
                 patientId = this.state.value.patientID;
 
                 try {
-                    patientDataService.editExistingPatient(patientId, this.state.value);
+                    this.patientDataService().editExistingPatient(patientId, this.state.value);
                 } catch (err) {
                     console.log('Error on Patient and Episode edit: ', err);
                     // Todo: Raise an error to the screen
@@ -144,7 +146,7 @@ class AddPatientFormContainer extends Component {
                 }
             } else {
                 try {
-                    patientDataService.createNewPatient(this.state.value);
+                    this.patientDataService().createNewPatient(this.state.value);
                     firebase.analytics().logEvent(eventNames.PATIENT_ADDED, {});
                 } catch (err) {
                     console.log('Error on Patient and Episode creation: ', err);
@@ -183,6 +185,13 @@ class AddPatientFormContainer extends Component {
             </View>
         );
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
+
 }
 
 export {AddPatientFormContainer};
