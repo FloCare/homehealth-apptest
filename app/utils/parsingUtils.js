@@ -5,7 +5,7 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
     console.log('details:', details);
     const address = details.address_components;
 
-    let zip = null;
+    let zipCode = null;
     let city = null;
     let state = null;
     let country = null;
@@ -71,9 +71,9 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
         }
 
         if (types.indexOf('postal_code') > -1) {
-            zip = component.long_name;
-            if (zip && streetAddress.lastIndexOf(` ${zip}`) > -1) {
-                streetAddress = streetAddress.replace(` ${zip}`, '');
+            zipCode = component.long_name;
+            if (zipCode && streetAddress.lastIndexOf(` ${zipCode}`) > -1) {
+                streetAddress = streetAddress.replace(` ${zipCode}`, '');
             } else if (postalCode && streetAddress.lastIndexOf(`, ${postalCode}`) > -1) {
                 streetAddress = streetAddress.replace(` ${postalCode}`, '');
             }
@@ -98,7 +98,7 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
     }
 
     const response = {
-        zip, city, stateName: state, country, streetAddress, lat, long
+        zipCode, city, stateName: state, country, streetAddress, lat, long
     };
 
     return response;

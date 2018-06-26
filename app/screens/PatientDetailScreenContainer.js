@@ -7,30 +7,9 @@ import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
+import {PatientDataService} from "../data_services/PatientDataService";
 
 class PatientDetailScreenContainer extends Component {
-    static navigatorButtons = Platform.select({
-            ios: {
-                rightButtons: [
-                    {
-                        id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                        buttonColor: '#fffff',
-                        systemItem: 'edit' //iOS only
-                    }
-                ]
-            },
-            android: {
-                rightButtons: [
-                    {
-                        icon: Images.editButton,
-                        id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                        buttonColor: '#fffff',
-                    }
-                ]
-            }
-        }
-    );
-
     constructor(props) {
         super(props);
         this.state = {
@@ -48,6 +27,11 @@ class PatientDetailScreenContainer extends Component {
         this.setMarkerRef = this.setMarkerRef.bind(this);
         this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
+
+        const patientDetails = floDB.objectForPrimaryKey(Patient, props.patientId);
+        if (patientDetails && patientDetails.isLocallyOwned) {
+            this.showEditNavButton();
+        }
     }
 
     componentDidMount() {
@@ -57,7 +41,7 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddVisit() {
         firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-                'VALUE': 1
+            VALUE: 1
         });
         this.props.navigator.showLightBox({
             screen: screenNames.addVisitsForPatientScreen,
@@ -74,8 +58,9 @@ class PatientDetailScreenContainer extends Component {
 
     onPressAddNotes() {
         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-            'type': parameterValues.EDIT_NOTES
+            type: parameterValues.EDIT_NOTES
         });
+        const {firstName, lastName} = this.state.patientDetail;
         this.props.navigator.push({
             screen: screenNames.addNote,
             animated: true,
@@ -83,7 +68,7 @@ class PatientDetailScreenContainer extends Component {
             title: 'Notes',
             passProps: {
                 patientId: this.state.patientDetail.patientID,
-                name: this.state.patientDetail.name
+                name: PatientDataService.constructName(firstName, lastName)
             },
             navigatorStyle: {
                 tabBarHidden: true
@@ -98,14 +83,23 @@ class PatientDetailScreenContainer extends Component {
             navigatorStyle: {
                 tabBarHidden: true
             },
+            navigatorButtons: {
+                rightButtons: [
+                    {
+                        id: 'deletePatient',
+                        icon: Images.delete
+                    }
+                ]
+            },
             passProps: {
                 values: {
                     patientID: this.state.patientDetail.patientID,
-                    name: this.state.patientDetail.name,
+                    firstName: this.state.patientDetail.firstName,
+                    lastName: this.state.patientDetail.lastName,
                     addressID: this.state.patientDetail.address.addressID,
                     streetAddress: this.state.patientDetail.address.streetAddress,
                     apartmentNo: this.state.patientDetail.address.apartmentNo,
-                    zip: this.state.patientDetail.address.zipCode,
+                    zipCode: this.state.patientDetail.address.zipCode,
                     city: this.state.patientDetail.address.city,
                     state: this.state.patientDetail.address.state,
                     primaryContact: this.state.patientDetail.primaryContact,
@@ -123,7 +117,8 @@ class PatientDetailScreenContainer extends Component {
     // this is the onPress handler for the navigation header 'Edit' button
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
-            const title = `${this.state.patientDetail.name}`;
+            let {firstName, lastName} = this.state.patientDetail;
+            const title = PatientDataService.constructName(firstName, lastName);
             this.props.navigator.setTitle({
                 title
             });
@@ -134,7 +129,7 @@ class PatientDetailScreenContainer extends Component {
             }
         }
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.patientDetails, screenNames.patientDetails);
         }
     }
@@ -149,20 +144,27 @@ class PatientDetailScreenContainer extends Component {
             this.setState({patientDetail: {}, lastVisit: null, nextVisit: null});
         } else {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
-            this.setState({patientDetail: patientDetails});
-            const episode = patientDetails.episodes[0];
-            // const visits = episode.visits.filtered(
-            //     'midnightEpochOfVisit==$0',
-            //     todayMomentInUTCMidnight().valueOf()).sorted('isDone');
-            // const visits = episode.visits.sorted([['midnightEpochOfVisit', true], ['miles', false])
-            const today = todayMomentInUTCMidnight();
-            const completedVisits = episode.visits.filtered(`midnightEpochOfVisit <= ${today}`).filtered('isDone = true').sorted('midnightEpochOfVisit');
-            const newVisits = episode.visits.filtered(`midnightEpochOfVisit >= ${today}`).filtered('isDone = false').sorted('midnightEpochOfVisit', false);
-            if (completedVisits.length > 0) {
-                this.setState({lastVisit: completedVisits[0]});
-            }
-            if (newVisits && newVisits.length > 0) {
-                this.setState({nextVisit: newVisits[0]});
+            try {
+                const newState = {patientDetail: patientDetails};
+                const episode = patientDetails.episodes[0];
+                const today = todayMomentInUTCMidnight();
+                const completedVisits = episode.visits.filtered(`midnightEpochOfVisit <= ${today}`).filtered('isDone = true').sorted('midnightEpochOfVisit');
+                const newVisits = episode.visits.filtered(`midnightEpochOfVisit >= ${today}`).filtered('isDone = false').sorted('midnightEpochOfVisit', false);
+
+                if (completedVisits.length > 0) {
+                    newState.lastVisit = completedVisits[0];
+                } else {
+                    newState.lastVisit = null;
+                }
+                if (newVisits && newVisits.length > 0) {
+                    newState.nextVisit = newVisits[0];
+                } else {
+                    newState.nextVisit = null;
+                }
+
+                this.setState(newState);
+            } catch (err) {
+                console.log('Error while setting state: ', err);
             }
 
             if (patientDetails) {
@@ -184,12 +186,37 @@ class PatientDetailScreenContainer extends Component {
         }
     }
 
+    showEditNavButton() {
+        this.props.navigator.setButtons(
+            Platform.select({
+                ios: {
+                    rightButtons: [
+                        {
+                            id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                            buttonColor: '#fffff',
+                            systemItem: 'edit' //iOS only
+                        }
+                    ]
+                },
+                android: {
+                    rightButtons: [
+                        {
+                            icon: Images.editButton,
+                            id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                            buttonColor: '#fffff',
+                        }
+                    ]
+                }
+            })
+        );
+    }
+
     setMarkerRef(element) {
         this.marker = element;
     }
 
-    componentWillUnMount() {
-        floDB.removeListener('change', this.handleListUpdate);
+    componentWillUnmount() {
+        floDB.removeListener('change', this.handleDBUpdate);
     }
 
     handleDBUpdate() {
@@ -246,15 +273,15 @@ class PatientDetailScreenContainer extends Component {
 
     render() {
         return (
-          <PatientDetailScreen
-              patientDetail={this.state.patientDetail}
-              nextVisit={this.state.nextVisit}
-              lastVisit={this.state.lastVisit}
-              onPressAddVisit={this.onPressAddVisit}
-              onPressAddNotes={this.onPressAddNotes}
-              showCallout={this.onRegionChangeComplete}
-              setMarkerRef={this.setMarkerRef}
-          />
+            <PatientDetailScreen
+                patientDetail={this.state.patientDetail}
+                nextVisit={this.state.nextVisit}
+                lastVisit={this.state.lastVisit}
+                onPressAddVisit={this.onPressAddVisit}
+                onPressAddNotes={this.onPressAddNotes}
+                showCallout={this.onRegionChangeComplete}
+                setMarkerRef={this.setMarkerRef}
+            />
         );
     }
 }

@@ -37,7 +37,7 @@ class AddStopScreenContainer extends Component {
                     streetAddress={values.streetAddress}
                     lat={values.lat}
                     long={values.long}
-                    zip={values.zip}
+                    zipCode={values.zipCode}
                     city={values.city}
                     state={values.state}
                     country={values.country}

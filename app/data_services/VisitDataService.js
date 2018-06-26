@@ -2,7 +2,7 @@ import {Patient, Visit, VisitOrder, Place} from '../utils/data/schema';
 import {VisitActions, VisitOrderActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {generateUUID, todayMomentInUTCMidnight} from '../utils/utils';
-import {patientDataService} from './PatientDataService';
+import {PatientDataService} from './PatientDataService';
 import {placeDataService} from './PlaceDataService';
 
 class VisitDataService {
@@ -63,7 +63,7 @@ class VisitDataService {
 
     addVisitsToRedux(visits) {
         this.store.dispatch({type: VisitActions.ADD_VISITS, visitList: VisitDataService.getFlatVisitMap(visits)});
-        patientDataService.addPatientsToRedux(visits.map(visit => visit.getPatient()).filter(patient => patient));
+        this.patientDataService().addPatientsToRedux(visits.map(visit => visit.getPatient()).filter(patient => patient));
         placeDataService.addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
     }
 
@@ -239,6 +239,12 @@ class VisitDataService {
         const obj = {visits, visitOrders};
         return obj;
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
 }
 
 export let visitDataService;

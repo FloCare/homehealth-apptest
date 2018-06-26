@@ -1,15 +1,16 @@
 import t from 'tcomb-form-native';
-import {PhoneNumber, zipCode} from '../../utils/lib';
+import {PhoneNumber, zipCodeType} from '../../utils/lib';
 import AddressAutoComplete from '../common/AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 import PatientFormTemplate from './AddPatientFormTemplate';
 
 const AddPatientModel = t.struct({
-    name: t.String,
+    firstName: t.String,
+    lastName: t.String,
     streetAddress: t.String,
     apartmentNo: t.maybe(t.String),
-    zip: zipCode,
+    zipCode: zipCodeType,
     city: t.maybe(t.String),
     state: t.maybe(t.String),
     primaryContact: PhoneNumber,
@@ -28,14 +29,21 @@ const formOptions = {
     stylesheet,
     template: PatientFormTemplate,
     fields: {
-        name: {
-            label: 'Patient Name',
+        firstName: {
+            label: 'First Name',
             error: nameError,
-            placeholder: 'John Doe',
+            placeholder: 'John',
             returnKeyType: 'next',
             autoCapitalize: 'words',
         },
-        zip: {
+        lastName: {
+            label: 'Last Name',
+            error: nameError,
+            placeholder: 'Doe',
+            returnKeyType: 'next',
+            autoCapitalize: 'words',
+        },
+        zipCode: {
             label: 'Zip Code',
             error: 'Please enter a valid zipCode',
             placeholder: '12345',

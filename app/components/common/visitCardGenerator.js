@@ -1,8 +1,8 @@
 import React, {PureComponent} from 'react';
-import {Card, Text, Divider} from 'react-native-elements';
+import {Text, Divider} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
-import {View, TouchableHighlight, Image, Linking, Platform} from 'react-native';
+import {View, TouchableHighlight, Image, Linking, Platform, Dimensions} from 'react-native';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
@@ -44,6 +44,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 function VisitCardGenerator({onDoneTogglePress}) {
+    const {width} = Dimensions.get('window');
+
     class RenderRow extends PureComponent {
         render() {
             console.log('- - - - - - VisitCard Render- - - - - - - - ');
@@ -53,15 +55,32 @@ function VisitCardGenerator({onDoneTogglePress}) {
                 }
             };
             return (
-                <Card
-                    containerStyle={
+
+                <View
+                    style={
                         [
+                            {
+                                // height: Math.max(height * 0.16),
+                                width: width * 0.90,
+                                padding: 15
+                            },
+                            Platform.select({
+                                    ios: {
+                                        shadowColor: 'rgba(0,0,0, .2)',
+                                        shadowOffset: {height: 0, width: 0},
+                                        shadowOpacity: 1,
+                                        shadowRadius: 1,
+                                    },
+                                    android: {
+                                        elevation: 1,
+                                    },
+                                }),
                             styles.cardContainerStyle,
                             this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
                             this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {}
                         ]}
                 >
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{height: 50, flexDirection: 'row'}}>
                         <View style={{flex: 1}}>
                             <Text style={styles.nameStyle}>{this.props.name}</Text>
                             <Text style={styles.addressStyle}>{this.props.formattedAddress}</Text>
@@ -71,14 +90,14 @@ function VisitCardGenerator({onDoneTogglePress}) {
                             onPress={safeOnDoneTogglePress}
                         />
                     </View>
-                    <Divider style={{marginBottom: 4, marginRight: 15, height: 1.5, backgroundColor: '#dddddd'}} />
+                    <Divider style={{marginVertical: 4, marginRight: 15, height: 1.5, backgroundColor: '#dddddd'}} />
                     <View
-                        style={{flexDirection: 'row', flex: 1, justifyContent: 'space-around', margin: 0, padding: 0}}
+                        style={{flexDirection: 'row', justifyContent: 'space-around', height: 35}}
                     >
                         <TouchableHighlight
                             activeOpacity={0.4}
                             underlayColor={'white'}
-                            style={{flex: 1, padding: 5}}
+                            style={{flex: 1}}
                             onPress={() => {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     type: parameterValues.CALL
@@ -93,7 +112,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                                 }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.props.primaryContact ? 1 : 0.4}}>
+                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', opacity: this.props.primaryContact ? 1 : 0.4}}>
                                 <Image
                                     source={Images.call}
                                     style={!this.props.primaryContact ? {tintColor: 'black'} : {}}
@@ -107,7 +126,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                         <TouchableHighlight
                             activeOpacity={0.4}
                             underlayColor={'white'}
-                            style={{flex: 1, padding: 5}}
+                            style={{flex: 1}}
                             onPress={() => {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     type: parameterValues.NAVIGATION
@@ -117,7 +136,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                                 }
                             }}
                         >
-                            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', opacity: this.props.coordinates ? 1 : 0.4}}>
+                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', opacity: this.props.coordinates ? 1 : 0.4}}>
                                 <Image
                                     source={Images.navigate}
                                     style={!this.props.coordinates ? {tintColor: 'black'} : {}}
@@ -128,7 +147,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                             </View>
                         </TouchableHighlight>
                     </View>
-                </Card>
+                </View>
             );
         }
     }

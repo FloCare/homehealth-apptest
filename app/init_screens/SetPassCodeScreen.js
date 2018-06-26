@@ -1,262 +1,225 @@
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
+import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
-import CodeInput from 'react-native-confirmation-code-input';
-import {StyleSheet, Text, View, Image, Alert, AsyncStorage} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import VirtualKeyboard from 'react-native-virtual-keyboard';
+import {StyleSheet, Text, View, Image, Alert, AsyncStorage, Dimensions} from 'react-native';
 import StartApp from '../screens/App';
-import {Images} from '../Images';
-import {screenNames, eventNames, parameterValues } from '../utils/constants';
-
-//const Realm = require('realm');
+import {screenNames, eventNames, parameterValues, PrimaryColor, PrimaryFontFamily} from '../utils/constants';
 
 class SetPassCodeScreen extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      floDB: null,
-      storage: null,
-      timeWentInactive: null,
+    static navigatorStyle = {
+        navBarHidden: true
     };
-    this.setPasscode = this.setPasscode.bind(this);
-    this.setKey = this.setKey.bind(this);
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
-    // this.savePatientObject = this.savePatientObject.bind(this);
-  }
 
-  onNavigatorEvent(event) {
+    constructor(props) {
+        super(props);
+        this.state = {
+            code: ''
+        };
+        this.setPasscode = this.setPasscode.bind(this);
+        this.setKey = this.setKey.bind(this);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+    }
+
+    onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.setPassCodeScreen, screenNames.setPassCodeScreen);
         }
     }
 
-// TODO revisit when this screen is moved after a first patient is added. Commenting for now
-// savePatientObject(value) {
-//   try {
-//     const patientId = Math.random().toString();
-//     const episodeId = Math.random().toString();
-//     const addressId = Math.random().toString();
-//       this.floDB.write(() => {
-//           // Add the patient
-//           const patient = this.floDB.create(Patient.schema.name, {
-//               patientID: patientId,
-//               name: value.name ? value.name.toString() : '',
-//               primaryContact: value.primaryContact ? parsePhoneNumber(value.primaryContact.toString()) : '',
-//               emergencyContact: value.emergencyContact ? parsePhoneNumber(value.emergencyContact.toString()) : '',
-//               notes: value.notes ? value.notes.toString() : '',
-//               timestamp: 0,                                   // Todo: Add a timestmap
-//           });
+    setKey() {
+        console.log('Trying to set the key ...');
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        let randomString = '';
+        const key = new Int8Array(64);
+        for (let i = 0; i < key.length; i++) {
+            const rnum = Math.floor(Math.random() * chars.length);
+            randomString += chars.substring(rnum, rnum + 1);
+        }
 
-//           // Add the corresponding address
-//           const address = patient.address = {
-//               addressID: addressId,
-//               streetAddress: value.streetAddress ? value.streetAddress.toString() : '',
-//               zipCode: value.zip ? value.zip.toString() : '',
-//               city: value.city ? value.city.toString() : '',
-//               state: value.state ? value.state.toString() : ''
-//           };
-
-//           // Add a latLong if present
-//           if (value.lat && value.long) {
-//               address.coordinates = {
-//                   latitude: value.lat,
-//                   longitude: value.long
-//               };
-//               // const latLongID = Math.random().toString();
-//               // address.latLong = {
-//               //     latLongID,
-//               //     lat: value.lat,
-//               //     long: value.long
-//               // };
-//           }
-
-//           // Add an Episode
-//           patient.episodes.push({
-//               episodeID: episodeId,
-//               diagnosis: []                                   // Todo: Add diagnosis
-//           });
-//         });
-//     } catch (err) {
-//       console.log('Error on Patient and Episode creation: ', err);
-//       // Todo: Raise an error to the screen
-//       return;
-//     }
-// }
-
-setKey() {
-  console.log('Trying to set the key ...');
-  const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-  let randomString = '';
-  const key = new Int8Array(64);
-  for (let i = 0; i < key.length; i++) {
-    const rnum = Math.floor(Math.random() * chars.length);
-    randomString += chars.substring(rnum, rnum + 1);
-  }
-
-  RNSecureKeyStore.set('flokey', randomString)
-  .then((res) => {
-    console.log(res);
-    try {
-      StartApp(randomString);
-    } catch (err) {
-      console.log('Error in starting app:', err);
-      Alert.alert('Error', 'Unable to retrieve data');
+        RNSecureKeyStore.set('flokey', randomString)
+            .then((res) => {
+                console.log(res);
+                try {
+                    StartApp(randomString);
+                } catch (err) {
+                    console.log('Error in starting app:', err);
+                    Alert.alert('Error', 'Unable to retrieve data');
+                }
+            }, (err) => {
+                console.log(err);
+                Alert.alert('Error', 'Unable to start the app');
+            });
     }
-  }, (err) => {
-    console.log(err);
-    Alert.alert('Error', 'Unable to start the app');
-  });
-}
 
 // Secure the entered passcode in the keystore
-setPasscode(passcode) {
-  if (passcode.length === 4) {
-    // Save the passcode to keystore
-    RNSecureKeyStore.set('passCode', passcode)
-    .then((res) => {
-      console.log('Updated the passcode to:', passcode);
-      // Open VerifyPasscode Screen next time
-      AsyncStorage.setItem('isFirstVisit', 'false');
-      firebase.analytics().logEvent(eventNames.PASSCODE, {
-          'status': parameterValues.SUCCESS
-      });
+    setPasscode(passcode) {
+        // Save the passcode to keystore
+        RNSecureKeyStore.set('passCode', passcode)
+            .then((res) => {
+                // Open VerifyPasscode Screen next time
+                AsyncStorage.setItem('isFirstVisit', 'false');
+                firebase.analytics().logEvent(eventNames.PASSCODE, {
+                    status: parameterValues.SUCCESS
+                });
 
-      // if key already set, use it
-      console.log('Trying to get the key ...');
-      RNSecureKeyStore.get('flokey')
-        .then((k) => {
-          // Connect to realm, Register new screens
-          // Navigate to the Tab Based App
-          try {
-            StartApp(k);
-          } catch (e) {
-            console.log('Error in starting app:', e);
-            Alert.alert('Error', 'Unable to retrieve data');
-          }
-        }, (err) => {
-          console.log('Key not already set', err);
-          this.setKey();
-        });
-    }, (err) => {
-      console.log(err);
-      firebase.analytics().logEvent(eventNames.PASSCODE, {
-          'status': parameterValues.FAILURE
-      });
-      Alert.alert('Error', 'Unable to update passcode');
-      return;
-    });
+                this.setKey();
+                // // if key already set, use it
+                // console.log('Trying to get the key ...');
+                // RNSecureKeyStore.get('flokey')
+                //     .then((k) => {
+                //         // Connect to realm, Register new screens
+                //         // Navigate to the Tab Based App
+                //         try {
+                //             StartApp(k);
+                //         } catch (e) {
+                //             console.log('Error in starting app:', e);
+                //             Alert.alert('Error', 'Unable to retrieve data');
+                //         }
+                //     }, (err) => {
+                //         console.log('Key not already set', err);
+                //         this.setKey();
+                //     });
+            }, (err) => {
+                console.log(err);
+                firebase.analytics().logEvent(eventNames.PASSCODE, {
+                    status: parameterValues.FAILURE
+                });
+                Alert.alert('Error', 'Unable to update passcode');
+                return;
+            });
+    }
 
-    // this.props.navigator.push({
-    //   screen: screenNames.homeScreen,
-    //   navigatorStyle: {
-    //     tabBarHidden: true
-    //   }
-    // });
+    onChangeCode(code) {
+        this.setState({code});
+        if (code.length === 4) { setTimeout(() => this.setPasscode(code)); }
+    }
 
-    // TODO Re-visit once this screen is moved to the flow after first patient being added
-    // RNSecureKeyStore.get('patientData')
-    // .then((res) => {
-    //   //Save the patient/visit/episode objects to Realm
-    //   this.savePatientObject(JSON.parse(res));
-    // }, (err) => {
-    //   console.log(err);
-    // });
-
-    // Create the encryption key
-    // TODO move this function of generating a random string to a common module
-
-    // const randomString = '';
-    // const key = new Int8Array(64);
-    // for (let i = 0; i < key.length; i++) {
-    //   var rnum = Math.floor(Math.random() * chars.length);
-    //   randomString += chars.substring(rnum,rnum+1);
+    // generateCodeDisplayArea() {
+    //     const dotArray = [];
+    //     for (let i = 0; i < 4; i++) {
+    //         if (this.state.code.length > i) { dotArray.push(<Text style={{color: 'white', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>); } else dotArray.push(<Text style={{color: 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>);
+    //     }
+    //     return (
+    //         <View
+    //             style={{flexDirection: 'row'}}
+    //         >
+    //             <Text style={{color: this.state.code.length > 0 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //             <Text style={{color: this.state.code.length > 1 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //             <Text style={{color: this.state.code.length > 2 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //             <Text style={{color: this.state.code.length > 3 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+    //         </View>
+    //     );
     // }
 
-    // RNSecureKeyStore.set('encryptionKey', randomString).then((res) => {
-    //   console.log(res);
-    // }, (err) => {
-    //   console.log(err);
-    // });
-  }
-}
-    
-  render() {
-    // TODO replicate in multiple screens or find a better way of doing at the overall APP level
-    return (
-      <KeyboardAwareScrollView>
-        <View>
-          <Text style={styles.headerSectionStyle}>
-                Let's secure the app
-          </Text>
-        </View>  
-        
-        {/*<View>
-          <Text style={styles.middleSectionStyle}>
-          Looks like you have added patients its time to secure the app. By enabling secure access 
-          you will only be able to open the app with the 4-digit security code.
-          </Text>
-        </View>*/}
-        <View>
-          <Text style={styles.topSectionStyle}>
-            Set a Passcode
-          </Text>
-        </View>
-        <View>
-          <Text style={styles.middleSectionStyle}>          
-          Note: Please keep the passcode handy
-          </Text>
-        </View>
-        <View>
-        <Image
-          style={styles.stretch}
-          source={Images.verificationCode}
-        />  
-        </View>
-        <View >
-        <CodeInput
-          codeLength={4}
-          inputPosition='center'
-          secureTextEntry
-          activeColor='grey'
-          inactiveColor='grey'
-          autoFocus
-          keyboardType='numeric'
-          onFulfill={(code) => this.setPasscode(code)}
-        />
-        </View>
-      </KeyboardAwareScrollView> 
-    );
-  }
+    render() {
+        const primaryColor = PrimaryColor;
+        const secondary = '#34da92';
+        const {width, height} = Dimensions.get('window');
+        return (
+            <LinearGradient
+                colors={[primaryColor, secondary]}
+                style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly',
+                }}
+            >
+                {/*<KeyboardAwareScrollView>*/}
+                    <View>
+                        <Text style={styles.headerSectionStyle}>
+                            Let's secure the app
+                        </Text>
+                    </View>
+                    <View>
+                        <Text style={styles.topSectionStyle}>
+                            Set a Passcode
+                        </Text>
+                    </View>
+                    <View>
+                        <Text style={styles.middleSectionStyle}>
+                            Note: Once set, the passcode cannot be changed
+                        </Text>
+                    </View>
+                    {/*<View>*/}
+                        {/*<Image*/}
+                            {/*style={styles.stretch}*/}
+                            {/*source={Images.verificationCode}*/}
+                        {/*/>*/}
+                    {/*</View>*/}
+                    {/*{this.generateCodeDisplayArea()}*/}
+
+                    <View
+                        style={{flexDirection: 'row'}}
+                    >
+                        <Text style={{color: this.state.code.length > 0 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+                        <Text style={{color: this.state.code.length > 1 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+                        <Text style={{color: this.state.code.length > 2 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+                        <Text style={{color: this.state.code.length > 3 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
+                    </View>
+                    <View style={{width, height: height * 0.5}}>
+                        <VirtualKeyboard
+                            color='white'
+                            pressMode='string'
+                            onPress={(val) => this.onChangeCode(val)}
+                            style={{
+                                container: {
+                                    flex: 1,
+                                    flexDirection: 'column',
+                                    // marginLeft: 0,
+                                    // marginRight: 0,
+                                },
+                                row: {
+                                    flex: 1
+                                },
+                                number: {
+                                    fontFamily: PrimaryFontFamily,
+                                    fontSize: 35,
+                                }
+                            }}
+                        />
+                    </View>
+                {/*</KeyboardAwareScrollView>*/}
+            </LinearGradient>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  headerSectionStyle: {  
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    marginTop: 50,
-  },
-  topSectionStyle: {  
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    marginBottom: 5,
-  },
-  middleSectionStyle: {  
-    fontSize: 12,
-    textAlign: 'center',
-    margin: 10,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  stretch: {
-    alignSelf: 'center',
-    width: 150,
-    height: 150,
-    marginBottom: 10,
-  }
+    headerSectionStyle: {
+        color: 'white',
+        fontFamily: PrimaryFontFamily,
+        fontSize: 24,
+        fontWeight: '500',
+        textAlign: 'center',
+        margin: 10,
+        marginTop: 50,
+    },
+    topSectionStyle: {
+        color: 'white',
+        fontFamily: PrimaryFontFamily,
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 10,
+        marginBottom: 5,
+    },
+    middleSectionStyle: {
+        color: 'white',
+        fontFamily: PrimaryFontFamily,
+        fontSize: 12,
+        textAlign: 'center',
+        margin: 10,
+        marginBottom: 10,
+        marginTop: 10,
+    },
+    stretch: {
+        alignSelf: 'center',
+        width: 150,
+        height: 150,
+        marginBottom: 10,
+    }
 });
 
 export {SetPassCodeScreen};

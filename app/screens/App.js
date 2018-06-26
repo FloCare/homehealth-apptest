@@ -2,13 +2,14 @@ import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import {RegisterScreens} from '.';
 import {screenNames, PrimaryColor} from '../utils/constants';
 import {Images} from '../Images';
 import {FloDBProvider} from '../utils/data/schema';
 import {RootReducer} from '../redux/RootReducer';
 
-import {initialiseService as initialisePatientService} from '../data_services/PatientDataService';
+import {PatientDataService} from '../data_services/PatientDataService';
 import {initialiseService as initialiseStopService} from '../data_services/PlaceDataService';
 import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
 import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
@@ -54,13 +55,19 @@ const StartApp = (key) => {
     const store = createStore(RootReducer);
 
     // Initialize Data Services, pass it the db and store instances
+    //TODO Move all intialisations to static calls
+    PatientDataService.initialiseService(FloDBProvider.db, store);
     initialiseVisitService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
-    initialisePatientService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
+    RNSecureKeyStore.get('accessToken').then(() => {
+        if (PatientDataService.getInstance().getTotalPatientCount() === 0){
+            PatientDataService.getInstance().updatePatientListFromServer();
+        }
+    });
 
     // Register the screens
     try {

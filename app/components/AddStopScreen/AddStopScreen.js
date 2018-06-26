@@ -5,7 +5,7 @@ import styles from './styles';
 
 const AddStopScreen = (props) => {
     const {
-        edit, placeID, addressID, streetAddress, lat, long, zip, city, 
+        edit, placeID, addressID, streetAddress, lat, long, zipCode, city,
         state, country, stopName, primaryContact
     } = props;
     return (
@@ -18,7 +18,7 @@ const AddStopScreen = (props) => {
                 streetAddress={streetAddress}
                 lat={lat}
                 long={long}
-                zip={zip}
+                zipCode={zipCode}
                 city={city}
                 state={state}
                 country={country}

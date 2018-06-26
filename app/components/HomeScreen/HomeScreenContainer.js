@@ -86,7 +86,7 @@ class HomeScreenContainer extends Component {
         );
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         NetInfo.removeEventListener(
             'connectionChange',
             HandleConnectionChange
@@ -198,7 +198,7 @@ class HomeScreenContainer extends Component {
                     })]}
             >
                 <HomeScreen
-                    visitID={[this.props.nextVisitID]}
+                    visitID={this.props.nextVisitID}
                     navigator={this.props.navigator}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}

@@ -105,6 +105,8 @@ function getComponentToDisplayBasedOnProps(props) {
             />
             {this.getTags()}
             <FlatList
+                onRefresh={props.onRefresh}
+                refreshing={props.refreshing}
                 data={props.listItems}
                 renderItem={props.renderItem}
             />

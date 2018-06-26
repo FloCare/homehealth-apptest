@@ -1,6 +1,7 @@
 import * as CollectionUtils from '../collectionUtils';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
+import {PatientDataService} from "../../data_services/PatientDataService";
 
 const Realm = require('realm');
 
@@ -12,23 +13,32 @@ class Patient extends Realm.Object {
     getFirstEpisode() {
         return CollectionUtils.getFirstElement(this.episodes);
     }
+
+    get name() {
+        return PatientDataService.constructName(this.firstName, this.lastName);
+    }
+
 }
 
-Patient.schema = {
+export const PatientSchema = {
     name: 'Patient',
     primaryKey: 'patientID',
     properties: {
         patientID: 'string',
-        name: 'string',
+        firstName: 'string',
+        lastName: 'string?',
         address: 'Address',                                                      // optional by default
         primaryContact: 'string',
         emergencyContact: 'string?',
         notes: 'string?',
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
         timestamp: 'int',
-        archived: {type: 'bool', default: false}
+        archived: {type: 'bool', default: false},
+        isLocallyOwned: {type: 'bool', default: true},
     }
 };
+
+Patient.schema = PatientSchema;
 
 // Todo: Check if inverse relationship needed
 
@@ -268,6 +278,42 @@ class FloDBProvider {
                 },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key)
+            },
+            {
+                schema: initialSchema,
+                schemaVersion: 3,
+                migration: (oldRealm, newRealm) => {
+                    if (oldRealm.schemaVersion < 3) {
+                        const newPatientObjects = newRealm.objects(Patient.schema.name);
+                        newPatientObjects.update('isLocallyOwned', true);
+                    }
+                },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: initialSchema,
+                schemaVersion: 4,
+                migration: (oldRealm, newRealm) => {
+                    if (oldRealm.schemaVersion < 4) {
+                        const oldPatientObjects = oldRealm.objects(Patient.schema.name);
+                        const newPatientObjects = newRealm.objects(Patient.schema.name);
+
+                        for (let i = 0; i < oldPatientObjects.length; i++) {
+                            const separatorIndex = oldPatientObjects[i].name.indexOf(" ");
+                            if (separatorIndex < 0){
+                                newPatientObjects[i].firstName = oldPatientObjects[i].name;
+                                newPatientObjects[i].lastName = null;
+                            }
+                            else{
+                                newPatientObjects[i].firstName = oldPatientObjects[i].name.substr(0, separatorIndex);
+                                newPatientObjects[i].lastName = oldPatientObjects[i].name.substr(separatorIndex + 1);
+                            }
+                        }
+                    }
+                },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
@@ -336,7 +382,8 @@ function CreateAndSaveDummies() {
         const patient = floDB.create(
             Patient.schema.name, {
                 patientID,
-                name: `John_${Math.round(Math.random() * 100)}`,
+                firstName: `Joh`,
+                lastName: `n_${Math.round(Math.random() * 100)}`,
                 primaryContact: `99647165${Math.round(Math.random() * 100)}`,
                 timestamp: 0
             });

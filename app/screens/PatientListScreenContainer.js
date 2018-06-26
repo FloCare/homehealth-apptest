@@ -2,13 +2,15 @@ import React, {Component} from 'react';
 import {Linking, Alert, Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
-import {patientDataService} from '../data_services/PatientDataService';
+import {PatientDataService} from '../data_services/PatientDataService';
+import {addressDataService} from "../data_services/AddressDataService";
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -35,14 +37,17 @@ class PatientListScreenContainer extends Component {
             searchText: null,
             patientList: [],
             patientCount: 0,      // not always a count of patientList
-            selectedPatient: props.selectedPatient,
+            selectedPatient: props.selectedPatient || null,
+            refreshing: false,
+            isTeamVersion: undefined
         };
+        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.patientMoreMenu = [
             {id: 'Notes', title: 'Add Notes'},
             {id: 'Call', title: 'Call'},
             {id: 'Maps', title: 'Show on maps'},
             {id: 'Visits', title: 'Add Visit'},
-            {id: 'DeletePatient', title: 'Remove Patient'},
+            {id: 'DeletePatient', title: 'Remove Patient', localOnly: true},
         ];
         this.getSectionData = this.getSectionData.bind(this);
         this.onSearch = this.onSearch.bind(this);
@@ -89,7 +94,7 @@ class PatientListScreenContainer extends Component {
             }
         }
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.patientList, screenNames.patientList);
         }
     }
@@ -98,11 +103,13 @@ class PatientListScreenContainer extends Component {
         this.setState({selectedPatient: patientId});
     }
 
+    //TODO the notion of item has changed from being a Realm object to being a plain JS object
+    //TODO changed to this function pending.
     onPressPopupButton(buttonPressed, item) {
         switch (buttonPressed) {
             case 'Notes':
                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                    'type': parameterValues.EDIT_NOTES
+                    type: parameterValues.EDIT_NOTES
                 });
                 this.navigateTo(
                     screenNames.addNote,
@@ -115,7 +122,7 @@ class PatientListScreenContainer extends Component {
                 break;
             case 'Call':
                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                    'type': parameterValues.CALL
+                    type: parameterValues.CALL
                 });
                 if (item && item.primaryContact) {
                     if (Platform.OS === 'android') {
@@ -130,7 +137,7 @@ class PatientListScreenContainer extends Component {
             case 'Maps':
                 // Todo: Move boilerplate like this to a schema helper method
                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                    'VALUE': 1
+                    VALUE: 1
                 });
                 if (
                     item &&
@@ -147,7 +154,7 @@ class PatientListScreenContainer extends Component {
                 break;
             case 'Visits':
                 firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-                    'VALUE': 1
+                    VALUE: 1
                 });
                 this.props.navigator.showLightBox({
                     screen: screenNames.addVisitsForPatientScreen,
@@ -165,7 +172,7 @@ class PatientListScreenContainer extends Component {
                 const archivePatient = (id) => {
                     console.log('Archiving patient');
                     try {
-                        patientDataService.archivePatient(id);
+                        this.patientDataService().archivePatient(id);
                         Alert.alert('Success', 'Patient deleted successfully');
                     } catch (err) {
                         console.log('ERROR while archiving patient:', err);
@@ -187,12 +194,21 @@ class PatientListScreenContainer extends Component {
         }
     }
 
+    getFormattedPatientList = (patientList) => {
+        const flatPatientList = PatientDataService.getFlatPatientList(patientList);
+        flatPatientList.forEach(patient => {
+            patient.address = {formattedAddress : addressDataService.getAddressByID(patient.addressID).formattedAddress}
+        });
+        return flatPatientList
+    };
+
     getSectionData(query) {
         if (!query) {
-            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false');
-            const sortedPatientList = patientList.sorted('name');
-            const patientCount = sortedPatientList.length;
-            const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
+            const patientList = this.patientDataService().getAllPatients();
+            const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
+            const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
+            const patientCount = formattedPatientList.length;
+            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
             this.setState({
                 patientList: sectionedPatientList,
                 patientCount
@@ -201,19 +217,22 @@ class PatientListScreenContainer extends Component {
             // Todo: Can improve querying Logic:
             // Todo: use higher weight for BEGINSWITH and lower for CONTAINS
             // Todo: Search on other fields ???
-            const queryStr = `name CONTAINS[c] "${query.toString()}"`;
-            const patientList = floDB.objects(Patient.schema.name).filtered('archived = false').filtered(queryStr);
-            const sortedPatientList = patientList.sorted('name');
-            const sectionedPatientList = createSectionedListFromRealmObject(sortedPatientList);
+            const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
+            const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
+            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         floDB.removeListener('change', this.handleListUpdate);
     }
 
     handleListUpdate() {
+        this.props.navigator.setTitle({
+            title: `Patients (${floDB.objects(Patient).filtered('archived = false').length})`
+        });
+
         // Todo: Don't query again
         this.getSectionData(null);
     }
@@ -238,9 +257,38 @@ class PatientListScreenContainer extends Component {
         this.navigateTo(screenNames.addPatient, title, prop);
     }
 
+    onRefresh() {
+        this.patientDataService().updatePatientListFromServer()
+            .then((result) => {
+                this.setState({refreshing: false});
+
+                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
+                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
+
+                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
+                if (!newPatientsCount && !deletedPatientsCount) {
+                    subtitle = 'No new changes';
+                }
+                Alert.alert(
+                    'Refresh Completed',
+                    subtitle
+                );
+            })
+            .catch(error => {
+                this.setState({refreshing: false});
+                console.log(error);
+                Alert.alert(
+                    'Refresh Failed',
+                );
+            });
+        this.setState({refreshing: true});
+    }
+
     render() {
         return (
             <PatientListScreen
+                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
+                refreshing={this.state.refreshing}
                 patientList={this.state.patientList}
                 patientCount={this.state.patientCount}
                 searchText={this.state.searchText}
@@ -253,6 +301,12 @@ class PatientListScreenContainer extends Component {
             />
         );
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
 }
 
 export default PatientListScreenContainer;

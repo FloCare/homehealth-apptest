@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
-import {Platform, View, ActionSheetIOS} from 'react-native';
+import {Platform, View, ActionSheetIOS, Alert} from 'react-native';
 import {ListItem} from 'react-native-elements';
+import RNSecureKeyStore from 'react-native-secure-key-store';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
 import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import {visitDataService} from '../../data_services/VisitDataService';
+import {PatientDataService} from '../../data_services/PatientDataService';
 
 const newStop = 'Add new Stop';
 const newPatient = 'Add new Patient';
@@ -57,10 +59,14 @@ class AddVisitsScreenContainer extends Component {
         super(props);
         this.state = {
             date: props.date,
-            selectedItems: Map()
+            selectedItems: Map(),
+            refreshing: false,
+            isTeamVersion: undefined
         };
+        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
-        this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').sorted('name');
+        const patientList = this.patientDataService().getAllPatients();
+        this.patientsResultObject = this.patientDataService().getPatientsSortedByName(patientList);
 
         this.onChangeText = this.onChangeText.bind(this);
         this.onItemToggle = this.onItemToggle.bind(this);
@@ -76,7 +82,7 @@ class AddVisitsScreenContainer extends Component {
         floDB.addListener('change', this.handleListUpdate);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         floDB.removeListener('change', this.handleListUpdate);
     }
 
@@ -121,8 +127,8 @@ class AddVisitsScreenContainer extends Component {
 
     onChangeText(text) {
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').filtered('name CONTAINS[c] $0', text).sorted('name');
-        this.patientsResultObject = floDB.objects(Patient.schema.name).filtered('archived = false').filtered('name CONTAINS[c] $0', text).sorted('name');
-
+        const filteredPatientList = this.patientDataService().getPatientsFilteredByName(text);
+        this.patientsResultObject = this.patientDataService().getPatientsSortedByName(filteredPatientList);
         this.setState({searchText: text});
     }
 
@@ -146,6 +152,7 @@ class AddVisitsScreenContainer extends Component {
         const key = object instanceof Patient ? object.patientID : object.placeID;
         return {
             key,
+            type: object instanceof Patient ? 'patient' : 'place',
             isSelected: this.state.selectedItems.has(key),
             object,
         };
@@ -153,29 +160,27 @@ class AddVisitsScreenContainer extends Component {
 
     getListWithAllItems() {
         const placeIterator = this.placeResultObject.values();
-        const patientIterator = this.patientsResultObject.values();
-
+        let patientIteratorIndex = 0;
         const allItems = [];
         let nextPlace = placeIterator.next();
-        let nextPatient = patientIterator.next();
+        let nextPatient = this.patientsResultObject[patientIteratorIndex];
         do {
-            if (nextPlace.done === true && nextPatient.done === true) {
+            if (nextPlace.done === true && patientIteratorIndex >= this.patientsResultObject.length) {
                 break;
             } else if (nextPlace.done === true) {
-                // console.log(`->${this.getFlatPatientItem(nextPatient.value)}`);
-                allItems.push(this.createItem(nextPatient.value));
-                nextPatient = patientIterator.next();
-            } else if (nextPatient.done === true) {
+                allItems.push(this.createItem(nextPatient));
+                nextPatient = this.patientsResultObject[++patientIteratorIndex];
+            } else if (patientIteratorIndex >= this.patientsResultObject.length) {
                 allItems.push(this.createItem(nextPlace.value));
                 nextPlace = placeIterator.next();
-            } else if (nextPatient.value.name.toLowerCase().localeCompare(nextPlace.value.name.toLowerCase()) < 0) {
-                allItems.push(this.createItem(nextPatient.value));
-                nextPatient = patientIterator.next();
+            } else if (nextPatient.name.toLowerCase().localeCompare(nextPlace.value.name.toLowerCase()) < 0) {
+                allItems.push(this.createItem(nextPatient));
+                nextPatient = this.patientsResultObject[++patientIteratorIndex];
             } else {
                 allItems.push(this.createItem(nextPlace.value));
                 nextPlace = placeIterator.next();
             }
-        } while (!(nextPlace.done && nextPatient.done));
+        } while (!nextPlace.done || patientIteratorIndex <= this.patientsResultObject.length);
         return allItems;
     }
 
@@ -262,9 +267,38 @@ class AddVisitsScreenContainer extends Component {
         console.log('add visits container all done');
     }
 
+    onRefresh() {
+        this.patientDataService().updatePatientListFromServer()
+            .then((result) => {
+                this.setState({refreshing: false});
+
+                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
+                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
+
+                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
+                if (!newPatientsCount && !deletedPatientsCount) {
+                    subtitle = 'No new changes';
+                }
+                Alert.alert(
+                    'Refresh Completed',
+                    subtitle
+                );
+            })
+            .catch(error => {
+                this.setState({refreshing: false});
+                console.log(error);
+                Alert.alert(
+                    'Refresh Failed',
+                );
+            });
+        this.setState({refreshing: true});
+    }
+
     render() {
         return (
             <AddVisitsScreen
+                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
+                refreshing={this.state.refreshing}
                 isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
                 searchText={this.state.searchText}
@@ -279,6 +313,12 @@ class AddVisitsScreenContainer extends Component {
             />
         );
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
+
 }
 
 export {AddVisitsScreenContainer};

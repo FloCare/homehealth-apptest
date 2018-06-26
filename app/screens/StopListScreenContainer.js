@@ -100,7 +100,7 @@ class StopListScreenContainer extends Component {
                             streetAddress: item.address.streetAddress,
                             lat: item.address.lat,
                             long: item.address.long,
-                            zip: item.address.zipCode,
+                            zipCode: item.address.zipCode,
                             city: item.address.city,
                             state: item.address.state,
                             country: item.address.country,
@@ -159,7 +159,7 @@ class StopListScreenContainer extends Component {
         }
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
         floDB.addListener('change', this.handleListUpdate);
     }
 

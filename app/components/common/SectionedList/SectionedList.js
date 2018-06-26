@@ -22,13 +22,16 @@ class SectionedList extends Component {
     }
 
     _renderMenu(item, onPressPopupButton, menuItems) {
-        return (
-            menuItems.map((menuItem) => (
+        const menu = [];
+        menuItems.forEach((menuItem) => {
+            if (menuItem.localOnly && !item.isLocallyOwned) { return; }
+            menu.push(
                 <MenuOption onSelect={() => onPressPopupButton(menuItem.id, item)}>
                     <StyledText style={styles.menuOptionsStyle}>{menuItem.title}</StyledText>
                 </MenuOption>
-            ))
-        );
+            );
+        });
+        return menu;
     }
 
     renderItem(item, selectedItem, onPressPopupButton, menu) {
@@ -48,16 +51,16 @@ class SectionedList extends Component {
                         <StyledText style={styles.nameStyle}>{item.name}</StyledText>
                         <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
                     </TouchableOpacity>
-                    <View style={{flex: 1, marginVertical: 15}}>
-                        <Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>
-                            <MenuTrigger
-                                children={<Image source={Images.threeDotButton} />}
-                            />
-                            <MenuOptions>
-                                {this._renderMenu(item, onPressPopupButton, menu)}
-                            </MenuOptions>
-                        </Menu>
-                    </View>
+                    {/*<View style={{flex: 1, marginVertical: 15}}>*/}
+                        {/*<Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>*/}
+                            {/*<MenuTrigger*/}
+                                {/*children={<Image source={Images.threeDotButton} />}*/}
+                            {/*/>*/}
+                            {/*<MenuOptions>*/}
+                                {/*{this._renderMenu(item, onPressPopupButton, menu)}*/}
+                            {/*</MenuOptions>*/}
+                        {/*</Menu>*/}
+                    {/*</View>*/}
                 </View>
             </View>
         );
@@ -79,6 +82,8 @@ class SectionedList extends Component {
         const {selectedItem, onPressPopupButton, menu} = this.props;
         return (
             <SectionList
+                onRefresh={this.props.onRefresh}
+                refreshing={this.props.refreshing}
                 sections={this.props.itemList}
                 renderItem={({item}) => this.renderItem(item, selectedItem, onPressPopupButton, menu)}
                 renderSectionHeader={this.renderSectionHeader}
