@@ -5,7 +5,7 @@ import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from
 import {generateUUID, todayMomentInUTCMidnight} from '../utils/utils';
 import {PatientDataService} from './PatientDataService';
 import {placeDataService} from './PlaceDataService';
-import {eventNames} from '../../utils/constants';
+import {eventNames} from '../utils/constants';
 
 class VisitDataService {
     static getFlatVisit(visit) {
