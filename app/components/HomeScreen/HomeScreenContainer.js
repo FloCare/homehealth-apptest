@@ -61,9 +61,9 @@ class HomeScreenContainer extends Component {
         //         this.navigateToVisitMapScreen(false);
         //     }
         // }
-        // STOP GAP solution. Will be removed when redux is used
+        // STOP GAP solution. To brainstorm on the right way of doing it
         if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.HomeScreen, screenNames.HomeScreen);
+            firebase.analytics().setCurrentScreen(screenNames.homeScreen, screenNames.homeScreen);
         }
     }
 

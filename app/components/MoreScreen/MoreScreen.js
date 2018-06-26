@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Image} from 'react-native';
 import {Divider, List, ListItem} from 'react-native-elements';
+import firebase from 'react-native-firebase';
 import {Images} from '../../Images';
 import {screenNames} from '../../utils/constants';
 
@@ -63,6 +64,10 @@ class MoreScreen extends Component {
             this.props.navigator.setTitle({
                 title: 'More'
             });
+        }
+        // STOP GAP solution. To brainstorm on the right way of doing it
+        if (event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.moreScreen, screenNames.moreScreen);
         }
     }
         render() {

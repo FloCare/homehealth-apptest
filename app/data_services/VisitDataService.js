@@ -1,9 +1,11 @@
+import firebase from 'react-native-firebase';
 import {Patient, Visit, VisitOrder, Place} from '../utils/data/schema';
 import {VisitActions, VisitOrderActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {generateUUID, todayMomentInUTCMidnight} from '../utils/utils';
 import {PatientDataService} from './PatientDataService';
 import {placeDataService} from './PlaceDataService';
+import {eventNames} from '../../utils/constants';
 
 class VisitDataService {
     static getFlatVisit(visit) {
@@ -182,6 +184,11 @@ class VisitDataService {
         this.floDB.write(() => {
                     visitOrderObject.visitList = newVisitOrder;
                 });
+
+        // TODO discuss if this is the right place to log this event
+        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+            'VALUE': newVisitOrder.length
+        });
 
         //TELLING REDUX ABOUT IT
         if (midnightEpoch === this.store.getState().date) {
