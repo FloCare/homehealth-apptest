@@ -68,7 +68,11 @@ export class PatientDataService {
     }
 
     getPatientsFilteredByName(searchTerm) {
+<<<<<<< HEAD
         if (!searchTerm || searchTerm === '') return this.getAllPatients();
+=======
+        if (searchTerm === '') return this.getAllPatients();
+>>>>>>> eslint correction
         const searchTerms = searchTerm.toString().split(' ');
         let queryStr = QueryHelper.nameContainsQuery(searchTerms.shift());
         queryStr = searchTerms.reduce((queryAccumulator, searchTerm) =>
