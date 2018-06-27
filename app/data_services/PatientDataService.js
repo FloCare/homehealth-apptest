@@ -40,7 +40,7 @@ export class PatientDataService {
 
     static constructName (firstName, lastName) {
         if (lastName === null) return firstName;
-        return firstName + " " + lastName;
+        return lastName + " " + firstName;
     }
 
     static getFlatPatientList(patientList) {
