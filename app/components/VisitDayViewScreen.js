@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import {Images} from '../Images';
 import VisitListScreenContainer from '../components/VisitListScreen/visitListScreenContainer';
 import VisitMapScreenController from '../components/VisitMapScreen/VisitMapScreenController';
+import {eventNames, parameterValues} from '../utils/constants';
 
 class VisitDayViewScreen extends Component {
     constructor(props) {
@@ -37,6 +39,9 @@ class VisitDayViewScreen extends Component {
     }
 
     setListScreen() {
+        firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
+            type: parameterValues.LIST
+        });
         this.props.navigator.setButtons({
             rightButtons: [
                 {
@@ -49,6 +54,9 @@ class VisitDayViewScreen extends Component {
     }
 
     setMapScreen() {
+        firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
+            type: parameterValues.MAP
+        });
         this.props.navigator.setButtons({
             rightButtons: [
                 {
