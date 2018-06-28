@@ -4,7 +4,7 @@ import {AddPatientScreen} from '../components/AddPatientScreen';
 import {screenNames} from '../utils/constants';
 import {Images} from "../Images";
 import {Alert, Platform} from 'react-native';
-import {patientDataService} from "../data_services/PatientDataService";
+import {PatientDataService} from "../data_services/PatientDataService";
 
 class AddPatientScreenContainer extends Component {
     /*
@@ -22,7 +22,7 @@ class AddPatientScreenContainer extends Component {
 
     archivePatientAndNavigateToRoot = (id) => {
         try {
-            patientDataService.archivePatient(id);
+            this.patientDataService().archivePatient(id);
             Alert.alert('Success',
                 'Patient deleted successfully',
                 [{text: 'OK', onPress: () => this.props.navigator.popToRoot()}],
@@ -112,6 +112,11 @@ class AddPatientScreenContainer extends Component {
             );
         }
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
 }
 
 export default AddPatientScreenContainer;
