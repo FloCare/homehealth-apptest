@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {StyleSheet, Text, View, Image} from 'react-native';
-import {screenNames, PrimaryFontFamily, screenNames} from '../utils/constants';
+import {screenNames, PrimaryFontFamily} from '../utils/constants';
 import {Images} from '../Images';
 
 export class WelcomePageScreen extends Component {
