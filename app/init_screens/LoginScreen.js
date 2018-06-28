@@ -23,6 +23,10 @@ class LoginScreen extends Component {
         });
     };
 
+    componentDidMount() {
+      firebase.analytics().setCurrentScreen(screenNames.loginScreen, screenNames.loginScreen);
+    }
+
     onSubmit() {
         const {email, password} = this.state;
         this.setState({
