@@ -185,11 +185,6 @@ class VisitDataService {
                     visitOrderObject.visitList = newVisitOrder;
                 });
 
-        // TODO discuss if this is the right place to log this event
-        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-            'VALUE': newVisitOrder.length
-        });
-
         //TELLING REDUX ABOUT IT
         if (midnightEpoch === this.store.getState().date) {
             console.log('dispatching visits');
@@ -211,6 +206,10 @@ class VisitDataService {
                 newVisits.push(visit);
                 if (visitSubject instanceof Patient) { visitSubject.episodes[0].visits.push(visit); } else visitSubject.visits.push(visit);
             }
+        });
+        // Logging the firebase event upon visits being added
+        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+            'VALUE': newVisits.length
         });
 
         this.insertToOrderedVisits(newVisits, midnightEpoch);
