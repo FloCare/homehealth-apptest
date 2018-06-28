@@ -22,7 +22,7 @@ class AddPatientScreenContainer extends Component {
 
     archivePatientAndNavigateToRoot = (id) => {
         try {
-            PatientDataService.getInstance().archivePatient(id);
+            this.patientDataService().archivePatient(id);
             Alert.alert('Success',
                 'Patient deleted successfully',
                 [{text: 'OK', onPress: () => this.props.navigator.popToRoot()}],
@@ -112,6 +112,11 @@ class AddPatientScreenContainer extends Component {
             );
         }
     }
+
+    // External Services
+    patientDataService = () => {
+        return PatientDataService.getInstance();
+    };
 }
 
 export default AddPatientScreenContainer;
