@@ -94,9 +94,6 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToVisitListScreen() {
-        firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
-            type: parameterValues.LIST
-        });
         this.props.navigator.push({
             screen: screenNames.visitDayViewScreen,
             passProps: {
@@ -109,9 +106,6 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToVisitMapScreen() {
-        firebase.analytics().logEvent(eventNames.VISIT_VIEW, {
-            type: parameterValues.MAP
-        });
         this.props.navigator.push({
             screen: screenNames.visitDayViewScreen,
             passProps: {
