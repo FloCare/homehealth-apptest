@@ -7,7 +7,7 @@ import {parsePhoneNumber} from '../utils/lib';
 import {visitDataService} from './VisitDataService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
-import {QueryHelper} from "../utils/data/queryHelper";
+import {QueryHelper} from '../utils/data/queryHelper';
 
 export class PatientDataService {
     static patientDataService;
@@ -17,7 +17,7 @@ export class PatientDataService {
     }
 
     static getInstance() {
-        if(!PatientDataService.patientDataService) {
+        if (!PatientDataService.patientDataService) {
             throw new Error('padient data service requested before being initialised');
         }
 
@@ -38,9 +38,9 @@ export class PatientDataService {
         };
     }
 
-    static constructName (firstName, lastName) {
+    static constructName(firstName, lastName) {
         if (lastName === null) return firstName;
-        return lastName + " " + firstName;
+        return `${lastName} ${firstName}`;
     }
 
     static getFlatPatientList(patientList) {
@@ -63,26 +63,24 @@ export class PatientDataService {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
     }
 
-    getAllPatients(){
+    getAllPatients() {
         return this.floDB.objects(Patient.schema.name).filtered('archived = false');
     }
 
     getPatientsFilteredByName(searchTerm) {
-        if (searchTerm === "") return this.getAllPatients();
-        const searchTerms = searchTerm.toString().split(" ");
+        if (!searchTerm || searchTerm === '') return this.getAllPatients();
+        const searchTerms = searchTerm.toString().split(' ');
         let queryStr = QueryHelper.nameContainsQuery(searchTerms.shift());
         queryStr = searchTerms.reduce((queryAccumulator, searchTerm) =>
             QueryHelper.andQuery(queryAccumulator, QueryHelper.nameContainsQuery(searchTerm)), queryStr);
         return this.getAllPatients().filtered(queryStr);
     }
 
-    getPatientsSortedByName(patientList){
+    getPatientsSortedByName(patientList) {
         if (patientList.length === 0) return patientList;
-        let patientDataArray = [];
+        const patientDataArray = [];
         patientList.forEach(patient => patientDataArray.push({sortIndex: patient.name.toString().toLowerCase(), data: patient}));
-        const sortedSeedArray = patientDataArray.sort(function(patientData1, patientData2) {
-            return patientData1.sortIndex.localeCompare(patientData2.sortIndex);
-        });
+        const sortedSeedArray = patientDataArray.sort((patientData1, patientData2) => patientData1.sortIndex.localeCompare(patientData2.sortIndex));
         return sortedSeedArray.map(seedData => seedData.data);
     }
 
