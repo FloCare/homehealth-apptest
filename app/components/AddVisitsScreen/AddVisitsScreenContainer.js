@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
+import firebase from 'react-native-firebase';
 import {Platform, View, ActionSheetIOS, Alert} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import RNSecureKeyStore from 'react-native-secure-key-store';
@@ -97,6 +98,10 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.addVisitScreen, screenNames.addVisitScreen);
+        }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'new-stop') {
                 this.props.navigator.push(newStopNavigatorArg);

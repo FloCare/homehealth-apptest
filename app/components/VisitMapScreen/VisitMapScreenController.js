@@ -6,7 +6,7 @@ import * as MapUtils from '../../utils/MapUtils';
 import {Images} from '../../Images';
 import {MapPanel} from './MapPanel';
 import {ControlPanel} from './ControlPanel';
-import {eventNames, parameterValues} from '../../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {visitDataService} from '../../data_services/VisitDataService';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 
@@ -38,6 +38,14 @@ class VisitMapScreenContainer extends Component {
         this.getAllPolylines = this.getAllPolylines.bind(this);
 
         this.getAllPolylines(props.filteredVisits.map(visit => visit.coordinates));
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+    }
+
+    onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.visitMapScreen, screenNames.visitMapScreen);
+        }
     }
 
     componentWillReceiveProps(nextProps) {

@@ -258,6 +258,9 @@ class PatientListScreenContainer extends Component {
     }
 
     onRefresh() {
+        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+            type: parameterValues.REFRESH
+        });
         this.patientDataService().updatePatientListFromServer()
             .then((result) => {
                 this.setState({refreshing: false});

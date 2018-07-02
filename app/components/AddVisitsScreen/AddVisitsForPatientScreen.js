@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {View, Image, TouchableHighlight, Dimensions} from 'react-native';
+import firebase from 'react-native-firebase';
 import {Button, Divider} from 'react-native-elements';
 import CalendarStrip from 'react-native-calendar-strip';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
-import {PrimaryColor} from '../../utils/constants';
+import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {visitDataService} from '../../data_services/VisitDataService';
@@ -17,6 +18,14 @@ class AddVisitsForPatientScreen extends Component {
         };
         this.onDateSelected = this.onDateSelected.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+    }
+
+    onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.addVisitsForPatientScreen, screenNames.addVisitsForPatientScreen);
+        }
     }
 
     onDateSelected(date) {

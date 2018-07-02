@@ -100,6 +100,7 @@ const parameterValues = {
     TOGGLE: 'toggle',
     DND: 'dnd',
     DETAILS: 'details',
+    REFRESH: 'refresh'
 
 };
 
