@@ -16,17 +16,9 @@ class VisitListScreenContainer extends Component {
             date: props.date,
             // showCalendar: false
         };
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
-    }
-
-    onNavigatorEvent(event) {
-        // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.visitListScreen, screenNames.visitListScreen);
-        }
     }
 
     componentWillReceiveProps(nextProps) {
