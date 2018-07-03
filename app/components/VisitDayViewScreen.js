@@ -36,9 +36,6 @@ class VisitDayViewScreen extends Component {
                 this.setListScreen();
             }
         }
-        if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.visitDayViewScreen, screenNames.visitDayViewScreen);
-        }
     }
 
     setListScreen() {
