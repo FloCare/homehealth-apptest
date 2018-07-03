@@ -101,6 +101,8 @@ class AddPatientScreenContainer extends Component {
                     notes={values.notes}
                     lat={values.lat}
                     long={values.long}
+                    dateOfBirth={values.dateOfBirth}
+                    emergencyContactInfo={values.emergencyContactInfo}
                 />
             );
         } else {

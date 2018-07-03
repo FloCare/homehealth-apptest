@@ -25,7 +25,9 @@ class AddPatientScreen extends Component {
             emergencyContact,
             notes,
             lat,
-            long
+            long,
+            dateOfBirth,
+            emergencyContactInfo
         } = this.props;
         return (
             <View style={styles.containerStyle}>
@@ -47,6 +49,8 @@ class AddPatientScreen extends Component {
                     notes={notes}
                     lat={lat}
                     long={long}
+                    dateOfBirth={dateOfBirth}
+                    emergencyContactInfo={emergencyContactInfo}
                 />
             </View>
         );

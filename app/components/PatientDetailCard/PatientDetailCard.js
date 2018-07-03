@@ -48,17 +48,27 @@ const getVisitsView = function (visitSectionData) {
     );
 };
 
+const getEmergencyContactText = (contactName, contactRelation) => {
+    if (contactRelation === null || contactRelation === '') return contactName;
+    if (contactName === null || contactName === '') return contactRelation;
+    return contactName + ' - ' + contactRelation;
+};
+
 const PatientDetailCard = (props) => {
     const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
     //Handle name with navigator props
     const {
         primaryContact,
-        emergencyContact,
+        emergencyContactNumber,
+        emergencyContactName,
+        emergencyContactRelation,
+        dateOfBirth,
         diagnosis,
         notes,
         address
     } = patientDetail;
 
+    const emergencyContactText = getEmergencyContactText (emergencyContactName, emergencyContactRelation)
     let coordinates = null;
     if (address) {
         if (address.coordinates &&
@@ -134,15 +144,38 @@ const PatientDetailCard = (props) => {
 
                 <Divider style={styles.dividerStyle} />
 
-                {emergencyContact !== '' && emergencyContact &&
+                { dateOfBirth &&
+                <View style={styles.containerStyle}>
+                    <Image source={Images.visits} />
+                    <View style={{marginLeft: 14}}>
+                        <StyledText style={{...styles.fontStyle, fontSize: 15, ...styles.headerStyle}}>
+                            Date Of Birth
+                        </StyledText>
+                        <StyledText style={{...styles.fontStyle, fontSize: 15}}>
+                            {moment(dateOfBirth).format('DD-MMM-YYYY')}
+                        </StyledText>
+                    </View>
+                </View>
+                }
+
+                {dateOfBirth &&
+                    <Divider style={styles.dividerStyle} />
+                }
+
+                {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <View style={styles.containerStyle}>
                     <Image source={Images.elliotLugo} />
                     <View style={{marginLeft: 14}}>
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Emergency Contact
                         </StyledText>
+                        {emergencyContactText && emergencyContactText.length > 0 &&
+                            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#525252'}}>
+                                {emergencyContactText}
+                            </StyledText>
+                        }
                         <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
-                            {emergencyContact}
+                            {emergencyContactNumber}
                         </StyledText>
                     </View>
                     <Button
@@ -158,11 +191,11 @@ const PatientDetailCard = (props) => {
                             right: 0
                         }}
                         onPress={() => {
-                            if (emergencyContact) {
+                            if (emergencyContactNumber) {
                                 if (Platform.OS === 'android') {
-                                    Linking.openURL(`tel: ${emergencyContact}`);
+                                    Linking.openURL(`tel: ${emergencyContactNumber}`);
                                 } else {
-                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
+                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContactNumber);
                                 }
                             }
                         }}
@@ -170,7 +203,7 @@ const PatientDetailCard = (props) => {
                 </View>
                 }
 
-                {emergencyContact !== '' && emergencyContact &&
+                {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <Divider style={styles.dividerStyle} />
                 }
 

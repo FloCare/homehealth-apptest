@@ -16,6 +16,12 @@ import ModalSelector from 'react-native-modal-selector';
 class AddPatientFormContainer extends Component {
     constructor(props) {
         super(props);
+        const emergencyContactInfo = {
+            contactNumber: props.emergencyContactInfo ? props.emergencyContactInfo.contactNumber || null : null,
+            contactName: props.emergencyContactInfo ? props.emergencyContactInfo.contactName || null : null,
+            contactRelation: props.emergencyContactInfo ? props.emergencyContactInfo.contactRelation || null : null
+        };
+        const showEmergencyContact = !!emergencyContactInfo.contactNumber;
         this.state = {
             value: {
                 patientID: props.patientID || null,
@@ -34,8 +40,10 @@ class AddPatientFormContainer extends Component {
                 notes: props.notes || null,
                 lat: props.lat || null,
                 long: props.long || null,
-                showDateOfBirth: false,
-                showEmergencyContact: false
+                showDateOfBirth: !!props.dateOfBirth,
+                dateOfBirth: props.dateOfBirth || null,
+                showEmergencyContact: showEmergencyContact,
+                emergencyContactInfo: emergencyContactInfo
             },
             //selectedItems: []
         };

@@ -35,6 +35,10 @@ export const PatientSchema = {
         timestamp: 'int',
         archived: {type: 'bool', default: false},
         isLocallyOwned: {type: 'bool', default: true},
+        dateOfBirth: 'date?',
+        emergencyContactNumber:  'string?',
+        emergencyContactName: 'string?',
+        emergencyContactRelation: 'string?'
     }
 };
 
@@ -314,6 +318,21 @@ class FloDBProvider {
                 },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: initialSchema,
+                schemaVersion: 5,
+                migration: (oldRealm, newRealm) => {
+                    if (oldRealm.schemaVersion < 5) {
+                        const newPatientObjects = newRealm.objects(Patient.schema.name);
+                        newPatientObjects.update('dateOfBirth', null);
+                        newPatientObjects.update('emergencyContactNumber', null);
+                        newPatientObjects.update('emergencyContactName', null);
+                        newPatientObjects.update('emergencyContactRelation', null);
+                    }
+                },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key)
             }
         ];
 

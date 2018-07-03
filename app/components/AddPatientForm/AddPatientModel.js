@@ -24,11 +24,23 @@ const AddPatientModel = t.struct({
     //emergencyContact: t.maybe(PhoneNumber),
     //diagnosis: t.maybe(t.String),
     notes: t.maybe(t.String),
-    dateOfBirth: t.Date,
-    showDateOfBirth: t.Boolean,
-    emergencyContactInfo: EmergencyContactInformationModel,
-    showEmergencyContact: t.Boolean
+    dateOfBirth: t.maybe(t.Date),
+    showDateOfBirth: t.maybe(t.Boolean),
+    emergencyContactInfo: t.maybe(EmergencyContactInformationModel),
+    showEmergencyContact: t.maybe(t.Boolean)
 });
+
+
+const NestedHeaderStylesheet = {
+...stylesheet,
+        controlLabel: {
+    ...stylesheet.controlLabel,
+            normal: {
+        ...stylesheet.controlLabel.normal,
+                fontSize: 12
+        }
+    }
+};
 
 const nameError = (value) => {
     if (!value) {
@@ -132,9 +144,10 @@ const formOptions = {
             },
         },
         dateOfBirth: {
+            label: 'Date Of Birth (Optional)',
             mode: 'date',
             config: {
-                format: (date) => moment(date).format('MM-DD-YYYY'),
+                format: (date) => moment(date).format('DD-MMM-YYYY'),
                 dialogMode: 'spinner'
             },
             maximumDate: new Date()
@@ -143,19 +156,23 @@ const formOptions = {
             hidden: true,
         },
         emergencyContactInfo: {
+            label: 'Emergency Contact Info (Optional)',
             fields: {
                 contactName: {
+                    stylesheet: NestedHeaderStylesheet,
                     label: 'Name',
                     placeholder: 'Blake',
                     returnKeyType: 'next',
                     autoCapitalize: 'words',
                 },
                 contactNumber: {
+                    stylesheet: NestedHeaderStylesheet,
                     label: 'Contact Number',
                     placeholder: '5417543010',
                     keyboardType: 'numeric'
                 },
                 contactRelation: {
+                    stylesheet: NestedHeaderStylesheet,
                     label: 'Relation',
                     placeholder: 'Brother'
                 }
