@@ -37,9 +37,21 @@ const PatientFormTemplate = (locals) => {
             <View style={styles.margin}>
                 {locals.inputs.emergencyContact}
             </View>
-            <View style={{...styles.margin, marginBottom: 30}}>
+            <View style={{...styles.margin}}>
                 {locals.inputs.notes}
             </View>
+            {
+                locals.value.showDateOfBirth &&
+                <View style={{...styles.margin}}>
+                    {locals.inputs.dateOfBirth}
+                </View>
+            }
+            {
+                locals.value.showEmergencyContact &&
+                <View style={{...styles.margin}}>
+                    {locals.inputs.emergencyContactInfo}
+                </View>
+            }
         </View>
     );
 };

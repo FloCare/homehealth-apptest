@@ -4,6 +4,13 @@ import AddressAutoComplete from '../common/AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 import PatientFormTemplate from './AddPatientFormTemplate';
+import moment from 'moment/moment';
+
+const EmergencyContactInformationModel = t.struct({
+    contactNumber: PhoneNumber,
+    contactName: t.maybe(t.String),
+    contactRelation: t.maybe(t.String)
+});
 
 const AddPatientModel = t.struct({
     firstName: t.String,
@@ -16,7 +23,11 @@ const AddPatientModel = t.struct({
     primaryContact: PhoneNumber,
     //emergencyContact: t.maybe(PhoneNumber),
     //diagnosis: t.maybe(t.String),
-    notes: t.maybe(t.String)
+    notes: t.maybe(t.String),
+    dateOfBirth: t.Date,
+    showDateOfBirth: t.Boolean,
+    emergencyContactInfo: EmergencyContactInformationModel,
+    showEmergencyContact: t.Boolean
 });
 
 const nameError = (value) => {
@@ -119,6 +130,39 @@ const formOptions = {
                     },
                 },
             },
+        },
+        dateOfBirth: {
+            mode: 'date',
+            config: {
+                format: (date) => moment(date).format('MM-DD-YYYY'),
+                dialogMode: 'spinner'
+            },
+            maximumDate: new Date()
+        },
+        showDateOfBirth: {
+            hidden: true,
+        },
+        emergencyContactInfo: {
+            fields: {
+                contactName: {
+                    label: 'Name',
+                    placeholder: 'Blake',
+                    returnKeyType: 'next',
+                    autoCapitalize: 'words',
+                },
+                contactNumber: {
+                    label: 'Contact Number',
+                    placeholder: '5417543010',
+                    keyboardType: 'numeric'
+                },
+                contactRelation: {
+                    label: 'Relation',
+                    placeholder: 'Brother'
+                }
+            }
+        },
+        showEmergencyContact: {
+            hidden: true
         }
     }
 };

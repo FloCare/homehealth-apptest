@@ -8,6 +8,10 @@ import styles from './styles';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {PrimaryFontFamily, eventNames} from '../../utils/constants';
 import {PatientDataService} from '../../data_services/PatientDataService';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {SimpleButton} from "../common/SimpleButton";
+import ModalSelector from 'react-native-modal-selector';
+
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
@@ -29,7 +33,9 @@ class AddPatientFormContainer extends Component {
                 //diagnosis: props.diagnosis || null,
                 notes: props.notes || null,
                 lat: props.lat || null,
-                long: props.long || null
+                long: props.long || null,
+                showDateOfBirth: false,
+                showEmergencyContact: false
             },
             //selectedItems: []
         };
@@ -50,6 +56,8 @@ class AddPatientFormContainer extends Component {
         this.options.OnChangeAddressText = this.onChangeAddressText;
         this.options.RefName = this.setAddressFieldRef;
         this.options.GetDefaultValue = this.getDefaultValue;
+        this.shouldChangeFocus = false;
+        this.focusField = null;
     }
 
    // onSelectedItemsChange(selectedItems) {
@@ -160,18 +168,80 @@ class AddPatientFormContainer extends Component {
         }
     }
 
+    componentDidUpdate() {
+        console.log("refs in did update");
+        if (this.shouldChangeFocus && this.focusField){
+            switch(this.focusField){
+                case 'emergencyContact':
+                    this.addPatientForm.refs.input.refs.emergencyContactInfo.refs.contactNumber.refs.input.focus();
+                    break;
+                default:
+                    console.log("ignoring focus field")
+            }
+            this.shouldChangeFocus = false;
+            this.focusField = null;
+        }
+    }
+
+    ExtraFieldsClickHandler = (key) => {
+        switch(key){
+            case 'dob':
+                this.setState({value: {...this.state.value, showDateOfBirth: true}});
+                this.shouldChangeFocus = true;
+                this.focusField = 'dob';
+                break;
+            case 'emergencyContact':
+                this.setState({value: {...this.state.value, showEmergencyContact: true}});
+                this.shouldChangeFocus = true;
+                this.focusField = 'emergencyContact';
+                break;
+            default:
+                console.log("unhandled key")
+        }
+    };
+
+    ExtraFieldsStyleData = {
+        data : [
+            { key: 0, id: 'dob', label: 'Date Of Birth'},
+            { key: 1, id: 'emergencyContact', label: 'Emergency Contact Information'},
+        ],
+        optionTextStyle : {color: 'black'},
+        overLayStyle : {backgroundColor: 'rgba(0,250,250,0.7)', padding: 5},
+        optionContainerStyle : {backgroundColor: 'rgba(255,255,255,1.0)'},
+        cancelContainerStyle : {backgroundColor: 'rgba(255,255,255,1.0)', borderRadius: 5},
+    };
+
     render() {
         const {onSubmit} = this.props;
         return (
             <View style={styles.containerStyle}>
-                <AddPatientForm
-                    refName={this.setForm}
-                    onChange={this.onChange}
-                    options={this.options}
-                    modelType={AddPatientModel}
-                    value={this.state.value}
-                    //selectedItems={this.state.selectedItems}
-                />
+                <KeyboardAwareScrollView style={{marginBottom: 20}}>
+                    <AddPatientForm
+                        refName={this.setForm}
+                        onChange={this.onChange}
+                        options={this.options}
+                        modelType={AddPatientModel}
+                        value={this.state.value}
+                        //selectedItems={this.state.selectedItems}
+                    />
+                    <ModalSelector
+                        data={this.ExtraFieldsStyleData.data}
+                        onChange={(option)=>{ this.ExtraFieldsClickHandler(option.id) }}
+                        overLayStyle={this.ExtraFieldsStyleData.overLayStyle}
+                        optionContainerStyle={this.ExtraFieldsStyleData.optionContainerStyle}
+                        optionTextStyle={this.ExtraFieldsStyleData.optionTextStyle}
+                        cancelText={'Cancel'}
+                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}
+                    >
+
+                        <SimpleButton
+                            style={{width: 200, alignSelf: 'center', height: 50, borderRadius: 5, borderWidth: 0,
+                                borderColor: 'black'}}
+                            title="Add more fields">
+                        </SimpleButton>
+                    </ModalSelector>
+                </KeyboardAwareScrollView>
+
                 <Button
                     containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
