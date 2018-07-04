@@ -131,7 +131,15 @@ class AddPatientFormContainer extends Component {
                 //diagnosis: null,
                 notes: null,
                 lat: null,
-                long: null
+                long: null,
+                showDateOfBirth: false,
+                dateOfBirth: null,
+                showEmergencyContact: false,
+                emergencyContactInfo: {
+                    contactNumber: null,
+                    contactName: null,
+                    contactRelation: null
+                }
             },
             //selectedItems: []
         });
@@ -223,7 +231,7 @@ class AddPatientFormContainer extends Component {
         const {onSubmit} = this.props;
         return (
             <View style={styles.containerStyle}>
-                <KeyboardAwareScrollView style={{marginBottom: 20}}>
+                <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'} style={{marginBottom: 20}}>
                     <AddPatientForm
                         refName={this.setForm}
                         onChange={this.onChange}
