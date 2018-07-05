@@ -1,13 +1,19 @@
 import moment from 'moment';
-import {floDB, Patient} from '../utils/data/schema';
+import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
-import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
+import {
+    arrayToMap,
+    arrayToObjectByKey,
+    filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
+    hasNonEmptyValueForKey
+} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
 import {visitDataService} from './VisitDataService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
+import {PhysicianDataService} from "./PhysicianDataService";
 
 export class PatientDataService {
     static patientDataService;
@@ -111,10 +117,19 @@ export class PatientDataService {
             } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id);
 
             // Todo: Add an episode, Move this to its own Data Service
-            newPatient.episodes.push({
+
+            let episodeData = {
                 episodeID: episodeId,
                 diagnosis: []
-            });
+            };
+
+            if (hasNonEmptyValueForKey(patient, 'primaryPhysician') &&
+                hasNonEmptyValueForAllKeys(patient.primaryPhysician, ['id', 'npiId', 'firstName'])){
+                    patient.primaryPhysician.physicianId = patient.primaryPhysician.id;
+                    episodeData.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(patient.primaryPhysician);
+            }
+
+            newPatient.episodes.push(episodeData);
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);

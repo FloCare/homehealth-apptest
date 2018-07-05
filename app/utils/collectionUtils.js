@@ -54,4 +54,20 @@ const createSectionedListFromRealmObject = (realmObj) => {
     return sectionsArray;
 };
 
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListFromRealmObject, arrayToObjectByKey};
+function hasNonEmptyValueForKey(object, key){
+    return !!(object.hasOwnProperty(key) && object[key])
+}
+
+function hasNonEmptyValueForAllKeys(object, keysList){
+    return keysList.every(key => hasNonEmptyValueForKey(object, key));
+}
+
+function validateNonEmptyValueForAllKeys(object, keyList){
+    if (!hasNonEmptyValueForAllKeys(object, keyList)){
+        throw new Error("Mandatory key is either missing or has null value");
+    }
+}
+
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement,
+    createSectionedListFromRealmObject, arrayToObjectByKey, hasNonEmptyValueForKey, hasNonEmptyValueForAllKeys,
+    validateNonEmptyValueForAllKeys};

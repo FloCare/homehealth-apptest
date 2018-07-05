@@ -15,6 +15,7 @@ import {initialiseService as initialiseVisitService} from '../data_services/Visi
 import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
 import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
 import {todayMomentInUTCMidnight} from '../utils/utils';
+import {PhysicianDataService} from "../data_services/PhysicianDataService";
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -57,6 +58,7 @@ const StartApp = (key) => {
     // Initialize Data Services, pass it the db and store instances
     //TODO Move all intialisations to static calls
     PatientDataService.initialiseService(FloDBProvider.db, store);
+    PhysicianDataService.initialiseService(FloDBProvider.db, store);
     initialiseVisitService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);

@@ -18,6 +18,11 @@ class Patient extends Realm.Object {
         return PatientDataService.constructName(this.firstName, this.lastName);
     }
 
+    get primaryPhysician(){
+        if (this.episodes.length === 0) return null;
+        return this.episodes[this.episodes.length - 1].primaryPhysician;
+    }
+
 }
 
 export const PatientSchema = {
@@ -119,6 +124,37 @@ Address.schema = {
     }
 };
 
+class Physician extends Realm.Object {
+
+    static getSchemaName() {
+        return 'Physician';
+    }
+
+    static getMandatoryKeys (){
+        return ['physicianId', 'npiId', 'firstName'];
+    }
+
+    get key() {
+        return this.physicianId;
+    }
+
+}
+
+const PhysicianSchemaV1 = {
+    name: Physician.getSchemaName(),
+    primaryKey: 'physicianId',
+    properties: {
+        physicianId: 'string',
+        npiId: 'string',
+        firstName: 'string',
+        lastName: 'string?',
+        contactNo: 'string?',
+        faxNo: 'string?'
+    }
+};
+
+Physician.schema = PhysicianSchemaV1;
+
 // 1 patient can have multiple episodes
 class Episode extends Realm.Object {
     getPatient() {
@@ -134,7 +170,8 @@ Episode.schema = {
         patient: {type: 'linkingObjects', objectType: 'Patient', property: 'episodes'},     // set automatically
         diagnosis: 'string[]',
         visits: {type: 'list', objectType: 'Visit', default: []},                           // cannot be optional
-        isClosed: {type: 'bool', default: false}
+        isClosed: {type: 'bool', default: false},
+        primaryPhysician: {type: 'Physician?'}
     }
 };
 
@@ -256,7 +293,7 @@ class FloDBProvider {
 
     static initialize(key) {
         console.log('initializing the DB ...');
-        const initialSchema = [Visit, Patient, Address, Episode, Place, VisitOrder];
+        const initialSchema = [Visit, Patient, Address, Episode, Place, VisitOrder, Physician];
         const schemas = [
             {
                 schema: initialSchema,
@@ -420,4 +457,4 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};
+export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, Physician, CreateAndSaveDummies};
