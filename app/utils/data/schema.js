@@ -1,251 +1,20 @@
-import * as CollectionUtils from '../collectionUtils';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
-import {PatientDataService} from "../../data_services/PatientDataService";
+import * as Migrations from "./schemas/migrations/MigrationsIndex";
+import {Address} from "./schemas/Models/address/Address";
+import {Episode} from "./schemas/Models/episode/Episode";
+import {Patient} from "./schemas/Models/patient/Patient";
+import {Place} from "./schemas/Models/place/Place";
+import {Visit} from "./schemas/Models/visit/Visit";
+import {VisitOrder} from "./schemas/Models/visitOrder/VisitOrder";
+import * as PatientSchemas from "./schemas/Models/patient/schemaVersions/SchemaIndex";
+import * as AddressSchemas from "./schemas/Models/address/schemaVersions/SchemaIndex";
+import * as EpisodeSchemas from "./schemas/Models/episode/schemaVersions/SchemaIndex";
+import * as PlaceSchemas from "./schemas/Models/place/schemaVersions/SchemaIndex";
+import * as VisitSchemas from "./schemas/Models/visit/schemaVersions/SchemaIndex";
+import * as VisitOrderSchemas from "./schemas/Models/visitOrder/schemaVersions/SchemaIndex";
 
 const Realm = require('realm');
-
-class Patient extends Realm.Object {
-    get key() {
-        return this.patientID;
-    }
-
-    getFirstEpisode() {
-        return CollectionUtils.getFirstElement(this.episodes);
-    }
-
-    get name() {
-        return PatientDataService.constructName(this.firstName, this.lastName);
-    }
-
-}
-
-export const PatientSchema = {
-    name: 'Patient',
-    primaryKey: 'patientID',
-    properties: {
-        patientID: 'string',
-        firstName: 'string',
-        lastName: 'string?',
-        address: 'Address',                                                      // optional by default
-        primaryContact: 'string',
-        emergencyContact: 'string?',
-        notes: 'string?',
-        episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
-        timestamp: 'int',
-        archived: {type: 'bool', default: false},
-        isLocallyOwned: {type: 'bool', default: true},
-    }
-};
-
-Patient.schema = PatientSchema;
-
-// Todo: Check if inverse relationship needed
-
-// Address can belong to a 'Patient' or a 'Place'
-class Address extends Realm.Object {
-    get formattedAddressForGeocoding() {
-        let addr = '';
-        if (this.apartmentNo) {
-            addr += `${this.apartmentNo}, `;
-        }
-        if (this.streetAddress) {
-            addr += `${this.streetAddress}`;
-        }
-        if (this.city) {
-            addr += `, ${this.city}`;
-        }
-        return addr;
-    }
-
-    get formattedAddress() {
-        let addr = this.formattedAddressForGeocoding;
-        if (this.zipCode) {
-            addr += ` ${this.zipCode}`;
-        }
-        if (this.state) {
-            addr += `, ${this.state}`;
-        }
-        return addr;
-    }
-
-    get formattedCompleteAddress() {
-        let addr = this.formattedAddress;
-        if (this.country) {
-            addr += `, ${this.country}`;
-        }
-        return addr;
-    }
-
-    get coordinates() {
-        if (!(this.latitude && this.longitude)) { return null; }
-        return {
-            latitude: this.latitude,
-            longitude: this.longitude
-        };
-    }
-
-    set coordinates(coordinates) {
-        this.latitude = coordinates.latitude;
-        this.longitude = coordinates.longitude;
-    }
-
-    getCommaSeperatedCoordinates() {
-        return `${this.latitude},${this.longitude}`;
-    }
-
-    hasCoordinates() {
-        return !!((
-            (this.latitude !== null) &&
-            (this.longitude !== null)
-        ));
-    }
-}
-
-Address.schema = {
-    name: 'Address',
-    primaryKey: 'addressID',
-    properties: {
-        addressID: 'string',
-        apartmentNo: 'string?',
-        streetAddress: 'string?',
-        zipCode: 'string?',
-        city: 'string?',
-        state: 'string?',
-        country: {type: 'string?', default: 'US'},     // Todo: Remove
-        latitude: 'double?',
-        longitude: 'double?',
-        isValidated: {type: 'bool', default: false}
-    }
-};
-
-// 1 patient can have multiple episodes
-class Episode extends Realm.Object {
-    getPatient() {
-        return CollectionUtils.getFirstElement(this.patient);
-    }
-}
-
-Episode.schema = {
-    name: 'Episode',
-    primaryKey: 'episodeID',
-    properties: {
-        episodeID: 'string',
-        patient: {type: 'linkingObjects', objectType: 'Patient', property: 'episodes'},     // set automatically
-        diagnosis: 'string[]',
-        visits: {type: 'list', objectType: 'Visit', default: []},                           // cannot be optional
-        isClosed: {type: 'bool', default: false}
-    }
-};
-
-class Place extends Realm.Object {
-    get key() {
-        return this.placeID;
-    }
-}
-
-Place.schema = {
-    name: 'Place',
-    primaryKey: 'placeID',
-    properties: {
-        placeID: 'string',
-        name: 'string',
-        address: 'Address',
-        primaryContact: 'string?',
-        visits: {type: 'Visit[]', default: []},
-        archived: {type: 'bool', default: false}
-    }
-};
-
-class Visit extends Realm.Object {
-    get key() {
-        return this.visitID;
-    }
-
-    getEpisode() {
-        return CollectionUtils.getFirstElement(this.episode);
-    }
-
-    getDiagnosis() {
-        if (this.getPatient()) {
-            return this.getPatient().diagnosis;
-        }
-        return undefined;
-    }
-
-    getPatient() {
-        const episode = this.getEpisode();
-        if (episode) {
-            return episode.getPatient();
-        }
-        return undefined;
-    }
-
-    getPlace() {
-        return CollectionUtils.getFirstElement(this.place);
-    }
-
-    getAddress() {
-        return this.getFromOwner(patient => patient.address, place => place.address);
-    }
-
-    getAssociatedName() {
-        return this.getFromOwner(patient => patient.name, place => place.name);
-    }
-
-    getAssociatedNumber() {
-        return this.getFromOwner(patient => patient.primaryContact, place => place.primaryContact);
-    }
-
-    getFromOwner(patientHandler, placeHandler) {
-        const patient = this.getPatient();
-        if (patient) {
-            return patientHandler(patient);
-        }
-        const place = CollectionUtils.getFirstElement(this.place);
-        if (place) {
-            return placeHandler(place);
-        }
-        throw new Error('Visit belongs to neither place nor patient');
-    }
-
-    isOwnerArchived() {
-        if ((this.getPatient() && this.getPatient().archived) ||
-            (this.getPlace() && this.getPlace().archived)
-        ) {
-            return true;
-        }
-        return false;
-    }
-}
-
-Visit.schema = {
-    name: 'Visit',
-    primaryKey: 'visitID',
-    properties: {
-        visitID: 'string',
-        episode: {type: 'linkingObjects', objectType: 'Episode', property: 'visits'},       // set automatically
-        place: {type: 'linkingObjects', objectType: 'Place', property: 'visits'},
-        midnightEpochOfVisit: 'int',
-
-        isDone: {type: 'bool', default: false},
-        timeOfCompletion: 'int?',
-
-        isDeleted: {type: 'bool', default: false}
-    }
-};
-
-class VisitOrder extends Realm.Object {
-}
-
-VisitOrder.schema = {
-    name: 'VisitOrder',
-    primaryKey: 'midnightEpoch',
-    properties: {
-        midnightEpoch: 'int',
-        visitList: 'Visit[]'
-    }
-};
 
 let floDB = null;
 
@@ -256,23 +25,31 @@ class FloDBProvider {
 
     static initialize(key) {
         console.log('initializing the DB ...');
-        const initialSchema = [Visit, Patient, Address, Episode, Place, VisitOrder];
-        const schemas = [
+
+        // 0th element intentionally left blank to make index of the array match with schema version
+        const schemaMigrations = [
             {
-                schema: initialSchema,
+
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 1,
                 migration: () => { console.log('Migration function goes here'); },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key)
             },
             {
-                schema: initialSchema,
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 2,
                 migration: (oldRealm, newRealm) => {
                     if (oldRealm.schemaVersion < 2) {
-                        const newPatientObjects = newRealm.objects(Patient.schema.name);
+                        const newPatientObjects = newRealm.objects(Patient.getSchemaName());
                         newPatientObjects.update('archived', false);
-                        const newPlaceObjects = newRealm.objects(Place.schema.name);
+                        const newPlaceObjects = newRealm.objects(Place.getSchemaName());
                         newPlaceObjects.update('archived', false);
                     }
                 },
@@ -280,11 +57,15 @@ class FloDBProvider {
                 encryptionKey: stringToArrayBuffer(key)
             },
             {
-                schema: initialSchema,
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 3,
                 migration: (oldRealm, newRealm) => {
+                    console.log("migr 3");
                     if (oldRealm.schemaVersion < 3) {
-                        const newPatientObjects = newRealm.objects(Patient.schema.name);
+                        console.log("migr 3");
+                        const newPatientObjects = newRealm.objects(Patient.getSchemaName());
                         newPatientObjects.update('isLocallyOwned', true);
                     }
                 },
@@ -292,56 +73,42 @@ class FloDBProvider {
                 encryptionKey: stringToArrayBuffer(key),
             },
             {
-                schema: initialSchema,
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV4, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 4,
-                migration: (oldRealm, newRealm) => {
-                    if (oldRealm.schemaVersion < 4) {
-                        const oldPatientObjects = oldRealm.objects(Patient.schema.name);
-                        const newPatientObjects = newRealm.objects(Patient.schema.name);
-
-                        for (let i = 0; i < oldPatientObjects.length; i++) {
-                            const separatorIndex = oldPatientObjects[i].name.indexOf(" ");
-                            if (separatorIndex < 0){
-                                newPatientObjects[i].firstName = oldPatientObjects[i].name;
-                                newPatientObjects[i].lastName = null;
-                            }
-                            else{
-                                newPatientObjects[i].firstName = oldPatientObjects[i].name.substr(0, separatorIndex);
-                                newPatientObjects[i].lastName = oldPatientObjects[i].name.substr(separatorIndex + 1);
-                            }
-                        }
-                    }
-                },
+                migration: Migrations.SplitNameToFirstNameLastNameMigration,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
-        let nextSchemaIndex = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
-        if (nextSchemaIndex < 0) {
-            nextSchemaIndex = 0;
-        }
-        while (nextSchemaIndex < schemas.length - 1) {
-            const migratedRealm = new Realm({
-                schema: schemas[nextSchemaIndex].schema,
-                schemaVersion: schemas[nextSchemaIndex].schemaVersion,
-                encryptionKey: schemas[nextSchemaIndex].encryptionKey,
-                path: schemas[nextSchemaIndex].path,
-                migration: schemas[nextSchemaIndex].migration
-            });
-            migratedRealm.close();
-            nextSchemaIndex++;
+        const targetSchemaVersion = 4;
+
+        let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
+        if (currentSchemaVersion < 1) {
+            currentSchemaVersion = 1;
         }
 
-        const lastIndex = schemas.length - 1;
+        while (currentSchemaVersion < targetSchemaVersion) {
+            const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion++]);
+            migratedRealm.close();
+        }
+
+        // Setting schema for each model
+        schemaMigrations[targetSchemaVersion].models.forEach((realmModel) => {
+            realmModel.schema = schemaMigrations[targetSchemaVersion].schema.find(
+                (schema) => schema.name === realmModel.getSchemaName())
+        });
+
         try {
             // initializing the DB synchronously
             floDB = new Realm({
-                schema: schemas[lastIndex].schema,
-                schemaVersion: schemas[lastIndex].schemaVersion,
-                encryptionKey: schemas[lastIndex].encryptionKey,
-                path: schemas[lastIndex].path,
-                migration: schemas[lastIndex].migration
+                schema: schemaMigrations[targetSchemaVersion].models,
+                schemaVersion: schemaMigrations[targetSchemaVersion].schemaVersion,
+                encryptionKey: schemaMigrations[targetSchemaVersion].encryptionKey,
+                path: schemaMigrations[targetSchemaVersion].path,
+                migration: schemaMigrations[targetSchemaVersion].migration
             });
             console.log('initialization done ...');
         } catch (err) {
