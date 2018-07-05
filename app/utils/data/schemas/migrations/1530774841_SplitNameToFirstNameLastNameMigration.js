@@ -1,9 +1,7 @@
 import {Patient} from "../../schema";
 
 export const SplitNameToFirstNameLastNameMigration = (oldRealm, newRealm) => {
-    console.log("running split name migration")
     if (oldRealm.schemaVersion < 4) {
-        console.log("starting migration");
         const oldPatientObjects = oldRealm.objects(Patient.getSchemaName());
         const newPatientObjects = newRealm.objects(Patient.getSchemaName());
 

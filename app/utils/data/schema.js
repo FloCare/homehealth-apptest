@@ -62,9 +62,7 @@ class FloDBProvider {
                 models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 3,
                 migration: (oldRealm, newRealm) => {
-                    console.log("migr 3");
                     if (oldRealm.schemaVersion < 3) {
-                        console.log("migr 3");
                         const newPatientObjects = newRealm.objects(Patient.getSchemaName());
                         newPatientObjects.update('isLocallyOwned', true);
                     }
