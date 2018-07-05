@@ -81,7 +81,7 @@ class FloDBProvider {
             }
         ];
 
-        const targetSchemaVersion = 4;
+        const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
 
         let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (currentSchemaVersion < 1) {
