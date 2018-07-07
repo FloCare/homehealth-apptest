@@ -24,7 +24,7 @@ class AddVisitsForPatientScreen extends Component {
     onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
         if(event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.addVisitsForPatientScreen, screenNames.addVisitsForPatientScreen);
+            firebase.analytics().setCurrentScreen(screenNames.addVisitsForPatient, screenNames.addVisitsForPatient);
         }
     }
 

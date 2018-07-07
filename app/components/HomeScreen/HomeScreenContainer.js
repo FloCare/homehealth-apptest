@@ -63,7 +63,7 @@ class HomeScreenContainer extends Component {
         // }
         // STOP GAP solution. To brainstorm on the right way of doing it
         if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.homeScreen, screenNames.homeScreen);
+            firebase.analytics().setCurrentScreen(screenNames.home, screenNames.home);
         }
     }
 
@@ -147,9 +147,6 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToAddVisit() {
-        firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
-            type: parameterValues.ADD_VISIT
-        });
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
             title: 'Add Visit',
@@ -164,9 +161,6 @@ class HomeScreenContainer extends Component {
     }
 
     navigateToAddVisitFAB() {
-        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-            type: parameterValues.ADD_VISIT
-        });
         this.props.navigator.push({
             screen: screenNames.addVisitScreen,
             title: 'Add Visit',
@@ -209,7 +203,12 @@ class HomeScreenContainer extends Component {
                 />
                 <Fab
                     onPressAddNote={this.navigateToAddNote}
-                    onPressAddVisit={this.navigateToAddVisitFAB}
+                    onPressAddVisit={() => {         
+                        firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
+                            type: parameterValues.ADD_VISIT
+                        }); 
+                        this.navigateToAddVisitFAB(); 
+                    }}
                     onPressAddPatient={this.navigateToAddPatient}
                 />
             </View>
