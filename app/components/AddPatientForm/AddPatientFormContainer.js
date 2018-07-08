@@ -6,7 +6,7 @@ import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
-import {PrimaryFontFamily, eventNames} from '../../utils/constants';
+import {PrimaryFontFamily, eventNames, PrimaryColor} from '../../utils/constants';
 import {PatientDataService} from '../../data_services/PatientDataService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SimpleButton} from "../common/SimpleButton";
@@ -202,17 +202,22 @@ class AddPatientFormContainer extends Component {
     ExtraFieldsClickHandler = (key) => {
         switch(key){
             case 'dob':
-                this.setState({value: {...this.state.value, showDateOfBirth: true}});
-                this.shouldChangeFocus = true;
-                this.focusField = 'dob';
+                this.setState({value: {
+                        ...this.state.value,
+                        showDateOfBirth: true,
+                        isDateTimePickerVisible: false
+                }});
                 break;
             case 'emergencyContact':
-                this.setState({value: {...this.state.value, showEmergencyContact: true}});
+                this.setState({value: {
+                    ...this.state.value,
+                    showEmergencyContact: true
+                }});
                 this.shouldChangeFocus = true;
                 this.focusField = 'emergencyContact';
                 break;
             default:
-                console.log("unhandled key")
+                console.log("unhandled key");
         }
     };
 
@@ -251,9 +256,10 @@ class AddPatientFormContainer extends Component {
                     >
 
                         <SimpleButton
-                            style={{width: 200, alignSelf: 'center', height: 50, borderRadius: 5, borderWidth: 0,
-                                borderColor: 'black'}}
-                            title="Add more fields">
+                            style={{backgroundColor: 'rgba(0, 0, 0, 0'}}
+                            textStyle={{color: PrimaryColor}}
+                            title="Add More Fields"
+                        >
                         </SimpleButton>
                     </ModalSelector>
                 </KeyboardAwareScrollView>

@@ -51,7 +51,7 @@ const getVisitsView = function (visitSectionData) {
 const getEmergencyContactText = (contactName, contactRelation) => {
     if (contactRelation === null || contactRelation === '') return contactName;
     if (contactName === null || contactName === '') return contactRelation;
-    return contactName + ' - ' + contactRelation;
+    return contactName + ' (' + contactRelation + ')';
 };
 
 const PatientDetailCard = (props) => {
@@ -149,9 +149,9 @@ const PatientDetailCard = (props) => {
                     <Image source={Images.visits} />
                     <View style={{marginLeft: 14}}>
                         <StyledText style={{...styles.fontStyle, fontSize: 15, ...styles.headerStyle}}>
-                            Date Of Birth
+                            Birthday
                         </StyledText>
-                        <StyledText style={{...styles.fontStyle, fontSize: 15}}>
+                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
                             {moment(dateOfBirth).format('DD-MMM-YYYY')}
                         </StyledText>
                     </View>
@@ -162,6 +162,18 @@ const PatientDetailCard = (props) => {
                     <Divider style={styles.dividerStyle} />
                 }
 
+                <View style={[styles.containerStyle, {opacity: 0.3}]}>
+                    <Image source={Images.diagnosis} />
+                    <View style={{marginLeft: 14}}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
+                            Diagnosis
+                        </StyledText>
+                        <Diagnosis diagnosis />
+                    </View>
+                </View>
+
+                <Divider style={styles.dividerStyle} />
+
                 {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <View style={styles.containerStyle}>
                     <Image source={Images.elliotLugo} />
@@ -169,14 +181,14 @@ const PatientDetailCard = (props) => {
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Emergency Contact
                         </StyledText>
-                        {emergencyContactText && emergencyContactText.length > 0 &&
-                            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#525252'}}>
-                                {emergencyContactText}
-                            </StyledText>
-                        }
-                        <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
+                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
                             {emergencyContactNumber}
                         </StyledText>
+                        {emergencyContactText && emergencyContactText.length > 0 &&
+                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                            {emergencyContactText}
+                        </StyledText>
+                        }
                     </View>
                     <Button
                         title="Call"
@@ -206,19 +218,7 @@ const PatientDetailCard = (props) => {
                 {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <Divider style={styles.dividerStyle} />
                 }
-
-                <View style={[styles.containerStyle, {opacity: 0.3}]}>
-                    <Image source={Images.diagnosis} />
-                    <View style={{marginLeft: 14}}>
-                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
-                            Diagnosis
-                        </StyledText>
-                        <Diagnosis diagnosis />
-                    </View>
-                </View>
-
-                <Divider style={styles.dividerStyle} />
-
+                
                 <View style={styles.containerStyle}>
                     <Image source={Images.visits} />
                     <View style={{marginLeft: 14}}>

@@ -5,12 +5,89 @@ import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 import PatientFormTemplate from './AddPatientFormTemplate';
 import moment from 'moment/moment';
+import React from 'react'
+import { Text, View, TouchableOpacity} from 'react-native'
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import {PrimaryColor, PrimaryFontFamily} from "../../utils/constants";
 
 const EmergencyContactInformationModel = t.struct({
     contactNumber: PhoneNumber,
     contactName: t.maybe(t.String),
     contactRelation: t.maybe(t.String)
 });
+
+const Component = t.form.Component;
+
+class FloatingDate extends Component {
+    constructor (props) {
+        super(props)
+        const dateValue = props.value || null;
+        this.state = {
+            isDateTimePickerVisible: !dateValue,
+            value: dateValue
+        }
+    }
+
+    getTemplate () {
+
+        const _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+        const _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+        const isVisible = this.state.isDateTimePickerVisible;
+        const selectedDate = this.state.value;
+        const _handleDatePicked = (date) => {
+            this._onChangeText();
+            _hideDateTimePicker();
+
+        };
+        let self = this
+        return function (locals) {
+            return (
+                <View style={{ flex: 1 }}>
+                    <TouchableOpacity onPress={_showDateTimePicker}>
+                        <Text>Date Of Birth</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop:10}}>
+                            <Text style={{color: '#525252',fontFamily: PrimaryFontFamily, fontSize: 15, paddingLeft: 5}}>
+                                {selectedDate ? moment(selectedDate).format('DD-MMM-YYYY') : "Select Date"}
+                            </Text>
+                            {
+                                selectedDate && <Text style={{color: PrimaryColor, textAlign: 'right', paddingRight:10}}>
+                                    {"Change Date"}
+                                </Text>
+                            }
+                        </View>
+                    </TouchableOpacity>
+                    <DateTimePicker
+                        date={selectedDate || new Date()}
+                        isVisible={isVisible}
+                        datePickerModeAndroid="spinner"
+                        onConfirm={(date) => {
+                            _handleDatePicked(date);
+                            locals.onChange(date);
+                        }}
+                        onCancel={() => {
+                            _hideDateTimePicker();
+                        }}
+                        maximumDate={new Date()}
+                    />
+                </View>
+            )
+        }
+    }
+
+    getLocals () {
+        let locals = super.getLocals();
+        return locals;
+    }
+
+    _onChangeText (dateString) {
+        this.setState({value: dateString})
+    }
+
+    shouldComponentUpdate (nextProps, nextState) {
+        return true
+    }
+}
 
 const AddPatientModel = t.struct({
     firstName: t.String,
@@ -144,13 +221,7 @@ const formOptions = {
             },
         },
         dateOfBirth: {
-            label: 'Date Of Birth (Optional)',
-            mode: 'date',
-            config: {
-                format: (date) => moment(date).format('DD-MMM-YYYY'),
-                dialogMode: 'spinner'
-            },
-            maximumDate: new Date()
+            factory: FloatingDate
         },
         showDateOfBirth: {
             hidden: true,
