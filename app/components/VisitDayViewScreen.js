@@ -27,12 +27,21 @@ class VisitDayViewScreen extends Component {
     }
 
     onNavigatorEvent(event) {
-        console.log('got navigator event');
+        if (event.id === 'didAppear') {
+            if(this.state.selectedScreen === 'list') {
+                firebase.analytics().setCurrentScreen(screenNames.visitList, screenNames.visitList);
+            }
+            else if(this.state.selectedScreen === 'map') {
+                firebase.analytics().setCurrentScreen(screenNames.visitMap, screenNames.visitMap);
+            }
+        }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'map-view') {
+                firebase.analytics().setCurrentScreen(screenNames.visitMap, screenNames.visitMap);
                 this.setMapScreen();
             }
             if (event.id === 'list-view') {
+                firebase.analytics().setCurrentScreen(screenNames.visitList, screenNames.visitList);
                 this.setListScreen();
             }
         }

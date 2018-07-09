@@ -48,7 +48,7 @@ class AddPatientScreenContainer extends Component {
     onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
         if(event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.addPatient, screenNames.addPatient);
+            firebase.analytics().setCurrentScreen(screenNames.addPatientScreen, screenNames.addPatientScreen);
         }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'deletePatient') {
