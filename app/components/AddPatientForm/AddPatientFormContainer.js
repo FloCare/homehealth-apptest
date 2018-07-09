@@ -256,7 +256,7 @@ class AddPatientFormContainer extends Component {
                     >
 
                         <SimpleButton
-                            style={{backgroundColor: 'rgba(0, 0, 0, 0'}}
+                            style={{backgroundColor: 'rgba(0, 0, 0, 0)'}}
                             textStyle={{color: PrimaryColor}}
                             title="Add More Fields"
                         >
