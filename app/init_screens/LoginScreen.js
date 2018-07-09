@@ -63,6 +63,8 @@ class LoginScreen extends Component {
                 firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.roles[0].role);
                 firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.roles[0].org);
 
+                AsyncStorage.setItem('userID', userPropsJson.id.toString());
+
                 this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,
                     title: 'Welcome',

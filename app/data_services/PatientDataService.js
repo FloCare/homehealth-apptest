@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {floDB, Patient} from '../utils/data/schema';
+import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
@@ -68,11 +68,7 @@ export class PatientDataService {
     }
 
     getPatientsFilteredByName(searchTerm) {
-<<<<<<< HEAD
         if (!searchTerm || searchTerm === '') return this.getAllPatients();
-=======
-        if (searchTerm === '') return this.getAllPatients();
->>>>>>> eslint correction
         const searchTerms = searchTerm.toString().split(' ');
         let queryStr = QueryHelper.nameContainsQuery(searchTerms.shift());
         queryStr = searchTerms.reduce((queryAccumulator, searchTerm) =>
@@ -214,7 +210,7 @@ export class PatientDataService {
                 const deletions = deletedPatients.length;
 
                 if (newPatientIDs.length > 0) {
-                    additions = await this._fetchAndSavePatientsByID(newPatientIDs);
+                    additions = await this.fetchAndSavePatientsByID(newPatientIDs);
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 return {
@@ -224,7 +220,7 @@ export class PatientDataService {
             });
     }
 
-    _fetchAndSavePatientsByID(newPatientIDs) {
+    fetchAndSavePatientsByID(newPatientIDs) {
         return PatientAPI.getPatientsByID(newPatientIDs)
             .then((json) => {
                 const successfulObjects = json.success;
