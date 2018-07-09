@@ -34,7 +34,6 @@ class FloDBProvider {
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
-                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 1,
                 migration: () => { console.log('Migration function goes here'); },
                 path: 'database.realm',
@@ -43,7 +42,6 @@ class FloDBProvider {
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
-                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 2,
                 migration: (oldRealm, newRealm) => {
                     if (oldRealm.schemaVersion < 2) {
@@ -59,7 +57,6 @@ class FloDBProvider {
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
-                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 3,
                 migration: (oldRealm, newRealm) => {
                     if (oldRealm.schemaVersion < 3) {
@@ -73,7 +70,6 @@ class FloDBProvider {
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV4, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
-                models: [Visit, Patient, Address, Episode, Place, VisitOrder],
                 schemaVersion: 4,
                 migration: Migrations.SplitNameToFirstNameLastNameMigration,
                 path: 'database.realm',
@@ -82,19 +78,19 @@ class FloDBProvider {
         ];
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
+        const models = [Visit, Patient, Address, Episode, Place, VisitOrder];
 
         let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
-        if (currentSchemaVersion < 1) {
-            currentSchemaVersion = 1;
-        }
-
-        while (currentSchemaVersion < targetSchemaVersion) {
-            const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion++]);
-            migratedRealm.close();
+        if (currentSchemaVersion >= 0) {
+            // Run migrations if schema exists
+            while (currentSchemaVersion < targetSchemaVersion) {
+                const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion++]);
+                migratedRealm.close();
+            }
         }
 
         // Setting schema for each model
-        schemaMigrations[targetSchemaVersion].models.forEach((realmModel) => {
+        models.forEach((realmModel) => {
             realmModel.schema = schemaMigrations[targetSchemaVersion].schema.find(
                 (schema) => schema.name === realmModel.getSchemaName())
         });
@@ -102,7 +98,7 @@ class FloDBProvider {
         try {
             // initializing the DB synchronously
             floDB = new Realm({
-                schema: schemaMigrations[targetSchemaVersion].models,
+                schema: models,
                 schemaVersion: schemaMigrations[targetSchemaVersion].schemaVersion,
                 encryptionKey: schemaMigrations[targetSchemaVersion].encryptionKey,
                 path: schemaMigrations[targetSchemaVersion].path,
