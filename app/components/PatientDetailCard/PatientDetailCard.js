@@ -146,7 +146,7 @@ const PatientDetailCard = (props) => {
 
                 { dateOfBirth &&
                 <View style={styles.containerStyle}>
-                    <Image source={Images.visits} />
+                    <Image source={Images.birthday} />
                     <View style={{marginLeft: 14}}>
                         <StyledText style={{...styles.fontStyle, fontSize: 15, ...styles.headerStyle}}>
                             Birthday
@@ -176,7 +176,7 @@ const PatientDetailCard = (props) => {
 
                 {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <View style={styles.containerStyle}>
-                    <Image source={Images.elliotLugo} />
+                    <Image source={Images.emergencyIcon} />
                     <View style={{marginLeft: 14}}>
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Emergency Contact Details
