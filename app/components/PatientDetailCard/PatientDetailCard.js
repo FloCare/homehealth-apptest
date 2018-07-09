@@ -152,7 +152,7 @@ const PatientDetailCard = (props) => {
                             Birthday
                         </StyledText>
                         <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
-                            {moment(dateOfBirth).format('DD-MMM-YYYY')}
+                            {moment(dateOfBirth).format('DD MMM YYYY')}
                         </StyledText>
                     </View>
                 </View>

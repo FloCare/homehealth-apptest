@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
-import {View} from 'react-native';
+import {View, Platform, TouchableOpacity, Image, Text} from 'react-native';
 import {Button} from 'react-native-elements';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
+import {ButtonTextStyles} from '../common/SimpleButton';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {PrimaryFontFamily, eventNames, PrimaryColor} from '../../utils/constants';
 import {PatientDataService} from '../../data_services/PatientDataService';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {SimpleButton} from "../common/SimpleButton";
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import ModalSelector from 'react-native-modal-selector';
+import {Images} from '../../Images';
 
 
 class AddPatientFormContainer extends Component {
@@ -235,7 +236,10 @@ class AddPatientFormContainer extends Component {
         const {onSubmit} = this.props;
         return (
             <View style={styles.containerStyle}>
-                <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'} style={{marginBottom: 20}}>
+
+                <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'}
+                                         enableAutoAutomaticScroll={(Platform.OS === 'ios')}
+                                         style={{...styles.formScrollViewStyle, marginBottom: 20}}>
                     <AddPatientForm
                         refName={this.setForm}
                         onChange={this.onChange}
@@ -251,15 +255,17 @@ class AddPatientFormContainer extends Component {
                         optionContainerStyle={this.ExtraFieldsStyleData.optionContainerStyle}
                         optionTextStyle={this.ExtraFieldsStyleData.optionTextStyle}
                         cancelText={'Cancel'}
-                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}
-                    >
+                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}>
 
-                        <SimpleButton
-                            style={{backgroundColor: 'rgba(0, 0, 0, 0)'}}
-                            textStyle={{color: PrimaryColor}}
-                            title="Add More Fields"
-                        >
-                        </SimpleButton>
+                        <TouchableOpacity
+                            style={{...styles.buttonStyle, backgroundColor: 'rgba(0, 0, 0, 0)', alignSelf:'center'}}>
+                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', paddingBottom: 20}}>
+                                <Image style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}} source={Images.plus}/>
+                                <Text style={{...ButtonTextStyles, fontSize: 20, color: PrimaryColor}}>
+                                    {"Add More Fields"}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
                     </ModalSelector>
                 </KeyboardAwareScrollView>
 

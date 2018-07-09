@@ -23,6 +23,7 @@ export const Images = {
     patient: require('../resources/patient.png'),
     person_ic: require('../resources/person_ic.png'),
     pin: require('../resources/pin.png'),
+    plus: require('../resources/plus.png'),
     planDay: require('../resources/plan.png'),
     savedPlaces: require('../resources/savedPlaces.png'),
     secureAccess: require('../resources/secureAccess.png'),

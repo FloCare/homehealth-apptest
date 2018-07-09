@@ -48,7 +48,7 @@ class DatePickerPopup extends Component {
                         <Text>Date Of Birth</Text>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop:10}}>
                             <Text style={{color: '#525252',fontFamily: PrimaryFontFamily, fontSize: 15, paddingLeft: 5}}>
-                                {selectedDate ? moment(selectedDate).format('DD-MMM-YYYY') : "Select Date"}
+                                {selectedDate ? moment(selectedDate).format('DD MMM YYYY') : "Select Date"}
                             </Text>
                             {
                                 selectedDate && <Text style={{color: PrimaryColor, textAlign: 'right', paddingRight:10}}>
