@@ -18,7 +18,7 @@ const EmergencyContactInformationModel = t.struct({
 
 const Component = t.form.Component;
 
-class FloatingDate extends Component {
+class DatePickerPopup extends Component {
     constructor (props) {
         super(props)
         const dateValue = props.value || null;
@@ -221,7 +221,7 @@ const formOptions = {
             },
         },
         dateOfBirth: {
-            factory: FloatingDate
+            factory: DatePickerPopup
         },
         showDateOfBirth: {
             hidden: true,

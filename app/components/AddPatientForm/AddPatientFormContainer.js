@@ -185,11 +185,10 @@ class AddPatientFormContainer extends Component {
     }
 
     componentDidUpdate() {
-        console.log("refs in did update");
         if (this.shouldChangeFocus && this.focusField){
             switch(this.focusField){
                 case 'emergencyContact':
-                    this.addPatientForm.refs.input.refs.emergencyContactInfo.refs.contactNumber.refs.input.focus();
+                    this.addPatientForm.getComponent(["emergencyContactInfo", "contactNumber"]).refs.input.focus();
                     break;
                 default:
                     console.log("ignoring focus field")

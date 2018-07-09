@@ -179,7 +179,7 @@ const PatientDetailCard = (props) => {
                     <Image source={Images.elliotLugo} />
                     <View style={{marginLeft: 14}}>
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
-                            Emergency Contact
+                            Emergency Contact Details
                         </StyledText>
                         <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
                             {emergencyContactNumber}
@@ -190,28 +190,28 @@ const PatientDetailCard = (props) => {
                         </StyledText>
                         }
                     </View>
-                    <Button
-                        title="Call"
-                        textStyle={{
-                            ...styles.fontStyle,
-                            color: PrimaryColor
-                        }}
-                        buttonStyle={styles.callButtonStyle}
-                        containerViewStyle={{
-                            width: '20%',
-                            position: 'absolute',
-                            right: 0
-                        }}
-                        onPress={() => {
-                            if (emergencyContactNumber) {
-                                if (Platform.OS === 'android') {
-                                    Linking.openURL(`tel: ${emergencyContactNumber}`);
-                                } else {
-                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContactNumber);
-                                }
-                            }
-                        }}
-                    />
+                    {/*<Button*/}
+                        {/*title="Call"*/}
+                        {/*textStyle={{*/}
+                            {/*...styles.fontStyle,*/}
+                            {/*color: PrimaryColor*/}
+                        {/*}}*/}
+                        {/*buttonStyle={styles.callButtonStyle}*/}
+                        {/*containerViewStyle={{*/}
+                            {/*width: '20%',*/}
+                            {/*position: 'absolute',*/}
+                            {/*right: 0*/}
+                        {/*}}*/}
+                        {/*onPress={() => {*/}
+                            {/*if (emergencyContactNumber) {*/}
+                                {/*if (Platform.OS === 'android') {*/}
+                                    {/*Linking.openURL(`tel: ${emergencyContactNumber}`);*/}
+                                {/*} else {*/}
+                                    {/*RNImmediatePhoneCall.immediatePhoneCall(emergencyContactNumber);*/}
+                                {/*}*/}
+                            {/*}*/}
+                        {/*}}*/}
+                    {/*/>*/}
                 </View>
                 }
 
