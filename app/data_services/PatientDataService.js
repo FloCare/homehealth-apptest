@@ -18,7 +18,7 @@ export class PatientDataService {
 
     static getInstance() {
         if (!PatientDataService.patientDataService) {
-            throw new Error('padient data service requested before being initialised');
+            throw new Error('patient data service requested before being initialised');
         }
 
         return PatientDataService.patientDataService;
