@@ -8,7 +8,7 @@ import {Images} from '../Images';
 export class WelcomePageScreen extends Component {
 
   componentDidMount() {
-    firebase.analytics().setCurrentScreen(screenNames.welcomeScreen, screenNames.welcomeScreen);
+    firebase.analytics().setCurrentScreen(screenNames.welcome, screenNames.welcome);
   }
 
   onButtonPress() {

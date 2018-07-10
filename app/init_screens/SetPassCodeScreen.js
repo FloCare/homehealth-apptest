@@ -25,7 +25,7 @@ class SetPassCodeScreen extends Component {
     onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
         if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.setPassCodeScreen, screenNames.setPassCodeScreen);
+            firebase.analytics().setCurrentScreen(screenNames.setPassCode, screenNames.setPassCode);
         }
     }
 

@@ -130,7 +130,7 @@ class PatientDetailScreenContainer extends Component {
         }
         // STOP GAP solution. Will be removed when redux is used
         if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.patientDetails, screenNames.patientDetails);
+            firebase.analytics().setCurrentScreen(screenNames.patientDetailsScreen, screenNames.patientDetailsScreen);
         }
     }
 

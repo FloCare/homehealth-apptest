@@ -100,7 +100,7 @@ class AddVisitsScreenContainer extends Component {
     onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
         if(event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.addVisitScreen, screenNames.addVisitScreen);
+            firebase.analytics().setCurrentScreen(screenNames.addVisit, screenNames.addVisit);
         }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'new-stop') {

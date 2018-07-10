@@ -5,7 +5,7 @@ import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from
 import {generateUUID, todayMomentInUTCMidnight} from '../utils/utils';
 import {PatientDataService} from './PatientDataService';
 import {placeDataService} from './PlaceDataService';
-import {eventNames} from '../utils/constants';
+import {eventNames, parameterValues} from '../utils/constants';
 
 class VisitDataService {
     static getFlatVisit(visit) {
@@ -93,6 +93,9 @@ class VisitDataService {
 
     toggleVisitDone(visitID) {
         console.log(`${visitID}toggled`);
+        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+            type: parameterValues.TOGGLE
+        });
         const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
 
         if (!visit.isDone) {

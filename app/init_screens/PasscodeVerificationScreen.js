@@ -13,7 +13,7 @@ class PasscodeVerificationScreen extends Component {
     };
 
     componentDidMount() {
-      firebase.analytics().setCurrentScreen(screenNames.passcodeVerificationScreen, screenNames.passcodeVerificationScreen);
+      firebase.analytics().setCurrentScreen(screenNames.passcodeVerification, screenNames.passcodeVerification);
     }
 
     constructor(props) {
