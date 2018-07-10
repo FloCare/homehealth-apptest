@@ -65,8 +65,6 @@ class AddPatientFormContainer extends Component {
         this.options.OnChangeAddressText = this.onChangeAddressText;
         this.options.RefName = this.setAddressFieldRef;
         this.options.GetDefaultValue = this.getDefaultValue;
-        this.shouldChangeFocus = false;
-        this.focusField = null;
     }
 
    // onSelectedItemsChange(selectedItems) {
@@ -182,21 +180,12 @@ class AddPatientFormContainer extends Component {
            this.clearForm();
            // Call Screen Container's onSubmit() hook
            onSubmit(patientId);
-        }
-    }
-
-    componentDidUpdate() {
-        if (this.shouldChangeFocus && this.focusField){
-            switch(this.focusField){
-                case 'emergencyContact':
-                    this.addPatientForm.getComponent(["emergencyContactInfo", "contactNumber"]).refs.input.focus();
-                    break;
-                default:
-                    console.log("ignoring focus field")
-            }
-            this.shouldChangeFocus = false;
-            this.focusField = null;
-        }
+        }else {
+           const validationResult = this.addPatientForm.validate();
+           if (validationResult.errors){
+               this.addPatientForm.getComponent(validationResult.errors[0].path).refs.input.focus();
+           }
+       }
     }
 
     ExtraFieldsClickHandler = (key) => {
@@ -213,8 +202,6 @@ class AddPatientFormContainer extends Component {
                     ...this.state.value,
                     showEmergencyContact: true
                 }});
-                this.shouldChangeFocus = true;
-                this.focusField = 'emergencyContact';
                 break;
             default:
                 console.log("unhandled key");
@@ -238,7 +225,7 @@ class AddPatientFormContainer extends Component {
             <View style={styles.containerStyle}>
 
                 <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'}
-                                         enableAutoAutomaticScroll={(Platform.OS === 'ios')}
+                                         enableAutoAutomaticScroll={false}
                                          style={{...styles.formScrollViewStyle, marginBottom: 20}}>
                     <AddPatientForm
                         refName={this.setForm}
@@ -258,10 +245,10 @@ class AddPatientFormContainer extends Component {
                         cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}>
 
                         <TouchableOpacity
-                            style={{...styles.buttonStyle, backgroundColor: 'rgba(0, 0, 0, 0)', alignSelf:'center'}}>
+                            style={{...styles.buttonStyle, marginTop: 20, backgroundColor: 'rgba(0, 0, 0, 0)', alignSelf:'center'}}>
                             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', paddingBottom: 20}}>
                                 <Image style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}} source={Images.plus}/>
-                                <Text style={{...ButtonTextStyles, fontSize: 20, color: PrimaryColor}}>
+                                <Text style={{...ButtonTextStyles.textStyle, fontSize: 20, color: PrimaryColor}}>
                                     {"Add More Fields"}
                                 </Text>
                             </View>

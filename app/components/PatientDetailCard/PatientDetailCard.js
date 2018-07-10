@@ -148,7 +148,7 @@ const PatientDetailCard = (props) => {
                 <View style={styles.containerStyle}>
                     <Image source={Images.birthday} />
                     <View style={{marginLeft: 14}}>
-                        <StyledText style={{...styles.fontStyle, fontSize: 15, ...styles.headerStyle}}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Birthday
                         </StyledText>
                         <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>

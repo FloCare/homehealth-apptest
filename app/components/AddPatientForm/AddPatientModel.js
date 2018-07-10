@@ -40,7 +40,6 @@ class DatePickerPopup extends Component {
             _hideDateTimePicker();
 
         };
-        let self = this
         return function (locals) {
             return (
                 <View style={{ flex: 1 }}>
@@ -76,8 +75,7 @@ class DatePickerPopup extends Component {
     }
 
     getLocals () {
-        let locals = super.getLocals();
-        return locals;
+        return super.getLocals();
     }
 
     _onChangeText (dateString) {
