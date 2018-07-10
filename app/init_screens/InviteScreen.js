@@ -12,7 +12,7 @@ export class InviteScreen extends Component {
   state = {showMessage: false};
 
   componentDidMount() {
-      firebase.analytics().setCurrentScreen(screenNames.InviteScreen, screenNames.InviteScreen);
+      firebase.analytics().setCurrentScreen(screenNames.invite, screenNames.invite);
   }
 // TODO will be used in the Sign In Page to figure out if it is a first time visit
   // async componentDidMount() {

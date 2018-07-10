@@ -58,6 +58,25 @@ const screenNames = {
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
     visitDayViewScreen: 'VisitDayViewScreen',
+
+    // Firebase screen names
+    home: 'home',
+    more: 'more',
+    login: 'login',
+    welcome: 'welcome',
+    invite: 'invite',
+    setPassCode: 'set_passcode',
+    passcodeVerification: 'passcode_verification',
+    addPatientScreen: 'add_patient',
+    patientDetailsScreen: 'patient_details',
+    patientListScreen: 'patient_list',
+    addNoteScreen: 'add_note',
+    addStopScreen: 'add_stop',
+    stopListScreen: 'stop_list',
+    addVisit: 'add_visit',
+    addVisitsForPatient: 'add_visits_for_patient',
+    visitList: 'visit_list',
+    visitMap: 'visit_map',
 };
 
 const visitType = {
@@ -100,6 +119,7 @@ const parameterValues = {
     TOGGLE: 'toggle',
     DND: 'dnd',
     DETAILS: 'details',
+    REFRESH: 'refresh'
 
 };
 

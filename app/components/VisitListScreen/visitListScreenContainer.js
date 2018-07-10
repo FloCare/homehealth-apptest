@@ -16,7 +16,6 @@ class VisitListScreenContainer extends Component {
             date: props.date,
             // showCalendar: false
         };
-        // this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);

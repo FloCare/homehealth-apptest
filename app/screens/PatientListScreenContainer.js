@@ -95,7 +95,7 @@ class PatientListScreenContainer extends Component {
         }
         // STOP GAP solution. Will be removed when redux is used
         if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.patientList, screenNames.patientList);
+            firebase.analytics().setCurrentScreen(screenNames.patientListScreen, screenNames.patientListScreen);
         }
     }
 
@@ -258,6 +258,9 @@ class PatientListScreenContainer extends Component {
     }
 
     onRefresh() {
+        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+            type: parameterValues.REFRESH
+        });
         this.patientDataService().updatePatientListFromServer()
             .then((result) => {
                 this.setState({refreshing: false});

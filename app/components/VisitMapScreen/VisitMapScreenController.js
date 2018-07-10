@@ -6,7 +6,7 @@ import * as MapUtils from '../../utils/MapUtils';
 import {Images} from '../../Images';
 import {MapPanel} from './MapPanel';
 import {ControlPanel} from './ControlPanel';
-import {eventNames, parameterValues} from '../../utils/constants';
+import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {visitDataService} from '../../data_services/VisitDataService';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 

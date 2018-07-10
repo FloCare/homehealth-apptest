@@ -23,6 +23,10 @@ class LoginScreen extends Component {
         });
     };
 
+    componentDidMount() {
+      firebase.analytics().setCurrentScreen(screenNames.login, screenNames.login);
+    }
+
     onSubmit() {
         const {email, password} = this.state;
         this.setState({
@@ -104,6 +108,7 @@ class LoginScreen extends Component {
         return (
             <LinearGradient
                 colors={[primaryColor, secondary]}
+                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
                 style={{
                     flex: 1,
                     alignItems: 'center',

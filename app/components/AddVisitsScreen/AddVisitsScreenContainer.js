@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Map} from 'immutable';
+import firebase from 'react-native-firebase';
 import {Platform, View, ActionSheetIOS, Alert} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import RNSecureKeyStore from 'react-native-secure-key-store';
@@ -61,7 +62,8 @@ class AddVisitsScreenContainer extends Component {
             date: props.date,
             selectedItems: Map(),
             refreshing: false,
-            isTeamVersion: undefined
+            isTeamVersion: undefined,
+            searchText: undefined
         };
         RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
@@ -91,10 +93,15 @@ class AddVisitsScreenContainer extends Component {
     }
 
     handleListUpdate() {
+        this.updateResultObjects(this.state.searchText);
         this.forceUpdate();
     }
 
     onNavigatorEvent(event) {
+        // STOP GAP solution. Will be removed when redux is used
+        if(event.id === 'didAppear') {
+            firebase.analytics().setCurrentScreen(screenNames.addVisit, screenNames.addVisit);
+        }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'new-stop') {
                 this.props.navigator.push(newStopNavigatorArg);
@@ -125,10 +132,14 @@ class AddVisitsScreenContainer extends Component {
         }
     }
 
-    onChangeText(text) {
+    updateResultObjects(text) {
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').filtered('name CONTAINS[c] $0', text).sorted('name');
         const filteredPatientList = this.patientDataService().getPatientsFilteredByName(text);
         this.patientsResultObject = this.patientDataService().getPatientsSortedByName(filteredPatientList);
+    }
+
+    onChangeText(text) {
+        this.updateResultObjects(text);
         this.setState({searchText: text});
     }
 
@@ -315,9 +326,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     // External Services
-    patientDataService = () => {
-        return PatientDataService.getInstance();
-    };
+    patientDataService = () => PatientDataService.getInstance();
 
 }
 

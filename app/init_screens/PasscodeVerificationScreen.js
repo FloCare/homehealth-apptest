@@ -1,15 +1,20 @@
 import React, {Component} from 'react';
+import firebase from 'react-native-firebase';
 import LinearGradient from 'react-native-linear-gradient';
 import VirtualKeyboard from 'react-native-virtual-keyboard';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {View, StyleSheet, Text, Alert, Dimensions, SafeAreaView} from 'react-native';
 import StartApp from '../screens/App';
-import {PrimaryColor, PrimaryFontFamily} from '../utils/constants';
+import {screenNames, PrimaryColor, PrimaryFontFamily} from '../utils/constants';
 
 class PasscodeVerificationScreen extends Component {
     static navigatorStyle = {
         navBarHidden: true
     };
+
+    componentDidMount() {
+      firebase.analytics().setCurrentScreen(screenNames.passcodeVerification, screenNames.passcodeVerification);
+    }
 
     constructor(props) {
         super(props);
@@ -85,6 +90,7 @@ class PasscodeVerificationScreen extends Component {
         return (
             <LinearGradient
                 colors={[primaryColor, secondary]}
+                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
                 style={{
                     flex: 1,
                     alignItems: 'center',

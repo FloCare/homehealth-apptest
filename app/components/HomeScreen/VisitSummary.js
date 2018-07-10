@@ -37,10 +37,10 @@ function visitSummaryToday(props) {
     return (
         <LinearGradient
             colors={[primaryColor, secondary]}
+            start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
             style={{
                 flex: 1,
                 alignItems: 'center',
-                backgroundColor: primaryColor,
                 margin: 0,
                 justifyContent: 'space-between'
                 // marginTop: 60,
@@ -126,10 +126,10 @@ function visitSummaryFuture(props) {
     return (
         <LinearGradient
             colors={[primaryColor, secondary]}
+            start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
             style={{
                 flex: 1,
                 alignItems: 'center',
-                backgroundColor: primaryColor,
                 margin: 0,
                 justifyContent: 'space-between'
                 // marginTop: 60,
@@ -207,10 +207,10 @@ function visitSummaryPast(props) {
     return (
         <LinearGradient
             colors={[primaryColor, secondary]}
+            start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
             style={{
                 flex: 1,
                 alignItems: 'center',
-                backgroundColor: primaryColor,
                 margin: 0,
                 justifyContent: 'space-between'
                 // marginTop: 60,
