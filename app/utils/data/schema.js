@@ -1,18 +1,19 @@
+import moment from 'moment/moment';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
-import * as Migrations from "./schemas/migrations/MigrationsIndex";
-import {Address} from "./schemas/Models/address/Address";
-import {Episode} from "./schemas/Models/episode/Episode";
-import {Patient} from "./schemas/Models/patient/Patient";
-import {Place} from "./schemas/Models/place/Place";
-import {Visit} from "./schemas/Models/visit/Visit";
-import {VisitOrder} from "./schemas/Models/visitOrder/VisitOrder";
-import * as PatientSchemas from "./schemas/Models/patient/schemaVersions/SchemaIndex";
-import * as AddressSchemas from "./schemas/Models/address/schemaVersions/SchemaIndex";
-import * as EpisodeSchemas from "./schemas/Models/episode/schemaVersions/SchemaIndex";
-import * as PlaceSchemas from "./schemas/Models/place/schemaVersions/SchemaIndex";
-import * as VisitSchemas from "./schemas/Models/visit/schemaVersions/SchemaIndex";
-import * as VisitOrderSchemas from "./schemas/Models/visitOrder/schemaVersions/SchemaIndex";
+import * as Migrations from './schemas/migrations/MigrationsIndex';
+import {Address} from './schemas/Models/address/Address';
+import {Episode} from './schemas/Models/episode/Episode';
+import {Patient} from './schemas/Models/patient/Patient';
+import {Place} from './schemas/Models/place/Place';
+import {Visit} from './schemas/Models/visit/Visit';
+import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
+import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
+import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
+import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
+import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex';
+import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
+import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
 
 const Realm = require('realm');
 
@@ -74,6 +75,14 @@ class FloDBProvider {
                 migration: Migrations.SplitNameToFirstNameLastNameMigration,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                schemaVersion: 5,
+                migration: Migrations.v005,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
@@ -92,7 +101,7 @@ class FloDBProvider {
         // Setting schema for each model
         models.forEach((realmModel) => {
             realmModel.schema = schemaMigrations[targetSchemaVersion].schema.find(
-                (schema) => schema.name === realmModel.getSchemaName())
+                (schema) => schema.name === realmModel.getSchemaName());
         });
 
         try {
@@ -143,10 +152,10 @@ function CreateAndSaveDummies() {
         const patient = floDB.create(
             Patient.schema.name, {
                 patientID,
-                firstName: `Joh`,
+                firstName: 'Joh',
                 lastName: `n_${Math.round(Math.random() * 100)}`,
                 primaryContact: `99647165${Math.round(Math.random() * 100)}`,
-                timestamp: 0
+                timestamp: moment().utc().valueOf(),
             });
         // Create the corresponding address
         patient.address = {
