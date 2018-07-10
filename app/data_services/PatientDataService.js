@@ -103,6 +103,7 @@ export class PatientDataService {
                 notes: patient.notes ? patient.notes.toString().trim() : '',
                 creationTimestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
                 assignmentTimestamp: moment().utc().valueOf(),
+                lastUpdateTimestamp: 0,
                 isLocallyOwned,
                 archived: false
             }, updateIfExisting);
@@ -139,6 +140,7 @@ export class PatientDataService {
                     primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
                     emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                     notes: patient.notes ? patient.notes.toString().trim() : '',
+                    lastUpdateTimestamp: moment().utc().valueOf(),
                 }, true);
             });
             this.updatePatientsInRedux([patientObj]);

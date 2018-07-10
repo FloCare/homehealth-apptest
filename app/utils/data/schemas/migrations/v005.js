@@ -8,6 +8,7 @@ export const v005 = (oldRealm, newRealm) => {
         for (let i = 0; i < oldPatientObjects.length; i++) {
             newPatientObjects[i].creationTimestamp = oldPatientObjects[i].timestamp;
             newPatientObjects[i].assignmentTimestamp = oldPatientObjects[i].timestamp;
+            newPatientObjects[i].lastUpdateTimestamp = oldPatientObjects[i].timestamp;
         }
     }
 };

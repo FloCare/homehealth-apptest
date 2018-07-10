@@ -12,6 +12,7 @@ export const PatientSchemaV5 = {
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
         creationTimestamp: 'int',
         assignmentTimestamp: 'int',
+        lastUpdateTimestamp: 'int',
         archived: {type: 'bool', default: false},
         isLocallyOwned: {type: 'bool', default: true},
     }
