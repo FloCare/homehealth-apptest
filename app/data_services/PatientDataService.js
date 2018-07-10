@@ -97,7 +97,6 @@ export class PatientDataService {
         const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
         const emergencyContactName = patient.emergencyContactInfo.contactName;
         const emergencyContactRelation = patient.emergencyContactInfo.contactRelation;
-        console.log("writing DOB: " + patient.dateOfBirth);
         this.floDB.write(() => {
             // Add the patient
             newPatient = this.floDB.create(Patient.schema.name, {
@@ -218,7 +217,7 @@ export class PatientDataService {
 
                 return {
                     deletedPatients,
-
+                    newPatientIDs
                 };
             })
             .then(async ({deletedPatients, newPatientIDs}) => {
@@ -247,6 +246,14 @@ export class PatientDataService {
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
                     patientObject.dateOfBirth = patientObject.dob || null;
+                    if (patientObject.dateOfBirth){
+                        try {
+                            patientObject.dateOfBirth = moment(patientObject.dateOfBirth, 'YYYY-MM-DD').toDate();
+                        } catch (e) {
+                            patientObject.dateOfBirth = null;
+                            console.log("Unable to parse DOB. Skipping field");
+                        }
+                    }
                     patientObject.emergencyContactInfo = {
                         emergencyContactName: patientObject.emergencyContactName || null,
                         emergencyContactNumber: patientObject.emergencyContactNumber || null,
