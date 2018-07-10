@@ -1,3 +1,4 @@
 <resources>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">_9q-fpO4NWxccvRz1V4z4lcwCSZbH1VVg14MQ</string>
     <string name="app_name">FloCare</string>
 </resources>

@@ -3,6 +3,7 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.microsoft.codepush.react.CodePush;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
@@ -15,6 +16,11 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.facebook.react.ReactInstanceManager;
+
+// Add CodePush imports
+import com.microsoft.codepush.react.ReactInstanceHolder;
+import com.microsoft.codepush.react.CodePush;
 
 import com.reactnativenavigation.NavigationApplication;
 
@@ -23,7 +29,7 @@ import com.airbnb.android.react.maps.MapsPackage;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainApplication extends NavigationApplication {
+public class MainApplication extends NavigationApplication implements ReactInstanceHolder {
 
   @Override
   public boolean isDebug() {
@@ -40,8 +46,15 @@ public class MainApplication extends NavigationApplication {
             new RNFirebasePackage(),
             new RNImmediatePhoneCallPackage(),
             new SplashScreenReactPackage(),
-            new RNFirebaseAnalyticsPackage() 
+            new RNFirebaseAnalyticsPackage(),
+            new CodePush("_9q-fpO4NWxccvRz1V4z4lcwCSZbH1VVg14MQ", getApplicationContext(), BuildConfig.DEBUG)
     );
+  }
+
+  @Override
+  public String getJSBundleFile() {
+        // Override default getJSBundleFile method with the one CodePush is providing
+    return CodePush.getJSBundleFile();
   }
 
   @Override
@@ -53,4 +66,10 @@ public class MainApplication extends NavigationApplication {
   public String getJSMainModuleName() {
     return "index";
   }
+
+      @Override
+    public ReactInstanceManager getReactInstanceManager() {
+        // CodePush must be told how to find React Native instance
+        return getReactNativeHost().getReactInstanceManager();
+    }
 }
