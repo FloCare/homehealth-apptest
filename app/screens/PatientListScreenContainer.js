@@ -6,7 +6,7 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
-import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
+import {createSectionedListByName} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
 import {PatientDataService} from '../data_services/PatientDataService';
@@ -208,7 +208,7 @@ class PatientListScreenContainer extends Component {
             const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
             const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
             const patientCount = formattedPatientList.length;
-            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
+            const sectionedPatientList = createSectionedListByName(formattedPatientList);
             this.setState({
                 patientList: sectionedPatientList,
                 patientCount
@@ -219,7 +219,7 @@ class PatientListScreenContainer extends Component {
             // Todo: Search on other fields ???
             const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
             const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
-            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
+            const sectionedPatientList = createSectionedListByName(formattedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
     }

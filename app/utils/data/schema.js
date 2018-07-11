@@ -18,8 +18,6 @@ import * as PhysicianSchemas from "./schemas/Models/physician/schemaVersions/Sch
 
 const Realm = require('realm');
 
-Physician.schema = PhysicianSchemaV1;
-
 let floDB = null;
 
 class FloDBProvider {
