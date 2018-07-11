@@ -3,7 +3,7 @@ import firebase from 'react-native-firebase';
 import {Platform, Alert} from 'react-native';
 import {StopListScreen} from '../components/StopListScreen';
 import {floDB, Place, VisitOrder} from '../utils/data/schema';
-import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
+import {createSectionedListByName} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
@@ -142,7 +142,7 @@ class StopListScreenContainer extends Component {
             const stopList = floDB.objects(Place.schema.name).filtered('archived = false');
             const sortedStopList = stopList.sorted('name');
             const stopCount = sortedStopList.length;
-            const sectionedStopList = createSectionedListFromRealmObject(sortedStopList);
+            const sectionedStopList = createSectionedListByName(sortedStopList);
             this.setState({
                 stopList: sectionedStopList,
                 stopCount
@@ -154,7 +154,7 @@ class StopListScreenContainer extends Component {
             const queryStr = `name CONTAINS[c] "${query.toString()}"`;
             const stopList = floDB.objects(Place.schema.name).filtered('archived = false').filtered(queryStr);
             const sortedStopList = stopList.sorted('name');
-            const sectionedStopList = createSectionedListFromRealmObject(sortedStopList);
+            const sectionedStopList = createSectionedListByName(sortedStopList);
             this.setState({stopList: sectionedStopList});
         }
     }
