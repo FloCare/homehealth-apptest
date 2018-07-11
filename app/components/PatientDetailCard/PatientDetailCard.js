@@ -1,12 +1,11 @@
 import React from 'react';
 import firebase from 'react-native-firebase';
-import {View, ScrollView, Image, Linking, Platform} from 'react-native';
+import {View, ScrollView, Image, Linking, Platform, TouchableOpacity} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
-
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
@@ -130,7 +129,7 @@ const PatientDetailCard = (props) => {
                         onPress={() => {
                             if (primaryContact) {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                                    'type': parameterValues.CALL
+                                    'type': parameterValues.CALL_PATIENT
                                 });
                                 if (Platform.OS === 'android') {
                                     Linking.openURL(`tel: ${primaryContact}`);
@@ -181,37 +180,30 @@ const PatientDetailCard = (props) => {
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Emergency Contact Details
                         </StyledText>
-                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
-                            {emergencyContactNumber}
-                        </StyledText>
-                        {emergencyContactText && emergencyContactText.length > 0 &&
-                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
-                            {emergencyContactText}
-                        </StyledText>
-                        }
+                        <TouchableOpacity onPress={ () => {
+                            if (emergencyContactNumber) {
+                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                    'type': parameterValues.CALL_EMERGENCY
+                                });
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${emergencyContactNumber}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContactNumber);
+                                }
+                            }
+                        }}>
+                        <View>
+                            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                                {emergencyContactNumber}
+                            </StyledText>
+                            {emergencyContactText && emergencyContactText.length > 0 &&
+                            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                                {emergencyContactText}
+                            </StyledText>
+                            }
+                        </View>
+                        </TouchableOpacity>
                     </View>
-                    {/*<Button*/}
-                        {/*title="Call"*/}
-                        {/*textStyle={{*/}
-                            {/*...styles.fontStyle,*/}
-                            {/*color: PrimaryColor*/}
-                        {/*}}*/}
-                        {/*buttonStyle={styles.callButtonStyle}*/}
-                        {/*containerViewStyle={{*/}
-                            {/*width: '20%',*/}
-                            {/*position: 'absolute',*/}
-                            {/*right: 0*/}
-                        {/*}}*/}
-                        {/*onPress={() => {*/}
-                            {/*if (emergencyContactNumber) {*/}
-                                {/*if (Platform.OS === 'android') {*/}
-                                    {/*Linking.openURL(`tel: ${emergencyContactNumber}`);*/}
-                                {/*} else {*/}
-                                    {/*RNImmediatePhoneCall.immediatePhoneCall(emergencyContactNumber);*/}
-                                {/*}*/}
-                            {/*}*/}
-                        {/*}}*/}
-                    {/*/>*/}
                 </View>
                 }
 
