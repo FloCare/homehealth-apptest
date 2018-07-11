@@ -47,7 +47,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new RNImmediatePhoneCallPackage(),
             new SplashScreenReactPackage(),
             new RNFirebaseAnalyticsPackage(),
-            new CodePush("_9q-fpO4NWxccvRz1V4z4lcwCSZbH1VVg14MQ", getApplicationContext())
+            new CodePush("_9q-fpO4NWxccvRz1V4z4lcwCSZbH1VVg14MQ", getApplicationContext(), BuildConfig.DEBUG)
     );
   }
 
