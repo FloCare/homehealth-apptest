@@ -133,9 +133,6 @@ class SortedVisitListContainer extends Component {
 
 
     onDoneTogglePress(visitID) {
-        firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
-            type: parameterValues.TOGGLE
-        });
         console.log(`${visitID} was changed`);
         visitDataService.toggleVisitDone(visitID);
     }

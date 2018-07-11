@@ -67,7 +67,7 @@ class MoreScreen extends Component {
         }
         // STOP GAP solution. To brainstorm on the right way of doing it
         if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.moreScreen, screenNames.moreScreen);
+            firebase.analytics().setCurrentScreen(screenNames.more, screenNames.more);
         }
     }
         render() {
