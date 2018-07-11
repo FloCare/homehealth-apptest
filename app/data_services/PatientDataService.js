@@ -34,7 +34,9 @@ export class PatientDataService {
             notes: patient.notes,
             //TODO this will need work if more than one episode per patient
             visits: patient.episodes[0].visits.map(visit => visit.visitID),
-            archived: patient.archived
+            archived: patient.archived,
+            recentlyAssigned: moment.utc(patient.assignmentTimestamp).diff(moment.utc(), 'days') === 0,
+            recentlyUpdated: moment.utc(patient.lastUpdateTimestamp).diff(moment.utc(), 'days') === 0,
         };
     }
 
@@ -92,6 +94,7 @@ export class PatientDataService {
         const addressId = Math.random().toString();
 
         let newPatient = null;
+        const creationTimestamp = patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf();
         this.floDB.write(() => {
             // Add the patient
             newPatient = this.floDB.create(Patient.schema.name, {
@@ -101,9 +104,9 @@ export class PatientDataService {
                 primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
                 emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
-                creationTimestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
+                creationTimestamp,
                 assignmentTimestamp: moment().utc().valueOf(),
-                lastUpdateTimestamp: 0,
+                lastUpdateTimestamp: creationTimestamp,
                 isLocallyOwned,
                 archived: false
             }, updateIfExisting);

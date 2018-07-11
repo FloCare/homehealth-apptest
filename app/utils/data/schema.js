@@ -155,7 +155,9 @@ function CreateAndSaveDummies() {
                 firstName: 'Joh',
                 lastName: `n_${Math.round(Math.random() * 100)}`,
                 primaryContact: `99647165${Math.round(Math.random() * 100)}`,
-                timestamp: moment().utc().valueOf(),
+                creationTimestamp: moment().utc().valueOf(),
+                assignmentTimestamp: moment().utc().valueOf(),
+                lastUpdateTimestamp: moment().utc().valueOf(),
             });
         // Create the corresponding address
         patient.address = {

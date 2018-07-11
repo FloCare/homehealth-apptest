@@ -12,7 +12,7 @@ export function configure() {
         onNotification(notification) {
             console.log('NOTIFICATION:', notification);
 
-            if (notification.data.remote) {
+            if (notification.data.remote && !notification.foreground) {
                 MessagingServiceCoordinator.getInstance().onNotification(notification);
             }
 

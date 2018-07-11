@@ -28,6 +28,7 @@ export class BaseMessagingService {
             case 'PNConnectedCategory':
                 this.connected = true;
                 break;
+            case 'PNTimeoutCategory':
             case 'PNNetworkIssuesCategory':
             case 'PNNetworkDownCategory':
                 this.connected = false;

@@ -4,7 +4,7 @@ import {PrimaryColor, PrimaryFontFamily} from '../../../utils/constants';
 const styles = {
     sectionHeader: {
         padding: 10,
-        paddingLeft: 15,
+        paddingLeft: 30,
         fontSize: 17,
         color: '#525252',
         backgroundColor: '#f3f3f3',
