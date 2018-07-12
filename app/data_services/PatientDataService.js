@@ -95,6 +95,11 @@ export class PatientDataService {
 
         let newPatient = null;
         const creationTimestamp = patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf();
+
+        const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
+        const emergencyContactName = patient.emergencyContactInfo.contactName;
+        const emergencyContactRelation = patient.emergencyContactInfo.contactRelation;
+
         this.floDB.write(() => {
             // Add the patient
             newPatient = this.floDB.create(Patient.schema.name, {
@@ -108,7 +113,11 @@ export class PatientDataService {
                 assignmentTimestamp: moment().utc().valueOf(),
                 lastUpdateTimestamp: creationTimestamp,
                 isLocallyOwned,
-                archived: false
+                archived: false,
+                dateOfBirth: patient.dateOfBirth,
+                emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : null,
+                emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : null,
+                emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : null,
             }, updateIfExisting);
 
             if (isLocallyOwned) {
@@ -132,6 +141,10 @@ export class PatientDataService {
         if (patientObj) {
             if (!isServerUpdate) { this._checkPermissionForEditing([patientObj]); }
 
+            const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
+            const emergencyContactName = patient.emergencyContactInfo.contactName;
+            const emergencyContactRelation = patient.emergencyContactInfo.contactRelation;
+
             this.floDB.write(() => {
                 // Edit the corresponding address info
                 if (patient.addressID) { addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID); }
@@ -144,7 +157,10 @@ export class PatientDataService {
                     primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : undefined,
                     emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : undefined,
                     notes: patient.notes ? patient.notes.toString().trim() : undefined,
-                    lastUpdateTimestamp: moment().utc().valueOf(),
+                    dateOfBirth: patient.dateOfBirth,
+                    emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : undefined,
+                    emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : undefined,
+                    emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : undefined,
                 }, true);
             });
             this.updatePatientsInRedux([patientObj], isServerUpdate);
@@ -236,6 +252,21 @@ export class PatientDataService {
                     patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
+
+                    patientObject.dateOfBirth = patientObject.dob || null;
+                    if (patientObject.dateOfBirth) {
+                        try {
+                            patientObject.dateOfBirth = moment(patientObject.dateOfBirth, 'YYYY-MM-DD').toDate();
+                        } catch (e) {
+                            patientObject.dateOfBirth = null;
+                            console.log('Unable to parse DOB. Skipping field');
+                        }
+                    }
+                    patientObject.emergencyContactInfo = {
+                        emergencyContactName: patientObject.emergencyContactName || null,
+                        emergencyContactNumber: patientObject.emergencyContactNumber || null,
+                        emergencyContactRelation: patientObject.emergencyContactRelation || null
+                    };
                 }
                 return json;
             });

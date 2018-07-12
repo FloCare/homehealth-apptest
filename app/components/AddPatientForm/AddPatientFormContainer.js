@@ -1,17 +1,29 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
-import {View} from 'react-native';
+import {View, TouchableOpacity, Image, Text} from 'react-native';
 import {Button} from 'react-native-elements';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
+import ModalSelector from 'react-native-modal-selector';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
+import {ButtonTextStyles} from '../common/SimpleButton';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
-import {PrimaryFontFamily, eventNames} from '../../utils/constants';
+import {PrimaryFontFamily, eventNames, PrimaryColor} from '../../utils/constants';
 import {PatientDataService} from '../../data_services/PatientDataService';
+
+import {Images} from '../../Images';
+
 
 class AddPatientFormContainer extends Component {
     constructor(props) {
         super(props);
+        const emergencyContactInfo = {
+            contactNumber: props.emergencyContactInfo ? props.emergencyContactInfo.contactNumber || null : null,
+            contactName: props.emergencyContactInfo ? props.emergencyContactInfo.contactName || null : null,
+            contactRelation: props.emergencyContactInfo ? props.emergencyContactInfo.contactRelation || null : null
+        };
+        const showEmergencyContact = !!emergencyContactInfo.contactNumber;
         this.state = {
             value: {
                 patientID: props.patientID || null,
@@ -29,7 +41,11 @@ class AddPatientFormContainer extends Component {
                 //diagnosis: props.diagnosis || null,
                 notes: props.notes || null,
                 lat: props.lat || null,
-                long: props.long || null
+                long: props.long || null,
+                showDateOfBirth: !!props.dateOfBirth,
+                dateOfBirth: props.dateOfBirth || null,
+                showEmergencyContact: showEmergencyContact,
+                emergencyContactInfo: emergencyContactInfo
             },
             //selectedItems: []
         };
@@ -115,7 +131,15 @@ class AddPatientFormContainer extends Component {
                 //diagnosis: null,
                 notes: null,
                 lat: null,
-                long: null
+                long: null,
+                showDateOfBirth: false,
+                dateOfBirth: null,
+                showEmergencyContact: false,
+                emergencyContactInfo: {
+                    contactNumber: null,
+                    contactName: null,
+                    contactRelation: null
+                }
             },
             //selectedItems: []
         });
@@ -157,21 +181,108 @@ class AddPatientFormContainer extends Component {
            this.clearForm();
            // Call Screen Container's onSubmit() hook
            onSubmit(patientId);
-        }
+        } else {
+           const validationResult = this.addPatientForm.validate();
+           if (validationResult.errors) {
+               this.addPatientForm.getComponent(validationResult.errors[0].path).refs.input.focus();
+           }
+       }
     }
+
+    disableExtraFields = () => {
+        return this.state.value.showDateOfBirth && this.state.value.showEmergencyContact;
+    };
+
+
+    ExtraFieldsClickHandler = (key) => {
+        switch (key) {
+            case 'dob':
+                this.setState({value: {
+                        ...this.state.value,
+                        showDateOfBirth: true,
+                        isDateTimePickerVisible: false
+                }});
+                break;
+            case 'emergencyContact':
+                this.setState({value: {
+                    ...this.state.value,
+                    showEmergencyContact: true
+                }});
+                break;
+            default:
+                console.log('unhandled key');
+        }
+    };
+
+    ExtraFieldsStyleData = {
+        data: [
+            {key: 0, id: 'dob', label: 'Date Of Birth'},
+            {key: 1, id: 'emergencyContact', label: 'Emergency Contact Information'},
+        ],
+        optionTextStyle: {color: 'black'},
+        overLayStyle: {backgroundColor: 'rgba(0,250,250,0.7)', padding: 5},
+        optionContainerStyle: {backgroundColor: 'rgba(255,255,255,1.0)'},
+        cancelContainerStyle: {backgroundColor: 'rgba(255,255,255,1.0)', borderRadius: 5},
+    };
+
+    // External Services
+    patientDataService = () => { return PatientDataService.getInstance(); };
 
     render() {
         const {onSubmit} = this.props;
+        const addFieldsButtonOpacity = this.disableExtraFields() ? 0.2 : 1.0;
         return (
             <View style={styles.containerStyle}>
-                <AddPatientForm
-                    refName={this.setForm}
-                    onChange={this.onChange}
-                    options={this.options}
-                    modelType={AddPatientModel}
-                    value={this.state.value}
-                    //selectedItems={this.state.selectedItems}
-                />
+
+                <KeyboardAwareScrollView
+                    keyboardShouldPersistTaps={'always'}
+                    enableAutoAutomaticScroll={false}
+                    style={{...styles.formScrollViewStyle, marginBottom: 20}}
+                >
+                    <AddPatientForm
+                        refName={this.setForm}
+                        onChange={this.onChange}
+                        options={this.options}
+                        modelType={AddPatientModel}
+                        value={this.state.value}
+                        //selectedItems={this.state.selectedItems}
+                    />
+                    <ModalSelector
+                        data={this.ExtraFieldsStyleData.data}
+                        onChange={(option) => { this.ExtraFieldsClickHandler(option.id); }}
+                        overLayStyle={this.ExtraFieldsStyleData.overLayStyle}
+                        optionContainerStyle={this.ExtraFieldsStyleData.optionContainerStyle}
+                        optionTextStyle={this.ExtraFieldsStyleData.optionTextStyle}
+                        cancelText={'Cancel'}
+                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}
+                        disabled={this.disableExtraFields()}
+                    >
+
+                        <TouchableOpacity
+                            style={{...styles.buttonStyle,
+                                marginTop: 20,
+                                backgroundColor: 'rgba(0, 0, 0, 0)',
+                                alignSelf: 'center'}}
+                        >
+                            <View
+                                style={{flex: 1,
+                                    flexDirection: 'row',
+                                    opacity: addFieldsButtonOpacity,
+                                    alignItems: 'center',
+                                    paddingBottom: 20}}
+                            >
+                                <Image
+                                    style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}}
+                                   source={Images.plus}
+                                />
+                                <Text style={{...ButtonTextStyles.textStyle, fontSize: 20, color: PrimaryColor}}>
+                                    {'Add More Fields'}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </ModalSelector>
+                </KeyboardAwareScrollView>
+
                 <Button
                     containerViewStyle={{marginLeft: 0, marginRight: 0}}
                     buttonStyle={styles.buttonStyle}
@@ -185,12 +296,6 @@ class AddPatientFormContainer extends Component {
             </View>
         );
     }
-
-    // External Services
-    patientDataService = () => {
-        return PatientDataService.getInstance();
-    };
-
 
 }
 
