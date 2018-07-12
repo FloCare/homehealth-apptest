@@ -233,68 +233,68 @@ class AddPatientFormContainer extends Component {
         const addFieldsButtonOpacity = this.disableExtraFields() ? 0.2 : 1.0;
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.containerStyle}>
+                <View style={styles.containerStyle}>
 
-                <KeyboardAwareScrollView
-                    keyboardShouldPersistTaps={'always'}
-                    enableAutoAutomaticScroll={false}
-                    style={{...styles.formScrollViewStyle, marginBottom: 20}}
-                >
-                    <AddPatientForm
-                        refName={this.setForm}
-                        onChange={this.onChange}
-                        options={this.options}
-                        modelType={AddPatientModel}
-                        value={this.state.value}
-                        //selectedItems={this.state.selectedItems}
-                    />
-                    <ModalSelector
-                        data={this.ExtraFieldsStyleData.data}
-                        onChange={(option) => { this.ExtraFieldsClickHandler(option.id); }}
-                        overLayStyle={this.ExtraFieldsStyleData.overLayStyle}
-                        optionContainerStyle={this.ExtraFieldsStyleData.optionContainerStyle}
-                        optionTextStyle={this.ExtraFieldsStyleData.optionTextStyle}
-                        cancelText={'Cancel'}
-                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}
-                        disabled={this.disableExtraFields()}
+                    <KeyboardAwareScrollView
+                        keyboardShouldPersistTaps={'always'}
+                        enableAutoAutomaticScroll={false}
+                        style={{...styles.formScrollViewStyle, marginBottom: 20}}
                     >
-
-                        <TouchableOpacity
-                            style={{...styles.buttonStyle,
-                                marginTop: 20,
-                                backgroundColor: 'rgba(0, 0, 0, 0)',
-                                alignSelf: 'center'}}
+                        <AddPatientForm
+                            refName={this.setForm}
+                            onChange={this.onChange}
+                            options={this.options}
+                            modelType={AddPatientModel}
+                            value={this.state.value}
+                            //selectedItems={this.state.selectedItems}
+                        />
+                        <ModalSelector
+                            data={this.ExtraFieldsStyleData.data}
+                            onChange={(option) => { this.ExtraFieldsClickHandler(option.id); }}
+                            overLayStyle={this.ExtraFieldsStyleData.overLayStyle}
+                            optionContainerStyle={this.ExtraFieldsStyleData.optionContainerStyle}
+                            optionTextStyle={this.ExtraFieldsStyleData.optionTextStyle}
+                            cancelText={'Cancel'}
+                            cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}
+                            disabled={this.disableExtraFields()}
                         >
-                            <View
-                                style={{flex: 1,
-                                    flexDirection: 'row',
-                                    opacity: addFieldsButtonOpacity,
-                                    alignItems: 'center',
-                                    paddingBottom: 20}}
-                            >
-                                <Image
-                                    style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}}
-                                   source={Images.plus}
-                                />
-                                <Text style={{...ButtonTextStyles.textStyle, fontSize: 20, color: PrimaryColor}}>
-                                    {'Add More Fields'}
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </ModalSelector>
-                </KeyboardAwareScrollView>
 
-                <Button
-                    containerViewStyle={{marginLeft: 0, marginRight: 0}}
-                    buttonStyle={styles.buttonStyle}
-                    textStyle={{
-                        fontFamily: PrimaryFontFamily,
-                        fontSize: 16
-                    }}
-                    title='Save'
-                    onPress={(e) => this.handleSubmit(e, onSubmit)}
-                />
-            </View>
+                            <TouchableOpacity
+                                style={{...styles.buttonStyle,
+                                    marginTop: 20,
+                                    backgroundColor: 'rgba(0, 0, 0, 0)',
+                                    alignSelf: 'center'}}
+                            >
+                                <View
+                                    style={{flex: 1,
+                                        flexDirection: 'row',
+                                        opacity: addFieldsButtonOpacity,
+                                        alignItems: 'center',
+                                        paddingBottom: 20}}
+                                >
+                                    <Image
+                                        style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}}
+                                       source={Images.plus}
+                                    />
+                                    <Text style={{...ButtonTextStyles.textStyle, fontSize: 20, color: PrimaryColor}}>
+                                        {'Add More Fields'}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        </ModalSelector>
+                    </KeyboardAwareScrollView>
+
+                    <Button
+                        containerViewStyle={{marginLeft: 0, marginRight: 0}}
+                        buttonStyle={styles.buttonStyle}
+                        textStyle={{
+                            fontFamily: PrimaryFontFamily,
+                            fontSize: 16
+                        }}
+                        title='Save'
+                        onPress={(e) => this.handleSubmit(e, onSubmit)}
+                    />
+                </View>
             </TouchableWithoutFeedback>
         );
     }
