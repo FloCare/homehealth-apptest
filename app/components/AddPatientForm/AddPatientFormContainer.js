@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
-import {View, TouchableOpacity, Image, Text} from 'react-native';
+import {View, TouchableOpacity, Image, Text, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import {Button} from 'react-native-elements';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import ModalSelector from 'react-native-modal-selector';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
@@ -232,6 +232,7 @@ class AddPatientFormContainer extends Component {
         const {onSubmit} = this.props;
         const addFieldsButtonOpacity = this.disableExtraFields() ? 0.2 : 1.0;
         return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.containerStyle}>
 
                 <KeyboardAwareScrollView
@@ -294,6 +295,7 @@ class AddPatientFormContainer extends Component {
                     onPress={(e) => this.handleSubmit(e, onSubmit)}
                 />
             </View>
+            </TouchableWithoutFeedback>
         );
     }
 
