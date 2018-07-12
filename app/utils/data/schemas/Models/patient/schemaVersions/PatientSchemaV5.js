@@ -7,7 +7,6 @@ export const PatientSchemaV5 = {
         lastName: 'string?',
         address: 'Address',                                                      // optional by default
         primaryContact: 'string',
-        emergencyContact: 'string?',
         notes: 'string?',
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
         creationTimestamp: 'int',
