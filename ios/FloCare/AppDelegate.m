@@ -21,11 +21,9 @@
   NSURL *jsCodeLocation;
 
 #ifdef DEBUG
-  NSLog(@"Inside Debug");
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
   jsCodeLocation = [CodePush bundleURL];
-  NSLog(@"Value of string is %@", jsCodeLocation);
 #endif
   
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
