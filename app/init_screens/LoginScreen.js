@@ -11,7 +11,7 @@ import {getUserProps} from '../utils/API/UserAPI';
 
 // TODO Change to the endpoint on Aptible
 const API_URL = 'https://app-9781.on-aptible.com/get-token/';
-var codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESTART };
+var codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME };
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
