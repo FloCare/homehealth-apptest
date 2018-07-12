@@ -89,7 +89,7 @@ export class PatientDataService {
     createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false) {
         // Todo: Add proper ID generators
         // Create a patient, create & add an address, and create & add an episode
-        const patientId = !isLocallyOwned && patient.id ? patient.id : Math.random().toString();
+        const patientId = !isLocallyOwned && patient.patientID ? patient.patientID : Math.random().toString();
         const episodeId = Math.random().toString();
         const addressId = Math.random().toString();
 
@@ -126,27 +126,28 @@ export class PatientDataService {
         }
     }
 
-    editExistingPatient(patientId, patient) {
-        const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
+    editExistingPatient(patient, isServerUpdate = false) {
+        const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patient.patientID);
+
         if (patientObj) {
-            this._checkPermissionForEditing([patientObj]);
+            if (!isServerUpdate) { this._checkPermissionForEditing([patientObj]); }
 
             this.floDB.write(() => {
                 // Edit the corresponding address info
-                addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID);
+                if (patient.addressID) { addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID); }
 
                 // Edit the patient info
                 this.floDB.create(Patient.schema.name, {
                     patientID: patient.patientID,
-                    firstName: patient.firstName ? patient.firstName.toString().trim() : ' ',
-                    lastName: patient.lastName ? patient.lastName.toString().trim() : ' ',
-                    primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
-                    emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
-                    notes: patient.notes ? patient.notes.toString().trim() : '',
+                    firstName: patient.firstName ? patient.firstName.toString().trim() : undefined,
+                    lastName: patient.lastName ? patient.lastName.toString().trim() : undefined,
+                    primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : undefined,
+                    emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : undefined,
+                    notes: patient.notes ? patient.notes.toString().trim() : undefined,
                     lastUpdateTimestamp: moment().utc().valueOf(),
                 }, true);
             });
-            this.updatePatientsInRedux([patientObj]);
+            this.updatePatientsInRedux([patientObj], isServerUpdate);
         }
     }
 
@@ -225,16 +226,26 @@ export class PatientDataService {
             });
     }
 
-    fetchAndSavePatientsByID(newPatientIDs) {
-        return PatientAPI.getPatientsByID(newPatientIDs)
+    _fetchPatientsByIDAndAdapt(patientIDs) {
+        return PatientAPI.getPatientsByID(patientIDs)
             .then((json) => {
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
-                    patientObject.id = patientObject.id.toString();
+                    patientObject.patientID = patientObject.id.toString();
                     patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
+                }
+                return json;
+            });
+    }
+
+    fetchAndSavePatientsByID(newPatientIDs) {
+        return this._fetchPatientsByIDAndAdapt(newPatientIDs)
+            .then((json) => {
+                const successfulObjects = json.success;
+                for (const patientObject of successfulObjects) {
                     this.createNewPatient(patientObject, false, true);
                 }
                 addressDataService.attemptFetchForPendingAddresses();
@@ -242,8 +253,20 @@ export class PatientDataService {
             });
     }
 
-    updatePatientsInRedux(patients) {
-        this._checkPermissionForEditing(patients);
+    fetchAndEditPatientsByID(patientIDs) {
+        return this._fetchPatientsByIDAndAdapt(patientIDs)
+            .then((json) => {
+                const successfulObjects = json.success;
+                for (const patientObject of successfulObjects) {
+                    this.editExistingPatient(patientObject, true);
+                }
+                addressDataService.attemptFetchForPendingAddresses();
+                return successfulObjects.length;
+            });
+    }
+
+    updatePatientsInRedux(patients, isServerUpdate = false) {
+        if (!isServerUpdate) { this._checkPermissionForEditing(patients); }
 
         this.store.dispatch({
             type: PatientActions.EDIT_PATIENTS,

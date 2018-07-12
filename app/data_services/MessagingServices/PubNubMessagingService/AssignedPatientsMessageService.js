@@ -62,6 +62,9 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
                 PatientDataService.getInstance().archivePatient(patientID.toString(), true);
                 this.notifyPatientAdditions();
                 break;
+            case 'UPDATE' :
+                PatientDataService.getInstance().fetchAndEditPatientsByID([patientID]);
+                break;
             default:
                 // throw new Error('Unrecognised action type in assigned patient message');
                 console.log(`unrecognised message: ${message}`);

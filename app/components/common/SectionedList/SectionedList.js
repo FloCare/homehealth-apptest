@@ -1,16 +1,11 @@
 import React, {Component} from 'react';
-import {View, Image, SectionList, TouchableOpacity} from 'react-native';
+import {View, SectionList, TouchableOpacity} from 'react-native';
 import {
-    Menu,
-    MenuOptions,
     MenuOption,
-    MenuTrigger
 } from 'react-native-popup-menu';
 import styles from './styles';
 import {PrimaryColor, TransparentPrimaryColor} from '../../../utils/constants';
 import StyledText from '../../common/StyledText';
-import {Images} from '../../../Images';
-import CustomMenuRenderer from '../CustomMenuRenderer';
 
 class SectionedList extends Component {
     constructor(props) {
@@ -45,7 +40,7 @@ class SectionedList extends Component {
                 onPress={({e}) => this.props.onItemPressed({item}, e)}
             >
                 <View
-                    style={{marginLeft: 5, backgroundColor: item.recentlyAssigned ? PrimaryColor : 'clear', width: 7, height: 7, borderRadius: 7}}
+                    style={{marginLeft: 5, backgroundColor: item.recentlyUpdated ? PrimaryColor : 'clear', width: 7, height: 7, borderRadius: 7}}
                 />
                 <View>
                     <StyledText style={styles.nameStyle}>{item.name}</StyledText>
