@@ -109,7 +109,8 @@ const eventNames = {
 const parameterValues = {
     SUCCESS: 'success',
     FAILURE: 'failure',
-    CALL: 'call',
+    CALL_PATIENT: 'call_patient',
+    CALL_EMERGENCY: 'call_emergency',
     NAVIGATION: 'navigation',
     EDIT_NOTES: 'edit_notes',
     MAP: 'map',

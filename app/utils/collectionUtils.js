@@ -39,10 +39,10 @@ function isNonEmptyArray(object) {
     return object && object.length && object.length > 0;
 }
 
-const createSectionedListFromRealmObject = (realmObj) => {
+const createSectionedListByName = (realmObj) => {
     const arr = Object.keys(realmObj).map((key) => realmObj[key]);
     const sections = arr.reduce((m, obj) => {
-        const title = obj.name[0];
+        const title = obj.name[0].toUpperCase();
         if ((Object.keys(m)).indexOf(title) > -1) {
             m[title].push(obj);
         } else {
@@ -54,4 +54,4 @@ const createSectionedListFromRealmObject = (realmObj) => {
     return sectionsArray;
 };
 
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListFromRealmObject, arrayToObjectByKey};
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByName, arrayToObjectByKey};

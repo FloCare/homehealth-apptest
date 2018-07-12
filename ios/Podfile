@@ -19,6 +19,7 @@ target 'FloCare' do
     'DevSupport',
     'RCTActionSheet',
     'RCTAnimation',
+    'RCTPushNotification',
     'RCTGeolocation',
     'RCTImage',
     'RCTLinkingIOS',

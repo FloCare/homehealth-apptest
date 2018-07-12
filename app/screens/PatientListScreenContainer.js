@@ -6,11 +6,11 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
-import {createSectionedListFromRealmObject} from '../utils/collectionUtils';
+import {createSectionedListByName} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
 import {PatientDataService} from '../data_services/PatientDataService';
-import {addressDataService} from "../data_services/AddressDataService";
+import {addressDataService} from '../data_services/AddressDataService';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -74,15 +74,15 @@ class PatientListScreenContainer extends Component {
         this.navigateTo(
             screenNames.patientDetails,
             item.item.name, {
-            patientId: item.item.patientID
-        });
+                patientId: item.item.patientID
+            });
     }
 
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
             const title = `Patients (${this.state.patientCount})`;
             this.props.navigator.setTitle({
-                title 
+                title
             });
         }
         if (event.id === 'willDisappear') {
@@ -122,7 +122,7 @@ class PatientListScreenContainer extends Component {
                 break;
             case 'Call':
                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                    type: parameterValues.CALL
+                    type: parameterValues.CALL_PATIENT
                 });
                 if (item && item.primaryContact) {
                     if (Platform.OS === 'android') {
@@ -197,9 +197,9 @@ class PatientListScreenContainer extends Component {
     getFormattedPatientList = (patientList) => {
         const flatPatientList = PatientDataService.getFlatPatientList(patientList);
         flatPatientList.forEach(patient => {
-            patient.address = {formattedAddress : addressDataService.getAddressByID(patient.addressID).formattedAddress}
+            patient.address = {formattedAddress: addressDataService.getAddressByID(patient.addressID).formattedAddress};
         });
-        return flatPatientList
+        return flatPatientList;
     };
 
     getSectionData(query) {
@@ -208,9 +208,10 @@ class PatientListScreenContainer extends Component {
             const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
             const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
             const patientCount = formattedPatientList.length;
-            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
+            const sectionedPatientList = createSectionedListByName(formattedPatientList);
+            const recentPatientsSection = this.createRecentPatientsSection(formattedPatientList);
             this.setState({
-                patientList: sectionedPatientList,
+                patientList: recentPatientsSection ? [recentPatientsSection, ...sectionedPatientList] : sectionedPatientList,
                 patientCount
             });
         } else {
@@ -219,9 +220,22 @@ class PatientListScreenContainer extends Component {
             // Todo: Search on other fields ???
             const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
             const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
-            const sectionedPatientList = createSectionedListFromRealmObject(formattedPatientList);
+            const sectionedPatientList = createSectionedListByName(formattedPatientList);
             this.setState({patientList: sectionedPatientList});
         }
+    }
+
+    createRecentPatientsSection(patientList) {
+        const recentPatientList = [];
+        for (const patient of patientList) {
+            if (patient.recentlyAssigned) {
+                recentPatientList.push(patient);
+            }
+        }
+        if (recentPatientList.length > 0) {
+            return {title: 'New', data: recentPatientList};
+        }
+        return undefined;
     }
 
     componentWillUnmount() {
@@ -306,9 +320,7 @@ class PatientListScreenContainer extends Component {
     }
 
     // External Services
-    patientDataService = () => {
-        return PatientDataService.getInstance();
-    };
+    patientDataService = () => PatientDataService.getInstance();
 
 }
 
