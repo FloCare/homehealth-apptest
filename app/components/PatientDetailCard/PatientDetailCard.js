@@ -1,12 +1,11 @@
 import React from 'react';
 import firebase from 'react-native-firebase';
-import {View, ScrollView, Image, Linking, Platform} from 'react-native';
+import {View, ScrollView, Image, Linking, Platform, TouchableOpacity} from 'react-native';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import styles from './styles';
 import {styles as componentStyles} from '../common/styles';
-
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
@@ -48,17 +47,27 @@ const getVisitsView = function (visitSectionData) {
     );
 };
 
+const getEmergencyContactText = (contactName, contactRelation) => {
+    if (contactRelation === null || contactRelation === '') return contactName;
+    if (contactName === null || contactName === '') return contactRelation;
+    return contactName + ' (' + contactRelation + ')';
+};
+
 const PatientDetailCard = (props) => {
     const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
     //Handle name with navigator props
     const {
         primaryContact,
-        emergencyContact,
+        emergencyContactNumber,
+        emergencyContactName,
+        emergencyContactRelation,
+        dateOfBirth,
         diagnosis,
         notes,
         address
     } = patientDetail;
 
+    const emergencyContactText = getEmergencyContactText (emergencyContactName, emergencyContactRelation)
     let coordinates = null;
     if (address) {
         if (address.coordinates &&
@@ -120,7 +129,7 @@ const PatientDetailCard = (props) => {
                         onPress={() => {
                             if (primaryContact) {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                                    'type': parameterValues.CALL
+                                    'type': parameterValues.CALL_PATIENT
                                 });
                                 if (Platform.OS === 'android') {
                                     Linking.openURL(`tel: ${primaryContact}`);
@@ -134,44 +143,22 @@ const PatientDetailCard = (props) => {
 
                 <Divider style={styles.dividerStyle} />
 
-                {emergencyContact !== '' && emergencyContact &&
+                { dateOfBirth &&
                 <View style={styles.containerStyle}>
-                    <Image source={Images.elliotLugo} />
+                    <Image source={Images.birthday} />
                     <View style={{marginLeft: 14}}>
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
-                            Emergency Contact
+                            Birthday
                         </StyledText>
-                        <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
-                            {emergencyContact}
+                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                            {moment(dateOfBirth).format('DD MMM YYYY')}
                         </StyledText>
                     </View>
-                    <Button
-                        title="Call"
-                        textStyle={{
-                            ...styles.fontStyle,
-                            color: PrimaryColor
-                        }}
-                        buttonStyle={styles.callButtonStyle}
-                        containerViewStyle={{
-                            width: '20%',
-                            position: 'absolute',
-                            right: 0
-                        }}
-                        onPress={() => {
-                            if (emergencyContact) {
-                                if (Platform.OS === 'android') {
-                                    Linking.openURL(`tel: ${emergencyContact}`);
-                                } else {
-                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContact);
-                                }
-                            }
-                        }}
-                    />
                 </View>
                 }
 
-                {emergencyContact !== '' && emergencyContact &&
-                <Divider style={styles.dividerStyle} />
+                {dateOfBirth &&
+                    <Divider style={styles.dividerStyle} />
                 }
 
                 <View style={[styles.containerStyle, {opacity: 0.3}]}>
@@ -186,6 +173,44 @@ const PatientDetailCard = (props) => {
 
                 <Divider style={styles.dividerStyle} />
 
+                {emergencyContactNumber !== '' && emergencyContactNumber &&
+                <View style={styles.containerStyle}>
+                    <Image source={Images.emergencyIcon} />
+                    <View style={{marginLeft: 14}}>
+                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
+                            Emergency Contact Details
+                        </StyledText>
+                        <TouchableOpacity onPress={ () => {
+                            if (emergencyContactNumber) {
+                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                    'type': parameterValues.CALL_EMERGENCY
+                                });
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${emergencyContactNumber}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(emergencyContactNumber);
+                                }
+                            }
+                        }}>
+                        <View>
+                            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                                {emergencyContactNumber}
+                            </StyledText>
+                            {emergencyContactText && emergencyContactText.length > 0 &&
+                            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                                {emergencyContactText}
+                            </StyledText>
+                            }
+                        </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                }
+
+                {emergencyContactNumber !== '' && emergencyContactNumber &&
+                <Divider style={styles.dividerStyle} />
+                }
+                
                 <View style={styles.containerStyle}>
                     <Image source={Images.visits} />
                     <View style={{marginLeft: 14}}>

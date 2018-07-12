@@ -122,7 +122,7 @@ class PatientListScreenContainer extends Component {
                 break;
             case 'Call':
                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                    type: parameterValues.CALL
+                    type: parameterValues.CALL_PATIENT
                 });
                 if (item && item.primaryContact) {
                     if (Platform.OS === 'android') {

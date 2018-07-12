@@ -2,6 +2,7 @@ export const Images = {
     // Maintain A-Z order
     accessCode: require('../resources/accessCode.png'),
     addButton: require('../resources/addPatient.png'),
+    birthday: require('../resources/birthDayIcon.png'),
     calendar: require('../resources/calendar.png'),
     calendarSelected: require('../resources/calendarSelected.png'),
     call: require('../resources/call.png'),
@@ -9,6 +10,7 @@ export const Images = {
     delete: require('../resources/delete.png'),
     diagnosis: require('../resources/diagnosis.png'),
     editButton: require('../resources/edit.png'),
+    emergencyIcon: require('../resources/emergencyIcon.png'),
     elliotLugo: require('../resources/elliotLugo.png'),
     legal: require('../resources/legal.png'),
     list: require('../resources/list.png'),
@@ -23,6 +25,7 @@ export const Images = {
     patient: require('../resources/patient.png'),
     person_ic: require('../resources/person_ic.png'),
     pin: require('../resources/pin.png'),
+    plus: require('../resources/plus.png'),
     planDay: require('../resources/plan.png'),
     savedPlaces: require('../resources/savedPlaces.png'),
     secureAccess: require('../resources/secureAccess.png'),

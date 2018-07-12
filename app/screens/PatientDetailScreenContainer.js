@@ -108,6 +108,12 @@ class PatientDetailScreenContainer extends Component {
                     notes: this.state.patientDetail.notes,
                     lat: this.state.patientDetail.address.lat,
                     long: this.state.patientDetail.address.long,
+                    dateOfBirth: this.state.patientDetail.dateOfBirth,
+                    emergencyContactInfo: {
+                        contactName: this.state.patientDetail.emergencyContactName,
+                        contactNumber: this.state.patientDetail.emergencyContactNumber,
+                        contactRelation: this.state.patientDetail.emergencyContactRelation,
+                    }
                 },
                 edit: true
             }

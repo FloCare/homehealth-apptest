@@ -100,7 +100,7 @@ function VisitCardGenerator({onDoneTogglePress}) {
                             style={{flex: 1}}
                             onPress={() => {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                                    type: parameterValues.CALL
+                                    type: parameterValues.CALL_PATIENT
                                 });
                                 //TODO not working on iOS
                                 if (this.props.primaryContact) {

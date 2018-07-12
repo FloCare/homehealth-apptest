@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
 import t from 'tcomb-form-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import styles from './styles';
 
 const Form = t.form.Form;
 
@@ -12,10 +10,6 @@ class AddPatientForm extends Component {
         //console.log('SelectedItems: ', options.SelectedItems);
 
         return (
-            <KeyboardAwareScrollView
-                style={styles.formScrollViewStyle}
-                keyboardShouldPersistTaps='handled'
-            >
                 <Form
                     ref={refName}
                     type={modelType}
@@ -23,7 +17,6 @@ class AddPatientForm extends Component {
                     onChange={onChange}
                     value={value}
                 />
-            </KeyboardAwareScrollView>
         );
     }
 }

@@ -74,6 +74,14 @@ class FloDBProvider {
                 migration: Migrations.SplitNameToFirstNameLastNameMigration,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                schemaVersion: 5,
+                migration: () => { console.log("Migrating to v5. Adding new fields")},
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key)
             }
         ];
 
