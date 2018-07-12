@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
-import {View, Platform, TouchableOpacity, Image, Text} from 'react-native';
+import {View, TouchableOpacity, Image, Text} from 'react-native';
 import {Button} from 'react-native-elements';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
+import ModalSelector from 'react-native-modal-selector';
 import {AddPatientForm} from './AddPatientForm';
 import {AddPatientModel, Options} from './AddPatientModel';
 import styles from './styles';
@@ -9,8 +11,7 @@ import {ButtonTextStyles} from '../common/SimpleButton';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {PrimaryFontFamily, eventNames, PrimaryColor} from '../../utils/constants';
 import {PatientDataService} from '../../data_services/PatientDataService';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
-import ModalSelector from 'react-native-modal-selector';
+
 import {Images} from '../../Images';
 
 
@@ -180,16 +181,21 @@ class AddPatientFormContainer extends Component {
            this.clearForm();
            // Call Screen Container's onSubmit() hook
            onSubmit(patientId);
-        }else {
+        } else {
            const validationResult = this.addPatientForm.validate();
-           if (validationResult.errors){
+           if (validationResult.errors) {
                this.addPatientForm.getComponent(validationResult.errors[0].path).refs.input.focus();
            }
        }
     }
 
+    disableExtraFields = () => {
+        return this.state.value.showDateOfBirth && this.state.value.showEmergencyContact;
+    };
+
+
     ExtraFieldsClickHandler = (key) => {
-        switch(key){
+        switch (key) {
             case 'dob':
                 this.setState({value: {
                         ...this.state.value,
@@ -204,29 +210,35 @@ class AddPatientFormContainer extends Component {
                 }});
                 break;
             default:
-                console.log("unhandled key");
+                console.log('unhandled key');
         }
     };
 
     ExtraFieldsStyleData = {
-        data : [
-            { key: 0, id: 'dob', label: 'Date Of Birth'},
-            { key: 1, id: 'emergencyContact', label: 'Emergency Contact Information'},
+        data: [
+            {key: 0, id: 'dob', label: 'Date Of Birth'},
+            {key: 1, id: 'emergencyContact', label: 'Emergency Contact Information'},
         ],
-        optionTextStyle : {color: 'black'},
-        overLayStyle : {backgroundColor: 'rgba(0,250,250,0.7)', padding: 5},
-        optionContainerStyle : {backgroundColor: 'rgba(255,255,255,1.0)'},
-        cancelContainerStyle : {backgroundColor: 'rgba(255,255,255,1.0)', borderRadius: 5},
+        optionTextStyle: {color: 'black'},
+        overLayStyle: {backgroundColor: 'rgba(0,250,250,0.7)', padding: 5},
+        optionContainerStyle: {backgroundColor: 'rgba(255,255,255,1.0)'},
+        cancelContainerStyle: {backgroundColor: 'rgba(255,255,255,1.0)', borderRadius: 5},
     };
+
+    // External Services
+    patientDataService = () => { return PatientDataService.getInstance(); };
 
     render() {
         const {onSubmit} = this.props;
+        const addFieldsButtonOpacity = this.disableExtraFields() ? 0.2 : 1.0;
         return (
             <View style={styles.containerStyle}>
 
-                <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'}
-                                         enableAutoAutomaticScroll={false}
-                                         style={{...styles.formScrollViewStyle, marginBottom: 20}}>
+                <KeyboardAwareScrollView
+                    keyboardShouldPersistTaps={'always'}
+                    enableAutoAutomaticScroll={false}
+                    style={{...styles.formScrollViewStyle, marginBottom: 20}}
+                >
                     <AddPatientForm
                         refName={this.setForm}
                         onChange={this.onChange}
@@ -237,19 +249,34 @@ class AddPatientFormContainer extends Component {
                     />
                     <ModalSelector
                         data={this.ExtraFieldsStyleData.data}
-                        onChange={(option)=>{ this.ExtraFieldsClickHandler(option.id) }}
+                        onChange={(option) => { this.ExtraFieldsClickHandler(option.id); }}
                         overLayStyle={this.ExtraFieldsStyleData.overLayStyle}
                         optionContainerStyle={this.ExtraFieldsStyleData.optionContainerStyle}
                         optionTextStyle={this.ExtraFieldsStyleData.optionTextStyle}
                         cancelText={'Cancel'}
-                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}>
+                        cancelContainerStyle={this.ExtraFieldsStyleData.cancelContainerStyle}
+                        disabled={this.disableExtraFields()}
+                    >
 
                         <TouchableOpacity
-                            style={{...styles.buttonStyle, marginTop: 20, backgroundColor: 'rgba(0, 0, 0, 0)', alignSelf:'center'}}>
-                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', paddingBottom: 20}}>
-                                <Image style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}} source={Images.plus}/>
+                            style={{...styles.buttonStyle,
+                                marginTop: 20,
+                                backgroundColor: 'rgba(0, 0, 0, 0)',
+                                alignSelf: 'center'}}
+                        >
+                            <View
+                                style={{flex: 1,
+                                    flexDirection: 'row',
+                                    opacity: addFieldsButtonOpacity,
+                                    alignItems: 'center',
+                                    paddingBottom: 20}}
+                            >
+                                <Image
+                                    style={{flex: 1, height: 18, resizeMode: 'contain', paddingRight: 40}}
+                                   source={Images.plus}
+                                />
                                 <Text style={{...ButtonTextStyles.textStyle, fontSize: 20, color: PrimaryColor}}>
-                                    {"Add More Fields"}
+                                    {'Add More Fields'}
                                 </Text>
                             </View>
                         </TouchableOpacity>
@@ -269,12 +296,6 @@ class AddPatientFormContainer extends Component {
             </View>
         );
     }
-
-    // External Services
-    patientDataService = () => {
-        return PatientDataService.getInstance();
-    };
-
 
 }
 
