@@ -56,24 +56,25 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
         const {actionType, patientID} = message;
         switch (actionType) {
             case 'ASSIGN' :
-                PatientDataService.getInstance().fetchAndSavePatientsByID([patientID]).then(() => this.notifyPatientAdditions());
+                PatientDataService.getInstance().fetchAndSavePatientsByID([patientID])
+                    .then(() => AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken));
                 break;
             case 'UNASSIGN' :
                 PatientDataService.getInstance().archivePatient(patientID.toString(), true);
-                this.notifyPatientAdditions();
+                AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken);
                 break;
             case 'UPDATE' :
-                PatientDataService.getInstance().fetchAndEditPatientsByID([patientID]);
+                PatientDataService.getInstance().fetchAndEditPatientsByID([patientID])
+                    .then(() => AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken));
                 break;
             default:
                 // throw new Error('Unrecognised action type in assigned patient message');
                 console.log(`unrecognised message: ${message}`);
         }
-        AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken);
     }
 
     //leftover from trying to use local notifications triggered by remote silent notifications
-    notifyPatientAdditions(count = 1) {
+    // notifyPatientAdditions(count = 1) {
         // const grammar = count === 1 ? 'patient' : 'patients';
         // PushNotification.localNotification({
         //     title: `New ${grammar} alert`,
@@ -82,5 +83,5 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
         //         screenName: screenNames.patientList
         //     }
         // });
-    }
+    // }
 }
