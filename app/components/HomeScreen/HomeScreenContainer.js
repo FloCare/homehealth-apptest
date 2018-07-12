@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
+import codePush from 'react-native-code-push';
 import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
@@ -10,6 +11,8 @@ import Fab from '../common/Fab';
 // import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
 import {dateService} from '../../data_services/DateService';
+
+var codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1 };
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -238,4 +241,5 @@ function stateToProps(state) {
     };
 }
 
+HomeScreenContainer = codePush(codePushOptions)(HomeScreenContainer);
 export default connect(stateToProps)(HomeScreenContainer);
