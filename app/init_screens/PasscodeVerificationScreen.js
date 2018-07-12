@@ -5,7 +5,7 @@ import VirtualKeyboard from 'react-native-virtual-keyboard';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {View, StyleSheet, Text, Alert, Dimensions, SafeAreaView} from 'react-native';
 import StartApp from '../screens/App';
-import {screenNames, PrimaryColor, PrimaryFontFamily} from '../utils/constants';
+import {screenNames, PrimaryColor, PrimaryFontFamily, userProperties} from '../utils/constants';
 
 class PasscodeVerificationScreen extends Component {
     static navigatorStyle = {
@@ -14,6 +14,7 @@ class PasscodeVerificationScreen extends Component {
 
     componentDidMount() {
       firebase.analytics().setCurrentScreen(screenNames.passcodeVerification, screenNames.passcodeVerification);
+      firebase.analytics().setUserProperty(userProperties.OTA_VERSION, '1.0');
     }
 
     constructor(props) {

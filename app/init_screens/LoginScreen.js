@@ -247,5 +247,4 @@ const styles = {
     },
 };
 
-
 export {LoginScreen};

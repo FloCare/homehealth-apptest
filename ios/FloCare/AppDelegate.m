@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import <CodePush/CodePush.h>
 #import <React/RCTBundleURLProvider.h>
 
 #import "RCCManager.h"
@@ -6,6 +7,7 @@
 
 #import <React/RCTRootView.h>
 #import <Firebase.h>
+#import <CodePush/CodePush.h>
 #import <React/RCTPushNotificationManager.h>
 #import <UserNotifications/UserNotifications.h>
 
@@ -52,10 +54,11 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
   [FIRApp configure];
 
   NSURL *jsCodeLocation;
+
 #ifdef DEBUG
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 #else
-  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  jsCodeLocation = [CodePush bundleURL];
 #endif
   
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
