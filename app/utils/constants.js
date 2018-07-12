@@ -143,4 +143,13 @@ const clearInActivityTimer = () => {
     }
 };
 
+//ending in a3b is dev key
+export const pubnubPubKey = 'pubnubPubKey';
+//ending in 524 is dev key
+export const pubnubSubKey = 'pubnubSubKey';
+
+export const apiServerURL = 'http://192.168.1.101:8000';
+// export const apiServerURL = 'https://app-9781.on-aptible.com';
+
+
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};

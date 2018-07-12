@@ -1,5 +1,6 @@
 import PubNub from 'pubnub';
 import {AsyncStorage} from 'react-native';
+import {pubnubPubKey, pubnubSubKey} from "../../../utils/constants";
 
 export class BaseMessagingService {
     deviceToken = null;
@@ -61,8 +62,8 @@ export class BaseMessagingService {
 
     newClient(userID) {
         return new PubNub({
-            publishKey: 'pub-c-087e1ed9-82bc-43f5-a2b0-1c62deff6a3b',
-            subscribeKey: 'sub-c-572e27ae-7608-11e8-9fa1-423cba266524',
+            publishKey: pubnubPubKey,
+            subscribeKey: pubnubSubKey,
             uuid: userID,
             ssl: true, // make it true
             keepAlive: false
