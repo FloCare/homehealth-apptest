@@ -49,9 +49,6 @@ target 'FloCare' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
-
-  pod 'CodePush', :path => '../node_modules/react-native-code-push'
-
 end
 
 post_install do |installer|
