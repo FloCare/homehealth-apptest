@@ -9,11 +9,13 @@ export const PatientSchemaV5 = {
         primaryContact: 'string',
         notes: 'string?',
         episodes: {type: 'list', objectType: 'Episode', default: []},            // cannot be optional
-        timestamp: 'int',
+        creationTimestamp: 'int',
+        assignmentTimestamp: 'int',
+        lastUpdateTimestamp: 'int',
         archived: {type: 'bool', default: false},
         isLocallyOwned: {type: 'bool', default: true},
         dateOfBirth: {type: 'date?', default: null},
-        emergencyContactNumber:  {type: 'string?', default: null},
+        emergencyContactNumber: {type: 'string?', default: null},
         emergencyContactName: {type: 'string?', default: null},
         emergencyContactRelation: {type: 'string?', default: null},
     }
