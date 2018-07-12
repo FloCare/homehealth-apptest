@@ -30,7 +30,6 @@ export class PatientDataService {
             name: PatientDataService.constructName(patient.firstName, patient.lastName),
             addressID: patient.address.addressID,
             primaryContact: patient.primaryContact,
-            emergencyContact: patient.emergencyContact,
             notes: patient.notes,
             //TODO this will need work if more than one episode per patient
             visits: patient.episodes[0].visits.map(visit => visit.visitID),
@@ -102,7 +101,6 @@ export class PatientDataService {
                 firstName: patient.firstName.toString().trim(),
                 lastName: patient.lastName.toString().trim(),
                 primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
-                emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
                 timestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
                 isLocallyOwned,
@@ -145,7 +143,6 @@ export class PatientDataService {
                     firstName: patient.firstName ? patient.firstName.toString().trim() : ' ',
                     lastName: patient.lastName ? patient.lastName.toString().trim() : ' ',
                     primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
-                    emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                     notes: patient.notes ? patient.notes.toString().trim() : '',
                     dateOfBirth: patient.dateOfBirth,
                     emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : null,
