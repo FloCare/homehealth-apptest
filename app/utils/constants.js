@@ -89,6 +89,7 @@ const userProperties = {
     USER_ID: 'user_id',
     ROLE: 'role',
     ORG: 'org',
+    OTA_VERSION: 'ota_version',
 };
 
 const eventNames = {
