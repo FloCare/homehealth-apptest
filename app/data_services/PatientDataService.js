@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {floDB, Patient} from '../utils/data/schema';
+import {Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
@@ -18,7 +18,7 @@ export class PatientDataService {
 
     static getInstance() {
         if (!PatientDataService.patientDataService) {
-            throw new Error('padient data service requested before being initialised');
+            throw new Error('patient data service requested before being initialised');
         }
 
         return PatientDataService.patientDataService;
@@ -34,7 +34,9 @@ export class PatientDataService {
             notes: patient.notes,
             //TODO this will need work if more than one episode per patient
             visits: patient.episodes[0].visits.map(visit => visit.visitID),
-            archived: patient.archived
+            archived: patient.archived,
+            recentlyAssigned: moment.utc(patient.assignmentTimestamp).diff(moment.utc(), 'days') === 0,
+            recentlyUpdated: moment.utc(patient.lastUpdateTimestamp).diff(moment.utc(), 'days') === 0,
         };
     }
 
@@ -87,14 +89,17 @@ export class PatientDataService {
     createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false) {
         // Todo: Add proper ID generators
         // Create a patient, create & add an address, and create & add an episode
-        const patientId = !isLocallyOwned && patient.id ? patient.id : Math.random().toString();
+        const patientId = !isLocallyOwned && patient.patientID ? patient.patientID : Math.random().toString();
         const episodeId = Math.random().toString();
         const addressId = Math.random().toString();
 
         let newPatient = null;
+        const creationTimestamp = patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf();
+
         const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
         const emergencyContactName = patient.emergencyContactInfo.contactName;
         const emergencyContactRelation = patient.emergencyContactInfo.contactRelation;
+
         this.floDB.write(() => {
             // Add the patient
             newPatient = this.floDB.create(Patient.schema.name, {
@@ -104,7 +109,9 @@ export class PatientDataService {
                 primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
                 emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
                 notes: patient.notes ? patient.notes.toString().trim() : '',
-                timestamp: patient.createdOn ? moment(patient.createdOn).valueOf() : moment().utc().valueOf(),
+                creationTimestamp,
+                assignmentTimestamp: moment().utc().valueOf(),
+                lastUpdateTimestamp: creationTimestamp,
                 isLocallyOwned,
                 archived: false,
                 dateOfBirth: patient.dateOfBirth,
@@ -128,33 +135,35 @@ export class PatientDataService {
         }
     }
 
-    editExistingPatient(patientId, patient) {
-        const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
+    editExistingPatient(patient, isServerUpdate = false) {
+        const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patient.patientID);
+
         if (patientObj) {
-            this._checkPermissionForEditing([patientObj]);
+            if (!isServerUpdate) { this._checkPermissionForEditing([patientObj]); }
+
             const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
             const emergencyContactName = patient.emergencyContactInfo.contactName;
             const emergencyContactRelation = patient.emergencyContactInfo.contactRelation;
+
             this.floDB.write(() => {
                 // Edit the corresponding address info
-                addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID);
+                if (patient.addressID) { addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID); }
 
                 // Edit the patient info
                 this.floDB.create(Patient.schema.name, {
                     patientID: patient.patientID,
-                    firstName: patient.firstName ? patient.firstName.toString().trim() : ' ',
-                    lastName: patient.lastName ? patient.lastName.toString().trim() : ' ',
-                    primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
-                    emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : '',
-                    notes: patient.notes ? patient.notes.toString().trim() : '',
+                    firstName: patient.firstName ? patient.firstName.toString().trim() : undefined,
+                    lastName: patient.lastName ? patient.lastName.toString().trim() : undefined,
+                    primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : undefined,
+                    emergencyContact: patient.emergencyContact ? parsePhoneNumber(patient.emergencyContact.toString().trim()) : undefined,
+                    notes: patient.notes ? patient.notes.toString().trim() : undefined,
                     dateOfBirth: patient.dateOfBirth,
-                    emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : null,
-                    emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : null,
-                    emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : null,
-                    timestamp: 0,                                   // Todo: Add a timestmap
+                    emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : undefined,
+                    emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : undefined,
+                    emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : undefined,
                 }, true);
             });
-            this.updatePatientsInRedux([patientObj]);
+            this.updatePatientsInRedux([patientObj], isServerUpdate);
         }
     }
 
@@ -223,7 +232,7 @@ export class PatientDataService {
                 const deletions = deletedPatients.length;
 
                 if (newPatientIDs.length > 0) {
-                    additions = await this._fetchAndSavePatientsByID(newPatientIDs);
+                    additions = await this.fetchAndSavePatientsByID(newPatientIDs);
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 return {
@@ -233,30 +242,41 @@ export class PatientDataService {
             });
     }
 
-    _fetchAndSavePatientsByID(newPatientIDs) {
-        return PatientAPI.getPatientsByID(newPatientIDs)
+    _fetchPatientsByIDAndAdapt(patientIDs) {
+        return PatientAPI.getPatientsByID(patientIDs)
             .then((json) => {
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
-                    patientObject.id = patientObject.id.toString();
+                    patientObject.patientID = patientObject.id.toString();
                     patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
+
                     patientObject.dateOfBirth = patientObject.dob || null;
-                    if (patientObject.dateOfBirth){
+                    if (patientObject.dateOfBirth) {
                         try {
                             patientObject.dateOfBirth = moment(patientObject.dateOfBirth, 'YYYY-MM-DD').toDate();
                         } catch (e) {
                             patientObject.dateOfBirth = null;
-                            console.log("Unable to parse DOB. Skipping field");
+                            console.log('Unable to parse DOB. Skipping field');
                         }
                     }
                     patientObject.emergencyContactInfo = {
-                        emergencyContactName: patientObject.emergencyContactName || null,
-                        emergencyContactNumber: patientObject.emergencyContactNumber || null,
-                        emergencyContactRelation: patientObject.emergencyContactRelation || null
+                        contactName: patientObject.emergencyContactName || null,
+                        contactNumber: patientObject.emergencyContactNumber || null,
+                        contactRelation: patientObject.emergencyContactRelation || null
                     };
+                }
+                return json;
+            });
+    }
+
+    fetchAndSavePatientsByID(newPatientIDs) {
+        return this._fetchPatientsByIDAndAdapt(newPatientIDs)
+            .then((json) => {
+                const successfulObjects = json.success;
+                for (const patientObject of successfulObjects) {
                     this.createNewPatient(patientObject, false, true);
                 }
                 addressDataService.attemptFetchForPendingAddresses();
@@ -264,8 +284,20 @@ export class PatientDataService {
             });
     }
 
-    updatePatientsInRedux(patients) {
-        this._checkPermissionForEditing(patients);
+    fetchAndEditPatientsByID(patientIDs) {
+        return this._fetchPatientsByIDAndAdapt(patientIDs)
+            .then((json) => {
+                const successfulObjects = json.success;
+                for (const patientObject of successfulObjects) {
+                    this.editExistingPatient(patientObject, true);
+                }
+                addressDataService.attemptFetchForPendingAddresses();
+                return successfulObjects.length;
+            });
+    }
+
+    updatePatientsInRedux(patients, isServerUpdate = false) {
+        if (!isServerUpdate) { this._checkPermissionForEditing(patients); }
 
         this.store.dispatch({
             type: PatientActions.EDIT_PATIENTS,
