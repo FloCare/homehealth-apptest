@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {TextInput, View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import codePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties} from '../utils/constants';
@@ -10,6 +11,7 @@ import {getUserProps} from '../utils/API/UserAPI';
 
 // TODO Change to the endpoint on Aptible
 const API_URL = 'https://app-9781.on-aptible.com/get-token/';
+var codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESTART };
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -248,5 +250,5 @@ const styles = {
     },
 };
 
-
+LoginScreen = codePush(codePushOptions)(LoginScreen);
 export {LoginScreen};
