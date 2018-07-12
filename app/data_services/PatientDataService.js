@@ -263,9 +263,9 @@ export class PatientDataService {
                         }
                     }
                     patientObject.emergencyContactInfo = {
-                        emergencyContactName: patientObject.emergencyContactName || null,
-                        emergencyContactNumber: patientObject.emergencyContactNumber || null,
-                        emergencyContactRelation: patientObject.emergencyContactRelation || null
+                        contactName: patientObject.emergencyContactName || null,
+                        contactNumber: patientObject.emergencyContactNumber || null,
+                        contactRelation: patientObject.emergencyContactRelation || null
                     };
                 }
                 return json;

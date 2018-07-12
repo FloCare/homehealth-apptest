@@ -26,7 +26,9 @@ export class BaseMessagingService {
 
         switch (statusEvent.category) {
             case 'PNConnectedCategory':
-                this.connected = true;
+                this.processFromHistory().then(() => {
+                    this.connected = true;
+                });
                 break;
             case 'PNTimeoutCategory':
             case 'PNNetworkIssuesCategory':
