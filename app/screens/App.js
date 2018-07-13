@@ -65,7 +65,9 @@ const StartApp = (key) => {
     initialiseDate(FloDBProvider.db, store);
 
     MessagingServiceCoordinator.initialiseService();
-    configureNotification();
+    if (Platform.OS === 'ios') {
+        configureNotification();
+    }
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     RNSecureKeyStore.get('accessToken').then(() => {
