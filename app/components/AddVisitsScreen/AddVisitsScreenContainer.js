@@ -8,7 +8,7 @@ import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
 import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
 import {PatientDataService} from '../../data_services/PatientDataService';
 
 const newStop = 'Add new Stop';

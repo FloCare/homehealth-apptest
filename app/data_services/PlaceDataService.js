@@ -2,7 +2,7 @@ import {Place} from '../utils/data/schema';
 import {PlaceActions} from '../redux/Actions';
 import {arrayToObjectByKey} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
-import {visitDataService} from './VisitDataService';
+import {visitDataService} from './VisitServices/VisitDataService';
 import {parsePhoneNumber} from '../utils/lib';
 
 class PlaceDataService {

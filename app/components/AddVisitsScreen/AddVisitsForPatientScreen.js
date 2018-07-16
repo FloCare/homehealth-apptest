@@ -7,7 +7,7 @@ import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
 import {PatientDataService} from '../../data_services/PatientDataService';
 
 class AddVisitsForPatientScreen extends Component {

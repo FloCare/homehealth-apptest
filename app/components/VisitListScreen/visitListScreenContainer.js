@@ -7,7 +7,7 @@ import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schem
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
 
 class VisitListScreenContainer extends Component {
     constructor(props) {
@@ -47,7 +47,7 @@ class VisitListScreenContainer extends Component {
         firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
             type: parameterValues.DND
         });
-        visitDataService.setVisitOrderByID(newOrder, this.props.date);
+        visitDataService.setVisitOrderForDate(newOrder, this.props.date);
     }
 
     generateVisitResultObject(date) {

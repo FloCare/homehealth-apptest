@@ -1,5 +1,5 @@
 import {DateActions} from '../redux/Actions';
-import {visitDataService} from './VisitDataService';
+import {visitDataService} from './VisitServices/VisitDataService';
 
 class DateService {
     constructor(floDB, store) {

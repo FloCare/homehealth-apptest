@@ -8,7 +8,7 @@ import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
 import EmptyStateButton from '../common/EmptyStateButton';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
 import {floDB, Visit} from '../../utils/data/schema';
 
 function onPressCard(visitID, navigator) {

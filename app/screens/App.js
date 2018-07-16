@@ -11,7 +11,7 @@ import {RootReducer} from '../redux/RootReducer';
 
 import {PatientDataService} from '../data_services/PatientDataService';
 import {initialiseService as initialiseStopService} from '../data_services/PlaceDataService';
-import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
+import {initialiseService as initialiseVisitService} from '../data_services/VisitServices/VisitDataService';
 import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
 import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
 import {configure as configureNotification} from '../data_services/MessagingServices/NotificationService';

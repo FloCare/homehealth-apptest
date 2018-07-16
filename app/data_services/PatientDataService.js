@@ -4,7 +4,7 @@ import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
-import {visitDataService} from './VisitDataService';
+import {visitDataService} from './VisitServices/VisitDataService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';

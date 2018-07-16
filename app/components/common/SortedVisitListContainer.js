@@ -6,7 +6,7 @@ import {TouchableHighlight} from 'react-native';
 
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
 class SortedVisitListContainer extends Component {
