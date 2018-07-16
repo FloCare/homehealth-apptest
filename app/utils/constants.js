@@ -89,6 +89,7 @@ const userProperties = {
     USER_ID: 'user_id',
     ROLE: 'role',
     ORG: 'org',
+    OTA_VERSION: 'ota_version',
 };
 
 const eventNames = {
@@ -108,7 +109,8 @@ const eventNames = {
 const parameterValues = {
     SUCCESS: 'success',
     FAILURE: 'failure',
-    CALL: 'call',
+    CALL_PATIENT: 'call_patient',
+    CALL_EMERGENCY: 'call_emergency',
     NAVIGATION: 'navigation',
     EDIT_NOTES: 'edit_notes',
     MAP: 'map',
@@ -141,5 +143,14 @@ const clearInActivityTimer = () => {
         inActivityTimer = null;
     }
 };
+
+//ending in a3b is dev key
+export const pubnubPubKey = 'pubnubPubKey';
+//ending in 524 is dev key
+export const pubnubSubKey = 'pubnubSubKey';
+
+export const apiServerURL = 'http://192.168.1.101:8000';
+// export const apiServerURL = 'https://app-9781.on-aptible.com';
+
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};

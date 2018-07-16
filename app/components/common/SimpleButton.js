@@ -16,6 +16,13 @@ const SimpleButton = (props) => (
     </TouchableOpacity>
 );
 
+export const ButtonTextStyles = {
+    textStyle: {
+        color: 'white',
+        fontSize: 18,
+        fontFamily: Platform.select({ios: 'SFProDisplay-Regular', android: 'SF-Pro-Display-Regular'}),
+    }
+}
 
 const styles = {
     buttonStyle: {
@@ -25,11 +32,8 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center'
     },
-    textStyle: {
-        color: 'white',
-        fontSize: 18,
-        fontFamily: Platform.select({ios: 'SFProDisplay-Regular', android: 'SF-Pro-Display-Regular'}),
-    }
+    ...ButtonTextStyles
+
 };
 
 export {SimpleButton};

@@ -1,9 +1,91 @@
 import t from 'tcomb-form-native';
+import moment from 'moment/moment';
+import React from 'react';
+import {Text, View, TouchableOpacity} from 'react-native'
+import DateTimePicker from 'react-native-modal-datetime-picker';
 import {PhoneNumber, zipCodeType} from '../../utils/lib';
 import AddressAutoComplete from '../common/AddressAutoComplete';
 import DiagnosisMultiSelect from './DiagnosisMultiSelect';
 import stylesheet from './formStyleSheet';
 import PatientFormTemplate from './AddPatientFormTemplate';
+import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
+
+const EmergencyContactInformationModel = t.struct({
+    contactNumber: PhoneNumber,
+    contactName: t.maybe(t.String),
+    contactRelation: t.maybe(t.String)
+});
+
+const Component = t.form.Component;
+
+class DatePickerPopup extends Component {
+    constructor(props) {
+        super(props);
+        const dateValue = props.value || null;
+        this.state = {
+            isDateTimePickerVisible: !dateValue,
+            value: dateValue
+        };
+    }
+
+    getTemplate() {
+        const _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+        const _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+        const isVisible = this.state.isDateTimePickerVisible;
+        const selectedDate = this.state.value;
+        const _handleDatePicked = (date) => {
+            this._onChangeText();
+            _hideDateTimePicker();
+        };
+        return function (locals) {
+            return (
+                <View style={{flex: 1}}>
+                    <TouchableOpacity onPress={_showDateTimePicker}>
+                        <Text>Date Of Birth</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop:10}}>
+                            <Text style={{color: '#525252', fontFamily: PrimaryFontFamily, fontSize: 15, paddingLeft: 5}}>
+                                {selectedDate ? moment(selectedDate).format('DD MMM YYYY') : 'Select Date'}
+                            </Text>
+                            {
+                                selectedDate && <Text style={{color: PrimaryColor, textAlign: 'right', paddingRight:10}}>
+                                    {'Change Date'}
+                                </Text>
+                            }
+                        </View>
+                    </TouchableOpacity>
+                    <DateTimePicker
+                        date={selectedDate || new Date()}
+                        isVisible={isVisible}
+                        datePickerModeAndroid="spinner"
+                        onConfirm={(date) => {
+                            _handleDatePicked(date);
+                            locals.onChange(date);
+                        }}
+                        onCancel={() => {
+                            _hideDateTimePicker();
+                        }}
+                        maximumDate={new Date()}
+                    />
+                </View>
+            );
+        };
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return true;
+    }
+
+    getLocals() {
+        return super.getLocals();
+    }
+
+    _onChangeText(dateString) {
+        this.setState({value: dateString});
+    }
+
+
+}
 
 const AddPatientModel = t.struct({
     firstName: t.String,
@@ -14,10 +96,25 @@ const AddPatientModel = t.struct({
     city: t.maybe(t.String),
     state: t.maybe(t.String),
     primaryContact: PhoneNumber,
-    //emergencyContact: t.maybe(PhoneNumber),
     //diagnosis: t.maybe(t.String),
-    notes: t.maybe(t.String)
+    notes: t.maybe(t.String),
+    dateOfBirth: t.maybe(t.Date),
+    showDateOfBirth: t.maybe(t.Boolean),
+    emergencyContactInfo: t.maybe(EmergencyContactInformationModel),
+    showEmergencyContact: t.maybe(t.Boolean)
 });
+
+
+const NestedHeaderStylesheet = {
+...stylesheet,
+        controlLabel: {
+    ...stylesheet.controlLabel,
+            normal: {
+        ...stylesheet.controlLabel.normal,
+                fontSize: 12
+        }
+    }
+};
 
 const nameError = (value) => {
     if (!value) {
@@ -54,11 +151,6 @@ const formOptions = {
             placeholder: '5417543010',
             keyboardType: 'numeric'
         },
-        // emergencyContact: {
-        //     label: 'Emergency Contact (Optional)',
-        //     placeholder: '5417543010',
-        //     keyboardType: 'numeric'
-        // },
         // diagnosis: {
         //     label: 'Diagnosis',
         //     placeholder: '#ADHD',
@@ -119,6 +211,38 @@ const formOptions = {
                     },
                 },
             },
+        },
+        dateOfBirth: {
+            factory: DatePickerPopup
+        },
+        showDateOfBirth: {
+            hidden: true,
+        },
+        emergencyContactInfo: {
+            label: 'Emergency Contact Info (Optional)',
+            fields: {
+                contactName: {
+                    stylesheet: NestedHeaderStylesheet,
+                    label: 'Name',
+                    placeholder: 'Blake',
+                    returnKeyType: 'next',
+                    autoCapitalize: 'words',
+                },
+                contactNumber: {
+                    stylesheet: NestedHeaderStylesheet,
+                    label: 'Contact Number',
+                    placeholder: '5417543010',
+                    keyboardType: 'numeric'
+                },
+                contactRelation: {
+                    stylesheet: NestedHeaderStylesheet,
+                    label: 'Relation',
+                    placeholder: 'Brother'
+                }
+            }
+        },
+        showEmergencyContact: {
+            hidden: true
         }
     }
 };

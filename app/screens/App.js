@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import {AsyncStorage, Platform, PushNotificationIOS} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
@@ -14,7 +14,9 @@ import {initialiseService as initialiseStopService} from '../data_services/Place
 import {initialiseService as initialiseVisitService} from '../data_services/VisitDataService';
 import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
 import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
+import {configure as configureNotification} from '../data_services/MessagingServices/NotificationService';
 import {todayMomentInUTCMidnight} from '../utils/utils';
+import {MessagingServiceCoordinator} from '../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {PhysicianDataService} from "../data_services/PhysicianDataService";
 
 const navigatorStyle = {
@@ -64,9 +66,12 @@ const StartApp = (key) => {
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
+    MessagingServiceCoordinator.initialiseService();
+    configureNotification();
+
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     RNSecureKeyStore.get('accessToken').then(() => {
-        if (PatientDataService.getInstance().getTotalPatientCount() === 0){
+        if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
             PatientDataService.getInstance().updatePatientListFromServer();
         }
     });

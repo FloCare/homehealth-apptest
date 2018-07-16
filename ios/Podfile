@@ -8,6 +8,8 @@ target 'FloCare' do
   # Required by RNFirebase
   pod 'Firebase/Core'
 
+  pod 'CodePush', :path => '../node_modules/react-native-code-push'
+
 
   # See http://facebook.github.io/react-native/docs/integration-with-existing-apps.html#configuring-cocoapods-dependencies
   pod 'yoga', path: "#{rn_path}/ReactCommon/yoga/yoga.podspec"
@@ -17,6 +19,7 @@ target 'FloCare' do
     'DevSupport',
     'RCTActionSheet',
     'RCTAnimation',
+    'RCTPushNotification',
     'RCTGeolocation',
     'RCTImage',
     'RCTLinkingIOS',

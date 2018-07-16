@@ -1,16 +1,11 @@
 import React, {Component} from 'react';
-import {View, Image, SectionList, TouchableOpacity} from 'react-native';
+import {View, SectionList, TouchableOpacity} from 'react-native';
 import {
-    Menu,
-    MenuOptions,
     MenuOption,
-    MenuTrigger
 } from 'react-native-popup-menu';
 import styles from './styles';
-import {TransparentPrimaryColor} from '../../../utils/constants';
+import {PrimaryColor, TransparentPrimaryColor} from '../../../utils/constants';
 import StyledText from '../../common/StyledText';
-import {Images} from '../../../Images';
-import CustomMenuRenderer from '../CustomMenuRenderer';
 
 class SectionedList extends Component {
     constructor(props) {
@@ -40,30 +35,29 @@ class SectionedList extends Component {
             backgroundColor = TransparentPrimaryColor(0.3);
         }
         return (
-            <View
-                style={{paddingLeft: 5, paddingRight: 5, backgroundColor}}
+            <TouchableOpacity
+                style={{flex: 1, marginHorizontal: 5, flexDirection: 'row', alignItems: 'center', backgroundColor}}
+                onPress={({e}) => this.props.onItemPressed({item}, e)}
             >
-                <View style={{flex: 10, flexDirection: 'row'}}>
-                    <TouchableOpacity
-                        style={{flex: 9, flexDirection: 'column'}}
-                        onPress={({e}) => this.props.onItemPressed({item}, e)}
-                    >
-                        <StyledText style={styles.nameStyle}>{item.name}</StyledText>
-                        <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
-                    </TouchableOpacity>
-                    {/*<View style={{flex: 1, marginVertical: 15}}>*/}
-                        {/*<Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>*/}
-                            {/*<MenuTrigger*/}
-                                {/*children={<Image source={Images.threeDotButton} />}*/}
-                            {/*/>*/}
-                            {/*<MenuOptions>*/}
-                                {/*{this._renderMenu(item, onPressPopupButton, menu)}*/}
-                            {/*</MenuOptions>*/}
-                        {/*</Menu>*/}
-                    {/*</View>*/}
+                <View
+                    style={{marginLeft: 5, backgroundColor: item.recentlyUpdated ? PrimaryColor : 'clear', width: 7, height: 7, borderRadius: 7}}
+                />
+                <View>
+                    <StyledText style={styles.nameStyle}>{item.name}</StyledText>
+                    <StyledText style={styles.addressStyle}>{item.address.formattedAddress}</StyledText>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
+        // {/*<View style={{flex: 1, marginVertical: 15}}>*/}
+        // {/*<Menu renderer={CustomMenuRenderer} rendererProps={styles.rendererStyle}>*/}
+        // {/*<MenuTrigger*/}
+        // {/*children={<Image source={Images.threeDotButton} />}*/}
+        // {/*/>*/}
+        // {/*<MenuOptions>*/}
+        // {/*{this._renderMenu(item, onPressPopupButton, menu)}*/}
+        // {/*</MenuOptions>*/}
+        // {/*</Menu>*/}
+        // {/*</View>*/}
     }
 
     renderSectionHeader({section}) {
