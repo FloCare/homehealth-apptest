@@ -1,4 +1,4 @@
-import {AsyncStorage, Platform, PushNotificationIOS} from 'react-native';
+import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
@@ -10,8 +10,8 @@ import {FloDBProvider} from '../utils/data/schema';
 import {RootReducer} from '../redux/RootReducer';
 
 import {PatientDataService} from '../data_services/PatientDataService';
+import {VisitService} from '../data_services/VisitServices/VisitService';
 import {initialiseService as initialiseStopService} from '../data_services/PlaceDataService';
-import {initialiseService as initialiseVisitService} from '../data_services/VisitServices/VisitDataService';
 import {initialiseService as initialiseAddressService} from '../data_services/AddressDataService';
 import {dateService, initialiseService as initialiseDate} from '../data_services/DateService';
 import {configure as configureNotification} from '../data_services/MessagingServices/NotificationService';
@@ -59,7 +59,7 @@ const StartApp = (key) => {
     // Initialize Data Services, pass it the db and store instances
     //TODO Move all intialisations to static calls
     PatientDataService.initialiseService(FloDBProvider.db, store);
-    initialiseVisitService(FloDBProvider.db, store);
+    VisitService.initialiseService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);

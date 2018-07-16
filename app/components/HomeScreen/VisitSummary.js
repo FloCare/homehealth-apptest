@@ -8,7 +8,7 @@ import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
 import EmptyStateButton from '../common/EmptyStateButton';
-import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {floDB, Visit} from '../../utils/data/schema';
 
 function onPressCard(visitID, navigator) {
@@ -30,7 +30,7 @@ function onPressCard(visitID, navigator) {
 }
 
 function visitSummaryToday(props) {
-    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => visitDataService.toggleVisitDone(visitID)});
+    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => VisitService.getInstance().toggleVisitDone(visitID)});
 
     const primaryColor = PrimaryColor;
     const secondary = '#34da92';

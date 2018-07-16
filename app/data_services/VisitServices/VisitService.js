@@ -6,19 +6,19 @@ import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
 
-export class VisitDataService {
-    static visitDataService;
+export class VisitService {
+    static visitService;
 
     static initialiseService(floDB, store) {
-        VisitDataService.visitDataService = new VisitDataService(floDB, store);
+        VisitService.visitService = new VisitService(floDB, store);
     }
 
     static getInstance() {
-        if (!VisitDataService.visitDataService) {
+        if (!VisitService.visitService) {
             throw new Error('Visit data service requested before being initialised');
         }
 
-        return VisitDataService.visitDataService;
+        return VisitService.visitService;
     }
 
     static getFlatVisit(visit) {
@@ -34,7 +34,7 @@ export class VisitDataService {
     }
 
     static getFlatVisitMap(visits) {
-        return arrayToObjectByKey(visits.map(visit => VisitDataService.getFlatVisit(visit)), 'visitID');
+        return arrayToObjectByKey(visits.map(visit => VisitService.getFlatVisit(visit)), 'visitID');
     }
 
     constructor(floDB, store) {
@@ -184,10 +184,4 @@ export class VisitDataService {
         const obj = {visits, visitOrders};
         return obj;
     }
-}
-
-export let visitDataService;
-
-export function initialiseService(floDB, store) {
-    visitDataService = new VisitDataService(floDB, store);
 }

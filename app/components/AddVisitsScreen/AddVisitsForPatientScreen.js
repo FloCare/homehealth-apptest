@@ -7,8 +7,8 @@ import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
-import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
 import {PatientDataService} from '../../data_services/PatientDataService';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 
 class AddVisitsForPatientScreen extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class AddVisitsForPatientScreen extends Component {
 
     onNavigatorEvent(event) {
         // STOP GAP solution. Will be removed when redux is used
-        if(event.id === 'didAppear') {
+        if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.addVisitsForPatient, screenNames.addVisitsForPatient);
         }
     }
@@ -43,7 +43,7 @@ class AddVisitsForPatientScreen extends Component {
 
         try {
             // Add a visit object
-            visitDataService.createNewVisits([patient], this.state.date.valueOf());
+            VisitService.getInstance().createNewVisits([patient], this.state.date.valueOf());
         } catch (e) {
             console.log('Error during Adding Visit: ', e);
         }
@@ -126,9 +126,7 @@ class AddVisitsForPatientScreen extends Component {
     }
 
     // External Services
-    patientDataService = () => {
-        return PatientDataService.getInstance();
-    };
+    patientDataService = () => PatientDataService.getInstance();
 
 }
 

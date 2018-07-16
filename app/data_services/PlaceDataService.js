@@ -2,7 +2,7 @@ import {Place} from '../utils/data/schema';
 import {PlaceActions} from '../redux/Actions';
 import {arrayToObjectByKey} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
-import {visitDataService} from './VisitServices/VisitDataService';
+import {VisitService} from './VisitServices/VisitService';
 import {parsePhoneNumber} from '../utils/lib';
 
 class PlaceDataService {
@@ -89,17 +89,17 @@ class PlaceDataService {
         this.floDB.write(() => {
             place = this.floDB.objectForPrimaryKey(Place.schema.name, placeId);
             place.archived = true;
-            obj = visitDataService.deleteVisits(place);
+            obj = VisitService.getInstance().deleteVisits(place);
         });
         if (place) {
             this.archivePlacesInRedux([placeId]);
         }
         if (obj && obj.visits) {
-            visitDataService.deleteVisitsFromRedux(obj.visits);
+            VisitService.getInstance().deleteVisitsFromRedux(obj.visits);
         }
         if (obj && obj.visitOrders) {
             for (let i = 0; i < obj.visitOrders.length; i++) {
-                visitDataService.updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
+                VisitService.getInstance().updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
             }
         }
         console.log('Place archived. His visits Deleted');

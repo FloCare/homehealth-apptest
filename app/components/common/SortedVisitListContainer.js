@@ -6,7 +6,7 @@ import {TouchableHighlight} from 'react-native';
 
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
-import {visitDataService} from '../../data_services/VisitServices/VisitDataService';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 
 //props: date, onOrderChange, isCompletedHidden, renderWithCallback, sortEnabled, singleEntry
 class SortedVisitListContainer extends Component {
@@ -134,7 +134,7 @@ class SortedVisitListContainer extends Component {
 
     onDoneTogglePress(visitID) {
         console.log(`${visitID} was changed`);
-        visitDataService.toggleVisitDone(visitID);
+        VisitService.getInstance().toggleVisitDone(visitID);
     }
 
     onPressRowSingleton() {

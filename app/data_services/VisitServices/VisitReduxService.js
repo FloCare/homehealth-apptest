@@ -1,6 +1,6 @@
 import {VisitActions, VisitOrderActions} from '../../redux/Actions';
 import {placeDataService} from '../PlaceDataService';
-import {VisitDataService} from './VisitDataService';
+import {VisitService} from './VisitService';
 import {PatientDataService} from '../PatientDataService';
 
 export class VisitReduxService {
@@ -41,11 +41,11 @@ export class VisitReduxService {
     }
 
     updateVisitToRedux(visit) {
-        this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitDataService.getFlatVisitMap([visit])});
+        this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitService.getFlatVisitMap([visit])});
     }
 
     addVisitsToRedux(visits) {
-        this.store.dispatch({type: VisitActions.ADD_VISITS, visitList: VisitDataService.getFlatVisitMap(visits)});
+        this.store.dispatch({type: VisitActions.ADD_VISITS, visitList: VisitService.getFlatVisitMap(visits)});
         PatientDataService.getInstance().addPatientsToRedux(visits.map(visit => visit.getPatient()).filter(patient => patient));
         placeDataService.addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
     }
@@ -54,7 +54,7 @@ export class VisitReduxService {
         console.log('Deleting visits from Redux');
         this.store.dispatch({
             type: VisitActions.DELETE_VISITS,
-            visitList: VisitDataService.getFlatVisitMap(visits)
+            visitList: VisitService.getFlatVisitMap(visits)
         });
     }
 }
