@@ -194,7 +194,9 @@ function CreateAndSaveDummies() {
             npiId,
             firstName: 'Bellandur',
             lastName: 'DrName',
-            phone1: '9823401232'
+            phone1: '9823401232',
+            phone2: '9857401265',
+            faxNo: '9378620212',
         });
         patient.episodes.push({
             episodeID,

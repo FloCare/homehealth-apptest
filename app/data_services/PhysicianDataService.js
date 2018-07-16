@@ -21,6 +21,11 @@ export class PhysicianDataService {
         this.store = store;
     }
 
+    static constructName(firstName, lastName) {
+        if (lastName === null) return firstName;
+        return `${lastName} ${firstName}`;
+    }
+
     // Has to be inside a floDB.write
     createNewPhysician(physicianDetails) {
         validateNonEmptyValueForAllKeys(physicianDetails, Physician.getMandatoryKeys());

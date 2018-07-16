@@ -12,6 +12,7 @@ import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import ViewMore from '../common/ViewMore';
+import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 
 const renderViewMore = (e, onPressAddNotes) => {
     return (
@@ -229,13 +230,16 @@ const PatientDetailCard = (props) => {
 
                 {physicianSectionPresent &&
                 <View style={styles.containerStyle}>
-                    <Image source={Images.emergencyIcon} />
+                    <Image source={Images.physicianIcon} />
                     <View style={{marginLeft: 14, flex: 1}}>
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Physician Contact Details
                         </StyledText>
                         <View style={{flexDirection: 'row'}}>
                             <View>
+                                <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 5}}>
+                                    {PhysicianDataService.constructName(physicianInfo.firstName, physicianInfo.lastName)}
+                                </StyledText>
                                 {
                                     physicianInfo.phone1 &&
                                     <View>

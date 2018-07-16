@@ -1,3 +1,5 @@
+import {PhysicianDataService} from '../../../../../data_services/PhysicianDataService';
+
 const Realm = require('realm');
 
 export class Physician extends Realm.Object {
@@ -11,7 +13,7 @@ export class Physician extends Realm.Object {
     }
 
     get name() {
-        return this.firstName + this.lastName;
+        PhysicianDataService.constructName(this.firstName, this.lastName);
     }
 
     get key() {
