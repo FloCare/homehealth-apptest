@@ -13,7 +13,7 @@ import {visitDataService} from './VisitDataService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
-import {PhysicianDataService} from "./PhysicianDataService";
+import {PhysicianDataService} from './PhysicianDataService';
 
 export class PatientDataService {
     static patientDataService;
@@ -130,14 +130,13 @@ export class PatientDataService {
 
             // Todo: Add an episode, Move this to its own Data Service
 
-            let episodeData = {
+            const episodeData = {
                 episodeID: episodeId,
                 diagnosis: []
             };
 
             if (hasNonEmptyValueForKey(patient, 'primaryPhysician') &&
-                hasNonEmptyValueForAllKeys(patient.primaryPhysician, ['id', 'npiId', 'firstName'])){
-                    patient.primaryPhysician.physicianId = patient.primaryPhysician.id;
+                hasNonEmptyValueForAllKeys(patient.primaryPhysician, ['id', 'npiId', 'firstName'])) {
                     episodeData.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(patient.primaryPhysician);
             }
 

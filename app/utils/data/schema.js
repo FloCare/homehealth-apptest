@@ -8,14 +8,15 @@ import {Patient} from './schemas/Models/patient/Patient';
 import {Place} from './schemas/Models/place/Place';
 import {Visit} from './schemas/Models/visit/Visit';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
-import {Physician} from "./schemas/Models/physician/Physician";
+import {Physician} from './schemas/Models/physician/Physician';
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
 import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
-import * as PhysicianSchemas from "./schemas/Models/physician/schemaVersions/SchemaIndex";
+import * as PhysicianSchemas from './schemas/Models/physician/schemaVersions/SchemaIndex';
+import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 
 const Realm = require('realm');
 
@@ -87,11 +88,11 @@ class FloDBProvider {
                 encryptionKey: stringToArrayBuffer(key),
             },
             {
-                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV4, AddressSchemas.AddressSchemaV1,
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
                     PhysicianSchemas.PhysicianSchemaV1],
                 schemaVersion: 6,
-                migration: () => { console.log('Migrating to v5. Adding physician'); },
+                migration: () => { console.log('Migrating to v6. Adding physician'); },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             }
@@ -142,6 +143,8 @@ function CreateAndSaveDummies() {
     const episodeID = `${Math.random().toString()}_Episode`;
     const patientID = `${Math.random().toString()}_Patient`;
     const visitID = `${Math.random().toString()}_Visit`;
+    const physicianId = `${Math.random().toString()}_Visit`;
+    const npiId = Math.floor(Math.random() * 1000000000).toString();
 
     console.log('==========================================');
     console.log('Creating Realm objects');
@@ -186,10 +189,18 @@ function CreateAndSaveDummies() {
             longitude: -122 + 0.05 * Math.random()
         };
         // Create an Episode
+        const primaryPhysician = PhysicianDataService.getInstance().createNewPhysician({
+            id: physicianId,
+            npiId,
+            firstName: 'Bellandur',
+            lastName: 'DrName',
+            phone1: '9823401232'
+        });
         patient.episodes.push({
             episodeID,
             diagnosis: ['A', 'B', 'C'],
-            isClosed: true
+            isClosed: true,
+            primaryPhysician
         });
         // patient.episodes[0].visits.push({
         //     visitID,

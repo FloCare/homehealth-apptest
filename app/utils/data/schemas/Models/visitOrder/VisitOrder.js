@@ -2,7 +2,7 @@ const Realm = require('realm');
 
 export class VisitOrder extends Realm.Object {
 
-    static getSchemaName(){
+    static getSchemaName() {
         return 'VisitOrder';
     }
 

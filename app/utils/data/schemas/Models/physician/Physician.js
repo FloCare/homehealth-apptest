@@ -6,12 +6,16 @@ export class Physician extends Realm.Object {
         return 'Physician';
     }
 
-    static getMandatoryKeys (){
-        return ['physicianId', 'npiId', 'firstName'];
+    static getMandatoryKeys() {
+        return ['id', 'npiId', 'firstName'];
+    }
+
+    get name() {
+        return this.firstName + this.lastName;
     }
 
     get key() {
-        return this.physicianId;
+        return this.id;
     }
 
 }

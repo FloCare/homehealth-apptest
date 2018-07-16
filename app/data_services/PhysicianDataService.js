@@ -1,12 +1,12 @@
 import {Physician} from '../utils/data/schema';
-import {validateNonEmptyValueForAllKeys} from "../utils/collectionUtils";
+import {validateNonEmptyValueForAllKeys} from '../utils/collectionUtils';
 
 export class PhysicianDataService {
 
     static physicianDataService;
 
     static initialiseService(floDB, store) {
-        PhysicianDataService.physicianDataService= new PhysicianDataService(floDB, store);
+        PhysicianDataService.physicianDataService = new PhysicianDataService(floDB, store);
     }
 
     static getInstance() {
@@ -22,21 +22,19 @@ export class PhysicianDataService {
     }
 
     // Has to be inside a floDB.write
-    createNewPhysician(physicianDetails){
-        // TODO Perform validations for mandatory fields before calling DB
-
+    createNewPhysician(physicianDetails) {
         validateNonEmptyValueForAllKeys(physicianDetails, Physician.getMandatoryKeys());
-
         return this.floDB.create(Physician.getSchemaName(),
             {
-                physicianId: physicianDetails.physicianId.toString(),
+                id: physicianDetails.id.toString(),
                 npiId: physicianDetails.npiId.toString(),
                 firstName: physicianDetails.firstName,
                 lastName: physicianDetails.lastName || null,
-                contactNo: physicianDetails.contactNo || null,
+                phone1: physicianDetails.phone1 || null,
+                phone2: physicianDetails.phone2 || null,
                 faxNo: physicianDetails.faxNo || null,
             }
-        )
+        );
     }
 
 }

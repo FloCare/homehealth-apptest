@@ -1,14 +1,15 @@
-import {Physician} from "../../../../schema";
+import {Physician} from '../Physician';
 
 export const PhysicianSchemaV1 = {
     name: Physician.getSchemaName(),
-    primaryKey: 'physicianId',
+    primaryKey: 'id',
     properties: {
-        physicianId: 'string',
+        id: 'string',
         npiId: 'string',
         firstName: 'string',
         lastName: 'string?',
-        contactNo: 'string?',
+        phone1: 'string?',
+        phone2: 'string?',
         faxNo: 'string?'
     }
 };
