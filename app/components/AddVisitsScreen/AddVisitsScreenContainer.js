@@ -8,7 +8,7 @@ import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
 import {screenNames, PrimaryColor} from '../../utils/constants';
 import {Images} from '../../Images';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {PatientDataService} from '../../data_services/PatientDataService';
 
 const newStop = 'Add new Stop';
@@ -216,7 +216,7 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onDone() {
-        visitDataService.createNewVisits(this.state.selectedItems.values(), this.state.date.valueOf());
+        VisitService.getInstance().createNewVisits(this.state.selectedItems.values(), this.state.date.valueOf());
         //This is the part where we create the new visit items
         // floDB.write(() => {
         //     for (const selectedItem of this.state.selectedItems.values()) {

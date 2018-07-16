@@ -4,7 +4,7 @@ import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
-import {visitDataService} from './VisitDataService';
+import {VisitService} from './VisitServices/VisitService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
@@ -174,17 +174,17 @@ export class PatientDataService {
             let obj = null;
             this.floDB.write(() => {
                 patient.archived = true;
-                obj = visitDataService.deleteVisits(patient);
+                obj = VisitService.getInstance().deleteVisits(patient);
             });
             if (patient) {
                 this._archivePatientsInRedux([patientId]);
             }
             if (obj && obj.visits) {
-                visitDataService.deleteVisitsFromRedux(obj.visits);
+                VisitService.getInstance().deleteVisitsFromRedux(obj.visits);
             }
             if (obj && obj.visitOrders) {
                 for (let i = 0; i < obj.visitOrders.length; i++) {
-                    visitDataService.updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
+                    VisitService.getInstance().updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
                 }
             }
             console.log('Patient archived. His visits Deleted');
