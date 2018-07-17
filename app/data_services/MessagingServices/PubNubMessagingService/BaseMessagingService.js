@@ -34,12 +34,14 @@ export class BaseMessagingService {
                 reverse: true,
                 start: assignedVisitLastTimestamp,
                 stringifiedTimeToken: true,
-            }).then(response => {
+            }).then(async response => {
                 console.log('processFromHistory response');
                 console.log(response);
                 for (const message of response.messages) {
-                    this.digestMessage({message: message.entry, timestamp: message.timetoken, channel: channel.name});
+                    await this.digestMessage({message: message.entry, timestamp: message.timetoken, channel: channel.name});
                 }
+
+                if (response.messages.length === 100) { this.processFromHistory([channel]); }
             }).catch(error => {
                 console.log('error in history call');
                 console.log(error);
@@ -75,7 +77,7 @@ export class BaseMessagingService {
     }
 
     digestMessage(message) {
-        this.onMessage(message.message)
+        return this.onMessage(message.message)
             .then(() => {
                 this.updateLastMessageTime(message);
             })
