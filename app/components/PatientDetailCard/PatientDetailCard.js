@@ -108,40 +108,35 @@ const PatientDetailCard = (props) => {
 
             <ScrollView>
                 <View style={styles.containerStyle}>
-                    <Image source={Images.elliotLugo} />
-                    <View style={{marginLeft: 14}}>
-                        <StyledText style={{...styles.headerStyle, ...styles.fontStyle}}>
-                            Primary Contact
-                        </StyledText>
-                        <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
-                            {primaryContact}
-                        </StyledText>
+                    <Image source={Images.primaryContact} style={{marginTop: 5}} />
+                    <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between'}}>
+                        <View style={{marginLeft: 14, flex: 4}}>
+                            <StyledText style={{...styles.headerStyle, ...styles.fontStyle}}>
+                                Primary Contact
+                            </StyledText>
+                            <StyledText style={{...styles.fontStyle, fontSize: 12, color: '#999999'}}>
+                                {primaryContact}
+                            </StyledText>
+                        </View>
+                        <View style={{flex: 1, alignSelf: 'center'}}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (primaryContact) {
+                                        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                            type: parameterValues.CALL_PATIENT
+                                        });
+                                        if (Platform.OS === 'android') {
+                                            Linking.openURL(`tel: ${primaryContact}`);
+                                        } else {
+                                            RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
+                                        }
+                                    }
+                                }}
+                            >
+                                <Image source={Images.callButton} style={{height: 28, resizeMode: 'contain'}} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <Button
-                        title="Call"
-                        textStyle={{
-                            ...styles.fontStyle,
-                            color: PrimaryColor
-                        }}
-                        buttonStyle={styles.callButtonStyle}
-                        containerViewStyle={{
-                            width: '20%',
-                            position: 'absolute',
-                            right: 0
-                        }}
-                        onPress={() => {
-                            if (primaryContact) {
-                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                                    type: parameterValues.CALL_PATIENT
-                                });
-                                if (Platform.OS === 'android') {
-                                    Linking.openURL(`tel: ${primaryContact}`);
-                                } else {
-                                    RNImmediatePhoneCall.immediatePhoneCall(primaryContact);
-                                }
-                            }
-                        }}
-                    />
                 </View>
 
                 <Divider style={styles.dividerStyle} />
@@ -164,17 +159,17 @@ const PatientDetailCard = (props) => {
                     <Divider style={styles.dividerStyle} />
                 }
 
-                <View style={[styles.containerStyle, {opacity: 0.3}]}>
-                    <Image source={Images.diagnosis} />
-                    <View style={{marginLeft: 14}}>
-                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
-                            Diagnosis
-                        </StyledText>
-                        <Diagnosis diagnosis />
-                    </View>
-                </View>
+                {/*<View style={[styles.containerStyle, {opacity: 0.3}]}>*/}
+                    {/*<Image source={Images.diagnosis} />*/}
+                    {/*<View style={{marginLeft: 14}}>*/}
+                        {/*<StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>*/}
+                            {/*Diagnosis*/}
+                        {/*</StyledText>*/}
+                        {/*<Diagnosis diagnosis />*/}
+                    {/*</View>*/}
+                {/*</View>*/}
 
-                <Divider style={styles.dividerStyle} />
+                {/*<Divider style={styles.dividerStyle} />*/}
 
                 {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <View style={styles.containerStyle}>
@@ -235,73 +230,67 @@ const PatientDetailCard = (props) => {
                         <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
                             Physician Contact Details
                         </StyledText>
-                        <View style={{flexDirection: 'row'}}>
-                            <View>
-                                <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 5}}>
-                                    {PhysicianDataService.constructName(physicianInfo.firstName, physicianInfo.lastName)}
-                                </StyledText>
-                                {
-                                    physicianInfo.phone1 &&
-                                    <View>
-                                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 5}}>
-                                            {physicianInfo.phone1}
-                                        </StyledText>
-                                        <StyledText style={{...styles.fontStyle, fontSize: 11, color: '#525252'}}>
-                                            {'Mobile'}
-                                        </StyledText>
-                                    </View>
-
-                                }
-                                {
-                                    physicianInfo.phone2 &&
-                                    <View>
-                                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 10}}>
-                                            {physicianInfo.phone2}
-                                        </StyledText>
-                                        <StyledText style={{...styles.fontStyle, fontSize: 11, color: '#525252'}}>
-                                            {'Mobile'}
-                                        </StyledText>
-                                    </View>
-                                }
-                                {
-                                    physicianInfo.faxNo &&
-                                    <View>
-                                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 10}}>
-                                            {physicianInfo.faxNo}
-                                        </StyledText>
-                                        <StyledText style={{...styles.fontStyle, fontSize: 11, color: '#525252'}}>
-                                            {'Fax Number'}
-                                        </StyledText>
-                                    </View>
-                                }
-
+                        <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#222222', marginTop: 5}}>
+                        {PhysicianDataService.constructName(physicianInfo.firstName, physicianInfo.lastName)}
+                        </StyledText>
+                        {
+                            physicianInfo.phone1 &&
+                            <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between'}}>
+                                <View style={{flex: 4}}>
+                                    <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 10}}>
+                                        {physicianInfo.phone1}
+                                    </StyledText>
+                                    <StyledText style={{...styles.fontStyle, fontSize: 11, color: '#525252'}}>
+                                        {'Office Phone'}
+                                    </StyledText>
+                                </View>
+                            <View style={{flex: 1, alignSelf: 'center'}}>
+                                  <TouchableOpacity
+                                      onPress={() => {
+                                          firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                              type: parameterValues.CALL_PHYSICIAN
+                                          });
+                                          if (Platform.OS === 'android') {
+                                              Linking.openURL(`tel: ${physicianInfo.phone1}`);
+                                          } else {
+                                              RNImmediatePhoneCall.immediatePhoneCall(physicianInfo.phone1);
+                                          }
+                                      }}
+                                  >
+                                    <Image source={Images.callButton} style={{height: 28, resizeMode: 'contain'}} />
+                                  </TouchableOpacity>
+                                </View>
                             </View>
-                            {/*<Button*/}
-                            {/*title="Call"*/}
-                            {/*textStyle={{*/}
-                            {/*...styles.fontStyle,*/}
-                            {/*color: PrimaryColor*/}
-                            {/*}}*/}
-                            {/*buttonStyle={styles.callButtonStyle}*/}
-                            {/*containerViewStyle={{*/}
-                            {/*position: 'absolute',*/}
-                            {/*right: 0*/}
-                            {/*}}*/}
-                            {/*onPress={() => {*/}
-                            {/*const physicianContactNumber = physicianInfo.phone1 || physicianInfo.phone2;*/}
-                            {/*if (physicianContactNumber) {*/}
-                            {/*firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {*/}
-                            {/*type: parameterValues.CALL_PHYSICIAN*/}
-                            {/*});*/}
-                            {/*if (Platform.OS === 'android') {*/}
-                            {/*Linking.openURL(`tel: ${physicianContactNumber}`);*/}
-                            {/*} else {*/}
-                            {/*RNImmediatePhoneCall.immediatePhoneCall(physicianContactNumber);*/}
-                            {/*}*/}
-                            {/*}*/}
-                            {/*}}*/}
-                            {/*/>*/}
-                        </View>
+                        }
+                        {
+                            physicianInfo.phone2 &&
+                            <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between', marginTop: 15, marginBottom: 10}}>
+                                <View style={{flex: 4}}>
+                                    <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>
+                                        {physicianInfo.phone2}
+                                    </StyledText>
+                                    <StyledText style={{...styles.fontStyle, fontSize: 11, color: '#525252'}}>
+                                        {'Office Phone'}
+                                    </StyledText>
+                                </View>
+                                <View style={{flex: 1, alignSelf: 'center'}}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                                type: parameterValues.CALL_PHYSICIAN
+                                            });
+                                            if (Platform.OS === 'android') {
+                                                Linking.openURL(`tel: ${physicianInfo.phone2}`);
+                                            } else {
+                                                RNImmediatePhoneCall.immediatePhoneCall(physicianInfo.phone2);
+                                            }
+                                        }}
+                                    >
+                                      <Image source={Images.callButton} style={{height: 28, resizeMode: 'contain'}} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        }
                     </View>
                 </View>
                 }
