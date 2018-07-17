@@ -64,7 +64,7 @@ const StartApp = (key) => {
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
-    MessagingServiceCoordinator.initialiseService();
+    MessagingServiceCoordinator.initialiseService(key);
     if (Platform.OS === 'ios') {
         configureNotification();
     }

@@ -1,10 +1,12 @@
 import PubNub from 'pubnub';
 import {AsyncStorage} from 'react-native';
-import {pubnubPubKey, pubnubSubKey} from "../../../utils/constants";
+import {pubnubPubKey, pubnubSubKey} from '../../../utils/constants';
+import {MessagingServiceCoordinator} from './MessagingServiceCoordinator';
 
 export class BaseMessagingService {
     deviceToken = null;
     connected = false;
+    channels = [];
 
     async initialChannels() {
         return null;
@@ -17,8 +19,32 @@ export class BaseMessagingService {
     onDisconnect() {
     }
 
-    async processFromHistory() {
+    getSeedChannels() {
+        return null;
+    }
 
+    async processFromHistory(channels) {
+        console.log('processFromHistory');
+        console.log(channels);
+        for (const channel of channels) {
+            const assignedVisitLastTimestamp = channel.lastMessageTimestamp;
+
+            this.newClient().history({
+                channel: channel.name,
+                reverse: true,
+                start: assignedVisitLastTimestamp,
+                stringifiedTimeToken: true,
+            }).then(response => {
+                console.log('processFromHistory response');
+                console.log(response);
+                for (const message of response.messages) {
+                    this.digestMessage({message: message.entry, timestamp: message.timetoken, channel: channel.name});
+                }
+            }).catch(error => {
+                console.log('error in history call');
+                console.log(error);
+            });
+        }
     }
 
     statusHandler(statusEvent) {
@@ -26,11 +52,11 @@ export class BaseMessagingService {
         console.log(statusEvent);
 
         switch (statusEvent.category) {
-            case 'PNConnectedCategory':
-                this.processFromHistory().then(() => {
-                    this.connected = true;
-                });
-                break;
+            // case 'PNConnectedCategory':
+            //     this.processFromHistory().then(() => {
+            //         this.connected = true;
+            //     });
+            //     break;
             case 'PNTimeoutCategory':
             case 'PNNetworkIssuesCategory':
             case 'PNNetworkDownCategory':
@@ -39,7 +65,7 @@ export class BaseMessagingService {
                 break;
             case 'PNReconnectedCategory':
             case 'PNNetworkUpCategory':
-                this.processFromHistory().then(() => {
+                this.processFromHistory(this.channels).then(() => {
                     this.connected = true;
                 });
                 break;
@@ -48,16 +74,33 @@ export class BaseMessagingService {
         }
     }
 
-    messageHandler(message) {
+    digestMessage(message) {
+        this.onMessage(message.message)
+            .then(() => {
+                this.updateLastMessageTime(message);
+            })
+            .catch(error => {
+                console.log('error in messageEventCallback');
+                console.log(error);
+            });
+    }
+
+    async messageEventCallback(message) {
         console.log('pubnub message event');
         console.log(message);
 
         //TODO scope for error, if during history catchup new messages arrive
         if (this.connected) {
-            this.onMessage(message.message, message.timetoken);
+            this.digestMessage({message: message.message, timestamp: message.timetoken, channel: message.channel});
         } else {
-            console.log('but this.connected is false');
+            console.log('but  this.connected is false');
         }
+    }
+
+    updateLastMessageTime(message) {
+        MessagingServiceCoordinator.getChannelRealm().write(() => {
+            MessagingServiceCoordinator.getChannelRealm().objectForPrimaryKey('Channel', message.channel).lastMessageTimestamp = message.timestamp;
+        });
     }
 
     newClient(userID) {
@@ -65,30 +108,52 @@ export class BaseMessagingService {
             publishKey: pubnubPubKey,
             subscribeKey: pubnubSubKey,
             uuid: userID,
-            ssl: true, // make it true
+            ssl: true,
             keepAlive: false
         });
     }
 
-    constructor() {
+    constructor(channelRealm) {
         return AsyncStorage.getItem('userID').then(userID => {
             this.pubnub = this.newClient(userID);
         }).then(() => {
             this.pubnub.addListener({
                 status: this.statusHandler.bind(this),
-                message: this.messageHandler.bind(this),
+                message: this.messageEventCallback.bind(this),
             });
 
-            this.initialChannels().then(channels => {
-                    this.channels = channels;
-                }
-            );
-            this.processFromHistory().then(() => this.subscribeToChannels(this.channels));
+            const channelsFromRealm = channelRealm.objects('Channel').filtered('handler = $0', this.constructor.name);
+            if (channelsFromRealm && channelsFromRealm.length > 0) this.channels.push(...channelsFromRealm.values());
+
+            if (this.channels.length === 0) {
+                console.log('found channels length to be zero, calling seed generator');
+                this.getSeedChannels().then(seedChannels => {
+                    if (seedChannels.length > 0) {
+                        this.saveChannelToRealm(seedChannels);
+                        if (seedChannels.length > 0) this.channels.push(...seedChannels);
+                        this.startSubscription(this.channels);
+                    }
+                });
+            } else this.startSubscription(this.channels);
 
             return this;
         }).catch(error => {
             throw new Error(`error initialising messaging service: ${error}`);
         });
+    }
+
+    saveChannelToRealm(channels) {
+        console.log('save channel to realm');
+        try {
+            MessagingServiceCoordinator.getChannelRealm().write(() => {
+                channels.forEach(channel => {
+                    MessagingServiceCoordinator.getChannelRealm().create('Channel', channel);
+                });
+            });
+        } catch (error) {
+            console.log('error in save channel to realm');
+            console.log(error);
+        }
     }
 
     onNotificationRegister() {
@@ -105,13 +170,21 @@ export class BaseMessagingService {
         );
     }
 
-    subscribeToChannels(channels) {
-        console.log(`subscribing to channels: ${channels}`);
-        if (!channels || channels.length === 0) {
+    startSubscription(channels) {
+        if (channels.length === 0) {
+            console.log('No channels to subscribe to');
             return;
         }
-        return this.pubnub.subscribe({
-            channels
+        //TODO dont subscribe if history failed
+        this.processFromHistory(channels).then(() => {
+            this.connected = true;
+            console.log(`subscribing to channels: ${channels}`);
+            if (!channels || channels.length === 0) {
+                return;
+            }
+            return this.pubnub.subscribe({
+                channels: channels.map(channel => channel.name)
+            });
         });
     }
 }

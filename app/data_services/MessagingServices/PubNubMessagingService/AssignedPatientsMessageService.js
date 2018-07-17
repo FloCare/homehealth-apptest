@@ -20,57 +20,56 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
         });
     }
 
-    async processFromHistory() {
-        console.log('processFromHistory');
-        let assignedVisitLastTimestamp = await AsyncStorage.getItem('assignedVisitLastTimestamp');
-        console.log(assignedVisitLastTimestamp);
-        if (!assignedVisitLastTimestamp) {
-            assignedVisitLastTimestamp = 0;
-        }
-
-        //TODO adapt for multiple channels
-        this.newClient().history({
-            channel: this.channels[0],
-            reverse: true,
-            start: assignedVisitLastTimestamp,
-            stringifiedTimeToken: true,
-        }).then(response => {
-            console.log('processfromhistory response');
-            console.log(response);
-            for (const message of response.messages) {
-                this.onMessage(message.entry, message.timetoken);
-            }
-        }).catch(error => {
-            console.log('error in history call');
-            console.log(error);
-        });
-    }
-
     onNotificationRegister(notificationTokenObject) {
         this.registerDeviceOnChannels(notificationTokenObject.token);
     }
 
-    onMessage(message, timetoken) {
-        console.log('onMessage called');
-        console.log(message);
-        const {actionType, patientID} = message;
-        switch (actionType) {
-            case 'ASSIGN' :
-                PatientDataService.getInstance().fetchAndSavePatientsByID([patientID])
-                    .then(() => AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken));
-                break;
-            case 'UNASSIGN' :
-                PatientDataService.getInstance().archivePatient(patientID.toString(), true);
-                AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken);
-                break;
-            case 'UPDATE' :
-                PatientDataService.getInstance().fetchAndEditPatientsByID([patientID])
-                    .then(() => AsyncStorage.setItem('assignedVisitLastTimestamp', timetoken));
-                break;
-            default:
-                // throw new Error('Unrecognised action type in assigned patient message');
-                console.log(`unrecognised message: ${message}`);
+    onMessage(message) {
+        return new Promise((resolve, reject) => {
+            resolve();
+            console.log('onMessage called');
+            console.log(message);
+            const {actionType, patientID} = message;
+            switch (actionType) {
+                case 'ASSIGN' :
+                    PatientDataService.getInstance().fetchAndSavePatientsByID([patientID])
+                        .then(() => resolve())
+                        .catch(error => reject(error));
+                    break;
+                case 'UNASSIGN' :
+                    try {
+                        PatientDataService.getInstance().archivePatient(patientID.toString(), true);
+                    } catch (e) {
+                        reject(e);
+                    }
+                    resolve();
+                    break;
+                case 'UPDATE' :
+                    PatientDataService.getInstance().fetchAndEditPatientsByID([patientID])
+                        .then(() => resolve())
+                        .catch(error => reject(error));
+                    break;
+                default:
+                    // throw new Error('Unrecognised action type in assigned patient message');
+                    console.log(`unrecognised message: ${message}`);
+                    reject();
+            }
+        });
+    }
+
+    async getSeedChannels() {
+        const userID = await AsyncStorage.getItem('userID');
+        let assignedVisitLastTimestamp = await AsyncStorage.getItem('assignedVisitLastTimestamp');
+        if (!assignedVisitLastTimestamp) {
+            assignedVisitLastTimestamp = '0';
         }
+
+        console.log(`last assigned ${assignedVisitLastTimestamp}`);
+        return [{
+            name: `${userID}_assignedPatients`,
+            lastMessageTimestamp: assignedVisitLastTimestamp,
+            handler: this.constructor.name,
+        }];
     }
 
     //leftover from trying to use local notifications triggered by remote silent notifications
