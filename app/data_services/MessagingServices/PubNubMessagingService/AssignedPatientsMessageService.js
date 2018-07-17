@@ -1,24 +1,23 @@
 import {AsyncStorage} from 'react-native';
 import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
-import {getUserProps} from '../../../utils/API/UserAPI';
 
 export class AssignedPatientsMessageService extends BaseMessagingService {
-    async initialChannels() {
-        return AsyncStorage.getItem('userID').then(res => {
-            if (res === null) {
-                return getUserProps().then(userPropsJson => {
-                    const userID = userPropsJson.id.toString();
-                    AsyncStorage.setItem('userID', userID);
-                    return [`${userID}_assignedPatients`];
-                });
-            }
-            return [`${res}_assignedPatients`];
-        }).catch(error => {
-            console.log(`error getting initial channel name: ${error}`);
-            return null;
-        });
-    }
+    // async initialChannels() {
+    //     return AsyncStorage.getItem('userID').then(res => {
+    //         if (res === null) {
+    //             return getUserProps().then(userPropsJson => {
+    //                 const userID = userPropsJson.id.toString();
+    //                 AsyncStorage.setItem('userID', userID);
+    //                 return [`${userID}_assignedPatients`];
+    //             });
+    //         }
+    //         return [`${res}_assignedPatients`];
+    //     }).catch(error => {
+    //         console.log(`error getting initial channel name: ${error}`);
+    //         return null;
+    //     });
+    // }
 
     onNotificationRegister(notificationTokenObject) {
         this.registerDeviceOnChannels(notificationTokenObject.token);

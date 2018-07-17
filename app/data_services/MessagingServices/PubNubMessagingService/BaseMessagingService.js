@@ -8,10 +8,6 @@ export class BaseMessagingService {
     connected = false;
     channels = [];
 
-    async initialChannels() {
-        return null;
-    }
-
     onMessage() {
 
     }
