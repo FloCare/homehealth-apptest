@@ -19,10 +19,6 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
     //     });
     // }
 
-    onNotificationRegister(notificationTokenObject) {
-        this.registerDeviceOnChannels(notificationTokenObject.token);
-    }
-
     onMessage(message) {
         return new Promise((resolve, reject) => {
             console.log('onMessage called');

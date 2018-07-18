@@ -1,7 +1,5 @@
-// import Realm from 'realm';
 import {AssignedPatientsMessageService} from './AssignedPatientsMessageService';
-import {VisitMessagingService} from './VisitMessagingService';
-import {stringToArrayBuffer} from "../../../utils/encryptionUtils";
+import {stringToArrayBuffer} from '../../../utils/encryptionUtils';
 
 const Realm = require('realm');
 
@@ -56,6 +54,13 @@ export class MessagingServiceCoordinator {
 
     constructor(messageServices) {
         this.messageServices = messageServices;
+    }
+
+    getMessagingServiceInstance(serviceClassName) {
+        const messagingServiceInstance = this.messageServices[serviceClassName.name];
+        if (!messagingServiceInstance) {
+            throw new Error(`Requested messaging service ${serviceClassName.name}not found`);
+        }
     }
 
     onNotificationRegister(token) {

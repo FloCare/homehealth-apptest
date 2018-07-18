@@ -7,6 +7,7 @@ export class BaseMessagingService {
     deviceToken = null;
     connected = false;
     channels = [];
+    notificationToken;
 
     onMessage() {
 
@@ -17,6 +18,10 @@ export class BaseMessagingService {
 
     getSeedChannels() {
         return null;
+    }
+
+    getChannelObjectsForPayload() {
+        return undefined;
     }
 
     async processFromHistory(channels) {
@@ -141,6 +146,15 @@ export class BaseMessagingService {
         });
     }
 
+    subscribeToChannel(payload) {
+        const liveChannelObjects = this.saveChannelToRealm(this.getChannelObjectsForPayload(payload));
+        this.channels.push(...liveChannelObjects);
+        this.startSubscription(liveChannelObjects);
+        this.registerDeviceOnChannels(this.notificationToken, liveChannelObjects);
+    }
+
+    //TODO unsubscribe from channels
+    
     saveChannelToRealm(channels) {
         console.log('save channel to realm');
         const realmObjects = [];
@@ -158,14 +172,16 @@ export class BaseMessagingService {
         }
     }
 
-    onNotificationRegister() {
 
+    onNotificationRegister(notificationTokenObject) {
+        this.notificationToken = notificationTokenObject.token;
+        this.registerDeviceOnChannels(notificationTokenObject.token);
     }
 
-    registerDeviceOnChannels(token) {
+    registerDeviceOnChannels(token, channels = this.channels) {
         return this.pubnub.push.addChannels(
             {
-                channels: this.channels,
+                channels: channels.map(channel => channel.name),
                 device: token,
                 pushGateway: 'apns'
             }
