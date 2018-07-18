@@ -171,22 +171,11 @@ export class PatientDataService {
         if (patient) {
             if (!deletedOnServer) { this._checkPermissionForEditing([patient]); }
 
-            let obj = null;
             this.floDB.write(() => {
                 patient.archived = true;
-                obj = VisitService.getInstance().deleteVisits(patient);
+                VisitService.getInstance().deleteVisitsForOwner(patient);
             });
-            if (patient) {
-                this._archivePatientsInRedux([patientId]);
-            }
-            if (obj && obj.visits) {
-                VisitService.getInstance().deleteVisitsFromRedux(obj.visits);
-            }
-            if (obj && obj.visitOrders) {
-                for (let i = 0; i < obj.visitOrders.length; i++) {
-                    VisitService.getInstance().updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
-                }
-            }
+            this._archivePatientsInRedux([patientId]);
             console.log('Patient archived. His visits Deleted');
         }
     }

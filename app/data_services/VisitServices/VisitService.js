@@ -155,7 +155,7 @@ export class VisitService {
     }
 
     // Should be a part of a write transaction
-    deleteVisits(owner) {
+    deleteVisitsForOwner(owner) {
         console.log('Deleting visits from realm');
         const today = todayMomentInUTCMidnight();
         let visits = null;
@@ -181,7 +181,14 @@ export class VisitService {
             visitOrders[i].visitList = visitList;
         }
         this.floDB.delete(visits);
-        const obj = {visits, visitOrders};
-        return obj;
+
+        if (visits) {
+            this.visitReduxService.deleteVisitsFromRedux(visits);
+        }
+        if (visitOrders) {
+            for (let i = 0; i < visitOrders.length; i++) {
+                this.visitReduxService.updateVisitOrderToReduxIfLive(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
+            }
+        }
     }
 }
