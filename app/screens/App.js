@@ -17,6 +17,7 @@ import {dateService, initialiseService as initialiseDate} from '../data_services
 import {configure as configureNotification} from '../data_services/MessagingServices/NotificationService';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {MessagingServiceCoordinator} from '../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {UserDataService} from '../data_services/UserDataService'
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -44,73 +45,84 @@ function getLargeNavBarOrSubstitute() {
     return null;
 }
 
+
+async function handleAppInitialisation() {
+    await UserDataService.initialiseUser();
+}
+
 const StartApp = (key) => {
-    // Initialize the DB
-    try {
-        FloDBProvider.initialize(key);
-    } catch (err) {
-        console.log('Error in initializing DB: ', err);
-        throw err;
-    }
-
-    // Initialize the Redux Store
-    const store = createStore(RootReducer);
-
-    // Initialize Data Services, pass it the db and store instances
-    //TODO Move all intialisations to static calls
-    PatientDataService.initialiseService(FloDBProvider.db, store);
-    VisitService.initialiseService(FloDBProvider.db, store);
-    initialiseStopService(FloDBProvider.db, store);
-    initialiseAddressService(FloDBProvider.db, store);
-    initialiseDate(FloDBProvider.db, store);
-
-    MessagingServiceCoordinator.initialiseService();
-    if (Platform.OS === 'ios') {
-        configureNotification();
-    }
-
-    dateService.setDate(todayMomentInUTCMidnight().valueOf());
-    RNSecureKeyStore.get('accessToken').then(() => {
-        if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            PatientDataService.getInstance().updatePatientListFromServer();
+    handleAppInitialisation().then( () => {
+        try {
+            // Initialize the DB
+            FloDBProvider.initialize(key);
+        } catch (err) {
+            console.log('Error in initializing DB: ', err);
+            throw err;
         }
-    });
 
-    // Register the screens
-    try {
-        RegisterScreens(store, Provider);
-    } catch (err) {
-        console.log('Error in registering screens: ', err);
-        throw err;
-    }
+        // Initialize the Redux Store
+        const store = createStore(RootReducer);
 
-    Navigation.startTabBasedApp({
-        tabs: [
-            {
-                title: 'Home Screen',
-                label: 'Today',
-                icon: Images.calendar,
-                screen: screenNames.homeScreen,
-                navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
-            },
-            {
-                title: 'Patients',
-                label: 'Patients',
-                icon: Images.person_ic,
-                screen: screenNames.patientList,
-                navigatorStyle: getLargeNavBarOrSubstitute()
-            },
-            {
-                label: 'More',
-                icon: Images.more,
-                screen: screenNames.moreScreen,
-                navigatorStyle: getLargeNavBarOrSubstitute()
-            },
-        ],
-        appStyle: navigatorStyle,
-        tabsStyle: navigatorStyle,
-        animationType: 'fade'
-    });
+        // Initialize Data Services, pass it the db and store instances
+        //TODO Move all intialisations to static calls
+        PatientDataService.initialiseService(FloDBProvider.db, store);
+        UserDataService.initialiseService(FloDBProvider.db, store);
+        VisitService.initialiseService(FloDBProvider.db, store);
+        initialiseStopService(FloDBProvider.db, store);
+        initialiseAddressService(FloDBProvider.db, store);
+        initialiseDate(FloDBProvider.db, store);
+
+        MessagingServiceCoordinator.initialiseService();
+        if (Platform.OS === 'ios') {
+            configureNotification();
+        }
+
+        dateService.setDate(todayMomentInUTCMidnight().valueOf());
+        RNSecureKeyStore.get('accessToken').then(() => {
+            if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
+                PatientDataService.getInstance().updatePatientListFromServer();
+            }
+        });
+
+        // Register the screens
+        try {
+            RegisterScreens(store, Provider);
+        } catch (err) {
+            console.log('Error in registering screens: ', err);
+            throw err;
+        }
+
+        Navigation.startTabBasedApp({
+            tabs: [
+                {
+                    title: 'Home Screen',
+                    label: 'Today',
+                    icon: Images.calendar,
+                    screen: screenNames.homeScreen,
+                    navigatorStyle: {
+                        navBarHidden: true,
+                        statusBarTextColorSchemeSingleScreen: 'dark'
+                    }
+                },
+                {
+                    title: 'Patients',
+                    label: 'Patients',
+                    icon: Images.person_ic,
+                    screen: screenNames.patientList,
+                    navigatorStyle: getLargeNavBarOrSubstitute()
+                },
+                {
+                    label: 'More',
+                    icon: Images.more,
+                    screen: screenNames.moreScreen,
+                    navigatorStyle: getLargeNavBarOrSubstitute()
+                },
+            ],
+            appStyle: navigatorStyle,
+            tabsStyle: navigatorStyle,
+            animationType: 'fade'
+        });
+    })
 };
 
 export default StartApp;
