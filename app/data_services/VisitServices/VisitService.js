@@ -5,6 +5,8 @@ import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
+import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
 
 export class VisitService {
     static visitService;
@@ -154,6 +156,12 @@ export class VisitService {
                 if (visitSubject instanceof Patient) { visitSubject.episodes[0].visits.push(visit); } else visitSubject.visits.push(visit);
             }
         });
+
+        //TODO this is just a stub
+        newVisits.forEach(visit => {
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
+        });
+
         // Logging the firebase event upon visits being added
         firebase.analytics().logEvent(eventNames.ADD_VISIT, {
             VALUE: newVisits.length

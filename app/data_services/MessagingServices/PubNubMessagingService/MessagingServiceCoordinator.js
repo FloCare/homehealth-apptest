@@ -1,5 +1,7 @@
+import queueFactory from 'react-native-queue';
 import {AssignedPatientsMessageService} from './AssignedPatientsMessageService';
 import {stringToArrayBuffer} from '../../../utils/encryptionUtils';
+import {VisitMessagingService} from './VisitMessagingService';
 
 const Realm = require('realm');
 
@@ -37,9 +39,11 @@ export class MessagingServiceCoordinator {
 
     static async initialiseService(channelRealmKey) {
         MessagingServiceCoordinator.initialiseRealm(channelRealmKey);
+        this.queue = await queueFactory();
+
         const messagingServices = {};
         messagingServices[AssignedPatientsMessageService.name] = await new AssignedPatientsMessageService(MessagingServiceCoordinator.getChannelRealm());
-        // messagingServices[VisitMessagingService.name] = await new VisitMessagingService(MessagingServiceCoordinator.getChannelRealm());
+        messagingServices[VisitMessagingService.name] = await new VisitMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
 
         MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices);
     }
@@ -61,6 +65,7 @@ export class MessagingServiceCoordinator {
         if (!messagingServiceInstance) {
             throw new Error(`Requested messaging service ${serviceClassName.name}not found`);
         }
+        return messagingServiceInstance;
     }
 
     onNotificationRegister(token) {

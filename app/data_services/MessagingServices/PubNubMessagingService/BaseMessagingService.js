@@ -24,6 +24,10 @@ export class BaseMessagingService {
         return undefined;
     }
 
+    initialiseWorkers() {
+
+    }
+
     async processFromHistory(channels) {
         console.log('processFromHistory');
         console.log(channels);
@@ -117,7 +121,7 @@ export class BaseMessagingService {
         });
     }
 
-    constructor(channelRealm) {
+    constructor(channelRealm, taskQueue) {
         return AsyncStorage.getItem('userID').then(userID => {
             this.pubnub = this.newClient(userID);
         }).then(() => {
@@ -139,6 +143,9 @@ export class BaseMessagingService {
                     }
                 });
             } else this.startSubscription(this.channels);
+
+            this.taskQueue = taskQueue;
+            this.initialiseWorkers();
 
             return this;
         }).catch(error => {

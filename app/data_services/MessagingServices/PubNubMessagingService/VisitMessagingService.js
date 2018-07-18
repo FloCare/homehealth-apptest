@@ -68,6 +68,55 @@ export class VisitMessagingService extends BaseMessagingService {
     //     }
     // }
 
+    initialiseWorkers() {
+        this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this));
+    }
+
+    async _publishVisitMessage(jobID, payload) {
+        await this.pubnub.publish({
+            channel: `${payload.patientID}_visits`,
+            message: {
+                actionType: payload.actionType,
+                visitID: payload.visitID,
+                userID: payload.userID,
+            }
+        }).catch(error => {
+            console.log('error publishing');
+            throw new Error(`could not publish message ${error}`);
+        });
+    }
+
+    publishVisitCreate(visit) {
+        //TODO visitAPI
+        console.log('publishVisitMessage');
+        this.taskQueue.createJob('publishVisitMessage', {
+            visitID: visit.visitID,
+            patientID: visit.getPatient().patientID,
+            actionType: 'CREATE',
+            userID: 23, //TODO my own userID
+        });
+    }
+
+    publishVisitUpdate(visit) {
+        //TODO visitAPI
+        this.taskQueue.createJob('publishVisitMessage', {
+            visitID: visit.visitID,
+            patientID: visit.getPatient().patientID,
+            actionType: 'UPDATE',
+            userID: 23, //TODO my own userID
+        });
+    }
+
+    publishVisitDelete(visit) {
+        //TODO visitAPI
+        this.taskQueue.createJob('publishVisitMessage', {
+            visitID: visit.visitID,
+            patientID: visit.getPatient().patientID,
+            actionType: 'DELETE',
+            userID: 23, //TODO my own userID
+        });
+    }
+
     getChannelObjectsForPayload(payload) {
         const patientIDs = payload.patientIDs;
         return patientIDs.map(patientID => ({
