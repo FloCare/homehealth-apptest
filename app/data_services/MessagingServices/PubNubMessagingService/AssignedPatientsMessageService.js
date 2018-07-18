@@ -25,7 +25,6 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
 
     onMessage(message) {
         return new Promise((resolve, reject) => {
-            resolve();
             console.log('onMessage called');
             console.log(message);
             const {actionType, patientID} = message;
