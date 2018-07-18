@@ -78,7 +78,7 @@ export class BaseMessagingService {
     }
 
     digestMessage(message) {
-        return this.onMessage(message.message)
+        return this.onMessage(message)
             .then(() => {
                 this.updateLastMessageTime(message);
             })

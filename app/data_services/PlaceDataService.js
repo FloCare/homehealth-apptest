@@ -89,7 +89,7 @@ class PlaceDataService {
         if (place) {
             this.floDB.write(() => {
                 place.archived = true;
-                VisitService.getInstance().deleteVisitsForOwner(place);
+                VisitService.getInstance().deleteVisitsForSubject(place);
             });
             this.archivePlacesInRedux([placeId]);
         }

@@ -2,18 +2,19 @@ import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
 
 export class VisitMessagingService extends BaseMessagingService {
-    onMessage(message) {
+    onMessage(messageObject) {
+        const {message, channel} = messageObject;
         return new Promise((resolve, reject) => {
             console.log('onMessage called');
             console.log(message);
             const {actionType, patientID} = message;
             switch (actionType) {
-                case 'ASSIGN' :
+                case 'CREATE' :
                     PatientDataService.getInstance().fetchAndSavePatientsByID([patientID])
                         .then(() => resolve())
                         .catch(error => reject(error));
                     break;
-                case 'UNASSIGN' :
+                case 'DELETE' :
                     try {
                         PatientDataService.getInstance().archivePatient(patientID.toString(), true);
                     } catch (e) {

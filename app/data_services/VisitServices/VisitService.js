@@ -130,10 +130,10 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
-    createNewVisits(visitOwners, midnightEpoch) {
+    createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
         this.floDB.write(() => {
-            for (const visitSubject of visitOwners) {
+            for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
                     midnightEpochOfVisit: midnightEpoch
@@ -155,17 +155,17 @@ export class VisitService {
     }
 
     // Should be a part of a write transaction
-    deleteVisitsForOwner(owner) {
+    deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
         const today = todayMomentInUTCMidnight();
         let visits = null;
         // Todo: Check if this works
-        if (owner instanceof Patient) {
+        if (subject instanceof Patient) {
             console.log('Deleting patient');
-            visits = owner.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
-        } else if (owner instanceof Place) {
+            visits = subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        } else if (subject instanceof Place) {
             console.log('Deleting Place');
-            visits = owner.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+            visits = subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
         }
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
@@ -174,7 +174,7 @@ export class VisitService {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!(visit.isOwnerArchived())) {
+                if (!(visit.isSubjectArchived())) {
                     visitList.push(visit);
                 }
             }
