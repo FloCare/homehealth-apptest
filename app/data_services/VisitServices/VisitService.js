@@ -130,6 +130,18 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
+    fetchAndSaveVisitsByID(visitIDs) {
+        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+    }
+
+    fetchAndEditVisitsByID(visitIDs) {
+        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+    }
+
+    deleteVisitsByID(visitIDs) {
+        //TODO delete these visits, ensure own visits are filtered out
+    }
+
     createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
         this.floDB.write(() => {
