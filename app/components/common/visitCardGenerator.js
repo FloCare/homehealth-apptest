@@ -19,22 +19,22 @@ const mapStateToProps = (state, ownProps) => {
         isDone: visit.isDone,
     };
 
-    let visitOwner;
+    let visitSubject;
     if (visit.isPatientVisit) {
         const patientID = visit.patientID;
-        visitOwner = state.patients[patientID];
+        visitSubject = state.patients[patientID];
     } else {
         const placeID = visit.placeID;
-        visitOwner = state.places[placeID];
+        visitSubject = state.places[placeID];
     }
 
-    props.name = visitOwner.name;
-    props.primaryContact = !visitOwner.archived && visitOwner.primaryContact;
+    props.name = visitSubject.name;
+    props.primaryContact = !visitSubject.archived && visitSubject.primaryContact;
 
-    const address = state.addresses[visitOwner.addressID];
-    //console.log('Owner', visitOwner.name);
+    const address = state.addresses[visitSubject.addressID];
+    //console.log('Owner', visitSubject.name);
     //console.log('Address:', address);
-    props.coordinates = !visitOwner.archived && {
+    props.coordinates = !visitSubject.archived && {
         latitude: address.latitude,
         longitude: address.longitude
     };
