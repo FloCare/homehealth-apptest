@@ -97,7 +97,8 @@ export class BaseMessagingService {
 
     updateLastMessageTime(message) {
         MessagingServiceCoordinator.getChannelRealm().write(() => {
-            MessagingServiceCoordinator.getChannelRealm().objectForPrimaryKey('Channel', message.channel).lastMessageTimestamp = message.timestamp;
+            const channelObj = MessagingServiceCoordinator.getChannelRealm().objectForPrimaryKey('Channel', message.channel);
+            channelObj.lastMessageTimestamp = message.timestamp;
         });
     }
 
@@ -127,8 +128,8 @@ export class BaseMessagingService {
                 console.log('found channels length to be zero, calling seed generator');
                 this.getSeedChannels().then(seedChannels => {
                     if (seedChannels.length > 0) {
-                        this.saveChannelToRealm(seedChannels);
-                        if (seedChannels.length > 0) this.channels.push(...seedChannels);
+                        const liveChannelObjects = this.saveChannelToRealm(seedChannels);
+                        if (seedChannels.length > 0) this.channels.push(...liveChannelObjects);
                         this.startSubscription(this.channels);
                     }
                 });
@@ -142,15 +143,18 @@ export class BaseMessagingService {
 
     saveChannelToRealm(channels) {
         console.log('save channel to realm');
+        const realmObjects = [];
         try {
             MessagingServiceCoordinator.getChannelRealm().write(() => {
                 channels.forEach(channel => {
-                    MessagingServiceCoordinator.getChannelRealm().create('Channel', channel);
+                    realmObjects.push(MessagingServiceCoordinator.getChannelRealm().create('Channel', channel));
                 });
             });
+            return realmObjects;
         } catch (error) {
             console.log('error in save channel to realm');
             console.log(error);
+            throw error;
         }
     }
 

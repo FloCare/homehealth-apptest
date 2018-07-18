@@ -70,16 +70,4 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
             handler: this.constructor.name,
         }];
     }
-
-    //leftover from trying to use local notifications triggered by remote silent notifications
-    // notifyPatientAdditions(count = 1) {
-        // const grammar = count === 1 ? 'patient' : 'patients';
-        // PushNotification.localNotification({
-        //     title: `New ${grammar} alert`,
-        //     message: `You have ${count} new ${grammar}`,
-        //     userInfo: {
-        //         screenName: screenNames.patientList
-        //     }
-        // });
-    // }
 }
