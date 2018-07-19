@@ -136,7 +136,7 @@ export class PatientDataService {
             };
 
             if (hasNonEmptyValueForKey(patient, 'primaryPhysician') &&
-                hasNonEmptyValueForAllKeys(patient.primaryPhysician, ['id', 'npiId', 'firstName'])) {
+                hasNonEmptyValueForAllKeys(patient.primaryPhysician, ['id', 'npi', 'firstName'])) {
                     episodeData.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(patient.primaryPhysician);
             }
 

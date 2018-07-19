@@ -32,12 +32,12 @@ export class PhysicianDataService {
         return this.floDB.create(Physician.getSchemaName(),
             {
                 id: physicianDetails.id.toString(),
-                npiId: physicianDetails.npiId.toString(),
+                npiId: physicianDetails.npi.toString(),
                 firstName: physicianDetails.firstName,
                 lastName: physicianDetails.lastName || null,
                 phone1: physicianDetails.phone1 || null,
                 phone2: physicianDetails.phone2 || null,
-                faxNo: physicianDetails.faxNo || null,
+                faxNo: physicianDetails.fax || null,
             }
         );
     }
