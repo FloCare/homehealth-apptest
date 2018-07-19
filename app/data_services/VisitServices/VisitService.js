@@ -157,7 +157,7 @@ export class VisitService {
             for (const visitSubject of visitOwners) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
-                    userID: UserDataService.getCurrentUserID(),
+                    userID: UserDataService.getCurrentUserID().toString(),
                     midnightEpochOfVisit: midnightEpoch
                 });
                 newVisits.push(visit);
