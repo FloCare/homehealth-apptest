@@ -32,7 +32,8 @@ export class PatientDataService {
             primaryContact: patient.primaryContact,
             notes: patient.notes,
             //TODO this will need work if more than one episode per patient
-            visits: patient.episodes[0].visits.map(visit => visit.visitID),
+            visits: VisitService.getInstance().filterUserVisits(
+                patient.episodes[0].visits).map(visit => visit.visitID),
             archived: patient.archived,
             recentlyAssigned: moment.utc(patient.assignmentTimestamp).diff(moment.utc(), 'days') === 0,
             recentlyUpdated: moment.utc(patient.lastUpdateTimestamp).diff(moment.utc(), 'days') === 0,

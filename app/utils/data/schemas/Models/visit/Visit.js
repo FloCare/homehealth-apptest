@@ -1,11 +1,15 @@
-import * as CollectionUtils from "../../../../collectionUtils";
+import * as CollectionUtils from '../../../../collectionUtils';
 
 const Realm = require('realm');
 
 export class Visit extends Realm.Object {
 
-    static getSchemaName(){
+    static getSchemaName() {
         return 'Visit';
+    }
+
+    static getAllFields() {
+        return Object.keys(Visit.schema.properties);
     }
 
     get key() {
