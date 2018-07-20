@@ -8,6 +8,8 @@ import {VisitService} from './VisitServices/VisitService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
+import {MessagingServiceCoordinator} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {VisitMessagingService} from './MessagingServices/PubNubMessagingService/VisitMessagingService';
 
 export class PatientDataService {
     static patientDataService;
@@ -130,6 +132,7 @@ export class PatientDataService {
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToChannels({patientIDs: [newPatient.patientID]});
         }
     }
 
@@ -170,6 +173,9 @@ export class PatientDataService {
 
         if (patient) {
             if (!deletedOnServer) { this._checkPermissionForEditing([patient]); }
+            else {
+                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToChannels({patientIDs: [patient.patientID]});
+            }
 
             this.floDB.write(() => {
                 patient.archived = true;

@@ -139,10 +139,10 @@ export class BaseMessagingService {
                     if (seedChannels.length > 0) {
                         const liveChannelObjects = this.saveChannelToRealm(seedChannels);
                         if (seedChannels.length > 0) this.channels.push(...liveChannelObjects);
-                        this.startSubscription(this.channels);
+                        this._startSubscription(this.channels);
                     }
                 });
-            } else this.startSubscription(this.channels);
+            } else this._startSubscription(this.channels);
 
             this.taskQueue = taskQueue;
             this.initialiseWorkers();
@@ -153,21 +153,55 @@ export class BaseMessagingService {
         });
     }
 
-    subscribeToChannel(payload) {
+    subscribeToChannels(payload) {
         const liveChannelObjects = this.saveChannelToRealm(this.getChannelObjectsForPayload(payload));
         this.channels.push(...liveChannelObjects);
-        this.startSubscription(liveChannelObjects);
+        this._startSubscription(liveChannelObjects);
         this.registerDeviceOnChannels(this.notificationToken, liveChannelObjects);
     }
 
-    //TODO unsubscribe from channels
-    
-    saveChannelToRealm(channels) {
+    //TODO unsubscribe from channels will aslo have to remove notification registration
+    unsubscribeToChannels(payload) {
+        const channelObjects = this.getChannelObjectsForPayload(payload);
+
+        // console.log('here at unsubs');
+        // console.log(payload);
+        // console.log(channelObjects);
+        const liveChannelsToRemove = this.channels.filter(channelLiveObject => {
+            let toRemove = false;
+            channelObjects.forEach(channelObject => {
+                if (channelObject.name === channelLiveObject.name) { toRemove = true; }
+            });
+            return toRemove;
+        });
+
+        // console.log(`${channelObjects.length},${liveChannelsToRemove.length},${this.channels.length}`);
+
+        this._unsubscribe(liveChannelsToRemove);
+        this.deregisterDeviceOnChannels(this.notificationToken, liveChannelsToRemove);
+        this.deleteChannelsFromRealm(channelObjects.map(channelObject => channelObject.name));
+    }
+
+    deleteChannelsFromRealm(channelNames) {
+        console.log('remove channel to realm');
+        MessagingServiceCoordinator.getChannelRealm().write(() => {
+            channelNames.forEach(channelName => {
+                try {
+                    const channelObject = MessagingServiceCoordinator.getChannelRealm().objectForPrimaryKey('Channel', channelName);
+                    MessagingServiceCoordinator.getChannelRealm().delete(channelObject);
+                } catch (e) {
+                    console.log(`tried to delete channel name ${channelName} but it doesnt exist`);
+                }
+            });
+        });
+    }
+
+    saveChannelToRealm(channelObjects) {
         console.log('save channel to realm');
         const realmObjects = [];
         try {
             MessagingServiceCoordinator.getChannelRealm().write(() => {
-                channels.forEach(channel => {
+                channelObjects.forEach(channel => {
                     realmObjects.push(MessagingServiceCoordinator.getChannelRealm().create('Channel', channel));
                 });
             });
@@ -195,7 +229,17 @@ export class BaseMessagingService {
         );
     }
 
-    startSubscription(channels) {
+    deregisterDeviceOnChannels(token, channels) {
+        return this.pubnub.push.removeChannels(
+            {
+                channels: channels.map(channel => channel.name),
+                device: token,
+                pushGateway: 'apns'
+            }
+        );
+    }
+
+    _startSubscription(channels) {
         if (channels.length === 0) {
             console.log('No channels to subscribe to');
             return;
@@ -203,13 +247,23 @@ export class BaseMessagingService {
         //TODO dont subscribe if history failed
         this.processFromHistory(channels).then(() => {
             this.connected = true;
-            console.log(`subscribing to channels: ${channels}`);
+            console.log(`subscribing to channels: ${channels.map(channel => channel.name)}`);
             if (!channels || channels.length === 0) {
                 return;
             }
             return this.pubnub.subscribe({
                 channels: channels.map(channel => channel.name)
             });
+        });
+    }
+
+    _unsubscribe(channels) {
+        if (channels.length === 0) {
+            console.log('No channels to unsubscribe to');
+            return;
+        }
+        return this.pubnub.unsubscribe({
+            channels: channels.map(channel => channel.name)
         });
     }
 }
