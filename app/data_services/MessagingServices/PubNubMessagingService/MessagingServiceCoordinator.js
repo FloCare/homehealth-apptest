@@ -77,11 +77,13 @@ export class MessagingServiceCoordinator {
     }
 
     onNotification(notification) {
+        const allPromises = [];
         for (const serviceName in this.messageServices) {
             if (this.messageServices.hasOwnProperty(serviceName)) {
-                this.messageServices[serviceName].processFromHistory();
+                allPromises.push(this.messageServices[serviceName].processFromHistory());
             }
         }
+        return Promise.all(allPromises);
     }
 }
 

@@ -16,7 +16,7 @@ export class BaseMessagingService {
     onDisconnect() {
     }
 
-    getSeedChannels() {
+    _bootstrapChannels() {
         return null;
     }
 
@@ -28,30 +28,39 @@ export class BaseMessagingService {
 
     }
 
-    async processFromHistory(channels) {
+    async processFromHistory(channels = this.channels) {
         console.log('processFromHistory');
         console.log(channels);
+
+        const allPromises = [];
         for (const channel of channels) {
             const assignedVisitLastTimestamp = channel.lastMessageTimestamp;
+            const newPromise = this.newClient().history({
+                    channel: channel.name,
+                    reverse: true,
+                    start: assignedVisitLastTimestamp,
+                    stringifiedTimeToken: true,
+                }).then(async response => {
+                    console.log('processFromHistory response');
+                    console.log(response);
+                    for (const message of response.messages) {
+                        await this.digestMessage({
+                            message: message.entry,
+                            timestamp: message.timetoken,
+                            channel: channel.name
+                        });
+                    }
 
-            this.newClient().history({
-                channel: channel.name,
-                reverse: true,
-                start: assignedVisitLastTimestamp,
-                stringifiedTimeToken: true,
-            }).then(async response => {
-                console.log('processFromHistory response');
-                console.log(response);
-                for (const message of response.messages) {
-                    await this.digestMessage({message: message.entry, timestamp: message.timetoken, channel: channel.name});
-                }
-
-                if (response.messages.length === 100) { this.processFromHistory([channel]); }
-            }).catch(error => {
-                console.log('error in history call');
-                console.log(error);
-            });
+                    if (response.messages.length === 100) {
+                        this.processFromHistory([channel]);
+                    }
+                }).catch(error => {
+                    console.log('error in history call');
+                    console.log(error);
+                });
+            allPromises.push(newPromise);
         }
+        await Promise.all(allPromises);
     }
 
     statusHandler(statusEvent) {
@@ -130,22 +139,17 @@ export class BaseMessagingService {
                 message: this.messageEventCallback.bind(this),
             });
 
+            this.taskQueue = taskQueue;
+            this.initialiseWorkers();
+
             const channelsFromRealm = channelRealm.objects('Channel').filtered('handler = $0', this.constructor.name);
             if (channelsFromRealm && channelsFromRealm.length > 0) this.channels.push(...channelsFromRealm.values());
 
             if (this.channels.length === 0) {
-                console.log('found channels length to be zero, calling seed generator');
-                this.getSeedChannels().then(seedChannels => {
-                    if (seedChannels.length > 0) {
-                        const liveChannelObjects = this.saveChannelToRealm(seedChannels);
-                        if (seedChannels.length > 0) this.channels.push(...liveChannelObjects);
-                        this._startSubscription(this.channels);
-                    }
-                });
-            } else this._startSubscription(this.channels);
-
-            this.taskQueue = taskQueue;
-            this.initialiseWorkers();
+                this._bootstrapChannels();
+            } else {
+                this._startSubscription(this.channels);
+            }
 
             return this;
         }).catch(error => {
@@ -153,24 +157,23 @@ export class BaseMessagingService {
         });
     }
 
-    subscribeToChannels(payload) {
-        const liveChannelObjects = this.saveChannelToRealm(this.getChannelObjectsForPayload(payload));
+    _subscribeToChannelsByObject(channelObjects) {
+        const liveChannelObjects = this.saveChannelToRealm(channelObjects);
         this.channels.push(...liveChannelObjects);
         this._startSubscription(liveChannelObjects);
         this.registerDeviceOnChannels(this.notificationToken, liveChannelObjects);
     }
 
     //TODO unsubscribe from channels will aslo have to remove notification registration
-    unsubscribeToChannels(payload) {
-        const channelObjects = this.getChannelObjectsForPayload(payload);
-
+    _unsubscribeFromChannelsByObject(channelObjects) {
         // console.log('here at unsubs');
-        // console.log(payload);
         // console.log(channelObjects);
         const liveChannelsToRemove = this.channels.filter(channelLiveObject => {
             let toRemove = false;
             channelObjects.forEach(channelObject => {
-                if (channelObject.name === channelLiveObject.name) { toRemove = true; }
+                if (channelObject.name === channelLiveObject.name) {
+                    toRemove = true;
+                }
             });
             return toRemove;
         });
@@ -179,6 +182,7 @@ export class BaseMessagingService {
 
         this._unsubscribe(liveChannelsToRemove);
         this.deregisterDeviceOnChannels(this.notificationToken, liveChannelsToRemove);
+        this.channels = this.channels.filter(channel => liveChannelsToRemove.indexOf(channel) === -1);
         this.deleteChannelsFromRealm(channelObjects.map(channelObject => channelObject.name));
     }
 

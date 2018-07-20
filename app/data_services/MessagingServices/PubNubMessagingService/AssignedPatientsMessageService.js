@@ -1,6 +1,7 @@
 import {AsyncStorage} from 'react-native';
 import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
+import {getItem} from '../../../utils/InMemoryStore';
 
 export class AssignedPatientsMessageService extends BaseMessagingService {
     // async initialChannels() {
@@ -52,18 +53,18 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
         });
     }
 
-    async getSeedChannels() {
-        const userID = await AsyncStorage.getItem('userID');
+    async _bootstrapChannels() {
+        const userID = getItem('userID');
         let assignedVisitLastTimestamp = await AsyncStorage.getItem('assignedVisitLastTimestamp');
         if (!assignedVisitLastTimestamp) {
             assignedVisitLastTimestamp = '0';
         }
 
         console.log(`last assigned ${assignedVisitLastTimestamp}`);
-        return [{
+        this._subscribeToChannelsByObject([{
             name: `${userID}_assignedPatients`,
             lastMessageTimestamp: assignedVisitLastTimestamp,
             handler: this.constructor.name,
-        }];
+        }]);
     }
 }

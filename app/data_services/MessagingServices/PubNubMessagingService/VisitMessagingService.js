@@ -79,6 +79,11 @@ export class VisitMessagingService extends BaseMessagingService {
                 actionType: payload.actionType,
                 visitID: payload.visitID,
                 userID: payload.userID,
+                pn_apns: {
+                    aps: {
+                        'content-available': 1
+                    },
+                }
             }
         }).catch(error => {
             console.log('error publishing');
@@ -117,22 +122,32 @@ export class VisitMessagingService extends BaseMessagingService {
         });
     }
 
-    getChannelObjectsForPayload(payload) {
-        const patientIDs = payload.patientIDs;
-        return patientIDs.map(patientID => ({
-            name: `${patientID}_visits`,
+    subscribeToPatients(patients) {
+        const channelObjects = patients.map(patient => ({
+            name: `${patient.patientID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
         }));
+        this._subscribeToChannelsByObject(channelObjects);
     }
 
-    async getSeedChannels() {
-        const patients = PatientDataService.getInstance().getAllPatients().filtered('isLocallyOwned = false');
-        return patients.map(patient => ({
+    unsubscribeToPatients(patients) {
+        const channelObjects = patients.map(patient => ({
             name: `${patient.patientID}_visits`,
+            //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
         }));
+        this._unsubscribeFromChannelsByObject(channelObjects);
+    }
+
+    async _bootstrapChannels() {
+        const patients = PatientDataService.getInstance().getAllPatients().filtered('isLocallyOwned = false');
+        patients.map(patient =>
+            VisitService.getInstance().getAllFutureVisitsForSubject(patient).forEach(visit => this.publishVisitCreate(visit))
+        );
+
+        this.subscribeToPatients(patients);
     }
 }

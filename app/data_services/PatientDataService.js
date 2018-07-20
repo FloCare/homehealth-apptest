@@ -132,7 +132,7 @@ export class PatientDataService {
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
-            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToChannels({patientIDs: [newPatient.patientID]});
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToPatients([newPatient]);
         }
     }
 
@@ -172,9 +172,8 @@ export class PatientDataService {
         const patient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
         if (patient) {
-            if (!deletedOnServer) { this._checkPermissionForEditing([patient]); }
-            else {
-                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToChannels({patientIDs: [patient.patientID]});
+            if (!deletedOnServer) { this._checkPermissionForEditing([patient]); } else {
+                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToPatients([patient]);
             }
 
             this.floDB.write(() => {

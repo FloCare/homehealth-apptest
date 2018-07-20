@@ -134,14 +134,23 @@ export class VisitService {
 
     fetchAndSaveVisitsByID(visitIDs) {
         //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
     }
 
     fetchAndEditVisitsByID(visitIDs) {
         //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
     }
 
     deleteVisitsByID(visitIDs) {
         //TODO delete these visits, ensure own visits are filtered out
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
     }
 
     createNewVisits(visitSubjects, midnightEpoch) {
@@ -174,19 +183,24 @@ export class VisitService {
         }
     }
 
+    getAllFutureVisitsForSubject(subject) {
+        const today = todayMomentInUTCMidnight();
+
+        if (subject instanceof Patient) {
+            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        } else if (subject instanceof Place) {
+            return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        }
+        throw new Error('requested visits for unrecognised entity');
+    }
+
     // Should be a part of a write transaction
     deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
         const today = todayMomentInUTCMidnight();
-        let visits = null;
+
         // Todo: Check if this works
-        if (subject instanceof Patient) {
-            console.log('Deleting patient');
-            visits = subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
-        } else if (subject instanceof Place) {
-            console.log('Deleting Place');
-            visits = subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
-        }
+        const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
