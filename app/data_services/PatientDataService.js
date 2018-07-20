@@ -14,6 +14,7 @@ import {visitDataService} from './VisitDataService';
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
 import {PhysicianDataService} from './PhysicianDataService';
+import { EpisodeDataService } from './EpisodeDataService'
 
 export class PatientDataService {
     static patientDataService;
@@ -257,8 +258,13 @@ export class PatientDataService {
         return PatientAPI.getPatientsByID(patientIDs)
             .then((json) => {
                 const successfulObjects = json.success;
+                const episodeIds = successfulObjects.map((patientObject) => patientObject.episodeId);
+                const episodeObjects = EpisodeDataService.getInstance().fetchEpisodeDetailsByIds(episodeIds)
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
+                    const episodeObject = episodeObjects.find(
+                        (currEpisodeObject) => currEpisodeObject.id === patientObject.episodeId
+                    );
                     patientObject.patientID = patientObject.id.toString();
                     patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
@@ -278,6 +284,8 @@ export class PatientDataService {
                         contactNumber: patientObject.emergencyContactNumber || null,
                         contactRelation: patientObject.emergencyContactRelation || null
                     };
+
+                    patientObject.episode = episodeObject;
                 }
                 return json;
             });
