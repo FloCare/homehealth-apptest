@@ -121,6 +121,7 @@ export class VisitMessagingService extends BaseMessagingService {
         const patientIDs = payload.patientIDs;
         return patientIDs.map(patientID => ({
             name: `${patientID}_visits`,
+            //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
         }));

@@ -53,15 +53,18 @@ class PasscodeVerificationScreen extends Component {
                 console.log(error);
                 Alert.alert('Error', 'Unable to verify passcode');
             })
-            .then((k) => {
+            .then(async (k) => {
                 if (k) {
                     // Connect to realm, Register new screens
                     // Navigate to the Tab Based App
                     try {
-                        StartApp(k);
+                        await StartApp(k);
                     } catch (e) {
                         console.log('Error in starting app:', e);
-                        Alert.alert('Error', 'Unable to start the app');
+                        //TODO reset passcode
+                        if (e.name === 'MissingNecessaryInternetConnection') {
+                            Alert.alert('Offline', 'Unable to start the app');
+                        } else { Alert.alert('Error', 'Unable to start the app'); }
                     }
                 }
             }, (err) => {
