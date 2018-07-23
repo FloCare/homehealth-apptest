@@ -8,17 +8,17 @@ const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
     const visit = state.visits[visitID];
 
-    let visitOwner;
+    let visitSubject;
     if (visit.isPatientVisit) {
         const patientID = visit.patientID;
-        visitOwner = state.patients[patientID];
+        visitSubject = state.patients[patientID];
     } else {
         const placeID = visit.placeID;
-        visitOwner = state.places[placeID];
+        visitSubject = state.places[placeID];
     }
 
     return {
-        name: visitOwner.name
+        name: visitSubject.name
     };
 };
 

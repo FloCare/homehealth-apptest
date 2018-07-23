@@ -5,6 +5,8 @@ import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
+import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
 import {UserDataService} from '../UserDataService'
 
 export class VisitService {
@@ -151,10 +153,31 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
-    createNewVisits(visitOwners, midnightEpoch) {
+    fetchAndSaveVisitsByID(visitIDs) {
+        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
+    }
+
+    fetchAndEditVisitsByID(visitIDs) {
+        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
+    }
+
+    deleteVisitsByID(visitIDs) {
+        //TODO delete these visits, ensure own visits are filtered out
+        return new Promise((resolve, reject) => {
+            resolve();
+        });
+    }
+
+    createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
         this.floDB.write(() => {
-            for (const visitSubject of visitOwners) {
+            for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
                     userID: UserDataService.getCurrentUserID().toString(),
@@ -164,6 +187,12 @@ export class VisitService {
                 if (visitSubject instanceof Patient) { visitSubject.episodes[0].visits.push(visit); } else visitSubject.visits.push(visit);
             }
         });
+
+        //TODO this is just a stub
+        newVisits.forEach(visit => {
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
+        });
+
         // Logging the firebase event upon visits being added
         firebase.analytics().logEvent(eventNames.ADD_VISIT, {
             VALUE: newVisits.length
@@ -176,20 +205,24 @@ export class VisitService {
         }
     }
 
+    getAllFutureVisitsForSubject(subject) {
+        const today = todayMomentInUTCMidnight();
+
+        if (subject instanceof Patient) {
+            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        } else if (subject instanceof Place) {
+            return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        }
+        throw new Error('requested visits for unrecognised entity');
+    }
+
     // Should be a part of a write transaction
-    deleteVisits(owner) {
+    deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
         const today = todayMomentInUTCMidnight();
-        let visits = null;
+
         // Todo: Check if this works
-        if (owner instanceof Patient) {
-            console.log('Deleting patient');
-            const allVisits = owner.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
-            visits = this.filterUserVisits(allVisits);
-        } else if (owner instanceof Place) {
-            console.log('Deleting Place');
-            visits = owner.visits.filtered(`midnightEpochOfVisit >= ${today}`);
-        }
+        const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
@@ -197,14 +230,21 @@ export class VisitService {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!(visit.isOwnerArchived())) {
+                if (!(visit.isSubjectArchived())) {
                     visitList.push(visit);
                 }
             }
             visitOrders[i].visitList = visitList;
         }
         this.floDB.delete(visits);
-        const obj = {visits, visitOrders};
-        return obj;
+
+        if (visits) {
+            this.visitReduxService.deleteVisitsFromRedux(visits);
+        }
+        if (visitOrders) {
+            for (let i = 0; i < visitOrders.length; i++) {
+                this.visitReduxService.updateVisitOrderToReduxIfLive(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
+            }
+        }
     }
 }
