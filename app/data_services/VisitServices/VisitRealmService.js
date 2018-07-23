@@ -1,5 +1,6 @@
 import {arrayToObjectByKey, filterResultObjectByListMembership} from '../../utils/collectionUtils';
 import {Visit, VisitOrder} from '../../utils/data/schema';
+import { UserDataService } from '../UserDataService'
 
 export class VisitRealmService {
     static visitRealmService;
@@ -33,8 +34,32 @@ export class VisitRealmService {
         return visitOrder.visitList;
     }
 
-    getVisitsForDate(midnightEpoch) {
-        return this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
+    getVisitsOfCurrentUserForDate(midnightEpoch) {
+        const allVisits = this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
+        return this.filterUserVisits(allVisits);
+    }
+
+    filterUserVisits(visits) {
+        return visits.filtered(`userID = "${UserDataService.getCurrentUserID()}"`);
+    }
+
+    filterVisitsLessThanDate(visits, date) {
+        return visits.filtered(`midnightEpochOfVisit <= ${date}`);
+    }
+
+    filterVisitsGreaterThanDate(visits, date) {
+        return visits.filtered(`midnightEpochOfVisit >= ${date}`);
+    }
+
+    filterDoneVisits(visits, doneStatus) {
+        return visits.filtered(`isDone = ${doneStatus}`);
+    }
+
+    sortVisitsByField(visits, field, descending) {
+        if (Visit.getAllFields().includes(field)) {
+            return visits.sorted(field, descending);
+        }
+        return visits;
     }
 
     getVisitOrderForDate(midnightEpoch) {

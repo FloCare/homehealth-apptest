@@ -5,6 +5,7 @@ import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
+import {UserDataService} from '../UserDataService'
 
 export class VisitService {
     static visitService;
@@ -54,11 +55,31 @@ export class VisitService {
     }
 
     loadVisitsForTheDayToRedux(midnightEpoch) {
-        const visitsOfDay = this.visitRealmService.getVisitsForDate(midnightEpoch);
+        const visitsOfDay = this.visitRealmService.getVisitsOfCurrentUserForDate(midnightEpoch);
         this.visitReduxService.addVisitsToRedux(visitsOfDay);
 
         const visitOrderOfDay = this.visitRealmService.getVisitOrderForDate(midnightEpoch);
         this.visitReduxService.setVisitOrderInRedux(visitOrderOfDay.visitList);
+    }
+
+    filterUserVisits(visits) {
+        return this.visitRealmService.filterUserVisits(visits);
+    }
+
+    filterVisitsLessThanDate(visits, date) {
+        return this.visitRealmService.filterVisitsLessThanDate(visits, date);
+    }
+
+    filterVisitsGreaterThanDate(visits, date) {
+        return this.visitRealmService.filterVisitsGreaterThanDate(visits, date);
+    }
+
+    filterDoneVisits(visits, doneStatus) {
+        return this.visitRealmService.filterDoneVisits(visits, doneStatus);
+    }
+
+    sortVisitsByField(visits, field, descending = false) {
+        return this.visitRealmService.sortVisitsByField(visits, field, descending);
     }
 
     toggleVisitDone(visitID) {
@@ -136,6 +157,7 @@ export class VisitService {
             for (const visitSubject of visitOwners) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
+                    userID: UserDataService.getCurrentUserID().toString(),
                     midnightEpochOfVisit: midnightEpoch
                 });
                 newVisits.push(visit);
@@ -162,7 +184,8 @@ export class VisitService {
         // Todo: Check if this works
         if (owner instanceof Patient) {
             console.log('Deleting patient');
-            visits = owner.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+            const allVisits = owner.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+            visits = this.filterUserVisits(allVisits);
         } else if (owner instanceof Place) {
             console.log('Deleting Place');
             visits = owner.visits.filtered(`midnightEpochOfVisit >= ${today}`);
