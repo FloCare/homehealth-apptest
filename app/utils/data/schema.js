@@ -6,15 +6,18 @@ import {Address} from './schemas/Models/address/Address';
 import {Episode} from './schemas/Models/episode/Episode';
 import {Patient} from './schemas/Models/patient/Patient';
 import {Place} from './schemas/Models/place/Place';
+import {User} from './schemas/Models/user/User';
 import {Visit} from './schemas/Models/visit/Visit';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
 import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex';
+import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
 import {getItem, setItem} from '../InMemoryStore';
+import { AsyncStorage } from 'react-native'
 
 const Realm = require('realm');
 
@@ -109,10 +112,28 @@ class FloDBProvider {
             //     path: 'database.realm',
             //     encryptionKey: stringToArrayBuffer(key),
             // }
+            //TODO Just to replace during conflict. Don't bother with 6th migration ;)
+            {
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                schemaVersion: 6,
+                migration: () => { console.log('Replace with conflict'); },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV2, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                        EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                        UserSchemas.UserSchemaV1],
+                schemaVersion: 7,
+                migration: Migrations.v007,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            }
         ];
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
-        const models = [Visit, Patient, Address, Episode, Place, VisitOrder];
+        const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User];
 
         let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (currentSchemaVersion >= 0) {
@@ -222,4 +243,5 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};
+export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
+        VisitOrder, User, CreateAndSaveDummies};

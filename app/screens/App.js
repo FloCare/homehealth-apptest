@@ -18,6 +18,7 @@ import {configure as configureNotification} from '../data_services/MessagingServ
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {MessagingServiceCoordinator} from '../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {initialiseStore} from '../utils/InMemoryStore';
+import {UserDataService} from '../data_services/UserDataService';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -62,6 +63,7 @@ const StartApp = async (key) => {
     //TODO Move all intialisations to static calls
     PatientDataService.initialiseService(FloDBProvider.db, store);
     VisitService.initialiseService(FloDBProvider.db, store);
+    UserDataService.initialiseService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);

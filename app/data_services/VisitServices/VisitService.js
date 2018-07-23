@@ -7,6 +7,7 @@ import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
 import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
+import {UserDataService} from '../UserDataService'
 
 export class VisitService {
     static visitService;
@@ -56,11 +57,31 @@ export class VisitService {
     }
 
     loadVisitsForTheDayToRedux(midnightEpoch) {
-        const visitsOfDay = this.visitRealmService.getVisitsForDate(midnightEpoch);
+        const visitsOfDay = this.visitRealmService.getVisitsOfCurrentUserForDate(midnightEpoch);
         this.visitReduxService.addVisitsToRedux(visitsOfDay);
 
         const visitOrderOfDay = this.visitRealmService.getVisitOrderForDate(midnightEpoch);
         this.visitReduxService.setVisitOrderInRedux(visitOrderOfDay.visitList);
+    }
+
+    filterUserVisits(visits) {
+        return this.visitRealmService.filterUserVisits(visits);
+    }
+
+    filterVisitsLessThanDate(visits, date) {
+        return this.visitRealmService.filterVisitsLessThanDate(visits, date);
+    }
+
+    filterVisitsGreaterThanDate(visits, date) {
+        return this.visitRealmService.filterVisitsGreaterThanDate(visits, date);
+    }
+
+    filterDoneVisits(visits, doneStatus) {
+        return this.visitRealmService.filterDoneVisits(visits, doneStatus);
+    }
+
+    sortVisitsByField(visits, field, descending = false) {
+        return this.visitRealmService.sortVisitsByField(visits, field, descending);
     }
 
     toggleVisitDone(visitID) {
@@ -159,6 +180,7 @@ export class VisitService {
             for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
+                    userID: UserDataService.getCurrentUserID().toString(),
                     midnightEpochOfVisit: midnightEpoch
                 });
                 newVisits.push(visit);

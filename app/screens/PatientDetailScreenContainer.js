@@ -8,6 +8,7 @@ import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {PatientDataService} from "../data_services/PatientDataService";
+import { VisitService } from '../data_services/VisitServices/VisitService'
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
@@ -153,8 +154,14 @@ class PatientDetailScreenContainer extends Component {
                 const newState = {patientDetail: patientDetails};
                 const episode = patientDetails.episodes[0];
                 const today = todayMomentInUTCMidnight();
-                const completedVisits = episode.visits.filtered(`midnightEpochOfVisit <= ${today}`).filtered('isDone = true').sorted('midnightEpochOfVisit');
-                const newVisits = episode.visits.filtered(`midnightEpochOfVisit >= ${today}`).filtered('isDone = false').sorted('midnightEpochOfVisit', false);
+                const userVisits = VisitService.getInstance().filterUserVisits(episode.visits);
+                const dateFilteredPastVisits = VisitService.getInstance().filterVisitsLessThanDate(userVisits, today);
+                const completedFilteredVisits = VisitService.getInstance().filterDoneVisits(dateFilteredPastVisits, true);
+                const completedVisits = VisitService.getInstance().sortVisitsByField(completedFilteredVisits, 'midnightEpochOfVisit');
+
+                const dateFilteredFutureVisits = VisitService.getInstance().filterVisitsLessThanDate(userVisits, today);
+                const doneFilteredFutureVisits = VisitService.getInstance().filterDoneVisits(dateFilteredFutureVisits, false);
+                const newVisits = VisitService.getInstance().sortVisitsByField(doneFilteredFutureVisits);
 
                 if (completedVisits.length > 0) {
                     newState.lastVisit = completedVisits[0];

@@ -50,10 +50,6 @@ class VisitListScreenContainer extends Component {
         VisitService.getInstance().setVisitOrderForDate(newOrder, this.props.date);
     }
 
-    generateVisitResultObject(date) {
-        return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', this.state.date.valueOf()).sorted('isDone');//date);//.sorted('isDone');
-    }
-
     render() {
         console.log('visitListScreenContainer rerendering');
         return (

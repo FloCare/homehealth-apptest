@@ -8,6 +8,10 @@ export class Visit extends Realm.Object {
         return 'Visit';
     }
 
+    static getAllFields() {
+        return Object.keys(Visit.schema.properties);
+    }
+
     get key() {
         return this.visitID;
     }
