@@ -31,6 +31,17 @@ export class VisitReduxService {
         this.store.dispatch({type: VisitOrderActions.SET_ORDER, visitOrder: visitOrder.map(visit => visit.visitID)});
     }
 
+    updateVisitPropertyInRedux(visitID, key, value) {
+        this.store.dispatch(
+            {
+                type: VisitActions.EDIT_SINGLE_VISIT,
+                visitID,
+                updateKey: key,
+                updateValue: value
+            }
+        );
+    }
+
     updateVisitOrderToReduxIfLive(visitList, midnightEpoch) {
         // console.log('checking to see if visit order date matches state date');
         console.log('Updating visit order in Redux for date:', midnightEpoch);

@@ -6,7 +6,7 @@ export const UserSchemaV1 = {
     properties: {
         id: 'string',
         firstName: 'string',
-        lastName: 'Address',
+        lastName: 'string?',
         primaryContact: 'string?',
         role: 'string'
     }

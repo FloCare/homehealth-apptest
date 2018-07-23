@@ -18,6 +18,7 @@ export const AddressActions = {
 export const VisitActions = {
     ADD_VISITS: 'ADD_VISITS',
     EDIT_VISITS: 'EDIT_VISITS',
+    EDIT_SINGLE_VISIT: 'EDIT_SINGLE_VISIT',
     DELETE_VISITS: 'DELETE_VISITS',
 };
 

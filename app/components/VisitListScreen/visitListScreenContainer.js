@@ -64,9 +64,11 @@ class VisitListScreenContainer extends Component {
 }
 
 function mapStateToProps(state) {
+    // filtering visits which have information in visits store
+    const filteredVisitOrder = state.visitOrder.filter((visitID) => state.visits[visitID]);
     return {
         date: state.date,
-        orderedVisitID: state.visitOrder,
+        orderedVisitID: filteredVisitOrder
     };
 }
 

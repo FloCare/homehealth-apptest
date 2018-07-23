@@ -44,6 +44,9 @@ class AddVisitsForPatientScreen extends Component {
         try {
             // Add a visit object
             VisitService.getInstance().createNewVisits([patient], this.state.date.valueOf());
+            if (this.props.isReschedule && this.props.oldVisitId) {
+                VisitService.getInstance().deleteVisitByID(this.props.oldVisitId);
+            }
         } catch (e) {
             console.log('Error during Adding Visit: ', e);
         }

@@ -34,7 +34,7 @@ export class UserDataService {
     }
 
     getUserByID(userID) {
-        this.floDB.objectForPrimaryKey(User.getSchemaName(), userID);
+        return this.floDB.objectForPrimaryKey(User.getSchemaName(), userID);
     }
 
 }

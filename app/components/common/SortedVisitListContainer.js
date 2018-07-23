@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
-import {TouchableHighlight} from 'react-native';
+import {TouchableHighlight, Text} from 'react-native';
 
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
@@ -120,12 +120,11 @@ class SortedVisitListContainer extends Component {
     getAugmentedRenderFunction(renderFunctionGenerator) {
         const RenderFunctionWithCallbacks = renderFunctionGenerator({
             onDoneTogglePress: this.onDoneTogglePress.bind(this),
+            navigator: this.props.navigator
         });
         //TODO hackey
         if (this.props.singleEntry) {
-            return ((props) => <TouchableHighlight underlayColor={'clear'} onPress={this.onPressRowSingleton.bind(this)}>
-                        <RenderFunctionWithCallbacks {...props} />
-                    </TouchableHighlight>
+            return ((props) => <RenderFunctionWithCallbacks {...props} />
             );
         }
         return RenderFunctionWithCallbacks;
@@ -135,11 +134,6 @@ class SortedVisitListContainer extends Component {
     onDoneTogglePress(visitID) {
         console.log(`${visitID} was changed`);
         VisitService.getInstance().toggleVisitDone(visitID);
-    }
-
-    onPressRowSingleton() {
-        const visit = floDB.objectForPrimaryKey(VisitOrder, this.props.date.valueOf()).visitList[0];
-        this.onPressRow(visit.visitID);
     }
 
     onPressRow(visitID) {

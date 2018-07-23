@@ -233,10 +233,12 @@ function getTabBarHeight() {
 }
 
 function stateToProps(state) {
+    const isVisitDone = (visitID) => state.visits[visitID] && state.visits[visitID].isDone;
+
     return {
         nextVisitID: state.visitOrder[0],
         date: state.date,
-        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (state.visits[visitID].isDone ? 0 : 1), 0),
+        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (isVisitDone(visitID) ? 0 : 1), 0),
         totalVisits: state.visitOrder.length,
     };
 }

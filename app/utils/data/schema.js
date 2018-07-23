@@ -16,7 +16,6 @@ import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex
 import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
-import { AsyncStorage } from 'react-native'
 
 const Realm = require('realm');
 

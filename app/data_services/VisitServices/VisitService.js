@@ -29,6 +29,7 @@ export class VisitService {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
             placeID: !isPatientVisit ? visit.getPlace().placeID : null,
+            plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
             isPatientVisit
         };
@@ -50,6 +51,7 @@ export class VisitService {
     }
 
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
+        console.log("setting visit order for : " + midnightEpoch);
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
         this.visitReduxService.updateVisitOrderToReduxIfLive(visitList, midnightEpoch);
     }
@@ -176,6 +178,15 @@ export class VisitService {
         }
     }
 
+    deleteVisitByID(visitID) {
+        // Visit order doesn't need to be explicitly deleted
+        const visit = this.visitRealmService.getVisitByID(visitID);
+        const visitTimeEpoch = visit.midnightEpochOfVisit;
+        this.visitReduxService.deleteVisitsFromRedux([visit]);
+        this.visitRealmService.deleteVisitByObject(visit);
+        this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
+    }
+
     // Should be a part of a write transaction
     deleteVisits(owner) {
         console.log('Deleting visits from realm');
@@ -207,4 +218,10 @@ export class VisitService {
         const obj = {visits, visitOrders};
         return obj;
     }
+
+    updateVisitStartTimeByID(visitID, startTime) {
+        this.visitRealmService.updateVisitStartTimeByID(visitID, startTime);
+        this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
+    }
+
 }
