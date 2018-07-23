@@ -121,7 +121,9 @@ const parameterValues = {
     TOGGLE: 'toggle',
     DND: 'dnd',
     DETAILS: 'details',
-    REFRESH: 'refresh'
+    REFRESH: 'refresh',
+    RESCHEDULE: 'reschedule',
+    DELETE_VISIT: 'delete_visit',
 
 };
 
