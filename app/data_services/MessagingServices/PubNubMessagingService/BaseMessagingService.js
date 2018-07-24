@@ -245,7 +245,7 @@ export class BaseMessagingService {
 
     _startSubscription(channels) {
         if (channels.length === 0) {
-            console.log('No channels to subscribe to');
+            console.log(`No channels to subscribe to: ${this.constructor.name}`);
             return;
         }
         //TODO dont subscribe if history failed

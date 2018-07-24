@@ -1,22 +1,18 @@
 import {AsyncStorage} from "react-native";
-import {getUserProps} from "./API/UserAPI";
+import {UserDataService} from "../data_services/UserDataService";
 
 const store = {};
 
 export async function initialiseStore() {
-    const userID = await AsyncStorage.getItem('userID').then(res => {
+    const myUserDetails = await AsyncStorage.getItem('myUserDetails').then(async res => {
         if (res === null) {
-            return getUserProps().then(userPropsJson => {
-                const userID = userPropsJson.id.toString();
-                AsyncStorage.setItem('userID', userID);
-                return userID;
-            }).catch(error => {
-                throw {name: 'MissingNecessaryInternetConnection'}
-            });
+            const userProps = await UserDataService.fetchUserProps();
+            AsyncStorage.setItem('myUserDetails', JSON.stringify(userProps));
+            res = JSON.stringify(userProps);
         }
-        return res;
+        return JSON.parse(res);
     });
-    setItem('userID', userID);
+    setItem('myUserDetails', myUserDetails);
 }
 
 export function getItem(key) {

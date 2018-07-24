@@ -1,7 +1,7 @@
 import {AsyncStorage} from 'react-native';
 import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
-import {getItem} from '../../../utils/InMemoryStore';
+import {UserDataService} from '../../UserDataService';
 
 export class AssignedPatientsMessageService extends BaseMessagingService {
     // async initialChannels() {
@@ -54,7 +54,7 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
     }
 
     async _bootstrapChannels() {
-        const userID = getItem('userID');
+        const userID = UserDataService.getCurrentUserProps().userID;
         let assignedVisitLastTimestamp = await AsyncStorage.getItem('assignedVisitLastTimestamp');
         if (!assignedVisitLastTimestamp) {
             assignedVisitLastTimestamp = '0';

@@ -6,7 +6,7 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
 import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties, apiServerURL} from '../utils/constants';
 import StyledText from '../components/common/StyledText';
 import {SimpleButton} from '../components/common/SimpleButton';
-import {getUserProps} from '../utils/API/UserAPI';
+import {UserDataService} from '../data_services/UserDataService';
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -22,6 +22,13 @@ class LoginScreen extends Component {
 
     componentDidMount() {
       firebase.analytics().setCurrentScreen(screenNames.login, screenNames.login);
+      // setTimeout(() => {
+      //     this.state = {
+      //         email: 'admin.admin',
+      //         password: '545819'
+      //     };
+      //     this.onSubmit();
+      // });
     }
 
     onSubmit() {
@@ -57,13 +64,13 @@ class LoginScreen extends Component {
                 console.log(`token set to ${token}`);
                 RNSecureKeyStore.set('accessToken', token);
             })
-            .then(() => getUserProps())
+            .then(() => UserDataService.fetchUserProps())
             .then(userPropsJson => {
-                firebase.analytics().setUserId(userPropsJson.id.toString());
-                firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.roles[0].role);
-                firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.roles[0].org);
+                firebase.analytics().setUserId(userPropsJson.userID);
+                firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.role);
+                firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.org);
 
-                AsyncStorage.setItem('userID', userPropsJson.id.toString());
+                AsyncStorage.setItem('myUserDetails', JSON.stringify(userPropsJson));
 
                 this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,

@@ -7,7 +7,7 @@ import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
 import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
-import {UserDataService} from '../UserDataService'
+import {UserDataService} from '../UserDataService';
 
 export class VisitService {
     static visitService;
@@ -49,6 +49,16 @@ export class VisitService {
 
     getVisitByID(visitID) {
         return this.floDB.objectForPrimaryKey(Visit, visitID);
+    }
+
+    isVisitOwn(visit) {
+        return UserDataService.getCurrentUserProps().userID === visit.user.userID;
+    }
+
+    getVisitsByEpisodeID(episodeID) {
+        if (!episodeID) { throw new Error('requested visits for empty episodeID'); }
+
+        return this.floDB.objects(Visit).filtered('episode.episodeID = $0', episodeID);
     }
 
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
@@ -180,7 +190,7 @@ export class VisitService {
             for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
-                    user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserID()),
+                    user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
                     midnightEpochOfVisit: midnightEpoch
                 });
                 newVisits.push(visit);
