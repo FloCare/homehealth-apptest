@@ -26,7 +26,7 @@ class FloDBProvider {
         return floDB;
     }
 
-    static initialize(key) {
+    static async initialize(key) {
         console.log('initializing the DB ...');
 
         // 0th element intentionally left blank to make index of the array match with schema version
@@ -86,6 +86,30 @@ class FloDBProvider {
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             },
+            // {
+            //     schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+            //         EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+            //     schemaVersion: 6,
+            //     prerequisite: () => {
+            //         //TODO get realm old patient to new patient data
+            //         setItem('patientMigrationMapping', {
+            //             18: 'xyz1',
+            //             19: 'xyz2',
+            //             20: 'xyz3',
+            //         });
+            //     },
+            //     migration: (oldRealm, newRealm) => {
+            //         if (oldRealm.schemaVersion < 6) {
+            //             const newPatientObjects = newRealm.objects(Patient.getSchemaName());
+            //
+            //             for (let i = 0; i < newPatientObjects.length; i++) {
+            //                 if (getItem('patientMigrationMapping')[newPatientObjects[i].patientID]) { newPatientObjects[i].patientID = getItem('patientMigrationMapping')[newPatientObjects[i].patientID]; } else console.log('not found');
+            //             }
+            //         }
+            //     },
+            //     path: 'database.realm',
+            //     encryptionKey: stringToArrayBuffer(key),
+            // }
             //TODO Just to replace during conflict. Don't bother with 6th migration ;)
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
@@ -100,6 +124,14 @@ class FloDBProvider {
                         EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
                         UserSchemas.UserSchemaV1],
                 schemaVersion: 7,
+                prerequisite: () => {
+                    //TODO get own user data and the patient ids mapping here
+                    // setItem('patientMigrationMapping', {
+                    //     18: 'xyz1',
+                    //     19: 'xyz2',
+                    //     20: 'xyz3',
+                    // });
+                },
                 migration: Migrations.v007,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
@@ -112,9 +144,14 @@ class FloDBProvider {
         let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (currentSchemaVersion >= 0) {
             // Run migrations if schema exists
-            while (currentSchemaVersion < targetSchemaVersion) {
-                const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion++]);
+            while (currentSchemaVersion <= targetSchemaVersion) {
+                if (schemaMigrations[currentSchemaVersion].prerequisite) {
+                    await schemaMigrations[currentSchemaVersion].prerequisite(migratedRealm);
+                }
+                const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion]);
                 migratedRealm.close();
+
+                currentSchemaVersion++;
             }
         }
 

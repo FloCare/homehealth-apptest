@@ -1,6 +1,6 @@
 import {arrayToObjectByKey, filterResultObjectByListMembership} from '../../utils/collectionUtils';
 import {Visit, VisitOrder} from '../../utils/data/schema';
-import { UserDataService } from '../UserDataService'
+import {UserDataService} from '../UserDataService';
 
 export class VisitRealmService {
     static visitRealmService;
@@ -45,7 +45,7 @@ export class VisitRealmService {
     }
 
     filterUserVisits(visits) {
-        return visits.filtered(`userID = "${UserDataService.getCurrentUserID()}"`);
+        return visits.filtered(`user.userID = "${UserDataService.getCurrentUserProps().userID}"`);
     }
 
     filterNonUserVisits(visits) {

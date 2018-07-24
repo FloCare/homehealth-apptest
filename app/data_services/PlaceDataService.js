@@ -84,23 +84,14 @@ class PlaceDataService {
 
     archivePlace(placeId) {
         console.log('Archiving Place from realm for placeId:', placeId);
-        let place = null;
-        let obj = null;
-        this.floDB.write(() => {
-            place = this.floDB.objectForPrimaryKey(Place.schema.name, placeId);
-            place.archived = true;
-            obj = VisitService.getInstance().deleteVisits(place);
-        });
+        const place = this.floDB.objectForPrimaryKey(Place.schema.name, placeId);
+        
         if (place) {
+            this.floDB.write(() => {
+                place.archived = true;
+                VisitService.getInstance().deleteVisitsForSubject(place);
+            });
             this.archivePlacesInRedux([placeId]);
-        }
-        if (obj && obj.visits) {
-            VisitService.getInstance().deleteVisitsFromRedux(obj.visits);
-        }
-        if (obj && obj.visitOrders) {
-            for (let i = 0; i < obj.visitOrders.length; i++) {
-                VisitService.getInstance().updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
-            }
         }
         console.log('Place archived. His visits Deleted');
     }

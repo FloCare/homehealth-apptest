@@ -40,18 +40,18 @@ export class Visit extends Realm.Object {
     }
 
     getAddress() {
-        return this.getFromOwner(patient => patient.address, place => place.address);
+        return this.getFromSubject(patient => patient.address, place => place.address);
     }
 
     getAssociatedName() {
-        return this.getFromOwner(patient => patient.name, place => place.name);
+        return this.getFromSubject(patient => patient.name, place => place.name);
     }
 
     getAssociatedNumber() {
-        return this.getFromOwner(patient => patient.primaryContact, place => place.primaryContact);
+        return this.getFromSubject(patient => patient.primaryContact, place => place.primaryContact);
     }
 
-    getFromOwner(patientHandler, placeHandler) {
+    getFromSubject(patientHandler, placeHandler) {
         const patient = this.getPatient();
         if (patient) {
             return patientHandler(patient);
@@ -63,7 +63,7 @@ export class Visit extends Realm.Object {
         throw new Error('Visit belongs to neither place nor patient');
     }
 
-    isOwnerArchived() {
+    isSubjectArchived() {
         if ((this.getPatient() && this.getPatient().archived) ||
             (this.getPlace() && this.getPlace().archived)
         ) {

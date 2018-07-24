@@ -1,12 +1,51 @@
+import queueFactory from 'react-native-queue';
 import {AssignedPatientsMessageService} from './AssignedPatientsMessageService';
+import {stringToArrayBuffer} from '../../../utils/encryptionUtils';
+import {VisitMessagingService} from './VisitMessagingService';
+
+const Realm = require('realm');
 
 export class MessagingServiceCoordinator {
     static messagingServiceCoordinator;
+    static channelRealm = null;
 
-    static async initialiseService() {
-        MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator({
-            assignedPatientsMessageService: await new AssignedPatientsMessageService()
-        });
+    static initialiseRealm(key) {
+        try {
+            MessagingServiceCoordinator.channelRealm = new Realm({
+                schema: [{
+                    name: 'Channel',
+                    primaryKey: 'name',
+                    properties: {
+                        name: 'string',
+                        lastMessageTimestamp: {type: 'string', default: '0'},
+                        handler: 'string'
+                    }
+                }],
+                encryptionKey: stringToArrayBuffer(key),
+                path: 'database.channelRealm',
+            });
+        } catch (e) {
+            console.log('failed to init channels realm');
+            console.log(e);
+        }
+    }
+
+    static getChannelRealm() {
+        if (!MessagingServiceCoordinator.channelRealm) {
+            throw new Error('channel realm requested before initialisation');
+        }
+        return MessagingServiceCoordinator.channelRealm;
+    }
+
+    static async initialiseService(channelRealmKey) {
+        MessagingServiceCoordinator.initialiseRealm(channelRealmKey);
+        this.queue = await queueFactory();
+
+        const messagingServices = {};
+        messagingServices[AssignedPatientsMessageService.name] = await new AssignedPatientsMessageService(MessagingServiceCoordinator.getChannelRealm());
+        messagingServices[VisitMessagingService.name] = await new VisitMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
+
+        MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices);
     }
 
     static getInstance() {
@@ -21,6 +60,14 @@ export class MessagingServiceCoordinator {
         this.messageServices = messageServices;
     }
 
+    getMessagingServiceInstance(serviceClassName) {
+        const messagingServiceInstance = this.messageServices[serviceClassName.name];
+        if (!messagingServiceInstance) {
+            throw new Error(`Requested messaging service ${serviceClassName.name}not found`);
+        }
+        return messagingServiceInstance;
+    }
+
     onNotificationRegister(token) {
         for (const serviceName in this.messageServices) {
             if (this.messageServices.hasOwnProperty(serviceName)) {
@@ -30,11 +77,13 @@ export class MessagingServiceCoordinator {
     }
 
     onNotification(notification) {
+        const allPromises = [];
         for (const serviceName in this.messageServices) {
             if (this.messageServices.hasOwnProperty(serviceName)) {
-                this.messageServices[serviceName].processFromHistory();
+                allPromises.push(this.messageServices[serviceName].processFromHistory());
             }
         }
+        return Promise.all(allPromises);
     }
 }
 

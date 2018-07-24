@@ -152,7 +152,7 @@ export const pubnubPubKey = 'pubnubPubKey';
 export const pubnubSubKey = 'pubnubSubKey';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
-export const apiServerURL = 'https://app-9781.on-aptible.com';
+export const apiServerURL = 'https://app-9707.on-aptible.com';
 
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};
