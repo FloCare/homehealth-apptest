@@ -2,13 +2,14 @@ import React, {Component} from 'react';
 import {Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import update from 'immutability-helper';
+import moment from 'moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
-import {PatientDataService} from "../data_services/PatientDataService";
-import { VisitService } from '../data_services/VisitServices/VisitService'
+import {PatientDataService} from '../data_services/PatientDataService';
+import {VisitService} from '../data_services/VisitServices/VisitService';
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
@@ -17,6 +18,8 @@ class PatientDetailScreenContainer extends Component {
             patientDetail: {},
             lastVisit: null,
             nextVisit: null,
+            selectedVisitsDate: this.props.selectedVisitsDate || todayMomentInUTCMidnight(),
+            currentWeekVisitData: {}
         };
         this.onPressAddNotes = this.onPressAddNotes.bind(this);
         this.onPressAddVisit = this.onPressAddVisit.bind(this);
@@ -33,11 +36,16 @@ class PatientDetailScreenContainer extends Component {
         if (patientDetails && patientDetails.isLocallyOwned) {
             this.showEditNavButton();
         }
+        this.episodeId = null;
     }
 
     componentDidMount() {
         this.getPatientDetails(this.props.patientId);
         floDB.addListener('change', this.handleDBUpdate);
+        const selectedVisitsDate = this.props.selectedVisitsDate || todayMomentInUTCMidnight();
+        //TODO Load from Monday of the week
+        this.loadVisitDataForWeek(selectedVisitsDate);
+        this.handleVisitDateSelection(selectedVisitsDate);
     }
 
     onPressAddVisit() {
@@ -152,28 +160,7 @@ class PatientDetailScreenContainer extends Component {
             const patientDetails = floDB.objectForPrimaryKey(Patient, patientId);
             try {
                 const newState = {patientDetail: patientDetails};
-                const episode = patientDetails.episodes[0];
-                const today = todayMomentInUTCMidnight();
-                const userVisits = VisitService.getInstance().filterUserVisits(episode.visits);
-                const dateFilteredPastVisits = VisitService.getInstance().filterVisitsLessThanDate(userVisits, today);
-                const completedFilteredVisits = VisitService.getInstance().filterDoneVisits(dateFilteredPastVisits, true);
-                const completedVisits = VisitService.getInstance().sortVisitsByField(completedFilteredVisits, 'midnightEpochOfVisit');
-
-                const dateFilteredFutureVisits = VisitService.getInstance().filterVisitsLessThanDate(userVisits, today);
-                const doneFilteredFutureVisits = VisitService.getInstance().filterDoneVisits(dateFilteredFutureVisits, false);
-                const newVisits = VisitService.getInstance().sortVisitsByField(doneFilteredFutureVisits);
-
-                if (completedVisits.length > 0) {
-                    newState.lastVisit = completedVisits[0];
-                } else {
-                    newState.lastVisit = null;
-                }
-                if (newVisits && newVisits.length > 0) {
-                    newState.nextVisit = newVisits[0];
-                } else {
-                    newState.nextVisit = null;
-                }
-
+                this.episodeId = patientDetails.getFirstEpisode().episodeID;
                 this.setState(newState);
             } catch (err) {
                 console.log('Error while setting state: ', err);
@@ -227,13 +214,42 @@ class PatientDetailScreenContainer extends Component {
         this.marker = element;
     }
 
+    handleVisitDateSelection = (date) => {
+        if (!date.isSame(this.state.selectedVisitsDate, 'day')) {
+            const dayVisitData = this.state.currentWeekVisitData[date.valueOf()];
+            this.setState({
+                selectedVisitsDate: date,
+                visitSectionData: dayVisitData
+            });
+        }
+    }
+
     componentWillUnmount() {
         floDB.removeListener('change', this.handleDBUpdate);
+    //    TODO Remove listeners from visits
     }
 
     handleDBUpdate() {
         //console.log('inside handleDB update listener, patinet Id:', this.props.patientId);
         this.getPatientDetails(this.props.patientId);
+    }
+
+    onVisitDataChange = (newVisitData) => {
+        this.setState({currentWeekVisitData: newVisitData});
+    }
+
+    loadVisitDataForWeek = (date) => {
+        const episodeID = this.episodeId;
+        if (episodeID) {
+            const startDate = date;
+            const endDate = moment(date).add(1, 'weeks');
+            // TODO remove old listener
+            // TODO change to actual function call
+            const currentWeekVisitData = VisitService.getInstance().getWeekVisitData(
+                episodeID, startDate, endDate, this.onVisitDataChange);
+            this.setState({currentWeekVisitData});
+            // TODO Update listener reference to new listener
+        }
     }
 
     parseResponse(result, patientId) {
@@ -287,9 +303,12 @@ class PatientDetailScreenContainer extends Component {
         return (
             <PatientDetailScreen
                 patientDetail={this.state.patientDetail}
-                nextVisit={this.state.nextVisit}
-                lastVisit={this.state.lastVisit}
                 onPressAddVisit={this.onPressAddVisit}
+                selectedVisitsDate={this.state.selectedVisitsDate}
+                onChangeVisitsDate={this.handleVisitDateSelection}
+                visitSectionData={this.state.visitSectionData}
+                currentWeekVisitData={this.state.currentWeekVisitData}
+                onWeekChanged={this.loadVisitDataForWeek}
                 onPressAddNotes={this.onPressAddNotes}
                 showCallout={this.onRegionChangeComplete}
                 setMarkerRef={this.setMarkerRef}

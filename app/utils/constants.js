@@ -111,6 +111,7 @@ const parameterValues = {
     FAILURE: 'failure',
     CALL_PATIENT: 'call_patient',
     CALL_EMERGENCY: 'call_emergency',
+    CALL_CLINICIAN: 'call_clinician',
     NAVIGATION: 'navigation',
     EDIT_NOTES: 'edit_notes',
     MAP: 'map',
