@@ -133,7 +133,8 @@ export class PatientDataService {
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
-            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToPatients([newPatient]);
+            //TODO
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes([newPatient]);
         }
     }
 
@@ -174,7 +175,8 @@ export class PatientDataService {
 
         if (patient) {
             if (!deletedOnServer) { this._checkPermissionForEditing([patient]); } else {
-                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToPatients([patient]);
+                //TODO
+                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes([patient]);
             }
 
             this.floDB.write(() => {

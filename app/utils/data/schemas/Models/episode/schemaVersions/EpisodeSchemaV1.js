@@ -1,4 +1,4 @@
-import {Episode} from "../Episode";
+import {Episode} from '../Episode';
 
 export const EpisodeSchemaV1 = {
     name: Episode.getSchemaName(),

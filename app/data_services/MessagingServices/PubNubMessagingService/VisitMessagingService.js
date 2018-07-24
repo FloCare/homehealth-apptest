@@ -1,6 +1,7 @@
 import {BaseMessagingService} from './BaseMessagingService';
-import {PatientDataService} from '../../PatientDataService';
 import {VisitService} from '../../VisitServices/VisitService';
+import {UserDataService} from '../../UserDataService';
+import {EpisodeDataService} from '../../EpisodeDataService';
 
 export class VisitMessagingService extends BaseMessagingService {
     onMessage(messageObject) {
@@ -30,7 +31,6 @@ export class VisitMessagingService extends BaseMessagingService {
                         .catch(error => reject(error));
                     break;
                 default:
-                    // throw new Error('Unrecognised action type in assigned patient message');
                     console.log(`unrecognised message: ${message}`);
                     reject();
             }
@@ -74,7 +74,7 @@ export class VisitMessagingService extends BaseMessagingService {
 
     async _publishVisitMessage(jobID, payload) {
         await this.pubnub.publish({
-            channel: `${payload.patientID}_visits`,
+            channel: `${payload.episodeID}_visits`,
             message: {
                 actionType: payload.actionType,
                 visitID: payload.visitID,
@@ -96,9 +96,9 @@ export class VisitMessagingService extends BaseMessagingService {
         console.log('publishVisitMessage');
         this.taskQueue.createJob('publishVisitMessage', {
             visitID: visit.visitID,
-            patientID: visit.getPatient().patientID,
+            episodeID: visit.getEpisode().episodeID,
             actionType: 'CREATE',
-            userID: 23, //TODO my own userID
+            userID: UserDataService.getCurrentUserProps().userID
         });
     }
 
@@ -106,9 +106,9 @@ export class VisitMessagingService extends BaseMessagingService {
         //TODO visitAPI
         this.taskQueue.createJob('publishVisitMessage', {
             visitID: visit.visitID,
-            patientID: visit.getPatient().patientID,
+            episodeID: visit.getEpisode().episodeID,
             actionType: 'UPDATE',
-            userID: 23, //TODO my own userID
+            userID: UserDataService.getCurrentUserProps().userID
         });
     }
 
@@ -116,15 +116,15 @@ export class VisitMessagingService extends BaseMessagingService {
         //TODO visitAPI
         this.taskQueue.createJob('publishVisitMessage', {
             visitID: visit.visitID,
-            patientID: visit.getPatient().patientID,
+            episodeID: visit.getEpisode().episodeID,
             actionType: 'DELETE',
-            userID: 23, //TODO my own userID
+            userID: UserDataService.getCurrentUserProps().userID
         });
     }
 
-    subscribeToPatients(patients) {
-        const channelObjects = patients.map(patient => ({
-            name: `${patient.patientID}_visits`,
+    subscribeToEpisodes(episodes) {
+        const channelObjects = episodes.map(episode => ({
+            name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
@@ -132,9 +132,9 @@ export class VisitMessagingService extends BaseMessagingService {
         this._subscribeToChannelsByObject(channelObjects);
     }
 
-    unsubscribeToPatients(patients) {
-        const channelObjects = patients.map(patient => ({
-            name: `${patient.patientID}_visits`,
+    unsubscribeToEpisodes(episodes) {
+        const channelObjects = episodes.map(episode => ({
+            name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
@@ -143,11 +143,11 @@ export class VisitMessagingService extends BaseMessagingService {
     }
 
     async _bootstrapChannels() {
-        const patients = PatientDataService.getInstance().getAllPatients().filtered('isLocallyOwned = false');
-        patients.map(patient =>
-            VisitService.getInstance().getAllFutureVisitsForSubject(patient).forEach(visit => this.publishVisitCreate(visit))
+        const episodes = EpisodeDataService.getInstance().getAllSyncedEpisodes();
+        episodes.map(episode =>
+            episode.visits.forEach(visit => this.publishVisitCreate(visit))
         );
 
-        this.subscribeToPatients(patients);
+        this.subscribeToEpisodes(episodes);
     }
 }

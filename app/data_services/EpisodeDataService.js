@@ -49,6 +49,10 @@ export class EpisodeDataService {
         });
     }
 
+    getAllSyncedEpisodes() {
+        return this.floDB.objects(Episode).filtered('patient.isLocallyOwned = false');
+    }
+
     subscribeToVisitsForDays(episodeID, startDate, endDate, callbackFunction) {
         const visitsResult = VisitService.getInstance().getVisitsByEpisodeID(episodeID).filtered('midnightEpoch >= $0 && midnightEpoch <= $1', startDate, endDate);
         const realmListener = (visits) => {
