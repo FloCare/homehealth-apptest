@@ -1,17 +1,9 @@
 import {User} from '../utils/data/schema';
+import {getItem} from '../utils/InMemoryStore';
 
 export class UserDataService {
     static userID = null;
     static userDataService;
-
-    static async initialiseUser() {
-        //TODO Fetch if user info not present in async storage and store it
-        // if (!UserDataService.userID) {
-        //     await AsyncStorage.getItem('userID').then(userID => {
-        //         UserDataService.userID = userID;
-        //     });
-        // }
-    }
 
     static initialiseService(floDB, store) {
         UserDataService.userDataService = new UserDataService(floDB, store);
@@ -23,7 +15,7 @@ export class UserDataService {
     }
 
     static getCurrentUserID() {
-        return UserDataService.userID;
+        return getItem('userID');
     }
 
     static getInstance() {

@@ -16,8 +16,6 @@ import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex
 import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
-import {getItem, setItem} from '../InMemoryStore';
-import { AsyncStorage } from 'react-native'
 
 const Realm = require('realm');
 
@@ -126,6 +124,14 @@ class FloDBProvider {
                         EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
                         UserSchemas.UserSchemaV1],
                 schemaVersion: 7,
+                prerequisite: () => {
+                    //TODO get own user data and the patient ids mapping here
+                    // setItem('patientMigrationMapping', {
+                    //     18: 'xyz1',
+                    //     19: 'xyz2',
+                    //     20: 'xyz3',
+                    // });
+                },
                 migration: Migrations.v007,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),

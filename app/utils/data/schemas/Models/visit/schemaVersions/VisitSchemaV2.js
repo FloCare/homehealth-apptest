@@ -5,7 +5,7 @@ export const VisitSchemaV2 = {
     primaryKey: 'visitID',
     properties: {
         visitID: 'string',
-        userID: 'string',
+        user: 'User',
         episode: {type: 'linkingObjects', objectType: 'Episode', property: 'visits'},       // set automatically
         place: {type: 'linkingObjects', objectType: 'Place', property: 'visits'},
         midnightEpochOfVisit: 'int',
