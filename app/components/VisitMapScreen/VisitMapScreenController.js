@@ -7,7 +7,7 @@ import {Images} from '../../Images';
 import {MapPanel} from './MapPanel';
 import {ControlPanel} from './ControlPanel';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
-import {visitDataService} from '../../data_services/VisitDataService';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 
 //TODO refactor this code: rate limiting, efficiency, setting correct viewport, mapmarker component design
@@ -88,7 +88,7 @@ class VisitMapScreenContainer extends Component {
         this.props.orderedVisitID.forEach(visitID => {
             if (!nextOrder.includes(visitID)) mutableNextOrder.push(visitID);
         });
-        visitDataService.setVisitOrderByID(mutableNextOrder, this.props.date);
+        VisitService.getInstance().setVisitOrderForDate(mutableNextOrder, this.props.date);
     }
 
     render() {

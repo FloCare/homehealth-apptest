@@ -1,5 +1,5 @@
 import {DateActions} from '../redux/Actions';
-import {visitDataService} from './VisitDataService';
+import {VisitService} from './VisitServices/VisitService';
 
 class DateService {
     constructor(floDB, store) {
@@ -9,7 +9,7 @@ class DateService {
 
     setDate(date) {
         this.store.dispatch({type: DateActions.SET_DATE, date});
-        visitDataService.loadVisitsForTheDayToRedux(date);
+        VisitService.getInstance().loadVisitsForTheDayToRedux(date);
     }
 }
 
