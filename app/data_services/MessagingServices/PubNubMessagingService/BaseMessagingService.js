@@ -98,6 +98,7 @@ export class BaseMessagingService {
             .catch(error => {
                 console.log('error in messageEventCallback');
                 console.log(error);
+                throw error;
             });
     }
 

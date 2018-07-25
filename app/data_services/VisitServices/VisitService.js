@@ -9,6 +9,7 @@ import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingS
 import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
 import {UserDataService} from '../UserDataService';
 import {getVisitsByID} from '../../utils/API/VisitAPI';
+import {EpisodeDataService} from '../EpisodeDataService';
 
 export class VisitService {
     static visitService;
@@ -57,7 +58,9 @@ export class VisitService {
     }
 
     getVisitsByEpisodeID(episodeID) {
-        if (!episodeID) { throw new Error('requested visits for empty episodeID'); }
+        if (!episodeID) {
+            throw new Error('requested visits for empty episodeID');
+        }
 
         return this.floDB.objects(Visit).filtered('episode.episodeID = $0', episodeID);
     }
@@ -168,7 +171,11 @@ export class VisitService {
         //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
         return new Promise((resolve, reject) => {
             getVisitsByID(visitIDs).then(respJson => {
-                
+                if (respJson.success && respJson.success.length === visitIDs.length) {
+                    respJson.success.forEach(visitJson => {
+                        this.saveNewVisit(visitJson);
+                    });
+                } else reject(respJson);
             });
             resolve();
         });
@@ -188,6 +195,14 @@ export class VisitService {
         });
     }
 
+    saveNewVisit(visitJson) {
+        let visit;
+        this.floDB.write(() => {
+            visit = this.floDB.create(Visit, visitJson);
+        });
+        EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID);
+    }
+
     createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
         this.floDB.write(() => {
@@ -198,7 +213,9 @@ export class VisitService {
                     midnightEpochOfVisit: midnightEpoch
                 });
                 newVisits.push(visit);
-                if (visitSubject instanceof Patient) { visitSubject.episodes[0].visits.push(visit); } else visitSubject.visits.push(visit);
+                if (visitSubject instanceof Patient) {
+                    visitSubject.episodes[0].visits.push(visit);
+                } else visitSubject.visits.push(visit);
             }
         });
 

@@ -11,6 +11,11 @@ export class VisitMessagingService extends BaseMessagingService {
             console.log('onMessage called');
             console.log(message);
             const {actionType, visitID, userID} = message;
+            if (userID === UserDataService.getCurrentUserProps().userID) {
+                console.log('message for my own visit, ignoring');
+                resolve();
+                return;
+            }
             //TODO if userID is equal to my own, skip this message
             switch (actionType) {
                 case 'CREATE' :
