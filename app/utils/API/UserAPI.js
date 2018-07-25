@@ -11,6 +11,7 @@ export function getUserProps(userID) {
                 method: 'POST',
                 headers: {
                     Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json',
                 },
                 body: userID ? {userID} : undefined
             }))

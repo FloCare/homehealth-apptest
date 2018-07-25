@@ -39,10 +39,10 @@ export class EpisodeDataService {
 
         const flatVisitsByDate = {};
         visits.forEach(visit => {
-            let visitForDayList = flatVisitsByDate[visit.midnightEpoch];
+            let visitForDayList = flatVisitsByDate[visit.midnightEpochOfVisit];
             if (!visitForDayList) {
                 visitForDayList = [];
-                flatVisitsByDate[visit.midnightEpoch] = visitForDayList;
+                flatVisitsByDate[visit.midnightEpochOfVisit] = visitForDayList;
             }
 
             visitForDayList.push(flatVisitForVisit(visit));
