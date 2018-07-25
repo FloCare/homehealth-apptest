@@ -149,7 +149,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
             return (
                 <View style={{alignSelf: 'center', flex: 2}}>
                     <View style={{flexDirection: 'row'}}>
-                        <View style={{marginLeft: 3}}>
+                        <View style={{marginLeft: 3, alignSelf: 'center'}}>
                             <Image source={Images.ellipse} />
                         </View>
                         <View style={{flex: 1}}>
