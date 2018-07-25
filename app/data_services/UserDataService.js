@@ -27,7 +27,7 @@ export class UserDataService {
 
     static fetchUserProps() {
         return getUserProps().then(userPropsJson => {
-            const userID = userPropsJson.id;
+            const userID = userPropsJson.userID;
             const firstName = userPropsJson.firstName;
             const lastName = userPropsJson.lastName;
             const primaryContact = userPropsJson.primaryContact;
@@ -46,18 +46,24 @@ export class UserDataService {
 
             return {
                 userID,
-                firstName: 'harshal',
-                lastName: 'me',
-                primaryContact: '9312693072',
+                firstName,
+                lastName,
+                primaryContact,
                 role,
                 org
             };
-        }).catch(() => {
+        }).catch((error) => {
+            console.log('error in fetchUserProps');
+            console.log(error);
             throw {name: 'MissingNecessaryInternetConnection'};
         });
     }
 
+    saveUserToRealm(user) {
+        this.floDB.create(User, user);
+    }
+
     getUserByID(userID) {
-        this.floDB.objectForPrimaryKey(User.getSchemaName(), userID);
+        return this.floDB.objectForPrimaryKey(User.getSchemaName(), userID);
     }
 }

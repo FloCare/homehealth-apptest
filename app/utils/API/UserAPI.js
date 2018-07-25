@@ -1,17 +1,18 @@
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {apiServerURL} from '../constants';
 
-export function getUserProps() {
+export function getUserProps(userID) {
     return RNSecureKeyStore.get('accessToken').catch(error => {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/users/v1.0/profile/?format=json`,
+        .then(token => fetch(`${apiServerURL}/users/v1.0/get-user-for-id/`,
             {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     Authorization: `Token ${token}`,
                 },
+                body: userID ? {userID} : undefined
             }))
         .then(response => {
             if (response.ok) {

@@ -16,6 +16,7 @@ import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex
 import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
+import {UserDataService} from '../../data_services/UserDataService';
 
 const Realm = require('realm');
 
@@ -31,14 +32,14 @@ class FloDBProvider {
 
         // 0th element intentionally left blank to make index of the array match with schema version
         const schemaMigrations = [
-            {
-
-            },
+            {},
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
                 schemaVersion: 1,
-                migration: () => { console.log('Migration function goes here'); },
+                migration: () => {
+                    console.log('Migration function goes here');
+                },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key)
             },
@@ -115,14 +116,16 @@ class FloDBProvider {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
                 schemaVersion: 6,
-                migration: () => { console.log('Replace with conflict'); },
+                migration: () => {
+                    console.log('Replace with conflict');
+                },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             },
             {
                 schema: [VisitSchemas.VisitSchemaV2, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
-                        EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
-                        UserSchemas.UserSchemaV1],
+                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1],
                 schemaVersion: 7,
                 prerequisite: () => {
                     //TODO get own user data and the patient ids mapping here
@@ -141,17 +144,17 @@ class FloDBProvider {
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
         const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User];
 
-        let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
-        if (currentSchemaVersion >= 0) {
+        let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
+        if (existingSchemaVersion >= 0) {
             // Run migrations if schema exists
-            while (currentSchemaVersion <= targetSchemaVersion) {
-                if (schemaMigrations[currentSchemaVersion].prerequisite) {
-                    await schemaMigrations[currentSchemaVersion].prerequisite(migratedRealm);
+            while (existingSchemaVersion <= targetSchemaVersion) {
+                if (schemaMigrations[existingSchemaVersion].prerequisite) {
+                    await schemaMigrations[existingSchemaVersion].prerequisite(migratedRealm);
                 }
-                const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion]);
+                const migratedRealm = new Realm(schemaMigrations[existingSchemaVersion]);
                 migratedRealm.close();
 
-                currentSchemaVersion++;
+                existingSchemaVersion++;
             }
         }
 
@@ -170,10 +173,26 @@ class FloDBProvider {
                 path: schemaMigrations[targetSchemaVersion].path,
                 migration: schemaMigrations[targetSchemaVersion].migration
             });
+
+            if (existingSchemaVersion === -1) {
+                FloDBProvider.seedInitialData(floDB);
+            }
             console.log('initialization done ...');
         } catch (err) {
             console.log('ERROR IN DB INITIALIZATION: ', err);
             throw err;
+        }
+    }
+
+    static seedInitialData(db) {
+        try {
+            db.write(() => {
+                const ownUser = db.create(User, UserDataService.getCurrentUserProps());
+                console.log(ownUser);
+            });
+        } catch (e) {
+            console.log('seedInitialData failed');
+            console.log(e);
         }
     }
 }
@@ -249,5 +268,7 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
-        VisitOrder, User, CreateAndSaveDummies};
+export {
+    FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
+    VisitOrder, User, CreateAndSaveDummies
+};

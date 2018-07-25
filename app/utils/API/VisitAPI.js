@@ -6,7 +6,7 @@ export function pushNewVisitsToServer(visits) {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/visits/?format=json`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/add-visits/?format=json`,
             {
                 method: 'POST',
                 headers: {
@@ -29,7 +29,7 @@ export function pushVisitUpdateToServer(visit) {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/visits/?format=json`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/update-visit-for-id/?format=json`,
             {
                 method: 'PUT',
                 headers: {
@@ -50,7 +50,7 @@ export function getVisitsByID(visitIDs) {
         console.log('error in getting access token');
         throw error;
     })//TODO correct this url
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/my-visits-details/`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-visits-for-ids/`,
             {
                 method: 'POST',
                 headers: {
@@ -58,7 +58,7 @@ export function getVisitsByID(visitIDs) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    visits: visitIDs
+                    visitIDs
                 })
             }))
         .then(response => {

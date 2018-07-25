@@ -1,5 +1,5 @@
 import PubNub from 'pubnub';
-import {AsyncStorage} from 'react-native';
+import {AsyncStorage, Platform} from 'react-native';
 import {pubnubPubKey, pubnubSubKey} from '../../../utils/constants';
 import {MessagingServiceCoordinator} from './MessagingServiceCoordinator';
 
@@ -224,6 +224,10 @@ export class BaseMessagingService {
     }
 
     registerDeviceOnChannels(token, channels = this.channels) {
+        if (Platform.OS === 'android') {
+            return;
+        }
+
         return this.pubnub.push.addChannels(
             {
                 channels: channels.map(channel => channel.name),
@@ -234,6 +238,10 @@ export class BaseMessagingService {
     }
 
     deregisterDeviceOnChannels(token, channels) {
+        if (Platform.OS === 'android') {
+            return;
+        }
+
         return this.pubnub.push.removeChannels(
             {
                 channels: channels.map(channel => channel.name),

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Patient} from '../utils/data/schema';
+import {Episode, Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {arrayToMap, arrayToObjectByKey, filterResultObjectByListMembership} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
@@ -131,18 +131,19 @@ export class PatientDataService {
             } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id);
 
             //Todo: Add an episode, Move this to its own Data Service
-            if (episode) newPatient.episodes.push(episode);
-            else {
-                newPatient.episodes.push({
+            if (!episode) {
+                episode = {
                     episodeID: episodeId,
                     diagnosis: []
-                });
+                };
             }
+            const episodeObject = this.floDB.create(Episode, episode, true);
+            newPatient.episodes.push(episodeObject);
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
             //TODO
-            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episode[0]);
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
         }
     }
 
@@ -190,7 +191,7 @@ export class PatientDataService {
                 this._checkPermissionForEditing([patient]);
             } else {
                 //TODO
-                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes(patient.episodes[0]);
+                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes(patient.episodes);
             }
 
             this.floDB.write(() => {
