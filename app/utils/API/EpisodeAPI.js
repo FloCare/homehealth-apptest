@@ -6,7 +6,7 @@ export function getEpisodeDetailsByIds(episodeIds) {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/episode-details/`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/episodes/`,
             {
                 method: 'POST',
                 headers: {
@@ -14,7 +14,7 @@ export function getEpisodeDetailsByIds(episodeIds) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    episodeIds
+                    episodes: episodeIds
                 })
             }))
         .then(response => {

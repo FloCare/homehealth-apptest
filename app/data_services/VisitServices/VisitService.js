@@ -8,6 +8,7 @@ import {VisitRealmService} from './VisitRealmService';
 import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
 import {UserDataService} from '../UserDataService';
+import {getVisitsByID} from '../../utils/API/VisitAPI';
 
 export class VisitService {
     static visitService;
@@ -166,6 +167,9 @@ export class VisitService {
     fetchAndSaveVisitsByID(visitIDs) {
         //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
         return new Promise((resolve, reject) => {
+            getVisitsByID(visitIDs).then(respJson => {
+                
+            });
             resolve();
         });
     }
