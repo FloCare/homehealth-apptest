@@ -39,6 +39,7 @@ export class VisitRealmService {
         return this.filterUserVisits(allVisits);
     }
 
+    //TODO create legit user objects
     filterUserVisits(visits) {
         return visits.filtered(`user.userID = "${UserDataService.getCurrentUserProps().userID}"`);
     }

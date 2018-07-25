@@ -25,6 +25,22 @@ export class EpisodeDataService {
         this.floDB.objectForPrimaryKey(Episode.getSchemaName(), episodeID);
     }
 
+    saveVisitToEpisodeID(visit, episodeID) {
+        try {
+            const episode = this.floDB.objectForPrimaryKey(Episode.getSchemaName(), episodeID);
+            if (!episode) {
+                throw new Error('episode not found when trying to save visit');
+            }
+            this.floDB.write(() => {
+                episode.visits.push(visit);
+            });
+        } catch (e) {
+            console.log('error saving visit to episode');
+            console.log(e);
+            throw e;
+        }
+    }
+
     _getFlatVisitsByDay(visits) {
         const flatVisitForVisit = visit => {
             const user = visit.user;
@@ -39,10 +55,10 @@ export class EpisodeDataService {
 
         const flatVisitsByDate = {};
         visits.forEach(visit => {
-            let visitForDayList = flatVisitsByDate[visit.midnightEpoch];
+            let visitForDayList = flatVisitsByDate[visit.midnightEpochOfVisit];
             if (!visitForDayList) {
                 visitForDayList = [];
-                flatVisitsByDate[visit.midnightEpoch] = visitForDayList;
+                flatVisitsByDate[visit.midnightEpochOfVisit] = visitForDayList;
             }
 
             visitForDayList.push(flatVisitForVisit(visit));

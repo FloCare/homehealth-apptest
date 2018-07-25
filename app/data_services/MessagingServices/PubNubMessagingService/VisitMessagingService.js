@@ -2,6 +2,7 @@ import {BaseMessagingService} from './BaseMessagingService';
 import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
+import {pushNewVisitsToServer, pushVisitDeleteByID, pushVisitUpdateToServer} from '../../../utils/API/VisitAPI';
 
 export class VisitMessagingService extends BaseMessagingService {
     onMessage(messageObject) {
@@ -10,6 +11,11 @@ export class VisitMessagingService extends BaseMessagingService {
             console.log('onMessage called');
             console.log(message);
             const {actionType, visitID, userID} = message;
+            if (userID === UserDataService.getCurrentUserProps().userID) {
+                console.log('message for my own visit, ignoring');
+                resolve();
+                return;
+            }
             //TODO if userID is equal to my own, skip this message
             switch (actionType) {
                 case 'CREATE' :
@@ -70,6 +76,7 @@ export class VisitMessagingService extends BaseMessagingService {
 
     initialiseWorkers() {
         this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this));
+        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this));
     }
 
     async _publishVisitMessage(jobID, payload) {
@@ -91,34 +98,71 @@ export class VisitMessagingService extends BaseMessagingService {
         });
     }
 
-    publishVisitCreate(visit) {
-        //TODO visitAPI
+    async _publishToServer(jobID, payload) {
+        console.log(`publish job here${payload}`);
+        const {action, visit} = payload;
+        let serverResponse;
+        try {
+            switch (action) {
+                case 'CREATE':
+                    console.log(JSON.stringify({visits: [visit]}));
+                    serverResponse = await pushNewVisitsToServer([visit]);
+                    break;
+                case 'UPDATE':
+                    serverResponse = await pushVisitUpdateToServer(visit);
+                    break;
+                case 'DELETE':
+                    serverResponse = await pushVisitDeleteByID(visit.visitID);
+                    break;
+                default:
+                    console.log(`invalid task: ${payload}`);
+                    break;
+            }
+        } catch (e) {
+            console.log('error in making server call');
+            console.log(payload);
+            console.log(e);
+            throw e;
+        }
+
+        //TODO check server response is ok
         console.log('publishVisitMessage');
         this.taskQueue.createJob('publishVisitMessage', {
             visitID: visit.visitID,
-            episodeID: visit.getEpisode().episodeID,
-            actionType: 'CREATE',
+            episodeID: visit.episodeID,
+            actionType: action,
             userID: UserDataService.getCurrentUserProps().userID
+        });
+    }
+
+    _getFlatVisitPayload(visit) {
+        return {
+            visitID: visit.visitID,
+            episodeID: visit.getEpisode().episodeID,
+            midnightEpochOfVisit: visit.midnightEpochOfVisit,
+            isDone: visit.isDone,
+            plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined
+        };
+    }
+
+    publishVisitCreate(visit) {
+        this.taskQueue.createJob('publishToServer', {
+            action: 'CREATE',
+            visit: this._getFlatVisitPayload(visit)
         });
     }
 
     publishVisitUpdate(visit) {
-        //TODO visitAPI
-        this.taskQueue.createJob('publishVisitMessage', {
-            visitID: visit.visitID,
-            episodeID: visit.getEpisode().episodeID,
-            actionType: 'UPDATE',
-            userID: UserDataService.getCurrentUserProps().userID
+        this.taskQueue.createJob('publishToServer', {
+            action: 'UPDATE',
+            visit: this._getFlatVisitPayload(visit)
         });
     }
 
     publishVisitDelete(visit) {
-        //TODO visitAPI
-        this.taskQueue.createJob('publishVisitMessage', {
-            visitID: visit.visitID,
-            episodeID: visit.getEpisode().episodeID,
-            actionType: 'DELETE',
-            userID: UserDataService.getCurrentUserProps().userID
+        this.taskQueue.createJob('publishToServer', {
+            action: 'DELETE',
+            visit: this._getFlatVisitPayload(visit)
         });
     }
 

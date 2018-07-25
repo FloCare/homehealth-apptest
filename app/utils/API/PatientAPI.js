@@ -8,7 +8,7 @@ export function getPatientIDList() {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/my-patients/?format=json`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-assigned-patient-ids/?format=json`,
             {
                 method: 'GET',
                 headers: {
@@ -33,7 +33,7 @@ export function getPatientsByID(patientIDs) {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/my-patients-details/`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-patients-for-ids/`,
             {
                 method: 'POST',
                 headers: {
@@ -41,7 +41,7 @@ export function getPatientsByID(patientIDs) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    patients: patientIDs
+                    patientIDs
                 })
             }))
         .then(response => {
