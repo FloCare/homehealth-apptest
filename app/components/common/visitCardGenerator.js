@@ -7,8 +7,8 @@ import {
     Image,
     Linking,
     Platform,
-    TouchableOpacity, Alert,
-} from 'react-native';
+    TouchableOpacity, Alert, Dimensions,
+} from 'react-native'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import ActionSheet from 'react-native-actionsheet';
@@ -62,8 +62,7 @@ const mapStateToProps = (state, ownProps) => {
     return props;
 };
 
-function VisitCardGenerator({onDoneTogglePress, navigator}) {
-
+function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false) {
     class RenderRow extends PureComponent {
 
         constructor(props) {
@@ -140,50 +139,49 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                 if (this.state.visitTime) {
                     return moment(this.state.visitTime).format('A');
                 }
-                return '';
+                return 'AM';
             }
         }
 
         renderDatePickerComponent = () => {
             const startDate = this.state.visitTime ? this.state.visitTime : moment().hours(12).minutes(0).seconds(0).toDate();
             return (
-                <View style={{alignSelf: 'center', flex: 2}}>
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{marginLeft: 3, alignSelf: 'center'}}>
-                            <Image source={Images.ellipse} />
-                        </View>
-                        <View style={{flex: 1}}>
-                            <TouchableOpacity
-                                onPress={() => { this.showTimePicker(); }}
-                            >
-                                <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
-                                    {this.timeDisplayString('time')}
-                                </Text>
-                                {
-                                    this.state.visitTime &&
-                                    <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
-                                        {this.timeDisplayString('meridian')}
-                                    </Text>
-                                }
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View>
-                        <DateTimePicker
-                            isVisible={this.state.isTimePickerVisible}
-                            titleIOS={'Pick Visit Time'}
-                            datePickerModeAndroid="spinner"
-                            is24Hour={false}
-                            minuteInterval={5}
-                            date={startDate}
-                            onConfirm={(date) => {
-                                this.handleTimePicked(date);
-                            }}
-                            onCancel={() => {
-                                this.hideTimePicker();
-                            }}
-                            mode={'time'}
-                        />
+                <View style={{alignSelf: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
+                    {
+                        !isHomeScreen &&
+                            <View style={{marginRight: 10}}>
+                                <Image source={Images.ellipse} />
+                            </View>
+
+                    }
+
+                    <View style={{alignSelf: 'center'}}>
+                        <TouchableOpacity
+                            onPress={() => { this.showTimePicker(); }}
+                        >
+                            <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
+                                {this.timeDisplayString('time')}
+                            </Text>
+                            <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 13}}>
+                                {this.timeDisplayString('meridian')}
+                            </Text>
+
+                            <DateTimePicker
+                                isVisible={this.state.isTimePickerVisible}
+                                titleIOS={'Pick Visit Time'}
+                                datePickerModeAndroid="spinner"
+                                is24Hour={false}
+                                minuteInterval={5}
+                                date={startDate}
+                                onConfirm={(date) => {
+                                    this.handleTimePicked(date);
+                                }}
+                                onCancel={() => {
+                                    this.hideTimePicker();
+                                }}
+                                mode={'time'}
+                            />
+                        </TouchableOpacity>
                     </View>
                 </View>
             );
@@ -347,9 +345,13 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                 }
             };
             return (
-                <View style={{flexDirection: 'row', marginRight: 10}}>
+
+                <View style={{flexDirection: 'row', marginRight: 10, width: 0.95 * Dimensions.get('screen').width}}>
                     <View style={{flex: 1}}>
-                        <View style={{width: '50%', height: '100%', alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
+                        {
+                            !isHomeScreen &&
+                            <View style={{width: '50%', flex: 1, alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
+                        }
                         <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 10, marginBottom: 10}}>
                             <CustomCheckBox
                                 checked={this.props.isDone}
@@ -357,63 +359,56 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                             />
                         </View>
                     </View>
-                    <View style={{flex: 8, marginTop: 10, marginBottom: 10}}>
-                        <View
-                            style={[
-                                    Platform.select({
-                                        ios: {
-                                            shadowColor: 'rgba(0,0,0, .2)',
-                                            shadowOffset: {height: 0, width: 0},
-                                            shadowOpacity: 1,
-                                            shadowRadius: 1,
-                                        },
-                                        android: {
-                                            elevation: 1,
-                                        },
-                                    }),
-                                    styles.cardContainerStyle,
-                                    this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
-                                    this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {}
-                                ]}
-                        >
-                            <View style={{flexDirection: 'row', flex: 1}}>
+                    <View
+                        style={[
+                            Platform.select({
+                                ios: {
+                                    shadowColor: 'rgba(0,0,0, .2)',
+                                    shadowOffset: {height: 0, width: 0},
+                                    shadowOpacity: 1,
+                                    shadowRadius: 1,
+                                },
+                                android: {
+                                    elevation: 1,
+                                },
+                            }),
+                            styles.cardContainerStyle,
+                            this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
+                            this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
+                            {flex: 8, marginTop: 10, marginBottom: 10, flexDirection: 'row'}
+                        ]}
+                    >
+                            {
+                                this.renderDatePickerComponent()
+                            }
+                        <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
+                            <View style={{margin: 10}}>
+                                <Text style={styles.nameStyle}>{this.props.name}</Text>
+                                <View style={{flexDirection: 'row', marginTop: 2}}>
+                                    <Image source={Images.location} style={{marginRight: 8}} />
+                                    <Text style={styles.addressStyle}>
+                                        {this.minifiedAddress(this.props.formattedAddress)}
+                                    </Text>
+                                </View>
                                 {
-                                    this.renderDatePickerComponent()
+                                    this.renderClinicianVisitData(this.state.clinicianVisitData)
                                 }
-                                <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
-                                    <View style={{margin: 10}}>
-                                        <View>
-                                            <Text style={styles.nameStyle}>{this.props.name}</Text>
-                                            <View style={{flexDirection: 'row', marginTop: 2}}>
-                                                <Image source={Images.location} style={{marginRight: 8}} />
-                                                <Text style={styles.addressStyle}>
-                                                    {this.minifiedAddress(this.props.formattedAddress)}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        {
-                                            this.renderClinicianVisitData(this.state.clinicianVisitData)
-                                        }
-                                    </View>
-
-                                </View>
-                                <View style={{flex: 1, alignSelf: 'center', height: '100%'}}>
-                                    <TouchableOpacity
-                                        onPress={() => { this.showCardActions(); }}
-                                    >
-                                        <View style={{marginTop: 15, alignSelf: 'center'}}>
-                                            <Image source={Images.dots} />
-                                        </View>
-                                        <ActionSheet
-                                            ref={element => this.cardActionSheet = element}
-                                            options={this.cardActions.map((action) => action.title)}
-                                            cancelButtonIndex={this.cardActions.length}
-                                            onPress={(index) => { this.handleCardActionPress(index); }}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
                             </View>
-
+                        </View>
+                        <View style={{flex: 1}}>
+                            <TouchableOpacity
+                                onPress={() => { this.showCardActions(); }}
+                            >
+                                <View style={{marginTop: 15, alignSelf: 'center'}}>
+                                    <Image source={Images.dots} />
+                                </View>
+                                <ActionSheet
+                                    ref={element => this.cardActionSheet = element}
+                                    options={this.cardActions.map((action) => action.title)}
+                                    cancelButtonIndex={this.cardActions.length - 1}
+                                    onPress={(index) => { this.handleCardActionPress(index); }}
+                                />
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>

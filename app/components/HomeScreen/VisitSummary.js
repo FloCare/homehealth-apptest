@@ -30,7 +30,8 @@ function onPressCard(visitID, navigator) {
 }
 
 function visitSummaryToday(props) {
-    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => VisitService.getInstance().toggleVisitDone(visitID)});
+    const isHomeScreen = true;
+    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => VisitService.getInstance().toggleVisitDone(visitID), navigator: props.navigator}, isHomeScreen);
 
     const primaryColor = PrimaryColor;
     const secondary = '#34da92';

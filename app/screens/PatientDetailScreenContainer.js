@@ -266,7 +266,9 @@ class PatientDetailScreenContainer extends Component {
     loadSelectedDateVisits = (date, currentWeekVisitData = this.state.currentWeekVisitData) => {
         const parsedDate = moment(date).valueOf();//moment(date).add(moment().utcOffset(), 'minutes').utc().valueOf();
         const dayVisitData = currentWeekVisitData[parsedDate];
-        dayVisitData.sort(this.visitTimeSorter);
+        if (dayVisitData) {
+            dayVisitData.sort(this.visitTimeSorter);
+        }
         this.setState({
             selectedVisitsDate: date,
             visitSectionData: dayVisitData

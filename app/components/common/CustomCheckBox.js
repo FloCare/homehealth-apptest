@@ -16,7 +16,6 @@ const CustomCheckBox = (props) => {
             containerStyle={{...checkBoxContainerStyle, ...props.checkBoxContainerStyle}}
             checkedImage={Images.tickMarkDone}
             uncheckedImage={Images.tickMarkNotDone}
-            center
             onChange={onPress}
         />
     );
