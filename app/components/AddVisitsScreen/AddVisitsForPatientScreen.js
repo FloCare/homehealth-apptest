@@ -98,7 +98,7 @@ class AddVisitsForPatientScreen extends Component {
                 />
                 <View>
                     <CalendarStrip
-                        style={{height: 85}}
+                        style={{height: 75}}
                         styleWeekend={false}
                         calendarHeaderFormat='MMMM'
                         calendarHeaderStyle={{fontWeight: '100', fontSize: 12, alignSelf: 'flex-start', padding: 10}}

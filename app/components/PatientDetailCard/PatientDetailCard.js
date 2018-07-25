@@ -33,25 +33,25 @@ const renderSingleClinicianVisit = (visitData) => {
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 6, marginTop: 5}}>
                 <StyledText style={{...styles.fontStyle, fontSize: 15, color: '#222222'}}>
-                    {`${nameString}, ${visitData.userRole}`}
+                    {`${nameString}, ${visitData.role}`}
                 </StyledText>
                 <StyledText style={{...styles.fontStyle, fontSize: 15, color: '#999999'}}>
-                    {visitData.visitStartTime ? moment(visitData.visitStartTime).format('HH:MM A') : ' '}
+                    {visitData.plannedStartTime ? moment(visitData.plannedStartTime).format('h:mm A') : '--:--'}
                 </StyledText>
             </View>
             {
-                visitData.contact && !visitData.ownVisit &&
+                visitData.primaryContact && !visitData.ownVisit &&
                 <View style={{flex: 1, alignSelf: 'center'}}>
                     <TouchableOpacity
                         onPress={() => {
-                            if (visitData.contact) {
+                            if (visitData.primaryContact) {
                                 firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                                     type: parameterValues.CALL_CLINICIAN
                                 });
                                 if (Platform.OS === 'android') {
-                                    Linking.openURL(`tel: ${visitData.contact}`);
+                                    Linking.openURL(`tel: ${visitData.primaryContact}`);
                                 } else {
-                                    RNImmediatePhoneCall.immediatePhoneCall(visitData.contact);
+                                    RNImmediatePhoneCall.immediatePhoneCall(visitData.primaryContact);
                                 }
                             }
                         }}
@@ -66,7 +66,6 @@ const renderSingleClinicianVisit = (visitData) => {
 };
 
 const renderVisitSectionData = (visitSectionData) => {
-    // TODO Sort visits by time
     if (visitSectionData && visitSectionData.length > 0) {
         return (
             <View style={{...styles.containerStyle, flexDirection: 'column'}}>
@@ -92,19 +91,20 @@ const getEmergencyContactText = (contactName, contactRelation) => {
 };
 
 
-const getActiveDotStyle = (date) => ({
-    startDate: date,
-    dotEnabled: true,
-    dotImage: Images.grayDot
-});
+const getActiveDotStyle = (currentDate, date) => {
+    return ({
+        startDate: date,
+        dotEnabled: true,
+        dotImage: moment(currentDate).isSame(date, 'day') ? Images.greenDot : Images.grayDot
+    });
+};
 
 const getCustomDateStyles = (currentDate, datesWithVisits) => {
     const customDateStyles = [
         {
             startDate: currentDate.valueOf(),
-            dateContainerStyle: {backgroundColor: PrimaryColor, borderRadius: 10},
-            dateNameStyle: {color: 'white'},
             dateNumberStyle: {color: 'white'},
+            dateNumberContainerStyle: {borderRadius: 3, backgroundColor: PrimaryColor, padding: 2}
         },
         {
             startDate: todayMomentInUTCMidnight().valueOf(),
@@ -113,7 +113,7 @@ const getCustomDateStyles = (currentDate, datesWithVisits) => {
         }
     ];
     for (let index = 0; index < datesWithVisits.length; index++) {
-        customDateStyles.push(getActiveDotStyle(datesWithVisits[index]));
+        customDateStyles.push(getActiveDotStyle(currentDate, datesWithVisits[index]));
     }
     return customDateStyles;
 };
@@ -121,7 +121,7 @@ const getCustomDateStyles = (currentDate, datesWithVisits) => {
 
 const PatientDetailCard = (props) => {
     const {patientDetail, onPressAddVisit, onWeekChanged, currentWeekVisitData,
-        selectedVisitsDate, visitSectionData, onChangeVisitsDate,
+        selectedVisitsDate, visitSectionData, onSelectVisitsDate,
         onPressAddNotes, showCallout, setMarkerRef} = props;
     //Handle name with navigator props
     const {
@@ -289,11 +289,13 @@ const PatientDetailCard = (props) => {
                             calendarHeaderFormat='MMMM'
                             calendarHeaderStyle={{fontWeight: '100', fontSize: 14, alignSelf: 'flex-start'}}
                             calendarHeaderViewStyle={{marginLeft: 27, marginTop: 10}}
-                            onDateSelected={onChangeVisitsDate}
+                            onDateSelected={(date) => { onSelectVisitsDate(moment(date).add(moment().utcOffset(), 'minutes').utc()); }}
                             onWeekChanged={onWeekChanged}
                             selectedDate={selectedVisitsDate.valueOf()}
                             customDatesStyles={getCustomDateStyles(selectedVisitsDate, datesWithVisits)}
                             responsiveSizingOffset={-5}
+                            dotMarginEnabled
+                            datesStripStyle={{alignSelf: 'center'}}
                         />
                     </View>
                     <View>

@@ -5,11 +5,16 @@ import update from 'immutability-helper';
 import moment from 'moment';
 import {PatientDetailScreen} from '../components/PatientDetailScreen';
 import {floDB, Patient} from '../utils/data/schema';
-import {screenNames, eventNames, parameterValues} from '../utils/constants';
+import {
+    screenNames,
+    eventNames,
+    parameterValues,
+    visitSubjects,
+} from '../utils/constants';
 import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {PatientDataService} from '../data_services/PatientDataService';
-import {VisitService} from '../data_services/VisitServices/VisitService';
+import {EpisodeDataService} from '../data_services/EpisodeDataService';
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
@@ -36,16 +41,17 @@ class PatientDetailScreenContainer extends Component {
         if (patientDetails && patientDetails.isLocallyOwned) {
             this.showEditNavButton();
         }
+        this.visitDataSubscriber = null;
         this.episodeId = null;
     }
 
     componentDidMount() {
+        // TODO Can we move this to constructor
         this.getPatientDetails(this.props.patientId);
         floDB.addListener('change', this.handleDBUpdate);
         const selectedVisitsDate = this.props.selectedVisitsDate || todayMomentInUTCMidnight();
         //TODO Load from Monday of the week
-        this.loadVisitDataForWeek(selectedVisitsDate);
-        this.handleVisitDateSelection(selectedVisitsDate);
+        this.loadVisitDataForWeek(selectedVisitsDate.valueOf());
     }
 
     onPressAddVisit() {
@@ -60,7 +66,8 @@ class PatientDetailScreenContainer extends Component {
                 tapBackgroundToDismiss: true
             },
             passProps: {
-                patientId: this.state.patientDetail.patientID
+                patientId: this.state.patientDetail.patientID,
+                visitSubject: visitSubjects.PATIENT
             },
         });
     }
@@ -214,19 +221,11 @@ class PatientDetailScreenContainer extends Component {
         this.marker = element;
     }
 
-    handleVisitDateSelection = (date) => {
-        if (!date.isSame(this.state.selectedVisitsDate, 'day')) {
-            const dayVisitData = this.state.currentWeekVisitData[date.valueOf()];
-            this.setState({
-                selectedVisitsDate: date,
-                visitSectionData: dayVisitData
-            });
-        }
-    }
-
     componentWillUnmount() {
         floDB.removeListener('change', this.handleDBUpdate);
-    //    TODO Remove listeners from visits
+        if (this.visitDataSubscriber) {
+            this.visitDataSubscriber.unsubscribe();
+        }
     }
 
     handleDBUpdate() {
@@ -234,22 +233,44 @@ class PatientDetailScreenContainer extends Component {
         this.getPatientDetails(this.props.patientId);
     }
 
+    visitTimeSorter = (visit1, visit2) => {
+        if (!visit1.plannedStartTime && !visit2.plannedStartTime) return 0;
+        if (!visit1.plannedStartTime) return 1;
+        if (!visit2.plannedStartTime) return -1;
+        return moment(visit1.plannedStartTime).valueOf() > moment(visit2.plannedStartTime).valueOf() ? 1 : -1;
+    }
+
     onVisitDataChange = (newVisitData) => {
-        this.setState({currentWeekVisitData: newVisitData});
+        const newVisitSectionData = newVisitData[this.state.selectedVisitsDate.valueOf()];
+        newVisitSectionData.sort(this.visitTimeSorter);
+        this.setState({currentWeekVisitData: newVisitData, visitSectionData: newVisitSectionData});
     }
 
     loadVisitDataForWeek = (date) => {
         const episodeID = this.episodeId;
         if (episodeID) {
-            const startDate = date;
-            const endDate = moment(date).add(1, 'weeks');
-            // TODO remove old listener
-            // TODO change to actual function call
-            const currentWeekVisitData = VisitService.getInstance().getWeekVisitData(
-                episodeID, startDate, endDate, this.onVisitDataChange);
+            const startDate = date.valueOf();
+            const endDate = moment(date).add(1, 'weeks').valueOf();
+            if (this.visitDataSubscriber) {
+                this.visitDataSubscriber.unsubscribe();
+            }
+            this.visitDataSubscriber = EpisodeDataService.getInstance()
+            .subscribeToVisitsForDays(episodeID, startDate, endDate, this.onVisitDataChange);
+            const currentWeekVisitData = this.visitDataSubscriber.currentData;
+            this.loadSelectedDateVisits(date, currentWeekVisitData);
             this.setState({currentWeekVisitData});
-            // TODO Update listener reference to new listener
+            return currentWeekVisitData;
         }
+    }
+
+    loadSelectedDateVisits = (date, currentWeekVisitData = this.state.currentWeekVisitData) => {
+        const parsedDate = moment(date).valueOf();//moment(date).add(moment().utcOffset(), 'minutes').utc().valueOf();
+        const dayVisitData = currentWeekVisitData[parsedDate];
+        dayVisitData.sort(this.visitTimeSorter);
+        this.setState({
+            selectedVisitsDate: date,
+            visitSectionData: dayVisitData
+        });
     }
 
     parseResponse(result, patientId) {
@@ -305,7 +326,7 @@ class PatientDetailScreenContainer extends Component {
                 patientDetail={this.state.patientDetail}
                 onPressAddVisit={this.onPressAddVisit}
                 selectedVisitsDate={this.state.selectedVisitsDate}
-                onChangeVisitsDate={this.handleVisitDateSelection}
+                onSelectVisitsDate={this.loadSelectedDateVisits}
                 visitSectionData={this.state.visitSectionData}
                 currentWeekVisitData={this.state.currentWeekVisitData}
                 onWeekChanged={this.loadVisitDataForWeek}

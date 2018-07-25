@@ -12,9 +12,20 @@ function VisitListScreen(props) {
             {/*<VisitListContainer visitResultObject={props.visitResultObject} />*/}
             {
                 props.showError &&
-                <View style={{backgroundColor: '#FFF78A', marginTop: 10, marginBottom: 5}}>
+                <View style={{backgroundColor: '#FFF78A', marginTop: 10}}>
                     <StyledText style={{fontSize: 12, color: '#F51414', alignSelf: 'center', margin: 5}}>
                         *Please check the order of the visits
+                    </StyledText>
+                </View>
+            }
+            {
+                props.totalDistance &&
+                <View style={{marginTop: 10, marginBottom: 5, flexDirection: 'row', alignSelf: 'center'}}>
+                    <StyledText style={{fontSize: 12, color: '#999999', alignSelf: 'center', margin: 5}}>
+                        Total Remaining Distance
+                    </StyledText>
+                    <StyledText style={{fontSize: 14, color: '#222222', alignSelf: 'center'}}>
+                        {props.totalDistance}
                     </StyledText>
                 </View>
             }

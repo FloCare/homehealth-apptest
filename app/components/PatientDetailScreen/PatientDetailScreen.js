@@ -4,7 +4,7 @@ import {PatientDetailCard} from '../PatientDetailCard';
 const PatientDetailScreen = (props) => {
     const {patientDetail, onPressAddVisit, onPressAddNotes, onWeekChanged,
         currentWeekVisitData, selectedVisitsDate, visitSectionData,
-        onChangeVisitsDate, showCallout, setMarkerRef} = props;
+        onSelectVisitsDate, showCallout, setMarkerRef} = props;
     return (
         <PatientDetailCard
             patientDetail={patientDetail}
@@ -12,7 +12,7 @@ const PatientDetailScreen = (props) => {
             onWeekChanged={onWeekChanged}
             selectedVisitsDate={selectedVisitsDate}
             visitSectionData={visitSectionData}
-            onChangeVisitsDate={onChangeVisitsDate}
+            onSelectVisitsDate={onSelectVisitsDate}
             currentWeekVisitData={currentWeekVisitData}
             onPressAddNotes={onPressAddNotes}
             showCallout={showCallout}
