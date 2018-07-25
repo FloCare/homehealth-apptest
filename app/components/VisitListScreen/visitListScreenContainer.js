@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
-import CalendarStrip from 'react-native-calendar-strip';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
-import {Images} from '../../Images';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 
@@ -50,11 +48,37 @@ class VisitListScreenContainer extends Component {
         VisitService.getInstance().setVisitOrderForDate(newOrder, this.props.date);
     }
 
+    showErrorMessage() {
+        //TODO Should we excldue isdone visits
+        let lastNonNullTime = null;
+        let showError = false;
+        for (const visitID in this.props.orderedVisitID) {
+            const currentVisitID = this.props.orderedVisitID[visitID];
+            const currentVisit = this.props.visits[currentVisitID];
+            if (lastNonNullTime && currentVisit.plannedStartTime) {
+                console.log('here 1 ');
+                console.log(lastNonNullTime);
+                console.log(currentVisit.plannedStartTime);
+                if (lastNonNullTime > currentVisit.plannedStartTime) {
+                    console.log('show error is true');
+                    showError = true;
+                    break;
+                } else {
+                    lastNonNullTime = currentVisit.plannedStartTime;
+                }
+            } else {
+                lastNonNullTime = lastNonNullTime || currentVisit.plannedStartTime;
+            }
+        }
+        return showError;
+    }
+
     render() {
         console.log('visitListScreenContainer rerendering');
         return (
             <VisitListScreen
                 navigator={this.props.navigator}
+                showError={this.showErrorMessage()}
                 orderedVisitID={this.props.orderedVisitID}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
                 onOrderChange={this.onOrderChange}
@@ -68,7 +92,8 @@ function mapStateToProps(state) {
     const filteredVisitOrder = state.visitOrder.filter((visitID) => state.visits[visitID]);
     return {
         date: state.date,
-        orderedVisitID: filteredVisitOrder
+        orderedVisitID: filteredVisitOrder,
+        visits: state.visits
     };
 }
 

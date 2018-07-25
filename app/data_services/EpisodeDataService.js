@@ -39,18 +39,19 @@ export class EpisodeDataService {
 
         const flatVisitsByDate = {};
         visits.forEach(visit => {
-            let visitForDayList = flatVisitsByDate[visit.midnightEpoch];
+            let visitForDayList = flatVisitsByDate[visit.midnightEpochOfVisit];
             if (!visitForDayList) {
                 visitForDayList = [];
-                flatVisitsByDate[visit.midnightEpoch] = visitForDayList;
+                flatVisitsByDate[visit.midnightEpochOfVisit] = visitForDayList;
             }
 
             visitForDayList.push(flatVisitForVisit(visit));
         });
+        return flatVisitsByDate;
     }
 
     subscribeToVisitsForDays(episodeID, startDate, endDate, callbackFunction) {
-        const visitsResult = VisitService.getInstance().getVisitsByEpisodeID(episodeID).filtered('midnightEpoch >= $0 && midnightEpoch <= $1', startDate, endDate);
+        const visitsResult = VisitService.getInstance().getVisitsByEpisodeID(episodeID).filtered('midnightEpochOfVisit >= $0 && midnightEpochOfVisit <= $1', startDate, endDate);
         const realmListener = (visits) => {
             callbackFunction(this._getFlatVisitsByDay(visits));
         };

@@ -49,7 +49,7 @@ export class VisitRealmService {
     }
 
     filterNonUserVisits(visits) {
-        return visits.filtered(`userID != "${UserDataService.getCurrentUserID()}"`);
+        return visits.filtered(`user.userID != "${UserDataService.getCurrentUserProps().userID}"`);
     }
 
     filterVisitsLessThanDate(visits, date) {

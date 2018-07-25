@@ -30,6 +30,8 @@ export class VisitService {
         return {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
+            episodeID: isPatientVisit ? visit.episode[0].episodeID : null,
+            midnightEpochOfVisit: visit.midnightEpochOfVisit,
             placeID: !isPatientVisit ? visit.getPlace().placeID : null,
             plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
