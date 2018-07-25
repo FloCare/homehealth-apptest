@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {Text, Divider} from 'react-native-elements';
+import {Text} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import {
@@ -7,8 +7,7 @@ import {
     Image,
     Linking,
     Platform,
-    Dimensions,
-    TouchableOpacity
+    TouchableOpacity, Alert,
 } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -19,10 +18,11 @@ import {styles} from './styles';
 import {
     eventNames,
     parameterValues,
-    PrimaryFontFamily, screenNames,
-} from '../../utils/constants'
+    PrimaryFontFamily, screenNames, visitSubjects,
+} from '../../utils/constants';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService'
+import {EpisodeDataService} from '../../data_services/EpisodeDataService'
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
@@ -31,53 +31,73 @@ const mapStateToProps = (state, ownProps) => {
     const props = {
         visitID: visit.visitID,
         isDone: visit.isDone,
+        episodeID: visit.episodeID,
+        midnightEpochOfVisit: visit.midnightEpochOfVisit
     };
 
-    let visitOwner;
+    let visitSubject;
     if (visit.isPatientVisit) {
         const patientID = visit.patientID;
-        visitOwner = state.patients[patientID];
+        visitSubject = state.patients[patientID];
         props.patientID = visit.patientID;
+        props.visitSubject = visitSubjects.PATIENT;
     } else {
         const placeID = visit.placeID;
-        visitOwner = state.places[placeID];
+        visitSubject = state.places[placeID];
+        props.placeID = placeID;
+        props.visitSubject = visitSubjects.PLACE;
     }
 
-    props.name = visitOwner.name;
-    props.primaryContact = !visitOwner.archived && visitOwner.primaryContact;
+    props.name = visitSubject.name;
+    props.primaryContact = !visitSubject.archived && visitSubject.primaryContact;
     props.visitTime = visit.plannedStartTime;
-    const address = state.addresses[visitOwner.addressID];
-    //console.log('Owner', visitOwner.name);
+    const address = state.addresses[visitSubject.addressID];
+    //console.log('Owner', visitSubject.name);
     //console.log('Address:', address);
-    props.coordinates = !visitOwner.archived && {
+    props.coordinates = !visitSubject.archived && {
         latitude: address.latitude,
         longitude: address.longitude
     };
     props.formattedAddress = address.formattedAddress;
-
     return props;
 };
 
 function VisitCardGenerator({onDoneTogglePress, navigator}) {
 
-    const cardActions = ['Call', 'Go To Address', 'Reschedule', 'Delete Visit', 'Cancel'];
-    const cancelIndex = 4;
-
     class RenderRow extends PureComponent {
 
         constructor(props) {
             super(props);
+            const episodeID = this.props.episodeID;
+            const startDate = this.props.midnightEpochOfVisit;
+            const endDate = this.props.midnightEpochOfVisit;
+            this.visitDataSubscriber = null;
+            if (episodeID) {
+                this.visitDataSubscriber = EpisodeDataService.getInstance()
+                .subscribeToVisitsForDays(episodeID, startDate, endDate, this.handleOtherClinicianDate);
+            }
+
             this.state = {
                 isTimePickerVisible: false,
                 visitTime: this.props.visitTime,
-                modalVisible: false
+                modalVisible: false,
+                clinicianVisitData: this.visitDataSubscriber ? this.visitDataSubscriber.currentData : null
             };
+
+            this.cardActions = this.setCardActions();
+        }
+
+        componentWillUnmount() {
+            if (this.visitDataSubscriber) {
+                this.visitDataSubscriber.unsubscribe();
+            }
         }
 
         onPressRescheduleVisit() {
             firebase.analytics().logEvent(eventNames.ADD_VISIT, {
                 VALUE: 1
             });
+            const visitSubject =
             navigator.showLightBox({
                 screen: screenNames.addVisitsForPatientScreen,
                 style: {
@@ -87,7 +107,10 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                 },
                 passProps: {
                     patientId: this.props.patientID,
+                    placeId: this.props.placeID,
+                    visitSubject: this.props.visitSubject,
                     title: 'Reschedule Visit',
+                    date: moment(this.props.midnightEpochOfVisit),
                     isReschedule: true,
                     oldVisitId: this.props.visitID
                 },
@@ -121,15 +144,86 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
             }
         }
 
-        handleDeleteVisit = () => {
-            VisitService.getInstance().deleteVisitByID(this.props.visitID);
+        renderDatePickerComponent = () => {
+            const startDate = this.state.visitTime ? this.state.visitTime : moment().hours(12).minutes(0).seconds(0).toDate();
+            return (
+                <View style={{alignSelf: 'center', flex: 2}}>
+                    <View style={{flexDirection: 'row'}}>
+                        <View style={{marginLeft: 3, alignSelf: 'center'}}>
+                            <Image source={Images.ellipse} />
+                        </View>
+                        <View style={{flex: 1}}>
+                            <TouchableOpacity
+                                onPress={() => { this.showTimePicker(); }}
+                            >
+                                <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
+                                    {this.timeDisplayString('time')}
+                                </Text>
+                                {
+                                    this.state.visitTime &&
+                                    <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
+                                        {this.timeDisplayString('meridian')}
+                                    </Text>
+                                }
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View>
+                        <DateTimePicker
+                            isVisible={this.state.isTimePickerVisible}
+                            titleIOS={'Pick Visit Time'}
+                            datePickerModeAndroid="spinner"
+                            is24Hour={false}
+                            minuteInterval={5}
+                            date={startDate}
+                            onConfirm={(date) => {
+                                this.handleTimePicked(date);
+                            }}
+                            onCancel={() => {
+                                this.hideTimePicker();
+                            }}
+                            mode={'time'}
+                        />
+                    </View>
+                </View>
+            );
         }
 
-        // card Action Related functions
-        // cardActions = {['Call', 'Go To Address', 'Reschedule', 'Delete Visit', 'Cancel']}
+        handleDeleteVisit = () => {
+            Alert.alert(
+                'Caution',
+                'This visit will be deleted. Do you wish to continue?',
+                [
+                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    {text: 'OK', onPress: () => VisitService.getInstance().deleteVisitByID(this.props.visitID)}
+                ]
+            );
+        }
+
+
+        setCardActions = () => {
+            const cardActionsMap = [];
+            let index = 0;
+            if (this.props.primaryContact) {
+                cardActionsMap.push({index, title: 'Call'});
+                index++;
+            }
+            if (this.props.coordinates && this.props.coordinates.latitude && this.props.coordinates.longitude){
+                cardActionsMap.push({index, title: 'Go To Address'});
+                index++;
+            }
+            cardActionsMap.push({index: index++, title: 'Reschedule'});
+            cardActionsMap.push({index: index++, title: 'Delete Visit'});
+            cardActionsMap.push({index: index++, title: 'Cancel'});
+            return cardActionsMap;
+        }
+
         handleCardActionPress(index) {
-            switch (index) {
-                case 0:
+            if (index >= this.cardActions.length) return;
+            const activeAction = this.cardActions.find((cardAction) => cardAction.index === index);
+
+            switch (activeAction.title) {
+                case 'Call':
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         type: parameterValues.CALL_PATIENT
                     });
@@ -141,23 +235,23 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                         }
                     }
                     break;
-                case 1:
+                case 'Go To Address':
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         type: parameterValues.NAVIGATION
                     });
                     if (this.props.coordinates) {
-                        const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`
+                        const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`;
                         Linking.openURL(mapsURL)
                             .catch(err => console.error('An error occurred', err));
                     }
                     break;
-                case 2:
+                case 'Reschedule':
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.RESCHEDULE
                     });
                     this.onPressRescheduleVisit();
                     break;
-                case 3:
+                case 'Delete Visit':
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.DELETE_VISIT
                     });
@@ -180,9 +274,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
             this.cardActionSheet.show();
         }
 
-        userData = [{role: 'COTA', time: '10:30 AM'}, {role: 'LPN', time: '4:30 PM'}, {role: 'SN', time: '6:30 PM'}]
-
-        renderClinicianVisit = (visitData) => {
+        renderSingleClinicianVisit = (visitData) => {
             const userRole = visitData.role;
             const visitTime = visitData.time;
             return (
@@ -216,48 +308,56 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
             return (
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     {
-                        clinicianVisits.map((clinicianVisit) => this.renderClinicianVisit(clinicianVisit))
+                        clinicianVisits.map((clinicianVisit) => this.renderSingleClinicianVisit(clinicianVisit))
                     }
                 </View>
             );
         }
 
-        renderOtherClinicianData = (userData) => {
+        renderClinicianVisitData = (clinicianVisitData) => {
             const numberOfCliniciansInRow = 2;
             const clinicianRows = [];
-
-            for (let itemIndex = 0; itemIndex < userData.length;) {
-                clinicianRows.push(this.renderClinicianVisitRow(userData.slice(itemIndex, itemIndex + numberOfCliniciansInRow)));
-                itemIndex += numberOfCliniciansInRow;
+            let filteredVisits = [];
+            if (clinicianVisitData && clinicianVisitData[this.props.midnightEpochOfVisit]) {
+                // filter out own visits
+                filteredVisits = clinicianVisitData[this.props.midnightEpochOfVisit].filter((visit) => !visit.ownVisit);
             }
-            return (
-              <View style={{marginTop: 5}}>
-                  {clinicianRows}
-              </View>
-            );
+            if (filteredVisits.length > 0) {
+                for (let itemIndex = 0; itemIndex < filteredVisits.length;) {
+                    clinicianRows.push(this.renderClinicianVisitRow(filteredVisits.slice(itemIndex, itemIndex + numberOfCliniciansInRow)));
+                    itemIndex += numberOfCliniciansInRow;
+                }
+                return (
+                    <View style={{marginTop: 5}}>
+                        {clinicianRows}
+                    </View>
+                );
+            }
+        }
+
+        handleOtherClinicianDate = (clinicianVisitData) => {
+            this.setState({clinicianVisitData});
         }
 
         render() {
-            console.log('- - - - - - VisitCard Render 1 - - - - - - - - ');
-            console.log(this.props.visitID);
+            console.log('- - - - - - VisitCard Render- - - - - - - - ');
             const safeOnDoneTogglePress = () => {
                 if (onDoneTogglePress) {
                     onDoneTogglePress(this.props.visitID);
                 }
             };
             return (
-                <View style={{flexDirection: 'row', marginTop: 10, marginRight: 10, marginBottom: 10}}>
-                    <View style={{flex: 1, paddingTop: 15}}>
-                        <View style={{width: '50%', height: '100%', alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: 'black'}}>
+                <View style={{flexDirection: 'row', marginRight: 10}}>
+                    <View style={{flex: 1}}>
+                        <View style={{width: '50%', height: '100%', alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
+                        <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 10, marginBottom: 10}}>
+                            <CustomCheckBox
+                                checked={this.props.isDone}
+                                onPress={safeOnDoneTogglePress}
+                            />
                         </View>
-                            <View style={{position: 'absolute', alignSelf: 'center'}}>
-                        <CustomCheckBox
-                            checked={this.props.isDone}
-                            onPress={safeOnDoneTogglePress}
-                        />
-                            </View>
                     </View>
-                    <View style={{flex: 8}}>
+                    <View style={{flex: 8, marginTop: 10, marginBottom: 10}}>
                         <View
                             style={[
                                     Platform.select({
@@ -277,46 +377,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                                 ]}
                         >
                             <View style={{flexDirection: 'row', flex: 1}}>
-                                <View style={{alignSelf: 'center', flex: 2}}>
-                                    <View style={{flexDirection: 'row'}}>
-                                        <View style={{marginLeft: 3}}>
-                                            <Image source={Images.ellipse}/>
-                                        </View>
-                                        <View style={{flex: 1}}>
-                                            <TouchableOpacity
-                                                onPress={() => { this.showTimePicker(); }}
-                                            >
-                                                <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
-                                                    {this.timeDisplayString('time')}
-                                                </Text>
-                                                {
-                                                    this.state.visitTime &&
-                                                    <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
-                                                        {this.timeDisplayString('meridian')}
-                                                    </Text>
-                                                }
-                                            </TouchableOpacity>
-                                        </View>
-
-                                    </View>
-                                    <View>
-                                        <DateTimePicker
-                                            isVisible={this.state.isTimePickerVisible}
-                                            titleIOS={'Pick Visit Time'}
-                                            datePickerModeAndroid="spinner"
-                                            is24Hour={false}
-                                            minuteInterval={5}
-                                            date={moment().hours(12).minutes(0).seconds(0).toDate()}
-                                            onConfirm={(date) => {
-                                                this.handleTimePicked(date);
-                                            }}
-                                            onCancel={() => {
-                                                this.hideTimePicker();
-                                            }}
-                                            mode={'time'}
-                                        />
-                                    </View>
-                                </View>
+                                {
+                                    this.renderDatePickerComponent()
+                                }
                                 <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
                                     <View style={{margin: 10}}>
                                         <View>
@@ -329,7 +392,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                                             </View>
                                         </View>
                                         {
-                                            this.renderOtherClinicianData(this.userData)
+                                            this.renderClinicianVisitData(this.state.clinicianVisitData)
                                         }
                                     </View>
 
@@ -343,9 +406,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}) {
                                         </View>
                                         <ActionSheet
                                             ref={element => this.cardActionSheet = element}
-                                            options={cardActions}
-                                            cancelButtonIndex={cancelIndex}
-                                            onPress={(index) => { this.handleCardActionPress(index)}}
+                                            options={this.cardActions.map((action) => action.title)}
+                                            cancelButtonIndex={this.cardActions.length}
+                                            onPress={(index) => { this.handleCardActionPress(index); }}
                                         />
                                     </TouchableOpacity>
                                 </View>

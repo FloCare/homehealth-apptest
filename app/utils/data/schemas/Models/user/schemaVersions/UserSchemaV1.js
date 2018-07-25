@@ -2,11 +2,11 @@ import {User} from '../User';
 
 export const UserSchemaV1 = {
     name: User.getSchemaName(),
-    primaryKey: 'id',
+    primaryKey: 'userID',
     properties: {
-        id: 'string',
+        userID: 'string',
         firstName: 'string',
-        lastName: 'string?',
+        lastName: 'string',
         primaryContact: 'string?',
         role: 'string'
     }

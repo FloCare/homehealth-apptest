@@ -8,6 +8,8 @@ import {VisitService} from './VisitServices/VisitService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
+import {MessagingServiceCoordinator} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {VisitMessagingService} from './MessagingServices/PubNubMessagingService/VisitMessagingService';
 
 export class PatientDataService {
     static patientDataService;
@@ -131,6 +133,7 @@ export class PatientDataService {
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToPatients([newPatient]);
         }
     }
 
@@ -170,24 +173,15 @@ export class PatientDataService {
         const patient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
         if (patient) {
-            if (!deletedOnServer) { this._checkPermissionForEditing([patient]); }
+            if (!deletedOnServer) { this._checkPermissionForEditing([patient]); } else {
+                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToPatients([patient]);
+            }
 
-            let obj = null;
             this.floDB.write(() => {
                 patient.archived = true;
-                obj = VisitService.getInstance().deleteVisits(patient);
+                VisitService.getInstance().deleteVisitsForSubject(patient);
             });
-            if (patient) {
-                this._archivePatientsInRedux([patientId]);
-            }
-            if (obj && obj.visits) {
-                VisitService.getInstance().deleteVisitsFromRedux(obj.visits);
-            }
-            if (obj && obj.visitOrders) {
-                for (let i = 0; i < obj.visitOrders.length; i++) {
-                    VisitService.getInstance().updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
-                }
-            }
+            this._archivePatientsInRedux([patientId]);
             console.log('Patient archived. His visits Deleted');
         }
     }

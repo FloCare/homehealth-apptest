@@ -1,10 +1,6 @@
 import React from 'react';
-import {Image} from 'react-native';
-import {CheckBox} from 'react-native-elements';
+import CheckBox from 'react-native-checkbox';
 import {Images} from '../../Images';
-
-const checkedIcon = Images.tickMarkDone;
-const uncheckedIcon = Images.tickMarkNotDone;
 
 const CustomCheckBox = (props) => {
     const checkBoxContainerStyle = {...styles.checkBoxContainerStyle};
@@ -16,13 +12,12 @@ const CustomCheckBox = (props) => {
     return (
         <CheckBox
             checked={props.checked}
-            checkedIcon={<Image source={checkedIcon} />}
-            uncheckedIcon={<Image source={uncheckedIcon} />}
+            label={''}
             containerStyle={{...checkBoxContainerStyle, ...props.checkBoxContainerStyle}}
-            textStyle={{marginLeft: 0, marginRight: 0}}
-            size={24}
+            checkedImage={Images.tickMarkDone}
+            uncheckedImage={Images.tickMarkNotDone}
             center
-            onPress={onPress}
+            onChange={onPress}
         />
     );
 };

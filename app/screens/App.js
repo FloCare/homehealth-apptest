@@ -17,7 +17,9 @@ import {dateService, initialiseService as initialiseDate} from '../data_services
 import {configure as configureNotification} from '../data_services/MessagingServices/NotificationService';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {MessagingServiceCoordinator} from '../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {initialiseStore} from '../utils/InMemoryStore';
 import {UserDataService} from '../data_services/UserDataService';
+import { EpisodeDataService } from '../data_services/EpisodeDataService'
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -45,10 +47,11 @@ function getLargeNavBarOrSubstitute() {
     return null;
 }
 
-const StartApp = (key) => {
+const StartApp = async (key) => {
     // Initialize the DB
     try {
-        FloDBProvider.initialize(key);
+        await initialiseStore();
+        await FloDBProvider.initialize(key);
     } catch (err) {
         console.log('Error in initializing DB: ', err);
         throw err;
@@ -61,12 +64,13 @@ const StartApp = (key) => {
     //TODO Move all intialisations to static calls
     PatientDataService.initialiseService(FloDBProvider.db, store);
     VisitService.initialiseService(FloDBProvider.db, store);
+    EpisodeDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
-    MessagingServiceCoordinator.initialiseService();
+    await MessagingServiceCoordinator.initialiseService(key);
     if (Platform.OS === 'ios') {
         configureNotification();
     }

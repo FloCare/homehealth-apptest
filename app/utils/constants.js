@@ -128,6 +128,11 @@ const parameterValues = {
 
 };
 
+const visitSubjects = {
+    PLACE: 'Place',
+    PATIENT: 'Patient'
+};
+
 let inActivityTimer = null;
 const inActivityTime = 120000; // ms
 const lastActiveTime = new Date();
@@ -153,7 +158,9 @@ export const pubnubPubKey = 'pubnubPubKey';
 export const pubnubSubKey = 'pubnubSubKey';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
-export const apiServerURL = 'https://app-9781.on-aptible.com';
+export const apiServerURL = 'https://app-9707.on-aptible.com';
 
 
-export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};
+export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
+    screenNames, visitType, PrimaryColor, TransparentPrimaryColor,
+    PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects};
