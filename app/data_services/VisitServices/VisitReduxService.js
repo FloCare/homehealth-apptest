@@ -61,11 +61,11 @@ export class VisitReduxService {
         placeDataService.addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
     }
 
-    deleteVisitsFromRedux(visits) {
+    deleteVisitsFromRedux(visitIDs) {
         console.log('Deleting visits from Redux');
         this.store.dispatch({
             type: VisitActions.DELETE_VISITS,
-            visitList: VisitService.getFlatVisitMap(visits)
+            visitIDs
         });
     }
 }

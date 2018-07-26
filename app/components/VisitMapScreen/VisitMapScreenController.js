@@ -130,7 +130,7 @@ function mapStateToProps(state) {
 }
 
 export function getVisitsWithAddressFromReduxState(state) {
-    return state.visitOrder.filter((visitID) => state.visits[visitID]).map(visitID => {
+    return state.visitOrder.map(visitID => {
         const visit = state.visits[visitID];
         let visitSubject;
         if (visit.isPatientVisit) {

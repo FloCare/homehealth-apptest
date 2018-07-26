@@ -234,13 +234,11 @@ function getTabBarHeight() {
 
 function stateToProps(state) {
     const isVisitDone = (visitID) => state.visits[visitID] && state.visits[visitID].isDone;
-    // Filter visit orders which have state in visits
-    const filteredVisitOrder = state.visitOrder.filter((visitID) => state.visits[visitID]);
     return {
-        nextVisitID: filteredVisitOrder[0],
+        nextVisitID: state.visitOrder[0],
         date: state.date,
-        remainingVisits: filteredVisitOrder.reduce((totalRemaining, visitID) => totalRemaining + (isVisitDone(visitID) ? 0 : 1), 0),
-        totalVisits: filteredVisitOrder.length,
+        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (isVisitDone(visitID) ? 0 : 1), 0),
+        totalVisits: state.visitOrder.length,
     };
 }
 

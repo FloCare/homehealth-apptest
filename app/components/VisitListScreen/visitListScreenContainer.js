@@ -97,7 +97,7 @@ class VisitListScreenContainer extends Component {
     }
 
     async computeVisitDistance(visitOrder) {
-        const pendingVisits = visitOrder.filter((visitID) => this.props.visits[visitID] && !this.props.visits[visitID].isDone)
+        const pendingVisits = visitOrder.filter((visitID) => this.props.visits[visitID] && !this.props.visits[visitID].isDone);
         const coordinatesList = pendingVisits.map((visitID) => this.props.visits[visitID].coordinates);
         let totalDistance = null;
         if (coordinatesList.length > 1) {
@@ -123,16 +123,14 @@ class VisitListScreenContainer extends Component {
 }
 
 function mapStateToProps(state) {
-    // filtering visits which have information in visits store
-    const filteredVisitOrder = state.visitOrder.filter((visitID) => state.visits[visitID]);
     const visitsWithCoordinates = getVisitsWithAddressFromReduxState(state);
     const getVisitCoordinates = (visitList, visitID) => (
         visitList.find((visit) => visit.visitID === visitID).coordinates
     );
 
     const visits = {};
-    for (const index in filteredVisitOrder) {
-        const visitID = filteredVisitOrder[index];
+    for (const index in state.visitOrder) {
+        const visitID = state.visitOrder[index];
         visits[visitID] = {
             isDone: state.visits[visitID].isDone,
             plannedStartTime: state.visits[visitID].plannedStartTime,
@@ -141,7 +139,7 @@ function mapStateToProps(state) {
     }
     return {
         date: state.date,
-        orderedVisitID: filteredVisitOrder,
+        orderedVisitID: state.visitOrder,
         visits
     };
 }

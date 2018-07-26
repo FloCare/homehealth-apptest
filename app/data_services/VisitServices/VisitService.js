@@ -222,9 +222,9 @@ export class VisitService {
         // Visit order doesn't need to be explicitly deleted
         const visit = this.visitRealmService.getVisitByID(visitID);
         const visitTimeEpoch = visit.midnightEpochOfVisit;
-        this.visitReduxService.deleteVisitsFromRedux([visit]);
         this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
+        this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
 
     getAllFutureVisitsForSubject(subject) {
@@ -258,15 +258,17 @@ export class VisitService {
             }
             visitOrders[i].visitList = visitList;
         }
+        const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.delete(visits);
 
-        if (visits) {
-            this.visitReduxService.deleteVisitsFromRedux(visits);
-        }
         if (visitOrders) {
             for (let i = 0; i < visitOrders.length; i++) {
                 this.visitReduxService.updateVisitOrderToReduxIfLive(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
             }
+        }
+
+        if (visits) {
+            this.visitReduxService.deleteVisitsFromRedux(visitIDs);
         }
     }
 
