@@ -1,24 +1,26 @@
 import React, {Component} from 'react';
-import CalendarStrip from 'react-native-calendar-strip';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import {VisitListScreen} from './visitListScreen';
 import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
-import {Images} from '../../Images';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
+import * as MapUtils from '../../utils/MapUtils';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
+import {getVisitsWithAddressFromReduxState} from '../VisitMapScreen/VisitMapScreenController';
 
 class VisitListScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
             date: props.date,
+            totalDistance: null,
             // showCalendar: false
         };
 
         this.navigateToAddVisitsScreen = this.navigateToAddVisitsScreen.bind(this);
         this.onOrderChange = this.onOrderChange.bind(this);
+        this.computeVisitDistance(this.props.orderedVisitID);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -28,6 +30,27 @@ class VisitListScreenContainer extends Component {
             console.log('component did 0');
             this.props.navigator.pop();
         } else this.setState({date: nextProps.date});
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.needsDistanceRecompute(this.props.visits, prevProps.visits)) {
+            this.computeVisitDistance(this.props.orderedVisitID);
+        }
+    }
+
+    needsDistanceRecompute(newVisits, oldVisits) {
+        if (Object.keys(newVisits).length !== Object.keys(oldVisits).length) return true;
+        return this.isVisitStatusChanged(newVisits, oldVisits);
+    }
+
+    isVisitStatusChanged(newVisits, oldVisits) {
+        for (const visitID in oldVisits) {
+            const newVisit = newVisits[visitID];
+            if (!newVisit || oldVisits[visitID].isDone !== newVisit.isDone) {
+                return true;
+            }
+        }
+        return false;
     }
 
     navigateToAddVisitsScreen() {
@@ -48,17 +71,49 @@ class VisitListScreenContainer extends Component {
             type: parameterValues.DND
         });
         VisitService.getInstance().setVisitOrderForDate(newOrder, this.props.date);
+        this.computeVisitDistance(newOrder);
     }
 
-    generateVisitResultObject(date) {
-        return floDB.objects(Visit.schema.name).filtered('midnightEpochOfVisit==$0', this.state.date.valueOf()).sorted('isDone');//date);//.sorted('isDone');
+    showErrorMessage() {
+        let lastNonNullTime = null;
+        let showError = false;
+        for (const visitID in this.props.orderedVisitID) {
+            const currentVisitID = this.props.orderedVisitID[visitID];
+            const currentVisit = this.props.visits[currentVisitID];
+            if (!currentVisit.isDone) {
+                if (lastNonNullTime && currentVisit.plannedStartTime) {
+                    if (lastNonNullTime > currentVisit.plannedStartTime) {
+                        showError = true;
+                        break;
+                    } else {
+                        lastNonNullTime = currentVisit.plannedStartTime;
+                    }
+                } else {
+                    lastNonNullTime = lastNonNullTime || currentVisit.plannedStartTime;
+                }
+            }
+        }
+        return showError;
+    }
+
+    async computeVisitDistance(visitOrder) {
+        const pendingVisits = visitOrder.filter((visitID) => this.props.visits[visitID] && !this.props.visits[visitID].isDone);
+        const coordinatesList = pendingVisits.map((visitID) => this.props.visits[visitID].coordinates);
+        let totalDistance = null;
+        if (coordinatesList.length > 1) {
+            this.setState({totalDistance});
+            const geoDataObject = await MapUtils.getProcessedDataForOrderedList(coordinatesList);
+            totalDistance = geoDataObject.distance;
+        }
+        this.setState({totalDistance});
     }
 
     render() {
-        console.log('visitListScreenContainer rerendering');
         return (
             <VisitListScreen
                 navigator={this.props.navigator}
+                showError={this.showErrorMessage()}
+                totalDistance={this.state.totalDistance}
                 orderedVisitID={this.props.orderedVisitID}
                 onAddVisitPress={this.navigateToAddVisitsScreen}
                 onOrderChange={this.onOrderChange}
@@ -68,9 +123,24 @@ class VisitListScreenContainer extends Component {
 }
 
 function mapStateToProps(state) {
+    const visitsWithCoordinates = getVisitsWithAddressFromReduxState(state);
+    const getVisitCoordinates = (visitList, visitID) => (
+        visitList.find((visit) => visit.visitID === visitID).coordinates
+    );
+
+    const visits = {};
+    for (const index in state.visitOrder) {
+        const visitID = state.visitOrder[index];
+        visits[visitID] = {
+            isDone: state.visits[visitID].isDone,
+            plannedStartTime: state.visits[visitID].plannedStartTime,
+            coordinates: getVisitCoordinates(visitsWithCoordinates, visitID)
+        };
+    }
     return {
         date: state.date,
         orderedVisitID: state.visitOrder,
+        visits
     };
 }
 

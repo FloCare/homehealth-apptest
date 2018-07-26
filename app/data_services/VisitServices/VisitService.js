@@ -5,6 +5,11 @@ import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
+import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
+import {UserDataService} from '../UserDataService';
+import {getVisitsByID} from '../../utils/API/VisitAPI';
+import {EpisodeDataService} from '../EpisodeDataService';
 
 export class VisitService {
     static visitService;
@@ -27,7 +32,10 @@ export class VisitService {
         return {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
+            episodeID: isPatientVisit ? visit.episode[0].episodeID : null,
+            midnightEpochOfVisit: visit.midnightEpochOfVisit,
             placeID: !isPatientVisit ? visit.getPlace().placeID : null,
+            plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
             isPatientVisit
         };
@@ -48,17 +56,49 @@ export class VisitService {
         return this.floDB.objectForPrimaryKey(Visit, visitID);
     }
 
+    isVisitOwn(visit) {
+        return UserDataService.getCurrentUserProps().userID === visit.user.userID;
+    }
+
+    getVisitsByEpisodeID(episodeID) {
+        if (!episodeID) {
+            throw new Error('requested visits for empty episodeID');
+        }
+
+        return this.floDB.objects(Visit).filtered('episode.episodeID = $0', episodeID);
+    }
+
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
         this.visitReduxService.updateVisitOrderToReduxIfLive(visitList, midnightEpoch);
     }
 
     loadVisitsForTheDayToRedux(midnightEpoch) {
-        const visitsOfDay = this.visitRealmService.getVisitsForDate(midnightEpoch);
+        const visitsOfDay = this.visitRealmService.getVisitsOfCurrentUserForDate(midnightEpoch);
         this.visitReduxService.addVisitsToRedux(visitsOfDay);
 
         const visitOrderOfDay = this.visitRealmService.getVisitOrderForDate(midnightEpoch);
         this.visitReduxService.setVisitOrderInRedux(visitOrderOfDay.visitList);
+    }
+
+    filterUserVisits(visits) {
+        return this.visitRealmService.filterUserVisits(visits);
+    }
+
+    filterVisitsLessThanDate(visits, date) {
+        return this.visitRealmService.filterVisitsLessThanDate(visits, date);
+    }
+
+    filterVisitsGreaterThanDate(visits, date) {
+        return this.visitRealmService.filterVisitsGreaterThanDate(visits, date);
+    }
+
+    filterDoneVisits(visits, doneStatus) {
+        return this.visitRealmService.filterDoneVisits(visits, doneStatus);
+    }
+
+    sortVisitsByField(visits, field, descending = false) {
+        return this.visitRealmService.sortVisitsByField(visits, field, descending);
     }
 
     toggleVisitDone(visitID) {
@@ -130,18 +170,49 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
-    createNewVisits(visitOwners, midnightEpoch) {
+    fetchAndSaveVisitsByID(visitIDs, update) {
+        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+        return new Promise((resolve, reject) => {
+            getVisitsByID(visitIDs).then(respJson => {
+                if (respJson.success && respJson.success.length === visitIDs.length) {
+                    respJson.success.forEach(visitJson => {
+                        this.saveVisit(visitJson, update);
+                    });
+                } else reject(respJson);
+            });
+            resolve();
+        });
+    }
+
+    saveVisit(visitJson, update = false) {
+        let visit;
+        this.floDB.write(() => {
+            visit = this.floDB.create(Visit, visitJson, update);
+        });
+        if (!update) { EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID); }
+    }
+
+    createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
         this.floDB.write(() => {
-            for (const visitSubject of visitOwners) {
+            for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
                     visitID: generateUUID(),
+                    user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
                     midnightEpochOfVisit: midnightEpoch
                 });
                 newVisits.push(visit);
-                if (visitSubject instanceof Patient) { visitSubject.episodes[0].visits.push(visit); } else visitSubject.visits.push(visit);
+                if (visitSubject instanceof Patient) {
+                    visitSubject.episodes[0].visits.push(visit);
+                } else visitSubject.visits.push(visit);
             }
         });
+
+        //TODO this is just a stub
+        newVisits.forEach(visit => {
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
+        });
+
         // Logging the firebase event upon visits being added
         firebase.analytics().logEvent(eventNames.ADD_VISIT, {
             VALUE: newVisits.length
@@ -154,19 +225,33 @@ export class VisitService {
         }
     }
 
+    deleteVisitByID(visitID) {
+        // Visit order doesn't need to be explicitly deleted
+        const visit = this.visitRealmService.getVisitByID(visitID);
+        const visitTimeEpoch = visit.midnightEpochOfVisit;
+        this.visitRealmService.deleteVisitByObject(visit);
+        this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
+        this.visitReduxService.deleteVisitsFromRedux([visitID]);
+    }
+
+    getAllFutureVisitsForSubject(subject) {
+        const today = todayMomentInUTCMidnight();
+
+        if (subject instanceof Patient) {
+            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        } else if (subject instanceof Place) {
+            return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        }
+        throw new Error('requested visits for unrecognised entity');
+    }
+
     // Should be a part of a write transaction
-    deleteVisits(owner) {
+    deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
         const today = todayMomentInUTCMidnight();
-        let visits = null;
+
         // Todo: Check if this works
-        if (owner instanceof Patient) {
-            console.log('Deleting patient');
-            visits = owner.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
-        } else if (owner instanceof Place) {
-            console.log('Deleting Place');
-            visits = owner.visits.filtered(`midnightEpochOfVisit >= ${today}`);
-        }
+        const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
@@ -174,14 +259,29 @@ export class VisitService {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!(visit.isOwnerArchived())) {
+                if (!(visit.isSubjectArchived())) {
                     visitList.push(visit);
                 }
             }
             visitOrders[i].visitList = visitList;
         }
+        const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.delete(visits);
-        const obj = {visits, visitOrders};
-        return obj;
+
+        if (visitOrders) {
+            for (let i = 0; i < visitOrders.length; i++) {
+                this.visitReduxService.updateVisitOrderToReduxIfLive(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
+            }
+        }
+
+        if (visits) {
+            this.visitReduxService.deleteVisitsFromRedux(visitIDs);
+        }
     }
+
+    updateVisitStartTimeByID(visitID, startTime) {
+        this.visitRealmService.updateVisitStartTimeByID(visitID, startTime);
+        this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
+    }
+
 }

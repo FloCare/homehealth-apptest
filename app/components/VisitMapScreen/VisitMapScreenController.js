@@ -118,30 +118,7 @@ class VisitMapScreenContainer extends Component {
 }
 
 function mapStateToProps(state) {
-    const todaysVisits = state.visitOrder.map(visitID => {
-        const visit = state.visits[visitID];
-        let visitOwner;
-        if (visit.isPatientVisit) {
-            const patientID = visit.patientID;
-            visitOwner = state.patients[patientID];
-        } else {
-            const placeID = visit.placeID;
-            visitOwner = state.places[placeID];
-        }
-        const address = state.addresses[visitOwner.addressID];
-        const coordinates = address.latitude && address.latitude ? {
-            latitude: address.latitude,
-            longitude: address.longitude,
-        } : undefined;
-
-        return {
-            visitID: visit.visitID,
-            name: visitOwner.name,
-            coordinates,
-            isDone: visit.isDone,
-            isPatientVisit: visit.isPatientVisit
-        };
-    });
+    const todaysVisits = getVisitsWithAddressFromReduxState(state);
     const defaultViewport = VisitMapScreenContainer.getViewportFromVisitCoordinates(todaysVisits);
 
     return {
@@ -150,6 +127,34 @@ function mapStateToProps(state) {
         filteredVisits: todaysVisits.filter(visit => !visit.isDone),
         defaultViewport
     };
+}
+
+export function getVisitsWithAddressFromReduxState(state) {
+    return state.visitOrder.map(visitID => {
+        const visit = state.visits[visitID];
+        let visitSubject;
+        if (visit.isPatientVisit) {
+            const patientID = visit.patientID;
+            visitSubject = state.patients[patientID];
+        } else {
+            const placeID = visit.placeID;
+            visitSubject = state.places[placeID];
+        }
+        const address = state.addresses[visitSubject.addressID];
+        const coordinates = address.latitude && address.latitude ? {
+            latitude: address.latitude,
+            longitude: address.longitude,
+        } : undefined;
+
+        return {
+            visitID: visit.visitID,
+            name: visitSubject.name,
+            coordinates,
+            plannedStartTime: visit.plannedStartTime,
+            isDone: visit.isDone,
+            isPatientVisit: visit.isPatientVisit
+        };
+    });
 }
 
 export default connect(mapStateToProps)(ScreenWithCalendarComponent(VisitMapScreenContainer));

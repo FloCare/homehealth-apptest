@@ -1,17 +1,25 @@
 import React from 'react';
 import firebase from 'react-native-firebase';
-import {View, ScrollView, Image, Linking, Platform, TouchableOpacity} from 'react-native';
+import {
+    View,
+    ScrollView,
+    Image,
+    Linking,
+    Platform,
+    TouchableOpacity,
+} from 'react-native';
+import CalendarStrip from 'react-native-calendar-strip';
 import {Text, Button, Divider} from 'react-native-elements';
 import moment from 'moment';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import styles from './styles';
-import {styles as componentStyles} from '../common/styles';
 import {PatientDetailMapComponent} from './PatientDetailMapComponent';
 import {Diagnosis} from '../common/Diagnosis';
 import {PrimaryColor, eventNames, parameterValues} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import ViewMore from '../common/ViewMore';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 
 const renderViewMore = (e, onPressAddNotes) => {
@@ -20,31 +28,59 @@ const renderViewMore = (e, onPressAddNotes) => {
     );
 };
 
-const getVisitsView = function (visitSectionData) {
+const renderSingleClinicianVisit = (visitData) => {
+    const nameString = visitData.ownVisit ? 'You' : visitData.userName;
+    return (
+        <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 6, marginTop: 5}}>
+                <StyledText style={{...styles.fontStyle, fontSize: 15, color: '#222222'}}>
+                    {`${nameString}, ${visitData.role}`}
+                </StyledText>
+                <StyledText style={{...styles.fontStyle, fontSize: 15, color: '#999999'}}>
+                    {visitData.plannedStartTime ? moment(visitData.plannedStartTime).format('h:mm A') : '--:--'}
+                </StyledText>
+            </View>
+            {
+                !!visitData.primaryContact && !visitData.ownVisit &&
+                <View style={{flex: 1, alignSelf: 'center'}}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            if (visitData.primaryContact) {
+                                firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+                                    type: parameterValues.CALL_CLINICIAN
+                                });
+                                if (Platform.OS === 'android') {
+                                    Linking.openURL(`tel: ${visitData.primaryContact}`);
+                                } else {
+                                    RNImmediatePhoneCall.immediatePhoneCall(visitData.primaryContact);
+                                }
+                            }
+                        }}
+                    >
+                    <Image source={Images.emptyCall} />
+                    </TouchableOpacity>
+                </View>
+            }
+        </View>
+    );
+};
+
+const renderVisitSectionData = (visitSectionData) => {
     if (visitSectionData && visitSectionData.length > 0) {
-        if (visitSectionData.length > 1) {
-            return (
-                <View style={componentStyles.listContainer}>
-                    <StyledText style={{...styles.fontStyle, ...styles.visitStyle, opacity: 0.7}}>
-                        {visitSectionData[0]}
-                    </StyledText>
-                    <StyledText style={{...styles.fontStyle, ...styles.visitStyle}}>
-                        {visitSectionData[1]}
-                    </StyledText>
-                </View>
-            );
-        } else {
-            return (
-                <View style={componentStyles.listContainer}>
-                    <StyledText style={{...styles.fontStyle, ...styles.visitStyle, width: '70%'}}>
-                        {visitSectionData[0]}
-                    </StyledText>
-                </View>
-            );
-        }
+        return (
+            <View style={{...styles.containerStyle, flexDirection: 'column'}}>
+                <Divider style={{...styles.dividerStyle, marginBottom: 10}} />
+                {visitSectionData.map((visitData) => renderSingleClinicianVisit(visitData))}
+            </View>
+        );
     }
     return (
-        <View style={{height: 16}} />
+        <View style={{...styles.containerStyle, flexDirection: 'column'}}>
+            <Divider style={{...styles.dividerStyle, marginBottom: 10}} />
+            <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#222222'}}>
+                {'No Visits Scheduled on This Day'}
+            </StyledText>
+        </View>
     );
 };
 
@@ -54,8 +90,39 @@ const getEmergencyContactText = (contactName, contactRelation) => {
     return `${contactName} (${contactRelation})`;
 };
 
+
+const getActiveDotStyle = (currentDate, date) => {
+    return ({
+        startDate: date,
+        dotEnabled: true,
+        dotImage: moment(currentDate).isSame(date, 'day') ? Images.greenDot : Images.grayDot
+    });
+};
+
+const getCustomDateStyles = (currentDate, datesWithVisits) => {
+    const customDateStyles = [
+        {
+            startDate: currentDate.valueOf(),
+            dateNumberStyle: {color: 'white'},
+            dateNumberContainerStyle: {borderRadius: 3, backgroundColor: PrimaryColor, padding: 2}
+        },
+        {
+            startDate: todayMomentInUTCMidnight().valueOf(),
+            dateNameStyle: {color: PrimaryColor},
+            dateNumberStyle: {color: PrimaryColor},
+        }
+    ];
+    for (let index = 0; index < datesWithVisits.length; index++) {
+        customDateStyles.push(getActiveDotStyle(currentDate, datesWithVisits[index]));
+    }
+    return customDateStyles;
+};
+
+
 const PatientDetailCard = (props) => {
-    const {patientDetail, nextVisit, lastVisit, onPressAddVisit, onPressAddNotes, showCallout, setMarkerRef} = props;
+    const {patientDetail, onPressAddVisit, onWeekChanged, currentWeekVisitData,
+        selectedVisitsDate, visitSectionData, onSelectVisitsDate,
+        onPressAddNotes, showCallout, setMarkerRef} = props;
     //Handle name with navigator props
     const {
         primaryContact,
@@ -80,19 +147,11 @@ const PatientDetailCard = (props) => {
         }
     }
 
-    let lastVisitTimestamp = null;
-    let nextVisitTimestamp = null;
-    const visitSectionData = [];
-    if (lastVisit) {
-        lastVisitTimestamp = moment.utc(lastVisit.midnightEpochOfVisit);
-        visitSectionData.push(`Last visited by You On "${lastVisitTimestamp.format('YYYY-MMM-DD')}"`);
-    }
-    if (nextVisit) {
-        nextVisitTimestamp = moment.utc(nextVisit.midnightEpochOfVisit);
-        visitSectionData.push(`Next visit scheduled On "${nextVisitTimestamp.format('YYYY-MMM-DD')}"`);
-    }
-    if (visitSectionData.length === 0) {
-        visitSectionData.push('No visits scheduled for You.');
+    const datesWithVisits = [];
+    for (const dateKey in currentWeekVisitData) {
+        if (currentWeekVisitData[dateKey].length > 0) {
+            datesWithVisits.push(parseInt(dateKey, 10));
+        }
     }
 
     return (
@@ -210,14 +269,36 @@ const PatientDetailCard = (props) => {
                 {emergencyContactNumber !== '' && emergencyContactNumber &&
                 <Divider style={styles.dividerStyle} />
                 }
-                
-                <View style={styles.containerStyle}>
-                    <Image source={Images.visits} />
-                    <View style={{marginLeft: 14}}>
-                        <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
-                            Visits
-                        </StyledText>
-                        {getVisitsView(visitSectionData)}
+
+                <View style={{...styles.containerStyle, flexDirection: 'column'}}>
+                    <View style={{flexDirection: 'row'}}>
+                        <Image source={Images.visits} />
+                        <View style={{marginLeft: 14}}>
+                            <StyledText style={{...styles.fontStyle, ...styles.headerStyle}}>
+                                Visits
+                            </StyledText>
+                        </View>
+                    </View>
+                    <View style={{width: '100%', alignSelf: 'center'}}>
+                        <CalendarStrip
+                            style={{height: 80}}
+                            styleWeekend={false}
+                            calendarHeaderFormat='MMMM'
+                            calendarHeaderStyle={{fontWeight: '100', fontSize: 14, alignSelf: 'flex-start'}}
+                            calendarHeaderViewStyle={{marginLeft: 27, marginTop: 10}}
+                            onDateSelected={(date) => { onSelectVisitsDate(moment(date).add(moment().utcOffset(), 'minutes').utc()); }}
+                            onWeekChanged={onWeekChanged}
+                            selectedDate={selectedVisitsDate.valueOf()}
+                            customDatesStyles={getCustomDateStyles(selectedVisitsDate, datesWithVisits)}
+                            responsiveSizingOffset={-5}
+                            dotMarginEnabled
+                            datesStripStyle={{alignSelf: 'center'}}
+                        />
+                    </View>
+                    <View>
+                        {
+                            renderVisitSectionData(visitSectionData)
+                        }
                     </View>
                 </View>
 

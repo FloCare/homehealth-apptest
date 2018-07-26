@@ -60,9 +60,6 @@ export const styles = StyleSheet.create({
     cardContainerStyle: {
         borderRadius: 4,
         // paddingBottom: 0,
-        margin: 10,
-        marginLeft: 15,
-        marginRight: 15,
         marginBottom: undefined,
         backgroundColor: '#ffffff',
         shadowColor: 'rgba(0, 0, 0, 0.11)',
@@ -74,6 +71,11 @@ export const styles = StyleSheet.create({
         shadowOpacity: 1,
         elevation: 4
     },
+    cardMarginStyle: {
+        margin: 10,
+        marginLeft: 5,
+        marginRight: 15,
+    }
     // containerStyle: {
     //     flex: 1,
     //     margin: 4,

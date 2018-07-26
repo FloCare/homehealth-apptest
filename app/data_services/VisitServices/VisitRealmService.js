@@ -1,5 +1,6 @@
 import {arrayToObjectByKey, filterResultObjectByListMembership} from '../../utils/collectionUtils';
 import {Visit, VisitOrder} from '../../utils/data/schema';
+import {UserDataService} from '../UserDataService';
 
 export class VisitRealmService {
     static visitRealmService;
@@ -33,8 +34,43 @@ export class VisitRealmService {
         return visitOrder.visitList;
     }
 
-    getVisitsForDate(midnightEpoch) {
-        return this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
+    getVisitsOfCurrentUserForDate(midnightEpoch) {
+        const allVisits = this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
+        return this.filterUserVisits(allVisits);
+    }
+
+    //TODO create legit user objects
+    filterUserVisits(visits) {
+        return visits.filtered(`user.userID = "${UserDataService.getCurrentUserProps().userID}"`);
+    }
+
+    filterVisitsLessThanDate(visits, date) {
+        return visits.filtered(`midnightEpochOfVisit <= ${date}`);
+    }
+
+    filterVisitsGreaterThanDate(visits, date) {
+        return visits.filtered(`midnightEpochOfVisit >= ${date}`);
+    }
+
+    filterDoneVisits(visits, doneStatus) {
+        return visits.filtered(`isDone = ${doneStatus}`);
+    }
+
+    sortVisitsByField(visits, field, descending) {
+        if (Visit.getAllFields().includes(field)) {
+            return visits.sorted(field, descending);
+        }
+        return visits;
+    }
+
+    getVisitByID(visitID) {
+        return this.floDB.objectForPrimaryKey(Visit, visitID);
+    }
+
+    deleteVisitByObject(visit) {
+        this.floDB.write(() => {
+            this.floDB.delete(visit);
+        });
     }
 
     getVisitOrderForDate(midnightEpoch) {
@@ -46,6 +82,14 @@ export class VisitRealmService {
         }
 
         return visitOrder;
+    }
+
+    updateVisitStartTimeByID(visitID, startTime) {
+        const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
+        this.floDB.write(() => {
+                visit.plannedStartTime = startTime;
+            }
+        );
     }
 
     insertNewVisits(visits, midnightEpoch) {

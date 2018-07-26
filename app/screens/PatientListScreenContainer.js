@@ -5,7 +5,12 @@ import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
-import {screenNames, eventNames, parameterValues} from '../utils/constants';
+import {
+    screenNames,
+    eventNames,
+    parameterValues,
+    visitSubjects,
+} from '../utils/constants'
 import {createSectionedListByName} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
@@ -157,14 +162,15 @@ class PatientListScreenContainer extends Component {
                     VALUE: 1
                 });
                 this.props.navigator.showLightBox({
-                    screen: screenNames.addVisitsForPatientScreen,
+                    screen: screenNames.addOrRescheduleVisitsLightBox,
                     style: {
                         backgroundBlur: 'dark',
                         backgroundColor: '#00000070',
                         tapBackgroundToDismiss: true
                     },
                     passProps: {
-                        patientId: item.patientID
+                        patientId: item.patientID,
+                        visitSubject: visitSubjects.PATIENT
                     },
                 });
                 break;

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Patient} from '../utils/data/schema';
+import {Episode, Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {
     arrayToMap,
@@ -13,6 +13,9 @@ import {VisitService} from './VisitServices/VisitService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
+import {MessagingServiceCoordinator} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {VisitMessagingService} from './MessagingServices/PubNubMessagingService/VisitMessagingService';
+import {getEpisodeDetailsByIds} from '../utils/API/EpisodeAPI';
 import {PhysicianDataService} from './PhysicianDataService';
 import { EpisodeDataService } from './EpisodeDataService'
 
@@ -39,7 +42,8 @@ export class PatientDataService {
             primaryContact: patient.primaryContact,
             notes: patient.notes,
             //TODO this will need work if more than one episode per patient
-            visits: patient.episodes[0].visits.map(visit => visit.visitID),
+            visits: VisitService.getInstance().filterUserVisits(
+                patient.episodes[0].visits).map(visit => visit.visitID),
             archived: patient.archived,
             recentlyAssigned: moment.utc(patient.assignmentTimestamp).diff(moment.utc(), 'days') === 0,
             recentlyUpdated: moment.utc(patient.lastUpdateTimestamp).diff(moment.utc(), 'days') === 0,
@@ -67,6 +71,7 @@ export class PatientDataService {
     getTotalPatientCount() {
         return this.floDB.objects(Patient).length;
     }
+
     getPatientByID(patientID) {
         return this.floDB.objectForPrimaryKey(Patient, patientID);
     }
@@ -87,12 +92,15 @@ export class PatientDataService {
     getPatientsSortedByName(patientList) {
         if (patientList.length === 0) return patientList;
         const patientDataArray = [];
-        patientList.forEach(patient => patientDataArray.push({sortIndex: patient.name.toString().toLowerCase(), data: patient}));
+        patientList.forEach(patient => patientDataArray.push({
+            sortIndex: patient.name.toString().toLowerCase(),
+            data: patient
+        }));
         const sortedSeedArray = patientDataArray.sort((patientData1, patientData2) => patientData1.sortIndex.localeCompare(patientData2.sortIndex));
         return sortedSeedArray.map(seedData => seedData.data);
     }
 
-    createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false) {
+    createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false, episode) {
         // Todo: Add proper ID generators
         // Create a patient, create & add an address, and create & add an episode
         const patientId = !isLocallyOwned && patient.patientID ? patient.patientID : Math.random().toString();
@@ -129,22 +137,25 @@ export class PatientDataService {
                 addressDataService.addAddressToTransaction(newPatient, patient, addressId);
             } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id);
 
-            // Todo: Add an episode, Move this to its own Data Service
-
-            const episodeData = {
-                episodeID: episodeId,
-                diagnosis: []
-            };
-
-            if (hasNonEmptyValueForKey(patient.episode, 'primaryPhysician') &&
-                hasNonEmptyValueForAllKeys(patient.primaryPhysician, ['id', 'npi', 'firstName'])) {
-                    episodeData.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(patient.primaryPhysician);
+            //Todo: Add an episode, Move this to its own Data Service
+            if (!episode) {
+                episode = {
+                    episodeID: episodeId,
+                    diagnosis: []
+                };
             }
+            if (hasNonEmptyValueForKey(episode, 'primaryPhysician') &&
+                hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['id', 'npi', 'firstName'])) {
+                episode.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(episode.primaryPhysician);
+            }
+            const episodeObject = this.floDB.create(Episode, episode, true);
+            newPatient.episodes.push(episodeObject);
 
-            newPatient.episodes.push(episodeData);
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
+            //TODO
+            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
         }
     }
 
@@ -152,7 +163,9 @@ export class PatientDataService {
         const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patient.patientID);
 
         if (patientObj) {
-            if (!isServerUpdate) { this._checkPermissionForEditing([patientObj]); }
+            if (!isServerUpdate) {
+                this._checkPermissionForEditing([patientObj]);
+            }
 
             const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
             const emergencyContactName = patient.emergencyContactInfo.contactName;
@@ -160,7 +173,9 @@ export class PatientDataService {
 
             this.floDB.write(() => {
                 // Edit the corresponding address info
-                if (patient.addressID) { addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID); }
+                if (patient.addressID) {
+                    addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID);
+                }
 
                 // Edit the patient info
                 this.floDB.create(Patient.schema.name, {
@@ -184,24 +199,18 @@ export class PatientDataService {
         const patient = this.floDB.objectForPrimaryKey(Patient.schema.name, patientId);
 
         if (patient) {
-            if (!deletedOnServer) { this._checkPermissionForEditing([patient]); }
+            if (!deletedOnServer) {
+                this._checkPermissionForEditing([patient]);
+            } else {
+                //TODO
+                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes(patient.episodes);
+            }
 
-            let obj = null;
             this.floDB.write(() => {
                 patient.archived = true;
-                obj = VisitService.getInstance().deleteVisits(patient);
+                VisitService.getInstance().deleteVisitsForSubject(patient);
             });
-            if (patient) {
-                this._archivePatientsInRedux([patientId]);
-            }
-            if (obj && obj.visits) {
-                VisitService.getInstance().deleteVisitsFromRedux(obj.visits);
-            }
-            if (obj && obj.visitOrders) {
-                for (let i = 0; i < obj.visitOrders.length; i++) {
-                    VisitService.getInstance().updateVisitOrderToReduxIfLive(obj.visitOrders[i].visitList, obj.visitOrders[i].midnightEpoch);
-                }
-            }
+            this._archivePatientsInRedux([patientId]);
             console.log('Patient archived. His visits Deleted');
         }
     }
@@ -244,7 +253,7 @@ export class PatientDataService {
                 const deletions = deletedPatients.length;
 
                 if (newPatientIDs.length > 0) {
-                    additions = await this.fetchAndSavePatientsByID(newPatientIDs);
+                    additions = await this.fetchAndSavePatientsByID(newPatientIDs).success;
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 return {
@@ -258,14 +267,8 @@ export class PatientDataService {
         return PatientAPI.getPatientsByID(patientIDs)
             .then((json) => {
                 const successfulObjects = json.success;
-                const episodeIds = successfulObjects.map((patientObject) => patientObject.episodeId);
-                const episodeObjects = EpisodeDataService.getInstance().fetchEpisodeDetailsByIds(episodeIds)
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
-                    const episodeObject = episodeObjects.find(
-                        (currEpisodeObject) => currEpisodeObject.id === patientObject.episodeId
-                    );
-                    patientObject.patientID = patientObject.id.toString();
                     patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
@@ -284,8 +287,6 @@ export class PatientDataService {
                         contactNumber: patientObject.emergencyContactNumber || null,
                         contactRelation: patientObject.emergencyContactRelation || null
                     };
-
-                    patientObject.episode = episodeObject;
                 }
                 return json;
             });
@@ -293,13 +294,33 @@ export class PatientDataService {
 
     fetchAndSavePatientsByID(newPatientIDs) {
         return this._fetchPatientsByIDAndAdapt(newPatientIDs)
-            .then((json) => {
+            .then(async json => {
+                const resultObject = {success: [], failed: []};
                 const successfulObjects = json.success;
+
+                const allPromises = [];
                 for (const patientObject of successfulObjects) {
-                    this.createNewPatient(patientObject, false, true);
+                    console.log(patientObject);
+                    const promise = getEpisodeDetailsByIds([patientObject.episodeID]).then(episodeResponseJson => {
+                        console.log('episode response json');
+                        console.log(episodeResponseJson);
+                        if (!episodeResponseJson.success || episodeResponseJson.success.length === 0) {
+                            resultObject.failed.push(patientObject.patientID);
+                        }
+                        this.createNewPatient(patientObject, false, true, episodeResponseJson.success[0]);
+                        resultObject.success.push(patientObject.patientID);
+                    }).catch((error) => {
+                        resultObject.failed.push(patientObject.patientID);
+                        console.log('got patient details for this patient, but failed to fetch episode and create local entity');
+                        console.log(error);
+                    });
+                    allPromises.push(promise);
                 }
+                await Promise.all(allPromises);
+
                 addressDataService.attemptFetchForPendingAddresses();
-                return successfulObjects.length;
+                console.log(resultObject);
+                return resultObject;
             });
     }
 
@@ -316,7 +337,9 @@ export class PatientDataService {
     }
 
     updatePatientsInRedux(patients, isServerUpdate = false) {
-        if (!isServerUpdate) { this._checkPermissionForEditing(patients); }
+        if (!isServerUpdate) {
+            this._checkPermissionForEditing(patients);
+        }
 
         this.store.dispatch({
             type: PatientActions.EDIT_PATIENTS,

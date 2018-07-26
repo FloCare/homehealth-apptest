@@ -4,17 +4,22 @@ import firebase from 'react-native-firebase';
 import {Button, Divider} from 'react-native-elements';
 import CalendarStrip from 'react-native-calendar-strip';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
-import {screenNames, PrimaryColor} from '../../utils/constants';
+import {
+    screenNames,
+    PrimaryColor,
+    visitSubjects,
+} from '../../utils/constants';
 import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {PatientDataService} from '../../data_services/PatientDataService';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
+import {placeDataService} from '../../data_services/PlaceDataService';
 
-class AddVisitsForPatientScreen extends Component {
+class AddOrRescheduleVisitsLightBox extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: todayMomentInUTCMidnight()
+            date: props.date || todayMomentInUTCMidnight()
         };
         this.onDateSelected = this.onDateSelected.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -36,14 +41,23 @@ class AddVisitsForPatientScreen extends Component {
     }
 
     onSubmit() {
-        const patientId = this.props.patientId;
-        console.log('Adding visit for: ', patientId);
-        const patient = this.patientDataService().getPatientByID(patientId);
-        console.log('Date is:', this.state.date.valueOf());
-
         try {
             // Add a visit object
-            VisitService.getInstance().createNewVisits([patient], this.state.date.valueOf());
+            if (this.props.visitSubject === visitSubjects.PATIENT) {
+                const patientId = this.props.patientId;
+                console.log('Adding visit for patient: ', patientId);
+                const patient = this.patientDataService().getPatientByID(patientId);
+                VisitService.getInstance().createNewVisits([patient], this.state.date.valueOf());
+            } else if (this.props.visitSubject === visitSubjects.PLACE) {
+                const placeId = this.props.placeId;
+                console.log('Adding visit for place: ', placeId);
+                const place = placeDataService.getPlaceByID(placeId);
+                VisitService.getInstance().createNewVisits([place], this.state.date.valueOf());
+            }
+
+            if (this.props.isReschedule && this.props.oldVisitId) {
+                VisitService.getInstance().deleteVisitByID(this.props.oldVisitId);
+            }
         } catch (e) {
             console.log('Error during Adding Visit: ', e);
         }
@@ -52,6 +66,7 @@ class AddVisitsForPatientScreen extends Component {
 
     render() {
         const {height, width} = Dimensions.get('window');
+        const title = this.props.title || 'Add Visit';
         return (
             <View
                 style={{
@@ -68,7 +83,7 @@ class AddVisitsForPatientScreen extends Component {
                             fontSize: 15,
                         }}
                     >
-                        Add Visit
+                        {title}
                     </StyledText>
                     <TouchableHighlight onPress={() => this.props.navigator.dismissLightBox()}>
                         <Image source={Images.close} />
@@ -130,4 +145,4 @@ class AddVisitsForPatientScreen extends Component {
 
 }
 
-export default AddVisitsForPatientScreen;
+export default AddOrRescheduleVisitsLightBox;

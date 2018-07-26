@@ -3,22 +3,25 @@ PODS:
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.4.0):
     - React
-  - CodePush (5.3.5):
+  - CodePush (5.4.0):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.7)
     - React
     - SSZipArchive (~> 2.1)
   - DoubleConversion (1.1.5)
-  - Firebase/Core (4.13.0):
-    - FirebaseAnalytics (= 4.2.0)
-    - FirebaseCore (= 4.0.20)
-  - FirebaseAnalytics (4.2.0):
+  - Firebase/Analytics (4.2.0):
+    - Firebase/Core
+  - Firebase/Core (4.2.0):
+    - FirebaseAnalytics (= 4.0.3)
+    - FirebaseCore (= 4.0.7)
+  - FirebaseAnalytics (4.0.3):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - nanopb (~> 0.3)
-  - FirebaseCore (4.0.20):
+  - FirebaseCore (4.0.7):
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - nanopb (~> 0.3)
   - FirebaseInstanceID (2.0.10):
     - FirebaseCore (~> 4.0)
   - Folly (2016.09.26.00):
@@ -57,8 +60,8 @@ PODS:
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
-  - React (0.55.4):
-    - React/Core (= 0.55.4)
+  - React (0.55.1):
+    - React/Core (= 0.55.1)
   - react-native-google-maps (0.20.1):
     - GoogleMaps (= 2.5.0)
     - React
@@ -66,62 +69,63 @@ PODS:
     - React
   - react-native-splash-screen (3.0.6):
     - React
-  - React/Core (0.55.4):
-    - yoga (= 0.55.4.React)
-  - React/CxxBridge (0.55.4):
+  - React/Core (0.55.1):
+    - yoga (= 0.55.1.React)
+  - React/CxxBridge (0.55.1):
     - Folly (= 2016.09.26.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.55.4):
+  - React/cxxreact (0.55.1):
     - boost-for-react-native (= 1.63.0)
     - Folly (= 2016.09.26.00)
     - React/jschelpers
     - React/jsinspector
-  - React/DevSupport (0.55.4):
+  - React/DevSupport (0.55.1):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.55.4)
-  - React/jschelpers (0.55.4):
+  - React/fishhook (0.55.1)
+  - React/jschelpers (0.55.1):
     - Folly (= 2016.09.26.00)
     - React/PrivateDatabase
-  - React/jsinspector (0.55.4)
-  - React/PrivateDatabase (0.55.4)
-  - React/RCTActionSheet (0.55.4):
+  - React/jsinspector (0.55.1)
+  - React/PrivateDatabase (0.55.1)
+  - React/RCTActionSheet (0.55.1):
     - React/Core
-  - React/RCTAnimation (0.55.4):
+  - React/RCTAnimation (0.55.1):
     - React/Core
-  - React/RCTBlob (0.55.4):
+  - React/RCTBlob (0.55.1):
     - React/Core
-  - React/RCTGeolocation (0.55.4):
+  - React/RCTGeolocation (0.55.1):
     - React/Core
-  - React/RCTImage (0.55.4):
+  - React/RCTImage (0.55.1):
     - React/Core
     - React/RCTNetwork
-  - React/RCTLinkingIOS (0.55.4):
+  - React/RCTLinkingIOS (0.55.1):
     - React/Core
-  - React/RCTNetwork (0.55.4):
+  - React/RCTNetwork (0.55.1):
     - React/Core
-  - React/RCTPushNotification (0.55.4):
+  - React/RCTPushNotification (0.55.1):
     - React/Core
-  - React/RCTSettings (0.55.4):
+  - React/RCTSettings (0.55.1):
     - React/Core
-  - React/RCTText (0.55.4):
+  - React/RCTText (0.55.1):
     - React/Core
-  - React/RCTVibration (0.55.4):
+  - React/RCTVibration (0.55.1):
     - React/Core
-  - React/RCTWebSocket (0.55.4):
+  - React/RCTWebSocket (0.55.1):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - RNVectorIcons (4.6.0):
     - React
   - SSZipArchive (2.1.3)
-  - yoga (0.55.4.React)
+  - yoga (0.55.1.React)
 
 DEPENDENCIES:
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - CodePush (from `../node_modules/react-native-code-push`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - Firebase/Analytics (= 4.2.0)
   - Firebase/Core
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
@@ -192,9 +196,9 @@ SPEC CHECKSUMS:
   BVLinearGradient: 6d8909e3fc6b089defa4b89d967441fa6827a2ee
   CodePush: f6b348759cdc42c734d9c3a46ceb2997c270b12e
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  Firebase: 5ec5e863d269d82d66b4bf56856726f8fb8f0fb3
-  FirebaseAnalytics: 7ef69e76a5142f643aeb47c780e1cdce4e23632e
-  FirebaseCore: 90cb1c53d69b556f112a1bf72b5fcfaad7650790
+  Firebase: 9548cae14d69718add12d75a5b312893f7ef89c7
+  FirebaseAnalytics: 76f754d37ca5b04f36856729b6af3ca0152d1069
+  FirebaseCore: 9a6cc1e3eaf75905390f9220596ad4fd8f92faee
   FirebaseInstanceID: 8d20d890d65c917f9f7d9950b6e10a760ad34321
   Folly: 211775e49d8da0ca658aebc8eab89d642935755c
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
@@ -203,7 +207,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   JWT: 8ace44791ddd338cfeff39d03b8397af53f5d63e
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-  React: aa2040dbb6f317b95314968021bd2888816e03d5
+  React: 35618ff86985ccc5a8a17d3ca0dd76fd47e0c690
   react-native-google-maps: 963fc78a5ac32dad3a726e4fa08b5307faa5cab2
   react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
   react-native-splash-screen: 8e3f866dc79bfe533baeffd0a38c33f7a7eae7f8
@@ -211,6 +215,6 @@ SPEC CHECKSUMS:
   SSZipArchive: 51a800ebb77f95a8329b6ced1faaff394b47f509
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 0a2bcc7aa9d024a23e39586e5ea09e033ddd9122
+PODFILE CHECKSUM: 847801b09c030bbde07498f6b1da151ac59d6a8d
 
 COCOAPODS: 1.5.0

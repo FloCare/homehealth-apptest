@@ -6,21 +6,21 @@ export function getEpisodeDetailsByIds(episodeIds) {
         console.log('error in getting access token');
         throw error;
     })
-    .then(token => fetch(`${apiServerURL}/phi/v1.0/episode-details/`,
-        {
-            method: 'POST',
-            headers: {
-                Authorization: `Token ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                episodeIds
-            })
-        }))
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error('HTTP request not OK');
-    });
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-episodes-for-ids/`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    episodeIDs: episodeIds
+                })
+            }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('HTTP request not OK');
+        });
 }

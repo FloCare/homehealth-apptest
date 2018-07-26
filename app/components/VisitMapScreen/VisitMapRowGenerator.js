@@ -2,23 +2,25 @@ import React, {PureComponent} from 'react';
 import {View} from 'react-native';
 import {Text} from 'react-native-elements';
 import {connect} from 'react-redux';
+import moment from 'moment';
 import StyledText from '../common/StyledText';
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
     const visit = state.visits[visitID];
 
-    let visitOwner;
+    let visitSubject;
     if (visit.isPatientVisit) {
         const patientID = visit.patientID;
-        visitOwner = state.patients[patientID];
+        visitSubject = state.patients[patientID];
     } else {
         const placeID = visit.placeID;
-        visitOwner = state.places[placeID];
+        visitSubject = state.places[placeID];
     }
 
     return {
-        name: visitOwner.name
+        name: visitSubject.name,
+        plannedStartTime: visit.plannedStartTime
     };
 };
 
@@ -26,6 +28,8 @@ function VisitMapRowGenerator() {
     class RenderRow extends PureComponent {
         render() {
             const {index, name, sortingActive, active} = this.props;
+            const visitTime = this.props.plannedStartTime ? moment(this.props.plannedStartTime).format('HH:mm A') : '--:-- ';
+            const displayLabel = `${visitTime} ${name}`;
             return (
                 <View
                     style={[
@@ -76,7 +80,7 @@ function VisitMapRowGenerator() {
                                 color: 'white',
                                 fontSize: 14
                             }}
-                        >{name}</StyledText>
+                        >{displayLabel}</StyledText>
                     </View>
                 </View>
             );
