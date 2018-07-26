@@ -54,7 +54,7 @@ const screenNames = {
     stopList: 'StopList',
 
     addVisitScreen: 'AddVisitScreen',
-    addVisitsForPatientScreen: 'AddVisitsForPatientScreen',
+    addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
     visitDayViewScreen: 'VisitDayViewScreen',

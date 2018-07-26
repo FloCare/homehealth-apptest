@@ -15,8 +15,7 @@ import {PatientDataService} from '../../data_services/PatientDataService';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {placeDataService} from '../../data_services/PlaceDataService';
 
-//TODO Rename screen Add new visits screen box
-class AddVisitsForPatientScreen extends Component {
+class AddOrRescheduleVisitsLightBox extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -55,6 +54,7 @@ class AddVisitsForPatientScreen extends Component {
                 const place = placeDataService.getPlaceByID(placeId);
                 VisitService.getInstance().createNewVisits([place], this.state.date.valueOf());
             }
+
             if (this.props.isReschedule && this.props.oldVisitId) {
                 VisitService.getInstance().deleteVisitByID(this.props.oldVisitId);
             }
@@ -145,4 +145,4 @@ class AddVisitsForPatientScreen extends Component {
 
 }
 
-export default AddVisitsForPatientScreen;
+export default AddOrRescheduleVisitsLightBox;

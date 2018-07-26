@@ -64,7 +64,7 @@ class PatientDetailScreenContainer extends Component {
             VALUE: 1
         });
         this.props.navigator.showLightBox({
-            screen: screenNames.addVisitsForPatientScreen,
+            screen: screenNames.addOrRescheduleVisitsLightBox,
             style: {
                 backgroundBlur: 'dark',
                 backgroundColor: '#00000070',

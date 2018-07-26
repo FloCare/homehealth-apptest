@@ -103,7 +103,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = false,
                 VALUE: 1
             });
             navigator.showLightBox({
-                screen: screenNames.addVisitsForPatientScreen,
+                screen: screenNames.addOrRescheduleVisitsLightBox,
                 style: {
                     backgroundBlur: 'dark',
                     backgroundColor: '#00000070',
