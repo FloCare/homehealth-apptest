@@ -1,19 +1,21 @@
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {apiServerURL} from '../constants';
 
-export function getUserProps(userID) {
+export function getEpisodeDetailsByIds(episodeIds) {
     return RNSecureKeyStore.get('accessToken').catch(error => {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/users/v1.0/get-user-for-id/`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-episodes-for-ids/`,
             {
                 method: 'POST',
                 headers: {
                     Authorization: `Token ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: userID ? {userID} : undefined
+                body: JSON.stringify({
+                    episodeIDs: episodeIds
+                })
             }))
         .then(response => {
             if (response.ok) {
@@ -21,16 +23,4 @@ export function getUserProps(userID) {
             }
             throw new Error('HTTP request not OK');
         });
-
-    // return new Promise((resolve) => {
-    //     setTimeout(resolve, 300, {
-    //         id: 999,
-    //         roles: [
-    //             {
-    //                 role: 'PT',
-    //                 org: 'ORG'
-    //             }
-    //         ]
-    //     });
-    // });
 }

@@ -1,6 +1,8 @@
 import {BaseMessagingService} from './BaseMessagingService';
-import {PatientDataService} from '../../PatientDataService';
 import {VisitService} from '../../VisitServices/VisitService';
+import {UserDataService} from '../../UserDataService';
+import {EpisodeDataService} from '../../EpisodeDataService';
+import {pushNewVisitsToServer, pushVisitDeleteByID, pushVisitUpdateToServer} from '../../../utils/API/VisitAPI';
 
 export class VisitMessagingService extends BaseMessagingService {
     onMessage(messageObject) {
@@ -9,6 +11,11 @@ export class VisitMessagingService extends BaseMessagingService {
             console.log('onMessage called');
             console.log(message);
             const {actionType, visitID, userID} = message;
+            if (userID === UserDataService.getCurrentUserProps().userID) {
+                console.log('message for my own visit, ignoring');
+                resolve();
+                return;
+            }
             //TODO if userID is equal to my own, skip this message
             switch (actionType) {
                 case 'CREATE' :
@@ -30,7 +37,6 @@ export class VisitMessagingService extends BaseMessagingService {
                         .catch(error => reject(error));
                     break;
                 default:
-                    // throw new Error('Unrecognised action type in assigned patient message');
                     console.log(`unrecognised message: ${message}`);
                     reject();
             }
@@ -70,11 +76,12 @@ export class VisitMessagingService extends BaseMessagingService {
 
     initialiseWorkers() {
         this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this));
+        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this));
     }
 
     async _publishVisitMessage(jobID, payload) {
         await this.pubnub.publish({
-            channel: `${payload.patientID}_visits`,
+            channel: `${payload.episodeID}_visits`,
             message: {
                 actionType: payload.actionType,
                 visitID: payload.visitID,
@@ -91,40 +98,77 @@ export class VisitMessagingService extends BaseMessagingService {
         });
     }
 
-    publishVisitCreate(visit) {
-        //TODO visitAPI
+    async _publishToServer(jobID, payload) {
+        console.log(`publish job here${payload}`);
+        const {action, visit} = payload;
+        let serverResponse;
+        try {
+            switch (action) {
+                case 'CREATE':
+                    console.log(JSON.stringify({visits: [visit]}));
+                    serverResponse = await pushNewVisitsToServer([visit]);
+                    break;
+                case 'UPDATE':
+                    serverResponse = await pushVisitUpdateToServer(visit);
+                    break;
+                case 'DELETE':
+                    serverResponse = await pushVisitDeleteByID(visit.visitID);
+                    break;
+                default:
+                    console.log(`invalid task: ${payload}`);
+                    break;
+            }
+        } catch (e) {
+            console.log('error in making server call');
+            console.log(payload);
+            console.log(e);
+            throw e;
+        }
+
+        //TODO check server response is ok
         console.log('publishVisitMessage');
         this.taskQueue.createJob('publishVisitMessage', {
             visitID: visit.visitID,
-            patientID: visit.getPatient().patientID,
-            actionType: 'CREATE',
-            userID: 23, //TODO my own userID
+            episodeID: visit.episodeID,
+            actionType: action,
+            userID: UserDataService.getCurrentUserProps().userID
+        });
+    }
+
+    _getFlatVisitPayload(visit) {
+        return {
+            visitID: visit.visitID,
+            episodeID: visit.getEpisode().episodeID,
+            midnightEpochOfVisit: visit.midnightEpochOfVisit,
+            isDone: visit.isDone,
+            plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined
+        };
+    }
+
+    publishVisitCreate(visit) {
+        this.taskQueue.createJob('publishToServer', {
+            action: 'CREATE',
+            visit: this._getFlatVisitPayload(visit)
         });
     }
 
     publishVisitUpdate(visit) {
-        //TODO visitAPI
-        this.taskQueue.createJob('publishVisitMessage', {
-            visitID: visit.visitID,
-            patientID: visit.getPatient().patientID,
-            actionType: 'UPDATE',
-            userID: 23, //TODO my own userID
+        this.taskQueue.createJob('publishToServer', {
+            action: 'UPDATE',
+            visit: this._getFlatVisitPayload(visit)
         });
     }
 
     publishVisitDelete(visit) {
-        //TODO visitAPI
-        this.taskQueue.createJob('publishVisitMessage', {
-            visitID: visit.visitID,
-            patientID: visit.getPatient().patientID,
-            actionType: 'DELETE',
-            userID: 23, //TODO my own userID
+        this.taskQueue.createJob('publishToServer', {
+            action: 'DELETE',
+            visit: this._getFlatVisitPayload(visit)
         });
     }
 
-    subscribeToPatients(patients) {
-        const channelObjects = patients.map(patient => ({
-            name: `${patient.patientID}_visits`,
+    subscribeToEpisodes(episodes) {
+        const channelObjects = episodes.map(episode => ({
+            name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
@@ -132,9 +176,9 @@ export class VisitMessagingService extends BaseMessagingService {
         this._subscribeToChannelsByObject(channelObjects);
     }
 
-    unsubscribeToPatients(patients) {
-        const channelObjects = patients.map(patient => ({
-            name: `${patient.patientID}_visits`,
+    unsubscribeToEpisodes(episodes) {
+        const channelObjects = episodes.map(episode => ({
+            name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: this.constructor.name,
@@ -143,11 +187,11 @@ export class VisitMessagingService extends BaseMessagingService {
     }
 
     async _bootstrapChannels() {
-        const patients = PatientDataService.getInstance().getAllPatients().filtered('isLocallyOwned = false');
-        patients.map(patient =>
-            VisitService.getInstance().getAllFutureVisitsForSubject(patient).forEach(visit => this.publishVisitCreate(visit))
+        const episodes = EpisodeDataService.getInstance().getAllSyncedEpisodes();
+        episodes.map(episode =>
+            episode.visits.forEach(visit => this.publishVisitCreate(visit))
         );
 
-        this.subscribeToPatients(patients);
+        this.subscribeToEpisodes(episodes);
     }
 }

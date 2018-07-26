@@ -1,4 +1,5 @@
 import {AsyncStorage} from 'react-native';
+import moment from 'moment/moment';
 import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
 import {UserDataService} from '../../UserDataService';
@@ -57,7 +58,7 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
         const userID = UserDataService.getCurrentUserProps().userID;
         let assignedVisitLastTimestamp = await AsyncStorage.getItem('assignedVisitLastTimestamp');
         if (!assignedVisitLastTimestamp) {
-            assignedVisitLastTimestamp = '0';
+            assignedVisitLastTimestamp = (moment().valueOf() * 10000).toString();
         }
 
         console.log(`last assigned ${assignedVisitLastTimestamp}`);

@@ -39,17 +39,9 @@ export class VisitRealmService {
         return this.filterUserVisits(allVisits);
     }
 
-    getVisitsOfOtherUsersForDate(midnightEpoch) {
-        const allVisits = this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
-        return this.filterNonUserVisits(allVisits);
-    }
-
+    //TODO create legit user objects
     filterUserVisits(visits) {
         return visits.filtered(`user.userID = "${UserDataService.getCurrentUserProps().userID}"`);
-    }
-
-    filterNonUserVisits(visits) {
-        return visits.filtered(`user.userID != "${UserDataService.getCurrentUserProps().userID}"`);
     }
 
     filterVisitsLessThanDate(visits, date) {

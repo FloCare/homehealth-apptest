@@ -19,7 +19,7 @@ import {todayMomentInUTCMidnight} from '../utils/utils';
 import {MessagingServiceCoordinator} from '../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {initialiseStore} from '../utils/InMemoryStore';
 import {UserDataService} from '../data_services/UserDataService';
-import { EpisodeDataService } from '../data_services/EpisodeDataService'
+import {EpisodeDataService} from '../data_services/EpisodeDataService';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
