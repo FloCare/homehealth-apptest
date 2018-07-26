@@ -40,7 +40,7 @@ const renderSingleClinicianVisit = (visitData) => {
                 </StyledText>
             </View>
             {
-                visitData.primaryContact && !visitData.ownVisit &&
+                !!visitData.primaryContact && !visitData.ownVisit &&
                 <View style={{flex: 1, alignSelf: 'center'}}>
                     <TouchableOpacity
                         onPress={() => {
@@ -56,11 +56,10 @@ const renderSingleClinicianVisit = (visitData) => {
                             }
                         }}
                     >
-                        <Image source={Images.emptyCall} />
+                    <Image source={Images.emptyCall} />
                     </TouchableOpacity>
                 </View>
             }
-
         </View>
     );
 };
