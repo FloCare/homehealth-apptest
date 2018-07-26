@@ -94,7 +94,7 @@ const getActiveDotStyle = (currentDate, date) => {
     return ({
         startDate: date,
         dotEnabled: true,
-        dotImage: moment(currentDate).isSame(date, 'day') ? Images.greenDot : Images.grayDot
+        dotColor: moment(currentDate).isSame(date, 'day') ? PrimaryColor : '#999999'
     });
 };
 
