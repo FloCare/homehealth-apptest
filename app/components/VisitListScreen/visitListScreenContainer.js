@@ -33,15 +33,20 @@ class VisitListScreenContainer extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.isVisitStatusChanged(this.props.visits, prevProps.visits)) {
+        if (this.needsDistanceRecompute(this.props.visits, prevProps.visits)) {
             this.computeVisitDistance(this.props.orderedVisitID);
         }
     }
 
-    isVisitStatusChanged(newVisits, currentVisits) {
-        for (const visitID in currentVisits) {
+    needsDistanceRecompute(newVisits, oldVisits) {
+        if (Object.keys(newVisits).length !== Object.keys(oldVisits).length) return true;
+        return this.isVisitStatusChanged(newVisits, oldVisits);
+    }
+
+    isVisitStatusChanged(newVisits, oldVisits) {
+        for (const visitID in oldVisits) {
             const newVisit = newVisits[visitID];
-            if (!newVisit || currentVisits[visitID].isDone !== newVisit.isDone) {
+            if (!newVisit || oldVisits[visitID].isDone !== newVisit.isDone) {
                 return true;
             }
         }
@@ -70,7 +75,6 @@ class VisitListScreenContainer extends Component {
     }
 
     showErrorMessage() {
-        //TODO Should we excldue isdone visits
         let lastNonNullTime = null;
         let showError = false;
         for (const visitID in this.props.orderedVisitID) {
