@@ -19,20 +19,22 @@ export class VisitMessagingService extends BaseMessagingService {
             //TODO if userID is equal to my own, skip this message
             switch (actionType) {
                 case 'CREATE' :
-                    VisitService.getInstance().fetchAndSaveVisitsByID([visitID])
-                        .then(() => resolve())
-                        .catch(error => reject(error));
+                    Promise.all([
+                        UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID),
+                        VisitService.getInstance().fetchAndSaveVisitsByID([visitID])
+                    ]).then(() => resolve())
+                    .catch(error => reject(error));
                     break;
                 case 'DELETE' :
                     try {
-                        VisitService.getInstance().deleteVisitsByID(visitID);
+                        VisitService.getInstance().deleteVisitByID(visitID);
                     } catch (e) {
                         reject(e);
                     }
                     resolve();
                     break;
                 case 'UPDATE' :
-                    VisitService.getInstance().fetchAndEditVisitsByID([visitID])
+                    VisitService.getInstance().fetchAndSaveVisitsByID([visitID], true)
                         .then(() => resolve())
                         .catch(error => reject(error));
                     break;
@@ -55,14 +57,14 @@ export class VisitMessagingService extends BaseMessagingService {
     //                 break;
     //             case 'DELETE' :
     //                 try {
-    //                     VisitService.getInstance().deleteVisitsByID(visitID);
+    //                     VisitService.getInstance().deleteVisitByID(visitID);
     //                 } catch (e) {
     //                     reject(e);
     //                 }
     //                 resolve();
     //                 break;
     //             case 'UPDATE' :
-    //                 VisitService.getInstance().fetchAndEditVisitsByID([visitID])
+    //                 VisitService.getInstance().fetchAndSaveEditedVisitsByID([visitID])
     //                     .then(() => resolve())
     //                     .catch(error => reject(error));
     //                 break;
