@@ -118,16 +118,10 @@ class SortedVisitListContainer extends Component {
     }
 
     getAugmentedRenderFunction(renderFunctionGenerator) {
-        const RenderFunctionWithCallbacks = renderFunctionGenerator({
+        return renderFunctionGenerator({
             onDoneTogglePress: this.onDoneTogglePress.bind(this),
             navigator: this.props.navigator
         });
-        //TODO hackey
-        if (this.props.singleEntry) {
-            return ((props) => <RenderFunctionWithCallbacks {...props} />
-            );
-        }
-        return RenderFunctionWithCallbacks;
     }
 
 

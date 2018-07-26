@@ -62,7 +62,7 @@ const mapStateToProps = (state, ownProps) => {
     return props;
 };
 
-function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false) {
+function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = false, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
         constructor(props) {
@@ -153,7 +153,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false
             return (
                 <View style={{alignSelf: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
                     {
-                        !isHomeScreen &&
+                        showEllipse &&
                             <View style={{marginRight: 10}}>
                                 <Image source={Images.ellipse} />
                             </View>
@@ -354,7 +354,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false
                 <View style={{flexDirection: 'row', marginRight: 10, width: 0.95 * Dimensions.get('screen').width}}>
                     <View style={{flex: 1}}>
                         {
-                            !isHomeScreen &&
+                            showCheckBoxLine &&
                             <View style={{width: '50%', flex: 1, alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
                         }
                         <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 10, marginBottom: 10}}>
