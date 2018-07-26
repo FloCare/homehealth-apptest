@@ -86,6 +86,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false
             this.cardActions = this.setCardActions();
         }
 
+        componentWillReceiveProps(nextProps) {
+            if (nextProps.visitTime !== this.props.visitTime) {
+                this.setState({visitTime: nextProps.visitTime});
+            }
+        }
+
         componentWillUnmount() {
             if (this.visitDataSubscriber) {
                 this.visitDataSubscriber.unsubscribe();
@@ -96,7 +102,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false
             firebase.analytics().logEvent(eventNames.ADD_VISIT, {
                 VALUE: 1
             });
-            const visitSubject =
             navigator.showLightBox({
                 screen: screenNames.addVisitsForPatientScreen,
                 style: {
@@ -206,7 +211,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, isHomeScreen = false
                 cardActionsMap.push({index, title: 'Call'});
                 index++;
             }
-            if (this.props.coordinates && this.props.coordinates.latitude && this.props.coordinates.longitude){
+            if (this.props.coordinates && this.props.coordinates.latitude && this.props.coordinates.longitude) {
                 cardActionsMap.push({index, title: 'Go To Address'});
                 index++;
             }

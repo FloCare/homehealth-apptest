@@ -51,7 +51,12 @@ class PatientDetailScreenContainer extends Component {
         floDB.addListener('change', this.handleDBUpdate);
         const selectedVisitsDate = this.props.selectedVisitsDate || todayMomentInUTCMidnight();
         //TODO Load from Monday of the week
-        this.loadVisitDataForWeek(selectedVisitsDate.valueOf());
+        const currentWeekVisitData = this.getVisitDataForWeek(selectedVisitsDate.valueOf());
+        const visitSectionData = this.getSelectedDateVisits(this.state.selectedVisitsDate, currentWeekVisitData);
+        this.setState({
+            currentWeekVisitData,
+            visitSectionData
+        });
     }
 
     onPressAddVisit() {
@@ -242,11 +247,13 @@ class PatientDetailScreenContainer extends Component {
 
     onVisitDataChange = (newVisitData) => {
         const newVisitSectionData = newVisitData[this.state.selectedVisitsDate.valueOf()];
-        newVisitSectionData.sort(this.visitTimeSorter);
+        if (newVisitSectionData) {
+            newVisitSectionData.sort(this.visitTimeSorter);
+        }
         this.setState({currentWeekVisitData: newVisitData, visitSectionData: newVisitSectionData});
     }
 
-    loadVisitDataForWeek = (date) => {
+    getVisitDataForWeek = (date) => {
         const episodeID = this.episodeId;
         if (episodeID) {
             const startDate = date.valueOf();
@@ -257,22 +264,32 @@ class PatientDetailScreenContainer extends Component {
             this.visitDataSubscriber = EpisodeDataService.getInstance()
             .subscribeToVisitsForDays(episodeID, startDate, endDate, this.onVisitDataChange);
             const currentWeekVisitData = this.visitDataSubscriber.currentData;
-            this.loadSelectedDateVisits(date, currentWeekVisitData);
-            this.setState({currentWeekVisitData});
             return currentWeekVisitData;
         }
     }
 
-    loadSelectedDateVisits = (date, currentWeekVisitData = this.state.currentWeekVisitData) => {
-        const parsedDate = moment(date).valueOf();//moment(date).add(moment().utcOffset(), 'minutes').utc().valueOf();
-        const dayVisitData = currentWeekVisitData[parsedDate];
-        if (dayVisitData) {
-            dayVisitData.sort(this.visitTimeSorter);
+    handleWeekChange = (date) => {
+        const currentWeekVisitData = this.getVisitDataForWeek(date);
+        this.setState({currentWeekVisitData});
+    }
+
+    getSelectedDateVisits = (date, currentWeekVisitData = this.state.currentWeekVisitData) => {
+        const parsedDate = moment(date).valueOf();
+        const selectedDateVisits = currentWeekVisitData[parsedDate] || [];
+        console.log(selectedDateVisits);
+        if (selectedDateVisits.length > 0) {
+            selectedDateVisits.sort(this.visitTimeSorter);
         }
-        this.setState({
-            selectedVisitsDate: date,
-            visitSectionData: dayVisitData
-        });
+        return selectedDateVisits;
+    }
+
+    handleDateSelection = (date) => {
+        if (!date.isSame(this.state.selectedVisitsDate, 'day')) {
+            const visitSectionData = this.getSelectedDateVisits(date);
+            this.setState({
+                selectedVisitsDate: date,
+                visitSectionData});
+        }
     }
 
     parseResponse(result, patientId) {
@@ -328,10 +345,10 @@ class PatientDetailScreenContainer extends Component {
                 patientDetail={this.state.patientDetail}
                 onPressAddVisit={this.onPressAddVisit}
                 selectedVisitsDate={this.state.selectedVisitsDate}
-                onSelectVisitsDate={this.loadSelectedDateVisits}
+                onSelectVisitsDate={this.handleDateSelection}
                 visitSectionData={this.state.visitSectionData}
                 currentWeekVisitData={this.state.currentWeekVisitData}
-                onWeekChanged={this.loadVisitDataForWeek}
+                onWeekChanged={this.handleWeekChange}
                 onPressAddNotes={this.onPressAddNotes}
                 showCallout={this.onRegionChangeComplete}
                 setMarkerRef={this.setMarkerRef}
