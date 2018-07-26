@@ -18,17 +18,15 @@ function VisitListScreen(props) {
                     </StyledText>
                 </View>
             }
-            {
-                props.totalDistance &&
-                <View style={{marginTop: 10, marginBottom: 5, flexDirection: 'row', alignSelf: 'center'}}>
-                    <StyledText style={{fontSize: 12, color: '#999999', alignSelf: 'center', margin: 5}}>
-                        Total Remaining Distance
-                    </StyledText>
-                    <StyledText style={{fontSize: 14, color: '#222222', alignSelf: 'center'}}>
-                        {props.totalDistance}
-                    </StyledText>
-                </View>
-            }
+
+            <View style={{marginTop: 10, marginBottom: 5, flexDirection: 'row', alignSelf: 'center'}}>
+                <StyledText style={{fontSize: 12, color: '#999999', alignSelf: 'center', margin: 5}}>
+                    Total Remaining Distance :
+                </StyledText>
+                <StyledText style={{fontSize: 14, color: '#222222', alignSelf: 'center'}}>
+                    {props.totalDistance ? props.totalDistance : ' -- '}
+                </StyledText>
+            </View>
 
             <SortedVisitListContainer
                 navigator={props.navigator}
