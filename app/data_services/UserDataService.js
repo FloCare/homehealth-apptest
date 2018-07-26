@@ -25,8 +25,8 @@ export class UserDataService {
         return UserDataService.userDataService;
     }
 
-    static fetchUserProps() {
-        return getUserProps().then(userPropsJson => {
+    static fetchUserProps(id) {
+        return getUserProps(id).then(userPropsJson => {
             const userID = userPropsJson.userID;
             const firstName = userPropsJson.firstName;
             const lastName = userPropsJson.lastName;
@@ -57,6 +57,18 @@ export class UserDataService {
             console.log(error);
             throw {name: 'MissingNecessaryInternetConnection'};
         });
+    }
+
+    fetchAndSaveUserToRealmIfMissing(id) {
+        try {
+            this.getUserByID(id);
+        } catch (e) {
+            return UserDataService.fetchUserProps(id).then(userJson => this.saveUserToRealm(userJson)).catch(error => {
+                console.log('error in fetch and save user');
+                console.log(error);
+                throw error;
+            });
+        }
     }
 
     saveUserToRealm(user) {

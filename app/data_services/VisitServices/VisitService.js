@@ -167,13 +167,13 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
-    fetchAndSaveVisitsByID(visitIDs) {
+    fetchAndSaveVisitsByID(visitIDs, update) {
         //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
         return new Promise((resolve, reject) => {
             getVisitsByID(visitIDs).then(respJson => {
                 if (respJson.success && respJson.success.length === visitIDs.length) {
                     respJson.success.forEach(visitJson => {
-                        this.saveNewVisit(visitJson);
+                        this.saveVisit(visitJson, update);
                     });
                 } else reject(respJson);
             });
@@ -181,26 +181,12 @@ export class VisitService {
         });
     }
 
-    fetchAndEditVisitsByID(visitIDs) {
-        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
-        return new Promise((resolve, reject) => {
-            resolve();
-        });
-    }
-
-    deleteVisitsByID(visitIDs) {
-        //TODO delete these visits, ensure own visits are filtered out
-        return new Promise((resolve, reject) => {
-            resolve();
-        });
-    }
-
-    saveNewVisit(visitJson) {
+    saveVisit(visitJson, update = false) {
         let visit;
         this.floDB.write(() => {
-            visit = this.floDB.create(Visit, visitJson);
+            visit = this.floDB.create(Visit, visitJson, update);
         });
-        EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID);
+        if (!update) { EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID); }
     }
 
     createNewVisits(visitSubjects, midnightEpoch) {
