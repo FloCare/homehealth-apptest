@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
-import {TouchableHighlight} from 'react-native';
-
+import {TouchableHighlight, Text} from 'react-native';
+import moment from 'moment/moment';
 import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
@@ -118,28 +118,16 @@ class SortedVisitListContainer extends Component {
     }
 
     getAugmentedRenderFunction(renderFunctionGenerator) {
-        const RenderFunctionWithCallbacks = renderFunctionGenerator({
+        return renderFunctionGenerator({
             onDoneTogglePress: this.onDoneTogglePress.bind(this),
+            navigator: this.props.navigator
         });
-        //TODO hackey
-        if (this.props.singleEntry) {
-            return ((props) => <TouchableHighlight underlayColor={'clear'} onPress={this.onPressRowSingleton.bind(this)}>
-                        <RenderFunctionWithCallbacks {...props} />
-                    </TouchableHighlight>
-            );
-        }
-        return RenderFunctionWithCallbacks;
     }
 
 
     onDoneTogglePress(visitID) {
         console.log(`${visitID} was changed`);
         VisitService.getInstance().toggleVisitDone(visitID);
-    }
-
-    onPressRowSingleton() {
-        const visit = floDB.objectForPrimaryKey(VisitOrder, this.props.date.valueOf()).visitList[0];
-        this.onPressRow(visit.visitID);
     }
 
     onPressRow(visitID) {
@@ -152,7 +140,8 @@ class SortedVisitListContainer extends Component {
                 this.props.navigator.push({
                     screen: screenNames.patientDetails,
                     passProps: {
-                        patientId: visit.getPatient().patientID
+                        patientId: visit.getPatient().patientID,
+                        selectedVisitsDate: moment(visit.midnightEpochOfVisit)
                     },
                     navigatorStyle: {
                         tabBarHidden: true

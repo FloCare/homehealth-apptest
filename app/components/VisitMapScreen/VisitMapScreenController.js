@@ -118,7 +118,19 @@ class VisitMapScreenContainer extends Component {
 }
 
 function mapStateToProps(state) {
-    const todaysVisits = state.visitOrder.map(visitID => {
+    const todaysVisits = getVisitsWithAddressFromReduxState(state);
+    const defaultViewport = VisitMapScreenContainer.getViewportFromVisitCoordinates(todaysVisits);
+
+    return {
+        date: state.date,
+        orderedVisitID: state.visitOrder,
+        filteredVisits: todaysVisits.filter(visit => !visit.isDone),
+        defaultViewport
+    };
+}
+
+export function getVisitsWithAddressFromReduxState(state) {
+    return state.visitOrder.map(visitID => {
         const visit = state.visits[visitID];
         let visitSubject;
         if (visit.isPatientVisit) {
@@ -138,18 +150,11 @@ function mapStateToProps(state) {
             visitID: visit.visitID,
             name: visitSubject.name,
             coordinates,
+            plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
             isPatientVisit: visit.isPatientVisit
         };
     });
-    const defaultViewport = VisitMapScreenContainer.getViewportFromVisitCoordinates(todaysVisits);
-
-    return {
-        date: state.date,
-        orderedVisitID: state.visitOrder,
-        filteredVisits: todaysVisits.filter(visit => !visit.isDone),
-        defaultViewport
-    };
 }
 
 export default connect(mapStateToProps)(ScreenWithCalendarComponent(VisitMapScreenContainer));

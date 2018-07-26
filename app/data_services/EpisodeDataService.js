@@ -63,6 +63,11 @@ export class EpisodeDataService {
 
             visitForDayList.push(flatVisitForVisit(visit));
         });
+        return flatVisitsByDate;
+    }
+
+    getAllSyncedEpisodes() {
+        return this.floDB.objects(Episode).filtered('patient.isLocallyOwned = false');
     }
 
     getAllSyncedEpisodes() {
@@ -70,7 +75,7 @@ export class EpisodeDataService {
     }
 
     subscribeToVisitsForDays(episodeID, startDate, endDate, callbackFunction) {
-        const visitsResult = VisitService.getInstance().getVisitsByEpisodeID(episodeID).filtered('midnightEpoch >= $0 && midnightEpoch <= $1', startDate, endDate);
+        const visitsResult = VisitService.getInstance().getVisitsByEpisodeID(episodeID).filtered('midnightEpochOfVisit >= $0 && midnightEpochOfVisit <= $1', startDate, endDate);
         const realmListener = (visits) => {
             callbackFunction(this._getFlatVisitsByDay(visits));
         };

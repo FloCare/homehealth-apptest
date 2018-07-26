@@ -54,7 +54,7 @@ const screenNames = {
     stopList: 'StopList',
 
     addVisitScreen: 'AddVisitScreen',
-    addVisitsForPatientScreen: 'AddVisitsForPatientScreen',
+    addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
     visitDayViewScreen: 'VisitDayViewScreen',
@@ -111,6 +111,7 @@ const parameterValues = {
     FAILURE: 'failure',
     CALL_PATIENT: 'call_patient',
     CALL_EMERGENCY: 'call_emergency',
+    CALL_CLINICIAN: 'call_clinician',
     NAVIGATION: 'navigation',
     EDIT_NOTES: 'edit_notes',
     MAP: 'map',
@@ -121,8 +122,15 @@ const parameterValues = {
     TOGGLE: 'toggle',
     DND: 'dnd',
     DETAILS: 'details',
-    REFRESH: 'refresh'
+    REFRESH: 'refresh',
+    RESCHEDULE: 'reschedule',
+    DELETE_VISIT: 'delete_visit',
 
+};
+
+const visitSubjects = {
+    PLACE: 'Place',
+    PATIENT: 'Patient'
 };
 
 let inActivityTimer = null;
@@ -153,4 +161,6 @@ export const pubnubSubKey = 'pubnubSubKey';
 export const apiServerURL = 'https://app-9707.on-aptible.com';
 
 
-export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};
+export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
+    screenNames, visitType, PrimaryColor, TransparentPrimaryColor,
+    PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects};

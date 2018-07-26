@@ -32,7 +32,10 @@ export class VisitService {
         return {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
+            episodeID: isPatientVisit ? visit.episode[0].episodeID : null,
+            midnightEpochOfVisit: visit.midnightEpochOfVisit,
             placeID: !isPatientVisit ? visit.getPlace().placeID : null,
+            plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
             isPatientVisit
         };
@@ -222,6 +225,15 @@ export class VisitService {
         }
     }
 
+    deleteVisitByID(visitID) {
+        // Visit order doesn't need to be explicitly deleted
+        const visit = this.visitRealmService.getVisitByID(visitID);
+        const visitTimeEpoch = visit.midnightEpochOfVisit;
+        this.visitRealmService.deleteVisitByObject(visit);
+        this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
+        this.visitReduxService.deleteVisitsFromRedux([visitID]);
+    }
+
     getAllFutureVisitsForSubject(subject) {
         const today = todayMomentInUTCMidnight();
 
@@ -253,15 +265,23 @@ export class VisitService {
             }
             visitOrders[i].visitList = visitList;
         }
+        const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.delete(visits);
 
-        if (visits) {
-            this.visitReduxService.deleteVisitsFromRedux(visits);
-        }
         if (visitOrders) {
             for (let i = 0; i < visitOrders.length; i++) {
                 this.visitReduxService.updateVisitOrderToReduxIfLive(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
             }
         }
+
+        if (visits) {
+            this.visitReduxService.deleteVisitsFromRedux(visitIDs);
+        }
     }
+
+    updateVisitStartTimeByID(visitID, startTime) {
+        this.visitRealmService.updateVisitStartTimeByID(visitID, startTime);
+        this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
+    }
+
 }

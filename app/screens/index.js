@@ -11,7 +11,7 @@ import AddStopScreenContainer from './AddStopScreenContainer';
 // import VisitMapScreenController from '../components/VisitMapScreen/VisitMapScreenController';
 import {ScreenWithCalendarComponent} from '../components/common/screenWithCalendarComponent';
 import StopListScreenContainer from './StopListScreenContainer';
-import AddVisitsForPatientScreen from '../components/AddVisitsScreen/AddVisitsForPatientScreen';
+import AddOrRescheduleVisitsLightBox from '../components/AddVisitsScreen/AddOrRescheduleVisitsLightBox';
 // import {todayMomentInUTCMidnight} from '../utils/utils';
 // import {CreateAndSaveDummies, floDB, Visit, VisitOrder} from '../utils/data/schema';
 import {MoreScreen} from '../components/MoreScreen/MoreScreen';
@@ -57,7 +57,7 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.addVisitScreen, () => LockOnInactivity(ScreenWithCalendarComponent(AddVisitsScreenContainer)));
     Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));
     Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer), store, Provider);
-    Navigation.registerComponent(screenNames.addVisitsForPatientScreen, () => LockOnInactivity(AddVisitsForPatientScreen));
+    Navigation.registerComponent(screenNames.addOrRescheduleVisitsLightBox, () => LockOnInactivity(AddOrRescheduleVisitsLightBox));
 };
 
 export {RegisterScreens};

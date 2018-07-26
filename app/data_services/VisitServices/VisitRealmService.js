@@ -63,6 +63,16 @@ export class VisitRealmService {
         return visits;
     }
 
+    getVisitByID(visitID) {
+        return this.floDB.objectForPrimaryKey(Visit, visitID);
+    }
+
+    deleteVisitByObject(visit) {
+        this.floDB.write(() => {
+            this.floDB.delete(visit);
+        });
+    }
+
     getVisitOrderForDate(midnightEpoch) {
         let visitOrder = this.floDB.objectForPrimaryKey(VisitOrder, midnightEpoch);
         if (!visitOrder) {
@@ -72,6 +82,14 @@ export class VisitRealmService {
         }
 
         return visitOrder;
+    }
+
+    updateVisitStartTimeByID(visitID, startTime) {
+        const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
+        this.floDB.write(() => {
+                visit.plannedStartTime = startTime;
+            }
+        );
     }
 
     insertNewVisits(visits, midnightEpoch) {
