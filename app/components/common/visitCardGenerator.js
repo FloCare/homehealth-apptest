@@ -62,7 +62,7 @@ const mapStateToProps = (state, ownProps) => {
     return props;
 };
 
-function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = false, showCheckBoxLine = true) {
+function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
         constructor(props) {

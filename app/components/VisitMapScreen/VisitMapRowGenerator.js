@@ -68,19 +68,37 @@ function VisitMapRowGenerator() {
                         }, active ? {elevation: 6, borderColor: 'white', borderWidth: 1} : {}
                         ]}
                     >
-                        <View style={{flex: 1, margin: 10, justifyContent: 'space-between'}}>
-                            <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
-                            <View style={{height: 2}} />
-                            <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
+                        <View style={{flex: 1, marginLeft: 3, justifyContent: 'space-between'}}>
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
+                            <View style={{height: 1}} />
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
+                            <View style={{height: 1}} />
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
+                            <View style={{height: 1}} />
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
                         </View>
-                        <StyledText
-                            style={{
-                                flex: 20,
-                                paddingLeft: 5,
-                                color: 'white',
-                                fontSize: 14
-                            }}
-                        >{displayLabel}</StyledText>
+                        <View style={{flexDirection: 'row', flex: 20, paddingLeft: 5}}>
+                            <StyledText style={{flex: 2, color: 'white', fontSize: 14}}>
+                                {visitTime}
+                            </StyledText>
+                            <View style={{flex: 5, borderLeftWidth: 1, borderLeftColor: 'white'}}>
+                                <StyledText style={{color: 'white', fontSize: 14, marginLeft: 10}}>
+                                    {name}
+                                </StyledText>
+                            </View>
+                        </View>
                     </View>
                 </View>
             );
