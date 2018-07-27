@@ -99,9 +99,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         onPressRescheduleVisit() {
-            firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-                VALUE: 1
-            });
             navigator.showLightBox({
                 screen: screenNames.addOrRescheduleVisitsLightBox,
                 style: {
@@ -243,7 +240,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         type: parameterValues.NAVIGATION
                     });
                     if (this.props.coordinates) {
-                        const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`;
+                        const mapsURL = "http://maps.apple.com/?ll=37.484847,-122.148386"// `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`;
                         Linking.openURL(mapsURL)
                             .catch(err => console.error('An error occurred', err));
                     }
