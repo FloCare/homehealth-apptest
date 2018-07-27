@@ -28,7 +28,7 @@ const renderViewMore = (e, onPressAddNotes) => {
 };
 
 const renderSingleClinicianVisit = (visitData) => {
-    const nameString = visitData.ownVisit ? 'You' : visitData.userName;
+    const nameString = visitData.ownVisit ? 'You' : visitData.name;
     return (
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 6, marginTop: 5}}>
@@ -94,7 +94,7 @@ const getActiveDotStyle = (currentDate, date) => {
     return ({
         startDate: date,
         dotEnabled: true,
-        dotImage: moment(currentDate).isSame(date, 'day') ? Images.greenDot : Images.grayDot
+        dotColor: moment(currentDate).isSame(date, 'day') ? PrimaryColor : '#999999'
     });
 };
 
