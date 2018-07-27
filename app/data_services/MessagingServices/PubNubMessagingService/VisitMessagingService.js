@@ -2,7 +2,7 @@ import {BaseMessagingService} from './BaseMessagingService';
 import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
-import {pushNewVisitsToServer, pushVisitDeleteByID, pushVisitUpdateToServer} from '../../../utils/API/VisitAPI';
+import {pushNewVisitsToServer, pushVisitDeleteByIDs, pushVisitUpdateToServer} from '../../../utils/API/VisitAPI';
 
 export class VisitMessagingService extends BaseMessagingService {
     onMessage(messageObject) {
@@ -103,21 +103,23 @@ export class VisitMessagingService extends BaseMessagingService {
 
     async _publishToServer(jobID, payload) {
         console.log(`publish job here${payload}`);
-        const {action, visit} = payload;
+        const {action, visits} = payload;
         let serverResponse;
         try {
             switch (action) {
                 case 'CREATE':
-                    console.log(JSON.stringify({visits: [visit]}));
-                    serverResponse = await pushNewVisitsToServer([visit]);
+                    console.log(JSON.stringify({visits}));
+                    serverResponse = await pushNewVisitsToServer(visits);
                     break;
                 case 'UPDATE':
                     console.log('update body');
-                    console.log(JSON.stringify(visit));
-                    serverResponse = await pushVisitUpdateToServer(visit);
+                    await visits.forEach(async visit => {
+                        console.log(JSON.stringify(visit));
+                        await pushVisitUpdateToServer(visit);
+                    });
                     break;
                 case 'DELETE':
-                    serverResponse = await pushVisitDeleteByID(visit.visitID);
+                    serverResponse = await pushVisitDeleteByIDs(visits.map(visit => visit.visitID));
                     break;
                 default:
                     console.log(`invalid task: ${payload}`);
@@ -130,14 +132,16 @@ export class VisitMessagingService extends BaseMessagingService {
             throw e;
         }
 
-        //TODO check server response is ok
-        console.log('publishVisitMessage');
-        this.taskQueue.createJob('publishVisitMessage', {
-            visitID: visit.visitID,
-            episodeID: visit.episodeID,
-            actionType: action,
-            userID: UserDataService.getCurrentUserProps().userID,
-            makePeersRefresh: payload.action === 'CREATE'
+        visits.forEach(visit => {
+            //TODO check server response is ok
+            console.log('publishVisitMessage');
+            this.taskQueue.createJob('publishVisitMessage', {
+                visitID: visit.visitID,
+                episodeID: visit.episodeID,
+                actionType: action,
+                userID: UserDataService.getCurrentUserProps().userID,
+                makePeersRefresh: payload.action === 'CREATE'
+            });
         });
     }
 
@@ -152,23 +156,25 @@ export class VisitMessagingService extends BaseMessagingService {
     }
 
     publishVisitCreate(visit) {
+        if (visit.getPlace()) return;
         this.taskQueue.createJob('publishToServer', {
             action: 'CREATE',
-            visit: this._getFlatVisitPayload(visit)
+            visits: [this._getFlatVisitPayload(visit)]
         });
     }
 
     publishVisitUpdate(visit) {
+        if (visit.getPlace()) return;
         this.taskQueue.createJob('publishToServer', {
             action: 'UPDATE',
-            visit: this._getFlatVisitPayload(visit)
+            visits: [this._getFlatVisitPayload(visit)]
         });
     }
 
-    publishVisitDelete(visit) {
+    publishVisitDeletes(visits) {
         this.taskQueue.createJob('publishToServer', {
             action: 'DELETE',
-            visit: this._getFlatVisitPayload(visit)
+            visits: visits.filter(visit => !visit.getPlace()).map(visit => this._getFlatVisitPayload(visit))
         });
     }
 

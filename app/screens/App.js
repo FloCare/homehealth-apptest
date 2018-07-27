@@ -72,20 +72,20 @@ const StartApp = async (key) => {
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
-    await MessagingServiceCoordinator.initialiseService(key);
-    if (Platform.OS === 'ios') {
-        configureNotification();
-    }
-
-    dateService.setDate(todayMomentInUTCMidnight().valueOf());
-    RNSecureKeyStore.get('accessToken').then(() => {
+    await RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            PatientDataService.getInstance().updatePatientListFromServer()
-                .then(() => {
+            return PatientDataService.getInstance().updatePatientListFromServer()
+                .then(result => {
                     VisitService.getInstance().fetchAndSaveMyVisitsFromServer();
                 });
         }
     });
+
+    dateService.setDate(todayMomentInUTCMidnight().valueOf());
+    await MessagingServiceCoordinator.initialiseService(key);
+    if (Platform.OS === 'ios') {
+        configureNotification();
+    }
 
     // Register the screens
     try {

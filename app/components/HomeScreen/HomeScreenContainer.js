@@ -185,7 +185,7 @@ class HomeScreenContainer extends Component {
         return (
             <View
                 style={[
-                    {backgroundColor: '#fcfcfc'},
+                    {backgroundColor: '#F8F8F8'},
                     Platform.select({
                         ios: {height: Dimensions.get('window').height - getTabBarHeight()},
                         android: {flex: 1}

@@ -13,6 +13,7 @@ const CustomCheckBox = (props) => {
         <CheckBox
             checked={props.checked}
             label={''}
+            checkboxStyle={{width: 20, height: 20}}
             containerStyle={{...checkBoxContainerStyle, ...props.checkBoxContainerStyle}}
             checkedImage={Images.tickMarkDone}
             uncheckedImage={Images.tickMarkNotDone}

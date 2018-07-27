@@ -85,7 +85,7 @@ export function getAllMyVisits() {
     });
 }
 
-export function pushVisitDeleteByID(visitID) {
+export function pushVisitDeleteByIDs(visitIDs) {
     return RNSecureKeyStore.get('accessToken').catch(error => {
         console.log('error in getting access token');
         throw error;
@@ -96,7 +96,7 @@ export function pushVisitDeleteByID(visitID) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            visitID
+            visitIDs
         })
     })).then(response => {
         if (response.ok) {

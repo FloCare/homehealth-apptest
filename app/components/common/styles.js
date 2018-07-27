@@ -62,14 +62,14 @@ export const styles = StyleSheet.create({
         // paddingBottom: 0,
         marginBottom: undefined,
         backgroundColor: '#ffffff',
-        shadowColor: 'rgba(0, 0, 0, 0.11)',
+        shadowColor: 'rgba(0, 0, 0, 0.21)',
         shadowOffset: {
             width: 0,
             height: 0
         },
-        shadowRadius: 11,
+        shadowRadius: 1,
         shadowOpacity: 1,
-        elevation: 4
+        elevation: 3
     },
     cardMarginStyle: {
         margin: 10,

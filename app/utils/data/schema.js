@@ -23,6 +23,7 @@ import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 import {UserDataService} from '../../data_services/UserDataService';
 import {getPatientsByOldID} from '../API/PatientAPI';
 import {arrayToObjectByKey} from '../collectionUtils';
+import {setItem} from '../InMemoryStore';
 
 const Realm = require('realm');
 
@@ -137,23 +138,33 @@ class FloDBProvider {
                 schemaVersion: 7,
                 prerequisite: async oldRealm => {
                     const allPatients = oldRealm.objects(Patient.getSchemaName());
-                    await getPatientsByOldID(allPatients.map(patient => patient.patientID))
+                    await getPatientsByOldID(allPatients.filtered('isLocallyOwned = false').map(patient => patient.patientID))
                         .then(responseJson => {
+                            // console.log(allPatients.map(patient => patient.patientID));
+                            // console.log(responseJson);
+                            //
                             if (!responseJson.success || responseJson.success.length !== allPatients.length) {
-                                Alert.alert('Note', 'Please check to make sure all patients are synced with your device.');
+                                Alert.alert('Note', 'Please check to make sure all current patients are synced with your device.');
                             }
+                            // console.log('prereq2');
                             const patientJsonByOldID = arrayToObjectByKey(responseJson.success, 'id');
-                            allPatients.forEach(patient => {
-                                const newJson = patientJsonByOldID[patient.patientID];
-                                if (newJson) {
-                                    oldRealm.write(() => {
-                                        patient.patientID = newJson.patientID;
-                                        patient.episodes[0].episodeID = newJson.episodeID;
-                                    });
-                                } else oldRealm.delete(patient);
-                            });
+                            setItem('patientJsonByOldID', patientJsonByOldID);
+                            // console.log('prereq3');
+                            // console.log(allPatients);
+                            //
+                            // allPatients.forEach(patient => {
+                            //     const newJson = patientJsonByOldID[patient.patientID];
+                            //     if (newJson) {
+                            //         oldRealm.write(() => {
+                            //             patient.patientID = newJson.patientID;
+                            //             patient.episodes[0].episodeID = newJson.episodeID;
+                            //         });
+                            //     } else oldRealm.delete(patient);
+                            // });
+                            //
+                            // console.log(allPatients);
                         }).catch(error => {
-                            console.log('error in migrating patient ids');
+                            console.log('error in prereq for migrating patient ids');
                             console.log(error);
                             throw error;
                         });
@@ -173,10 +184,10 @@ class FloDBProvider {
             while (existingSchemaVersion < targetSchemaVersion) {
                 if (schemaMigrations[existingSchemaVersion + 1].prerequisite) {
                     const previousRealm = new Realm(schemaMigrations[existingSchemaVersion]);
-                    await schemaMigrations[existingSchemaVersion].prerequisite(previousRealm);
+                    await schemaMigrations[existingSchemaVersion + 1].prerequisite(previousRealm);
                     previousRealm.close();
                 }
-                const migratedRealm = new Realm(schemaMigrations[existingSchemaVersion]);
+                const migratedRealm = new Realm(schemaMigrations[existingSchemaVersion + 1]);
                 migratedRealm.close();
 
                 existingSchemaVersion++;
