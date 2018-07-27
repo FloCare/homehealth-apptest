@@ -80,7 +80,10 @@ const StartApp = async (key) => {
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            PatientDataService.getInstance().updatePatientListFromServer();
+            PatientDataService.getInstance().updatePatientListFromServer()
+                .then(() => {
+                    VisitService.getInstance().fetchAndSaveMyVisitsFromServer();
+                });
         }
     });
 

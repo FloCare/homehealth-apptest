@@ -12,18 +12,18 @@ export class VisitMessagingService extends BaseMessagingService {
             console.log(message);
             const {actionType, visitID, userID} = message;
             if (userID === UserDataService.getCurrentUserProps().userID) {
-                console.log('message for my own visit, ignoring');
+                console.log(`message for my own visit, ignoring, mine:${UserDataService.getCurrentUserProps().userID}`);
                 resolve();
                 return;
             }
             //TODO if userID is equal to my own, skip this message
             switch (actionType) {
                 case 'CREATE' :
-                    Promise.all([
-                        UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID),
-                        VisitService.getInstance().fetchAndSaveVisitsByID([visitID])
-                    ]).then(() => resolve())
-                    .catch(error => reject(error));
+                    UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID)
+                        .then(() => {
+                            VisitService.getInstance().fetchAndSaveVisitsByID([visitID]);
+                            resolve();
+                        }).catch(error => reject(error));
                     break;
                 case 'DELETE' :
                     try {
@@ -88,11 +88,12 @@ export class VisitMessagingService extends BaseMessagingService {
                 actionType: payload.actionType,
                 visitID: payload.visitID,
                 userID: payload.userID,
-                pn_apns: {
-                    aps: {
-                        'content-available': 1
-                    },
-                }
+                pn_apns: payload.makePeersRefresh ?
+                    {
+                        aps: {
+                            'content-available': 1
+                        },
+                    } : undefined
             }
         }).catch(error => {
             console.log('error publishing');
@@ -111,6 +112,8 @@ export class VisitMessagingService extends BaseMessagingService {
                     serverResponse = await pushNewVisitsToServer([visit]);
                     break;
                 case 'UPDATE':
+                    console.log('update body');
+                    console.log(JSON.stringify(visit));
                     serverResponse = await pushVisitUpdateToServer(visit);
                     break;
                 case 'DELETE':
@@ -133,7 +136,8 @@ export class VisitMessagingService extends BaseMessagingService {
             visitID: visit.visitID,
             episodeID: visit.episodeID,
             actionType: action,
-            userID: UserDataService.getCurrentUserProps().userID
+            userID: UserDataService.getCurrentUserProps().userID,
+            makePeersRefresh: payload.action === 'CREATE'
         });
     }
 

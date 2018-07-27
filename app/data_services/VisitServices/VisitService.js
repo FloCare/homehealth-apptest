@@ -1,14 +1,14 @@
 import firebase from 'react-native-firebase';
 import {Patient, Visit, VisitOrder, Place} from '../../utils/data/schema';
-import {arrayToObjectByKey} from '../../utils/collectionUtils';
+import {arrayToObjectByKey, arrayToObjectListByKey} from '../../utils/collectionUtils';
 import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
-import {MessagingServiceCoordinator} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {getMessagingServiceInstance} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
 import {UserDataService} from '../UserDataService';
-import {getVisitsByID} from '../../utils/API/VisitAPI';
+import {getAllMyVisits, getVisitsByID} from '../../utils/API/VisitAPI';
 import {EpisodeDataService} from '../EpisodeDataService';
 
 export class VisitService {
@@ -50,10 +50,6 @@ export class VisitService {
 
         this.visitRealmService = VisitRealmService.initialiseService(floDB);
         this.visitReduxService = VisitReduxService.initialiseService(store);
-    }
-
-    getVisitByID(visitID) {
-        return this.floDB.objectForPrimaryKey(Visit, visitID);
     }
 
     isVisitOwn(visit) {
@@ -113,6 +109,7 @@ export class VisitService {
         } else {
             this.markVisitUndone(visit);
         }
+        getMessagingServiceInstance(VisitMessagingService).publishVisitUpdate(visit);
     }
 
     markVisitDone(visit) {
@@ -170,26 +167,58 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
-    fetchAndSaveVisitsByID(visitIDs, update) {
-        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
-        return new Promise((resolve, reject) => {
-            getVisitsByID(visitIDs).then(respJson => {
-                if (respJson.success && respJson.success.length === visitIDs.length) {
-                    respJson.success.forEach(visitJson => {
-                        this.saveVisit(visitJson, update);
-                    });
-                } else reject(respJson);
+    fetchAndSaveMyVisitsFromServer() {
+        return getAllMyVisits().then(visits => {
+            const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
+            console.log(visitByMidnight);
+            Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
+                const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false));
+                this.floDB.write(() => {
+                    this.visitRealmService.getVisitOrderForDate(midnightEpochOfVisit).visits = daysVisits;
+                    console.log(`midnight ${midnightEpochOfVisit}`);
+                    console.log(this.visitRealmService.getVisitOrderForDate(midnightEpochOfVisit));
+                });
             });
-            resolve();
+        }).catch(error => {
+            console.log('error in fetching all preexisting visits');
+            console.log(error);
         });
     }
 
-    saveVisit(visitJson, update = false) {
-        let visit;
-        this.floDB.write(() => {
-            visit = this.floDB.create(Visit, visitJson, update);
+    fetchAndSaveVisitsByID(visitIDs, update) {
+        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
+        return getVisitsByID(visitIDs).then(respJson => {
+            if (respJson.success && respJson.success.length === visitIDs.length) {
+                const visits = [];
+                respJson.success.forEach(visitJson => {
+                    console.log(visitJson);
+                    visits.push(this.saveVisitToRealm(visitJson, update));
+                });
+                return visits;
+            }
+            throw respJson;
+        }).catch(error => {
+            console.log(`error occured in trying to fetch and save visits ${visitIDs}`);
+            console.log(error);
+            throw error;
         });
-        if (!update) { EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID); }
+    }
+
+    saveVisitToRealm(visitJson, update = false) {
+        let visit;
+        if (visitJson.plannedStartTime) {
+            visitJson.plannedStartTime = new Date(visitJson.plannedStartTime);
+        }
+        this.floDB.write(() => {
+            const user = UserDataService.getInstance().getUserByID(visitJson.userID);
+            if (!user) throw new Error(`no user found for visit being saved: ${visitJson.userID}`);
+            visit = this.floDB.create(Visit, visitJson, update);
+            visit.user = user;
+        });
+        if (!update) {
+            EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID);
+        }
+        return visit;
     }
 
     createNewVisits(visitSubjects, midnightEpoch) {
@@ -210,7 +239,7 @@ export class VisitService {
 
         //TODO this is just a stub
         newVisits.forEach(visit => {
-            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
+            getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
         });
 
         // Logging the firebase event upon visits being added
@@ -228,7 +257,14 @@ export class VisitService {
     deleteVisitByID(visitID) {
         // Visit order doesn't need to be explicitly deleted
         const visit = this.visitRealmService.getVisitByID(visitID);
+        if (!visit) {
+            console.log(`attempting to delete visitID: ${visitID}, that doesnt exist`);
+            return;
+        }
         const visitTimeEpoch = visit.midnightEpochOfVisit;
+
+        getMessagingServiceInstance(VisitMessagingService).publishVisitDelete(visit);
+
         this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
@@ -253,6 +289,8 @@ export class VisitService {
         // Todo: Check if this works
         const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
+
+        visits.forEach(visit => getMessagingServiceInstance(VisitMessagingService).publishVisitDelete(visit));
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
@@ -282,6 +320,8 @@ export class VisitService {
     updateVisitStartTimeByID(visitID, startTime) {
         this.visitRealmService.updateVisitStartTimeByID(visitID, startTime);
         this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
+
+        getMessagingServiceInstance(VisitMessagingService).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
     }
 
 }

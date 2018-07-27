@@ -15,8 +15,6 @@ export const Images = {
     emergencyIcon: require('../resources/emergencyIcon.png'),
     emptyCall: require('../resources/emptyCall.png'),
     elliotLugo: require('../resources/elliotLugo.png'),
-    greenDot: require('../resources/greenDot.png'),
-    grayDot: require('../resources/grayDot.png'),
     legal: require('../resources/legal.png'),
     list: require('../resources/list.png'),
     listView: require('../resources/listView.png'),

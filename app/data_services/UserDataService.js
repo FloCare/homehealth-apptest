@@ -60,22 +60,35 @@ export class UserDataService {
     }
 
     fetchAndSaveUserToRealmIfMissing(id) {
-        try {
-            this.getUserByID(id);
-        } catch (e) {
-            return UserDataService.fetchUserProps(id).then(userJson => this.saveUserToRealm(userJson)).catch(error => {
-                console.log('error in fetch and save user');
-                console.log(error);
-                throw error;
-            });
+        const user = this.getUserByID(id);
+        console.log('fetch and save user of missing');
+        console.log(user);
+        if (user) {
+            return new Promise((resolve) => resolve(user));
         }
+
+        return UserDataService.fetchUserProps(id).then(userJson => {
+            console.log('entereted then block');
+            return this.saveUserToRealm(userJson);
+        }).catch(error => {
+            console.log('error in fetch and save user');
+            console.log(error);
+            throw error;
+        });
     }
 
     saveUserToRealm(user) {
-        this.floDB.create(User, user);
+        let userObject;
+        console.log('save to realm');
+        this.floDB.write(() => {
+            userObject = this.floDB.create(User, user, true);
+        });
+        console.log('save to realm');
+        console.log(userObject);
+        return userObject;
     }
 
     getUserByID(userID) {
-        return this.floDB.objectForPrimaryKey(User.getSchemaName(), userID);
+        return this.floDB.objectForPrimaryKey(User, userID);
     }
 }
