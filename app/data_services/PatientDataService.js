@@ -280,7 +280,8 @@ export class PatientDataService {
                 const deletions = deletedPatients.length;
 
                 if (newPatientIDs.length > 0) {
-                    additions = await this.fetchAndSavePatientsByID(newPatientIDs).success;
+                    const newPatients = await this.fetchAndSavePatientsByID(newPatientIDs);
+                    additions = newPatients.success.length;
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 return {
@@ -329,7 +330,8 @@ export class PatientDataService {
                     episodeResponseJson => {
                         const episodeObjects = episodeResponseJson.success;
                         for (const patientObject of successfulObjects) {
-                            const episodeObject = episodeObjects.find((episode) => episode.episodeID === patientObject.episodeID);
+                            const episodeObject = episodeObjects.find(
+                                (episode) => episode.episodeID === patientObject.episodeID);
                             dataArray.push({
                                 patient: patientObject,
                                 episode: episodeObject
@@ -347,7 +349,7 @@ export class PatientDataService {
 
     fetchAndSavePatientsByID(newPatientIDs) {
         return this.fetchPatientsWithEpisodeData(newPatientIDs).then(
-            responseArray => {
+            (responseArray) => {
                 const resultObject = {success: [], failed: []};
                 responseArray.forEach(
                     (patientEpisodeData) => {
@@ -370,8 +372,8 @@ export class PatientDataService {
 
 
     fetchAndEditPatientsByID(patientIDs) {
-        return this.fetchPatientsWithEpisodeData(patientIDs)
-            .then(responseArray => {
+        return this.fetchPatientsWithEpisodeData(patientIDs).then(
+            responseArray => {
                 responseArray.forEach(
                     (patientEpisodeData) => {
                         const patient = patientEpisodeData.patient;
