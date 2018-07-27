@@ -20,7 +20,7 @@ import {MessagingServiceCoordinator} from '../data_services/MessagingServices/Pu
 import {initialiseStore} from '../utils/InMemoryStore';
 import {UserDataService} from '../data_services/UserDataService';
 import {EpisodeDataService} from '../data_services/EpisodeDataService';
-import {PhysicianDataService} from "../data_services/PhysicianDataService";
+import {PhysicianDataService} from '../data_services/PhysicianDataService';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -75,9 +75,7 @@ const StartApp = async (key) => {
     await RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
             return PatientDataService.getInstance().updatePatientListFromServer()
-                .then(result => {
-                    VisitService.getInstance().fetchAndSaveMyVisitsFromServer();
-                });
+                .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
         }
     });
 

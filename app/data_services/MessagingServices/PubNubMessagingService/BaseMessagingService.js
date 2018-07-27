@@ -44,11 +44,15 @@ export class BaseMessagingService {
                     console.log('processFromHistory response');
                     console.log(response);
                     for (const message of response.messages) {
-                        await this.digestMessage({
-                            message: message.entry,
-                            timestamp: message.timetoken,
-                            channel: channel.name
-                        });
+                        try {
+                            await this.digestMessage({
+                                message: message.entry,
+                                timestamp: message.timetoken,
+                                channel: channel.name
+                            });
+                        } catch (e) {
+                            console.log('skipping a message that threw error');
+                        }
                     }
 
                     if (response.messages.length === 100) {
@@ -91,6 +95,7 @@ export class BaseMessagingService {
     }
 
     digestMessage(message) {
+        console.log('digest message');
         return this.onMessage(message)
             .then(() => {
                 this.updateLastMessageTime(message);
@@ -207,7 +212,7 @@ export class BaseMessagingService {
         try {
             MessagingServiceCoordinator.getChannelRealm().write(() => {
                 channelObjects.forEach(channel => {
-                    realmObjects.push(MessagingServiceCoordinator.getChannelRealm().create('Channel', channel));
+                    realmObjects.push(MessagingServiceCoordinator.getChannelRealm().create('Channel', channel, true));
                 });
             });
             return realmObjects;
@@ -267,6 +272,9 @@ export class BaseMessagingService {
             return this.pubnub.subscribe({
                 channels: channels.map(channel => channel.name)
             });
+        }).catch(error => {
+            console.log('error in catch up so skipping subscription');
+            console.log(error);
         });
     }
 

@@ -174,8 +174,9 @@ export class VisitService {
             console.log(visitByMidnight);
             Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
                 const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false));
+                const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
                 this.floDB.write(() => {
-                    this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)).visitList = daysVisits;
+                    visitOrder.visitList = daysVisits;
                     console.log(`midnight ${midnightEpochOfVisit}`);
                     console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
                 });
@@ -187,7 +188,6 @@ export class VisitService {
     }
 
     fetchAndSaveVisitsByID(visitIDs, update) {
-        //TODO make calls to the server here, some logic can be borrowed from createNewVisits but mostly needs modification
         return getVisitsByID(visitIDs).then(respJson => {
             if (respJson.success && respJson.success.length === visitIDs.length) {
                 const visits = [];
@@ -305,10 +305,14 @@ export class VisitService {
                     visitList.push(visit);
                 }
             }
-            visitOrders[i].visitList = visitList;
+            this.floDB.write(() => {
+                visitOrders[i].visitList = visitList;
+            });
         }
         const visitIDs = visits.map((visit) => visit.visitID);
-        this.floDB.delete(visits);
+        this.floDB.write(() => {
+            this.floDB.delete(visits);
+        });
 
         if (visitOrders) {
             for (let i = 0; i < visitOrders.length; i++) {

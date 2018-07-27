@@ -3,6 +3,8 @@ import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {pushNewVisitsToServer, pushVisitDeleteByIDs, pushVisitUpdateToServer} from '../../../utils/API/VisitAPI';
+import {showVisitCollisionNotification} from '../NotificationService';
+import {todayMomentInUTCMidnight} from '../../../utils/utils';
 
 export class VisitMessagingService extends BaseMessagingService {
     onMessage(messageObject) {
@@ -16,14 +18,27 @@ export class VisitMessagingService extends BaseMessagingService {
                 resolve();
                 return;
             }
-            //TODO if userID is equal to my own, skip this message
             switch (actionType) {
                 case 'CREATE' :
                     UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID)
-                        .then(() => {
-                            VisitService.getInstance().fetchAndSaveVisitsByID([visitID]);
+                        .then(() => VisitService.getInstance().fetchAndSaveVisitsByID([visitID]))
+                        .then((visits) => {
+                            visits.forEach(visit => {
+                                // console.log(visit);
+                                const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
+                                myVisitsForTheDay.forEach(myVisit => {
+                                    if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
+                                        showVisitCollisionNotification(myVisit, visit);
+                                    }
+                                });
+                            });
                             resolve();
-                        }).catch(error => reject(error));
+                        }).catch(error => {
+                        console.log('error in create');
+                        console.log(error);
+                        resolve();
+                        // reject(error);
+                    });
                     break;
                 case 'DELETE' :
                     try {
@@ -95,6 +110,10 @@ export class VisitMessagingService extends BaseMessagingService {
                         },
                     } : undefined
             }
+        }).then(result => {
+            console.log('publish visit result');
+            console.log(payload);
+            console.log(result);
         }).catch(error => {
             console.log('error publishing');
             throw new Error(`could not publish message ${error}`);
@@ -204,6 +223,8 @@ export class VisitMessagingService extends BaseMessagingService {
             episode.visits.forEach(visit => this.publishVisitCreate(visit))
         );
 
+        console.log('bootstrapping chanels');
+        // episodes.forEach(episode => console.log(episode.episodeID));
         this.subscribeToEpisodes(episodes);
     }
 }

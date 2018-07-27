@@ -11,6 +11,7 @@ import Fab from '../common/Fab';
 // import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
 import {dateService} from '../../data_services/DateService';
+import {setItem} from '../../utils/InMemoryStore';
 
 const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1};
 
@@ -32,6 +33,7 @@ class HomeScreenContainer extends Component {
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
         // addListener(this.onOrderChange);
+        setItem('navigator', this.props.navigator);
     }
 
     componentDidMount() {
