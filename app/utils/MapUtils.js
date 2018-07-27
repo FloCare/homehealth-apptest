@@ -103,7 +103,7 @@ async function getProcessedDataForOrderedList(coordinates) {
 
 
 const navigateTo = (latitude, longitude, address) => {
-    const scheme = Platform.select({ios: 'geo:0,0?q=', android: 'geo:0,0?q='});
+    const scheme = Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
     const latLng = `${latitude},${longitude}`;
     const label = address;
     const url = Platform.select({
