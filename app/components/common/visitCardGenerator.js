@@ -279,14 +279,14 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
         renderSingleClinicianVisit = (visitData) => {
             const userRole = visitData.role;
-            const visitTime = visitData.time;
+            const visitTime = visitData.plannedStartTime ? moment(visitData.plannedStartTime).format('hh:mm A') : ' --:-- ';
             return (
               <View style={{flexDirection: 'row', marginRight: 5}}>
                   <View
                       style={{
                           borderRadius: 3,
-                          paddingLeft: 4,
-                          paddingRight: 4,
+                          paddingLeft: 2,
+                          paddingRight: 2,
                           paddingTop: 1,
                           paddingBottom: 1,
                           margin: 2,
@@ -295,12 +295,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                           backgroundColor: '#F5F5F5'
                         }}
                   >
-                      <Text style={{fontSize: 14, color: '#222222'}}>
+                      <Text style={{fontSize: 12, color: '#222222'}}>
                           {userRole}
                       </Text>
                   </View>
 
-                  <Text style={{marginLeft: 2, alignSelf: 'center', fontSize: 14}}>
+                  <Text style={{marginLeft: 2, alignSelf: 'center', fontSize: 12}}>
                       {visitTime}
                   </Text>
               </View>

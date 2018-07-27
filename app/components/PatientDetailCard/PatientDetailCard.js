@@ -28,7 +28,7 @@ const renderViewMore = (e, onPressAddNotes) => {
 };
 
 const renderSingleClinicianVisit = (visitData) => {
-    const nameString = visitData.ownVisit ? 'You' : visitData.userName;
+    const nameString = visitData.ownVisit ? 'You' : visitData.name;
     return (
         <View style={{flexDirection: 'row'}}>
             <View style={{flex: 6, marginTop: 5}}>
