@@ -142,7 +142,11 @@ export class PatientDataService {
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
-            getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
+            try {
+                getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
+            } catch (e) {
+                console.log('error trying to subscribe to new patient');
+            }
         }
     }
 
@@ -241,11 +245,11 @@ export class PatientDataService {
                 const deletions = deletedPatients.length;
 
                 if (newPatientIDs.length > 0) {
-                    additions = await this.fetchAndSavePatientsByID(newPatientIDs).success;
+                    additions = (await this.fetchAndSavePatientsByID(newPatientIDs)).success;
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 console.log('after sync with server patient list is:');
-                console.log(this.floDB.objects(Patient.getSchemaName));
+                console.log(this.floDB.objects(Patient.getSchemaName()));
                 return {
                     additions,
                     deletions
@@ -309,6 +313,7 @@ export class PatientDataService {
                 await Promise.all(allPromises);
 
                 addressDataService.attemptFetchForPendingAddresses();
+                console.log('resultObject');
                 console.log(resultObject);
                 return resultObject;
             });

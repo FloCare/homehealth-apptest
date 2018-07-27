@@ -29,6 +29,7 @@ export class VisitService {
     static getFlatVisit(visit) {
         const isPatientVisit = visit.getPatient() !== undefined;
 
+        // if (!isPatientVisit && !visit.getPlace()) { console.log('break'); console.log(visit.getEpisode()); console.log(visit.getEpisode().patient[0]); }
         return {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
@@ -174,9 +175,9 @@ export class VisitService {
             Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
                 const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false));
                 this.floDB.write(() => {
-                    this.visitRealmService.getVisitOrderForDate(midnightEpochOfVisit).visits = daysVisits;
+                    this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)).visitList = daysVisits;
                     console.log(`midnight ${midnightEpochOfVisit}`);
-                    console.log(this.visitRealmService.getVisitOrderForDate(midnightEpochOfVisit));
+                    console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
                 });
             });
         }).catch(error => {
@@ -209,12 +210,15 @@ export class VisitService {
         if (visitJson.plannedStartTime) {
             visitJson.plannedStartTime = new Date(visitJson.plannedStartTime);
         }
+        // console.log('saving visit');
+        // console.log(visitJson);
         this.floDB.write(() => {
             const user = UserDataService.getInstance().getUserByID(visitJson.userID);
             if (!user) throw new Error(`no user found for visit being saved: ${visitJson.userID}`);
             visit = this.floDB.create(Visit, visitJson, update);
             visit.user = user;
         });
+        // console.log('visitsaved');
         if (!update) {
             EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID);
         }
@@ -263,7 +267,7 @@ export class VisitService {
         }
         const visitTimeEpoch = visit.midnightEpochOfVisit;
 
-        getMessagingServiceInstance(VisitMessagingService).publishVisitDelete(visit);
+        getMessagingServiceInstance(VisitMessagingService).publishVisitDeletes([visit]);
 
         this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
@@ -290,7 +294,7 @@ export class VisitService {
         const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
-        visits.forEach(visit => getMessagingServiceInstance(VisitMessagingService).publishVisitDelete(visit));
+        getMessagingServiceInstance(VisitMessagingService).publishVisitDeletes(visits);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
