@@ -5,7 +5,6 @@ import {
     arrayToMap,
     arrayToObjectByKey,
     filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
-    hasNonEmptyValueForKey
 } from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
@@ -17,7 +16,6 @@ import {getMessagingServiceInstance} from './MessagingServices/PubNubMessagingSe
 import {VisitMessagingService} from './MessagingServices/PubNubMessagingService/VisitMessagingService';
 import {getEpisodeDetailsByIds} from '../utils/API/EpisodeAPI';
 import {PhysicianDataService} from './PhysicianDataService';
-import { EpisodeDataService } from './EpisodeDataService'
 
 export class PatientDataService {
     static patientDataService;
@@ -161,7 +159,6 @@ export class PatientDataService {
             }
             const episodeObject = this.floDB.create(Episode, episode, true);
             newPatient.episodes.push(episodeObject);
-
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
@@ -189,7 +186,7 @@ export class PatientDataService {
             this.floDB.write(() => {
                 // Edit the corresponding address info
                 if (isServerUpdate && patient.address && patient.address.addressID) {
-                    addressDataService.addAddressToTransaction(patientObj, patient, patient.address.addressID);
+                    addressDataService.addAddressToTransaction(patientObj, patient.address, patient.address.addressID);
                 }
                 if (!isServerUpdate && patient.addressID) {
                     addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID);

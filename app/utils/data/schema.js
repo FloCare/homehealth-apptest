@@ -143,9 +143,9 @@ class FloDBProvider {
                             // console.log(allPatients.map(patient => patient.patientID));
                             // console.log(responseJson);
                             //
-                            if (!responseJson.success || responseJson.success.length !== allPatients.length) {
-                                Alert.alert('Note', 'Please check to make sure all current patients are synced with your device.');
-                            }
+                            // if (!responseJson.success || responseJson.success.length !== allPatients.length) {
+                            //     Alert.alert('Note', 'Please check to make sure all current patients are synced with your device.');
+                            // }
                             // console.log('prereq2');
                             const patientJsonByOldID = arrayToObjectByKey(responseJson.success, 'id');
                             setItem('patientJsonByOldID', patientJsonByOldID);
