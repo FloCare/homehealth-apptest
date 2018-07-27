@@ -119,7 +119,6 @@ class FloDBProvider {
             //     path: 'database.realm',
             //     encryptionKey: stringToArrayBuffer(key),
             // }
-            //TODO Just to replace during conflict. Don't bother with 6th migration ;)
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
