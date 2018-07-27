@@ -357,7 +357,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             showCheckBoxLine &&
                             <View style={{width: '50%', flex: 1, alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
                         }
-                        <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 10, marginBottom: 10}}>
+                        <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 2, marginBottom: 2}}>
                             <CustomCheckBox
                                 checked={this.props.isDone}
                                 onPress={safeOnDoneTogglePress}
@@ -366,21 +366,10 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                     </View>
                     <View
                         style={[
-                            Platform.select({
-                                ios: {
-                                    shadowColor: 'rgba(0,0,0, .2)',
-                                    shadowOffset: {height: 0, width: 0},
-                                    shadowOpacity: 1,
-                                    shadowRadius: 1,
-                                },
-                                android: {
-                                    elevation: 1,
-                                },
-                            }),
                             styles.cardContainerStyle,
                             this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
                             this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
-                            {flex: 8, marginTop: 10, marginBottom: 10, flexDirection: 'row'}
+                            {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
                         ]}
                     >
                             {
