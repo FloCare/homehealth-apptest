@@ -62,6 +62,14 @@ const mapStateToProps = (state, ownProps) => {
     return props;
 };
 
+const cardActions = {
+    call: 'Call Patient',
+    goToAddress: 'Go To Address',
+    reschedule: 'Reschedule Visit',
+    deleteVisit: 'Delete Visit',
+    cancel: 'Cancel'
+};
+
 function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
@@ -99,9 +107,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         onPressRescheduleVisit() {
-            firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-                VALUE: 1
-            });
             navigator.showLightBox({
                 screen: screenNames.addOrRescheduleVisitsLightBox,
                 style: {
@@ -208,15 +213,15 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             const cardActionsMap = [];
             let index = 0;
             if (this.props.primaryContact) {
-                cardActionsMap.push({index, title: 'Call'});
+                cardActionsMap.push({index, title: cardActions.call});
                 index++;
             }
             if (this.props.coordinates && this.props.coordinates.latitude && this.props.coordinates.longitude) {
-                cardActionsMap.push({index, title: 'Go To Address'});
+                cardActionsMap.push({index, title: cardActions.goToAddress});
                 index++;
             }
-            cardActionsMap.push({index: index++, title: 'Reschedule'});
-            cardActionsMap.push({index: index++, title: 'Delete Visit'});
+            cardActionsMap.push({index: index++, title: cardActions.reschedule});
+            cardActionsMap.push({index: index++, title: cardActions.deleteVisit});
             cardActionsMap.push({index: index++, title: 'Cancel'});
             return cardActionsMap;
         }
@@ -226,7 +231,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             const activeAction = this.cardActions.find((cardAction) => cardAction.index === index);
 
             switch (activeAction.title) {
-                case 'Call':
+                case cardActions.call:
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         type: parameterValues.CALL_PATIENT
                     });
@@ -238,7 +243,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         }
                     }
                     break;
-                case 'Go To Address':
+                case cardActions.goToAddress:
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         type: parameterValues.NAVIGATION
                     });
@@ -248,13 +253,13 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             .catch(err => console.error('An error occurred', err));
                     }
                     break;
-                case 'Reschedule':
+                case cardActions.reschedule:
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.RESCHEDULE
                     });
                     this.onPressRescheduleVisit();
                     break;
-                case 'Delete Visit':
+                case cardActions.deleteVisit:
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.DELETE_VISIT
                     });
@@ -357,7 +362,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             showCheckBoxLine &&
                             <View style={{width: '50%', flex: 1, alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
                         }
-                        <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 10, marginBottom: 10}}>
+                        <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 2, marginBottom: 2}}>
                             <CustomCheckBox
                                 checked={this.props.isDone}
                                 onPress={safeOnDoneTogglePress}
@@ -366,21 +371,10 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                     </View>
                     <View
                         style={[
-                            Platform.select({
-                                ios: {
-                                    shadowColor: 'rgba(0,0,0, .2)',
-                                    shadowOffset: {height: 0, width: 0},
-                                    shadowOpacity: 1,
-                                    shadowRadius: 1,
-                                },
-                                android: {
-                                    elevation: 1,
-                                },
-                            }),
                             styles.cardContainerStyle,
                             this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
                             this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
-                            {flex: 8, marginTop: 10, marginBottom: 10, flexDirection: 'row'}
+                            {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
                         ]}
                     >
                             {
