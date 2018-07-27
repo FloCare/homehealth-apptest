@@ -23,6 +23,7 @@ import {
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService'
 import {EpisodeDataService} from '../../data_services/EpisodeDataService'
+import {navigateTo} from '../../utils/MapUtils';
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
@@ -248,9 +249,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         type: parameterValues.NAVIGATION
                     });
                     if (this.props.coordinates) {
-                        const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`;
-                        Linking.openURL(mapsURL)
-                            .catch(err => console.error('An error occurred', err));
+                        navigateTo(this.props.coordinates.latitude, this.props.coordinates.longitude, this.props.formattedAddress);
                     }
                     break;
                 case cardActions.reschedule:

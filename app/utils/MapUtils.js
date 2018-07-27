@@ -1,5 +1,6 @@
 import geoJsonBounds from "geojson-bounds";
 import Polyline from "@mapbox/polyline/src/polyline";
+import {Platform, Linking} from 'react-native';
 
 const directionsResposeCache = {};
 function getViewPortFromBounds(boundsCoordinates) {
@@ -99,4 +100,17 @@ async function getProcessedDataForOrderedList(coordinates) {
         throw error;
     }
 }
-export {getViewPortFromBounds, callDirectionsApiForPoints, extractInformationFromDirectionApiResponse, getProcessedDataForOrderedList};
+
+
+const navigateTo = (latitude, longitude, address) => {
+    const scheme = Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
+    const latLng = `${latitude},${longitude}`;
+    const label = address;
+    const url = Platform.select({
+        ios: `${scheme}${label}@${latLng}`,
+        android: `${scheme}${latLng}(${label})`
+    });
+    Linking.openURL(url).catch(err => console.error('An error occurred', err));
+};
+
+export {getViewPortFromBounds, callDirectionsApiForPoints, extractInformationFromDirectionApiResponse, getProcessedDataForOrderedList, navigateTo};
