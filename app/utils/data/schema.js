@@ -10,6 +10,7 @@ import {Place} from './schemas/Models/place/Place';
 import {User} from './schemas/Models/user/User';
 import {Visit} from './schemas/Models/visit/Visit';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
+import {Physician} from './schemas/Models/physician/Physician';
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
@@ -17,6 +18,8 @@ import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex
 import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
+import * as PhysicianSchemas from './schemas/Models/physician/schemaVersions/SchemaIndex';
+import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 import {UserDataService} from '../../data_services/UserDataService';
 import {getPatientsByOldID} from '../API/PatientAPI';
 import {arrayToObjectByKey} from '../collectionUtils';
@@ -36,7 +39,9 @@ class FloDBProvider {
 
         // 0th element intentionally left blank to make index of the array match with schema version
         const schemaMigrations = [
-            {},
+            {
+
+            },
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
@@ -115,21 +120,21 @@ class FloDBProvider {
             //     path: 'database.realm',
             //     encryptionKey: stringToArrayBuffer(key),
             // }
-            //TODO Just to replace during conflict. Don't bother with 6th migration ;)
             {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
-                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    PhysicianSchemas.PhysicianSchemaV1],
                 schemaVersion: 6,
                 migration: () => {
-                    console.log('Replace with conflict');
+                    console.log('Migrating to v6. Adding physician');
                 },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             },
             {
                 schema: [VisitSchemas.VisitSchemaV2, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
-                    EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
-                    UserSchemas.UserSchemaV1],
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1],
                 schemaVersion: 7,
                 prerequisite: async oldRealm => {
                     const allPatients = oldRealm.objects(Patient.getSchemaName());
@@ -171,7 +176,7 @@ class FloDBProvider {
         ];
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
-        const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User];
+        const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User, Physician];
 
         let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (existingSchemaVersion >= 0) {
@@ -238,6 +243,8 @@ function CreateAndSaveDummies() {
     const episodeID = `${Math.random().toString()}_Episode`;
     const patientID = `${Math.random().toString()}_Patient`;
     const visitID = `${Math.random().toString()}_Visit`;
+    const physicianID = `${Math.random().toString()}_Visit`;
+    const npiId = Math.floor(Math.random() * 1000000000).toString();
 
     console.log('==========================================');
     console.log('Creating Realm objects');
@@ -282,10 +289,20 @@ function CreateAndSaveDummies() {
             longitude: -122 + 0.05 * Math.random()
         };
         // Create an Episode
+        const primaryPhysician = PhysicianDataService.getInstance().createNewPhysician({
+            physicianID,
+            npiId,
+            firstName: 'Bellandur',
+            lastName: 'DrName',
+            phone1: '9823401232',
+            phone2: '9857401265',
+            faxNo: '9378620212',
+        });
         patient.episodes.push({
             episodeID,
             diagnosis: ['A', 'B', 'C'],
-            isClosed: true
+            isClosed: true,
+            primaryPhysician
         });
         // patient.episodes[0].visits.push({
         //     visitID,
@@ -301,5 +318,5 @@ function CreateAndSaveDummies() {
 
 export {
     FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
-    VisitOrder, User, CreateAndSaveDummies
+    VisitOrder, User, Physician, CreateAndSaveDummies
 };

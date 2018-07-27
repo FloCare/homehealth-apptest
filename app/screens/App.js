@@ -20,6 +20,7 @@ import {MessagingServiceCoordinator} from '../data_services/MessagingServices/Pu
 import {initialiseStore} from '../utils/InMemoryStore';
 import {UserDataService} from '../data_services/UserDataService';
 import {EpisodeDataService} from '../data_services/EpisodeDataService';
+import {PhysicianDataService} from "../data_services/PhysicianDataService";
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -66,6 +67,7 @@ const StartApp = async (key) => {
     VisitService.initialiseService(FloDBProvider.db, store);
     EpisodeDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
+    PhysicianDataService.initialiseService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);

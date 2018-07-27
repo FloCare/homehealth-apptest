@@ -68,4 +68,11 @@ const createSectionedListByName = (realmObj) => {
     return sectionsArray;
 };
 
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByName, arrayToObjectByKey, arrayToObjectListByKey};
+function hasNonEmptyValueForKey(object, key) {
+    return !!(object.hasOwnProperty(key) && object[key]);
+}
+
+function hasNonEmptyValueForAllKeys(object, keysList) {
+    return keysList.every(key => hasNonEmptyValueForKey(object, key));
+}
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByName, arrayToObjectByKey, arrayToObjectListByKey, hasNonEmptyValueForKey, hasNonEmptyValueForAllKeys};
