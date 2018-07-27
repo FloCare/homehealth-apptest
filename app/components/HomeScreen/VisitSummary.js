@@ -130,71 +130,83 @@ function visitSummaryFuture(props) {
     const primaryColor = PrimaryColor;
     const secondary = '#34da92';
     return (
-        <LinearGradient
-            colors={[primaryColor, secondary]}
-            start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
-            style={{
-                flex: 1,
-                alignItems: 'center',
-                margin: 0,
-                justifyContent: 'space-between'
-                // marginTop: 60,
-                // paddingTop: 10,
-                // paddingBottom: 30
-            }}
-        >
-            <View style={{flex: 2, justifyContent: 'center'}}>
-                <StyledText
-                    style={{
-                        fontSize: 24,
-                        fontWeight: 'bold',
-                        color: '#ffffff'
-                    }}
-                >
-                    {`${props.totalVisitsCount} visits planned`}
-                </StyledText>
-            </View>
-            <View style={{flex: 2}}>
-                <StyledText
-                    style={{
-                        alignSelf: 'center',
-                        fontSize: 12,
-                        color: '#ffffff'
-                    }}
-                >
-                    View visits on
-                </StyledText>
-                <View
-                    style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        justifyContent: 'space-around',
-                        // alignSelf: 'stretch',
-                    }}
-                >
-                    <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
-                        {/*// underlayColor={primaryColor}>*/}
-                        <Image
-                            style={{resizeMode: 'contain'}}
-                            source={Images.map}
-                        />
-                    </TouchableWithoutFeedback>
-
-
-                    <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
-                        <Image
-                            style={{resizeMode: 'contain'}}
-                            source={Images.list}
-                        />
-                    </TouchableWithoutFeedback>
+        <View style={{flex: 1}}>
+            <LinearGradient
+                colors={[primaryColor, secondary]}
+                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
+                style={{
+                    alignItems: 'center',
+                    margin: 0,
+                    justifyContent: 'space-between',
+                    // marginTop: 60,
+                    // paddingTop: 10,
+                    // paddingBottom: 10
+                }}
+            >
+                <View style={homeStyles.headerStyle}>
+                    <StyledText
+                        style={{
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            color: '#ffffff'
+                        }}
+                    >
+                        {`${props.totalVisitsCount} visits planned`}
+                    </StyledText>
                 </View>
-            </View>
+                <View>
+                    <StyledText
+                        style={{
+                            alignSelf: 'center',
+                            fontSize: 12,
+                            color: '#ffffff',
+                            marginTop: 10
+                        }}
+                    >
+                        View visits on
+                    </StyledText>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-around',
+                            marginTop: 10,
+                            marginBottom: 20
+                            // alignSelf: 'stretch',
+                        }}
+                    >
+
+                        <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
+                            <View style={homeStyles.listViewIconStyle}>
+                                <Image
+                                    style={{resizeMode: 'contain'}}
+                                    source={Images.list}
+                                />
+                                <Text style={{alignSelf: 'center', color: '#ffffff'}}>
+                                    List
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
+                            <View style={homeStyles.listViewIconStyle}>
+                                <Image
+                                    style={{resizeMode: 'contain'}}
+                                    source={Images.map}
+                                />
+                                <Text style={{alignSelf: 'center', color: '#ffffff'}}>
+                                    Maps
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </View>
+            </LinearGradient>
             <View
                 style={{
-                    flex: 3,
                     width: Dimensions.get('screen').width,
                     justifyContent: 'flex-start',
                     alignItems: 'center',
+                    marginTop: 30
                 }}
             >
                 <EmptyStateButton
@@ -203,7 +215,7 @@ function visitSummaryFuture(props) {
                     Add Visits
                 </EmptyStateButton>
             </View>
-        </LinearGradient>
+        </View>
     );
 }
 
@@ -211,66 +223,79 @@ function visitSummaryPast(props) {
     const primaryColor = PrimaryColor;
     const secondary = '#34da92';
     return (
-        <LinearGradient
-            colors={[primaryColor, secondary]}
-            start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
-            style={{
-                flex: 1,
-                alignItems: 'center',
-                margin: 0,
-                justifyContent: 'space-between'
-                // marginTop: 60,
-                // paddingTop: 10,
-                // paddingBottom: 30
-            }}
-        >
-            <View style={{flex: 1, justifyContent: 'center'}}>
-                <StyledText
-                    style={{
-                        fontSize: 24,
-                        fontWeight: 'bold',
-                        color: '#ffffff'
-                    }}
-                >
-                    {`${props.totalVisitsCount} visits`}
-                </StyledText>
-            </View>
-            <View style={{flex: 2}}>
-                <StyledText
-                    style={{
-                        alignSelf: 'center',
-                        fontSize: 12,
-                        color: '#ffffff'
-                    }}
-                >
-                    View visits on
-                </StyledText>
-                <View
-                    style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        justifyContent: 'space-around',
-                        // alignSelf: 'stretch',
-                    }}
-                >
-                    <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
-                        {/*// underlayColor={primaryColor}>*/}
-                        <Image
-                            style={{resizeMode: 'contain'}}
-                            source={Images.map}
-                        />
-                    </TouchableWithoutFeedback>
-
-
-                    <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
-                        <Image
-                            style={{resizeMode: 'contain'}}
-                            source={Images.list}
-                        />
-                    </TouchableWithoutFeedback>
+        <View style={{flex: 1}}>
+            <LinearGradient
+                colors={[primaryColor, secondary]}
+                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
+                style={{
+                    alignItems: 'center',
+                    margin: 0,
+                    justifyContent: 'space-between'
+                    // marginTop: 60,
+                    // paddingTop: 10,
+                    // paddingBottom: 30
+                }}
+            >
+                <View style={homeStyles.headerStyle}>
+                    <StyledText
+                        style={{
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            color: '#ffffff'
+                        }}
+                    >
+                        {`${props.totalVisitsCount} visits`}
+                    </StyledText>
                 </View>
-            </View>
-        </LinearGradient>
+                <View>
+                    <StyledText
+                        style={{
+                            alignSelf: 'center',
+                            fontSize: 12,
+                            color: '#ffffff',
+                            marginTop: 10
+                        }}
+                    >
+                        View visits on
+                    </StyledText>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-around',
+                            marginTop: 10,
+                            marginBottom: 20
+                            // alignSelf: 'stretch',
+                        }}
+                    >
+
+                        <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
+                            <View style={homeStyles.listViewIconStyle}>
+                                <Image
+                                    style={{resizeMode: 'contain'}}
+                                    source={Images.list}
+                                />
+                                <Text style={{alignSelf: 'center', color: '#ffffff'}}>
+                                    List
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                        <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
+                            <View style={homeStyles.listViewIconStyle}>
+                                <Image
+                                    style={{resizeMode: 'contain'}}
+                                    source={Images.map}
+                                />
+                                <Text style={{alignSelf: 'center', color: '#ffffff'}}>
+                                    Maps
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                    </View>
+                </View>
+            </LinearGradient>
+        </View>
     );
 }
 
