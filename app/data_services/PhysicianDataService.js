@@ -1,4 +1,5 @@
 import {Physician} from '../utils/data/schema';
+import { PatientDataService } from './PatientDataService'
 
 export class PhysicianDataService {
 
@@ -21,8 +22,7 @@ export class PhysicianDataService {
     }
 
     static constructName(firstName, lastName) {
-        if (lastName === null) return firstName;
-        return `${lastName} ${firstName}`;
+        return PatientDataService.constructName(firstName, lastName);
     }
 
     // Has to be inside a floDB.write

@@ -213,7 +213,7 @@ function CreateAndSaveDummies() {
     const episodeID = `${Math.random().toString()}_Episode`;
     const patientID = `${Math.random().toString()}_Patient`;
     const visitID = `${Math.random().toString()}_Visit`;
-    const physicianId = `${Math.random().toString()}_Visit`;
+    const physicianID = `${Math.random().toString()}_Visit`;
     const npiId = Math.floor(Math.random() * 1000000000).toString();
 
     console.log('==========================================');
@@ -260,7 +260,7 @@ function CreateAndSaveDummies() {
         };
         // Create an Episode
         const primaryPhysician = PhysicianDataService.getInstance().createNewPhysician({
-            id: physicianId,
+            physicianID,
             npiId,
             firstName: 'Bellandur',
             lastName: 'DrName',

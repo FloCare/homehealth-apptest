@@ -6,7 +6,6 @@ export const Images = {
     calendar: require('../resources/calendar.png'),
     calendarSelected: require('../resources/calendarSelected.png'),
     call: require('../resources/call.png'),
-    callButton: require('../resources/callButton.png'),
     close: require('../resources/close.png'),
     dots: require('../resources/dots.png'),
     delete: require('../resources/delete.png'),

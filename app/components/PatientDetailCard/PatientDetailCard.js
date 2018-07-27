@@ -192,7 +192,7 @@ const PatientDetailCard = (props) => {
                                     }
                                 }}
                             >
-                                <Image source={Images.callButton} style={{height: 28, resizeMode: 'contain'}} />
+                                <Image source={Images.emptyCall} style={{height: 28, resizeMode: 'contain'}} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -338,7 +338,7 @@ const PatientDetailCard = (props) => {
                                           }
                                       }}
                                   >
-                                    <Image source={Images.callButton} style={{height: 28, resizeMode: 'contain'}} />
+                                    <Image source={Images.emptyCall} style={{height: 28, resizeMode: 'contain'}} />
                                   </TouchableOpacity>
                                 </View>
                             </View>
@@ -367,7 +367,7 @@ const PatientDetailCard = (props) => {
                                             }
                                         }}
                                     >
-                                      <Image source={Images.callButton} style={{height: 28, resizeMode: 'contain'}} />
+                                      <Image source={Images.emptyCall} style={{height: 28, resizeMode: 'contain'}} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
