@@ -8,7 +8,7 @@ import {VisitService} from './VisitServices/VisitService';
 
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
-import {MessagingServiceCoordinator} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {getMessagingServiceInstance} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {VisitMessagingService} from './MessagingServices/PubNubMessagingService/VisitMessagingService';
 import {getEpisodeDetailsByIds} from '../utils/API/EpisodeAPI';
 
@@ -128,7 +128,7 @@ export class PatientDataService {
 
             if (isLocallyOwned) {
                 addressDataService.addAddressToTransaction(newPatient, patient, addressId);
-            } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.id);
+            } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.addressID);
 
             //Todo: Add an episode, Move this to its own Data Service
             if (!episode) {
@@ -142,11 +142,11 @@ export class PatientDataService {
         });
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
-            //TODO
-            MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
+            getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
         }
     }
 
+    //TODO edit address for patient
     editExistingPatient(patient, isServerUpdate = false) {
         const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patient.patientID);
 
@@ -178,7 +178,7 @@ export class PatientDataService {
                     emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : undefined,
                 }, true);
             });
-            this.updatePatientsInRedux([patientObj], isServerUpdate);
+            if (this.store) { this.updatePatientsInRedux([patientObj], isServerUpdate); }
         }
     }
 
@@ -191,7 +191,7 @@ export class PatientDataService {
                 this._checkPermissionForEditing([patient]);
             } else {
                 //TODO
-                MessagingServiceCoordinator.getInstance().getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes(patient.episodes);
+                getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes(patient.episodes);
             }
 
             this.floDB.write(() => {
@@ -244,6 +244,8 @@ export class PatientDataService {
                     additions = await this.fetchAndSavePatientsByID(newPatientIDs).success;
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
+                console.log('after sync with server patient list is:');
+                console.log(this.floDB.objects(Patient.getSchemaName));
                 return {
                     additions,
                     deletions
@@ -257,7 +259,7 @@ export class PatientDataService {
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
-                    patientObject.address.id = patientObject.address.id.toString();
+                    // patientObject.address.id = patientObject.address.id.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
 

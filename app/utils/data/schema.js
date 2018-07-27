@@ -1,4 +1,5 @@
 import moment from 'moment/moment';
+import {Alert} from 'react-native';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
 import * as Migrations from './schemas/migrations/MigrationsIndex';
@@ -17,6 +18,8 @@ import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
 import {UserDataService} from '../../data_services/UserDataService';
+import {getPatientsByOldID} from '../API/PatientAPI';
+import {arrayToObjectByKey} from '../collectionUtils';
 
 const Realm = require('realm');
 
@@ -127,13 +130,28 @@ class FloDBProvider {
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
                     UserSchemas.UserSchemaV1],
                 schemaVersion: 7,
-                prerequisite: () => {
-                    //TODO get own user data and the patient ids mapping here
-                    // setItem('patientMigrationMapping', {
-                    //     18: 'xyz1',
-                    //     19: 'xyz2',
-                    //     20: 'xyz3',
-                    // });
+                prerequisite: async oldRealm => {
+                    const allPatients = oldRealm.objects(Patient.getSchemaName());
+                    await getPatientsByOldID(allPatients.map(patient => patient.patientID))
+                        .then(responseJson => {
+                            if (!responseJson.success || responseJson.success.length !== allPatients.length) {
+                                Alert.alert('Note', 'Please check to make sure all patients are synced with your device.');
+                            }
+                            const patientJsonByOldID = arrayToObjectByKey(responseJson.success, 'id');
+                            allPatients.forEach(patient => {
+                                const newJson = patientJsonByOldID[patient.patientID];
+                                if (newJson) {
+                                    oldRealm.write(() => {
+                                        patient.patientID = newJson.patientID;
+                                        patient.episodes[0].episodeID = newJson.episodeID;
+                                    });
+                                } else oldRealm.delete(patient);
+                            });
+                        }).catch(error => {
+                            console.log('error in migrating patient ids');
+                            console.log(error);
+                            throw error;
+                        });
                 },
                 migration: Migrations.v007,
                 path: 'database.realm',
@@ -147,9 +165,11 @@ class FloDBProvider {
         let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (existingSchemaVersion >= 0) {
             // Run migrations if schema exists
-            while (existingSchemaVersion <= targetSchemaVersion) {
-                if (schemaMigrations[existingSchemaVersion].prerequisite) {
-                    await schemaMigrations[existingSchemaVersion].prerequisite(migratedRealm);
+            while (existingSchemaVersion < targetSchemaVersion) {
+                if (schemaMigrations[existingSchemaVersion + 1].prerequisite) {
+                    const previousRealm = new Realm(schemaMigrations[existingSchemaVersion]);
+                    await schemaMigrations[existingSchemaVersion].prerequisite(previousRealm);
+                    previousRealm.close();
                 }
                 const migratedRealm = new Realm(schemaMigrations[existingSchemaVersion]);
                 migratedRealm.close();
@@ -171,7 +191,7 @@ class FloDBProvider {
                 schemaVersion: schemaMigrations[targetSchemaVersion].schemaVersion,
                 encryptionKey: schemaMigrations[targetSchemaVersion].encryptionKey,
                 path: schemaMigrations[targetSchemaVersion].path,
-                migration: schemaMigrations[targetSchemaVersion].migration
+                migration: schemaMigrations[targetSchemaVersion].migration,
             });
 
             if (existingSchemaVersion === -1) {

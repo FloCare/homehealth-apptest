@@ -60,14 +60,6 @@ export class MessagingServiceCoordinator {
         this.messageServices = messageServices;
     }
 
-    getMessagingServiceInstance(serviceClassName) {
-        const messagingServiceInstance = this.messageServices[serviceClassName.name];
-        if (!messagingServiceInstance) {
-            throw new Error(`Requested messaging service ${serviceClassName.name}not found`);
-        }
-        return messagingServiceInstance;
-    }
-
     onNotificationRegister(token) {
         for (const serviceName in this.messageServices) {
             if (this.messageServices.hasOwnProperty(serviceName)) {
@@ -87,3 +79,10 @@ export class MessagingServiceCoordinator {
     }
 }
 
+export function getMessagingServiceInstance(serviceClassName) {
+    const messagingServiceInstance = MessagingServiceCoordinator.getInstance().messageServices[serviceClassName.name];
+    if (!messagingServiceInstance) {
+        throw new Error(`Requested messaging service ${serviceClassName.name}not found`);
+    }
+    return messagingServiceInstance;
+}

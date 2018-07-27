@@ -13,7 +13,7 @@ export function getUserProps(userID) {
                     Authorization: `Token ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: userID ? {userID} : undefined
+                body: userID ? JSON.stringify({userID}) : undefined
             }))
         .then(response => {
             if (response.ok) {

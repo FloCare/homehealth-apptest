@@ -18,6 +18,20 @@ function arrayToObjectByKey(array, keyProperty) {
     return array.reduce((map, object) => { map[object[keyProperty]] = object; return map; }, {});
 }
 
+function arrayToObjectListByKey(array, keyProperty) {
+    if (!keyProperty) {
+        console.error('keyProperty missing');
+    }
+    if (!array) {
+        console.error('array undefined');
+    }
+    return array.reduce((map, object) => {
+        if (!map[object[keyProperty]]) { map[object[keyProperty]] = []; }
+        map[object[keyProperty]].push(object);
+        return map;
+    }, {});
+}
+
 function filterResultObjectByListMembership(object, property, membershipList) {
     let filterPredicate = membershipList
         .map((membershipItem) => `${property}=="${membershipItem}"`)
@@ -54,4 +68,4 @@ const createSectionedListByName = (realmObj) => {
     return sectionsArray;
 };
 
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByName, arrayToObjectByKey};
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByName, arrayToObjectByKey, arrayToObjectListByKey};
