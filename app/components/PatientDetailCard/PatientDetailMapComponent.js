@@ -1,10 +1,17 @@
 import React from 'react';
 import MapView, {Marker, Callout} from 'react-native-maps';
 import firebase from 'react-native-firebase';
-import {Linking} from 'react-native';
 import {MapMarker} from '../common/PatientMap/MapMarker';
 import {CustomCallout} from '../common/PatientMap/CustomCallout';
 import {eventNames, parameterValues} from '../../utils/constants';
+import {navigateTo} from '../../utils/MapUtils';
+
+const onPress = (coordinates, address) => {
+    firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+        type: parameterValues.NAVIGATION
+    });
+    navigateTo(coordinates.latitude, coordinates.longitude, address);
+};
 
 export function PatientDetailMapComponent(props) {
     return (
@@ -25,15 +32,11 @@ export function PatientDetailMapComponent(props) {
             <Marker
                 coordinate={props.patientCoordinates}
                 ref={props.setMarkerRef}
-                onPress={() => {
-                    firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-                        'type': parameterValues.NAVIGATION
-                    });
-                    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err));
-                }}
+                onPress={() => onPress(props.patientCoordinates, props.patientAddress)}
+                // Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err));
             >
                 <MapMarker />
-                <Callout onPress={() => Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err))} style={{marginTop: 10}}>
+                <Callout onPress={() => onPress(props.patientCoordinates, props.patientAddress)} style={{marginTop: 10}}>
                     <CustomCallout address={props.patientAddress} />
                 </Callout>
             </Marker>
