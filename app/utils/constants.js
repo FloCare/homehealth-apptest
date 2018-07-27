@@ -123,8 +123,10 @@ const parameterValues = {
     DND: 'dnd',
     DETAILS: 'details',
     REFRESH: 'refresh',
-    RESCHEDULE: 'reschedule',
+    RESCHEDULE: 'date_reschedule',
     DELETE_VISIT: 'delete_visit',
+    ADD_TIME: 'add_time',
+    VIEW_VISIT_CALENDAR: 'view_visit_calendar',
 
 };
 

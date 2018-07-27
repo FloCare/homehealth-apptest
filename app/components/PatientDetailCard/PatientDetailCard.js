@@ -288,7 +288,12 @@ const PatientDetailCard = (props) => {
                             calendarHeaderFormat='MMMM'
                             calendarHeaderStyle={{fontWeight: '100', fontSize: 14, alignSelf: 'flex-start'}}
                             calendarHeaderViewStyle={{marginLeft: 27, marginTop: 10}}
-                            onDateSelected={(date) => { onSelectVisitsDate(moment(date).add(moment().utcOffset(), 'minutes').utc()); }}
+                            onDateSelected={(date) => { 
+                                firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
+                                    'type': parameterValues.VIEW_VISIT_CALENDAR
+                                });
+                                onSelectVisitsDate(moment(date).add(moment().utcOffset(), 'minutes').utc()); 
+                            }}
                             onWeekChanged={onWeekChanged}
                             selectedDate={selectedVisitsDate.valueOf()}
                             customDatesStyles={getCustomDateStyles(selectedVisitsDate, datesWithVisits)}

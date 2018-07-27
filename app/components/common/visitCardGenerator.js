@@ -179,6 +179,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                 minuteInterval={5}
                                 date={startDate}
                                 onConfirm={(date) => {
+                                    firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
+                                        type: parameterValues.ADD_TIME
+                                    });
                                     this.handleTimePicked(date);
                                 }}
                                 onCancel={() => {
