@@ -62,6 +62,14 @@ const mapStateToProps = (state, ownProps) => {
     return props;
 };
 
+const cardActions = {
+    call: 'Call Patient',
+    goToAddress: 'Go To Address',
+    reschedule: 'Reschedule Visit',
+    deleteVisit: 'Delete Visit',
+    cancel: 'Cancel'
+};
+
 function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
@@ -205,15 +213,15 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             const cardActionsMap = [];
             let index = 0;
             if (this.props.primaryContact) {
-                cardActionsMap.push({index, title: 'Call'});
+                cardActionsMap.push({index, title: cardActions.call});
                 index++;
             }
             if (this.props.coordinates && this.props.coordinates.latitude && this.props.coordinates.longitude) {
-                cardActionsMap.push({index, title: 'Go To Address'});
+                cardActionsMap.push({index, title: cardActions.goToAddress});
                 index++;
             }
-            cardActionsMap.push({index: index++, title: 'Reschedule'});
-            cardActionsMap.push({index: index++, title: 'Delete Visit'});
+            cardActionsMap.push({index: index++, title: cardActions.reschedule});
+            cardActionsMap.push({index: index++, title: cardActions.deleteVisit});
             cardActionsMap.push({index: index++, title: 'Cancel'});
             return cardActionsMap;
         }
@@ -223,7 +231,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             const activeAction = this.cardActions.find((cardAction) => cardAction.index === index);
 
             switch (activeAction.title) {
-                case 'Call':
+                case cardActions.call:
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         type: parameterValues.CALL_PATIENT
                     });
@@ -235,23 +243,23 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         }
                     }
                     break;
-                case 'Go To Address':
+                case cardActions.goToAddress:
                     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                         type: parameterValues.NAVIGATION
                     });
                     if (this.props.coordinates) {
-                        const mapsURL = "http://maps.apple.com/?ll=37.484847,-122.148386"// `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`;
+                        const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${this.props.coordinates.latitude},${this.props.coordinates.longitude}`;
                         Linking.openURL(mapsURL)
                             .catch(err => console.error('An error occurred', err));
                     }
                     break;
-                case 'Reschedule':
+                case cardActions.reschedule:
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.RESCHEDULE
                     });
                     this.onPressRescheduleVisit();
                     break;
-                case 'Delete Visit':
+                case cardActions.deleteVisit:
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.DELETE_VISIT
                     });
