@@ -62,7 +62,7 @@ function VisitMapRowGenerator() {
                         style={[{
                             flex: 1,
                             flexDirection: 'row',
-                            backgroundColor: 'rgba(255,255,255,0.35)',
+                            backgroundColor: 'rgba(21, 58, 44, 0.15)',
                             marginLeft: 10,
                             alignItems: 'center'
                         }, active ? {elevation: 6, borderColor: 'white', borderWidth: 1} : {}
