@@ -2,9 +2,9 @@ import {Physician} from '../Physician';
 
 export const PhysicianSchemaV1 = {
     name: Physician.getSchemaName(),
-    primaryKey: 'id',
+    primaryKey: 'physicianID',
     properties: {
-        id: 'string',
+        physicianID: 'string',
         npiId: 'string',
         firstName: 'string',
         lastName: 'string?',

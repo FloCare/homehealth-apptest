@@ -144,9 +144,20 @@ export class PatientDataService {
                     diagnosis: []
                 };
             }
-            if (hasNonEmptyValueForKey(episode, 'primaryPhysician') &&
-                hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['id', 'npi', 'firstName'])) {
-                episode.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(episode.primaryPhysician);
+            if (episode.primaryPhysician &&
+                hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['physicianID', 'npi', 'firstName'])) {
+                const physicianDetails = episode.primaryPhysician;
+                const physician = {
+                    physicianID: physicianDetails.physicianID.toString(),
+                    npiId: physicianDetails.npi.toString(),
+                    firstName: physicianDetails.firstName,
+                    lastName: physicianDetails.lastName,
+                    phone1: physicianDetails.phone1,
+                    phone2: physicianDetails.phone2,
+                    faxNo: physicianDetails.fax,
+                };
+
+                episode.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
             }
             const episodeObject = this.floDB.create(Episode, episode, true);
             newPatient.episodes.push(episodeObject);
@@ -159,7 +170,7 @@ export class PatientDataService {
         }
     }
 
-    editExistingPatient(patient, isServerUpdate = false) {
+    editExistingPatient(patient, isServerUpdate = false, episode = null) {
         const patientObj = this.floDB.objectForPrimaryKey(Patient.schema.name, patient.patientID);
 
         if (patientObj) {
@@ -178,7 +189,7 @@ export class PatientDataService {
                 }
 
                 // Edit the patient info
-                this.floDB.create(Patient.schema.name, {
+                const patient = this.floDB.create(Patient.schema.name, {
                     patientID: patient.patientID,
                     firstName: patient.firstName ? patient.firstName.toString().trim() : undefined,
                     lastName: patient.lastName ? patient.lastName.toString().trim() : undefined,
@@ -189,6 +200,22 @@ export class PatientDataService {
                     emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : undefined,
                     emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : undefined,
                 }, true);
+
+                if (episode && episode.primaryPhysician &&
+                    hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['physicianID', 'npi', 'firstName'])) {
+                    const physicianDetails = episode.primaryPhysician;
+                    const physician = {
+                        physicianID: physicianDetails.physicianID.toString(),
+                        npiId: physicianDetails.npi.toString(),
+                        firstName: physicianDetails.firstName,
+                        lastName: physicianDetails.lastName,
+                        phone1: physicianDetails.phone1,
+                        phone2: physicianDetails.phone2,
+                        faxNo: physicianDetails.fax,
+                    };
+
+                    patient.getFirstEpisode().primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
+                }
             });
             this.updatePatientsInRedux([patientObj], isServerUpdate);
         }
@@ -269,7 +296,7 @@ export class PatientDataService {
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
-                    patientObject.address.id = patientObject.address.id.toString();
+                    patientObject.address.id = patientObject.address.addressID.toString();
                     patientObject.address.lat = patientObject.address.latitude;
                     patientObject.address.long = patientObject.address.longitude;
 
@@ -292,48 +319,70 @@ export class PatientDataService {
             });
     }
 
-    fetchAndSavePatientsByID(newPatientIDs) {
-        return this._fetchPatientsByIDAndAdapt(newPatientIDs)
-            .then(async json => {
-                const resultObject = {success: [], failed: []};
+    fetchPatientsWithEpisodeData(patientIDs) {
+        return this._fetchPatientsByIDAndAdapt(patientIDs).then(
+            json => {
+                const dataArray = [];
                 const successfulObjects = json.success;
-
-                const allPromises = [];
-                for (const patientObject of successfulObjects) {
-                    console.log(patientObject);
-                    const promise = getEpisodeDetailsByIds([patientObject.episodeID]).then(episodeResponseJson => {
-                        console.log('episode response json');
-                        console.log(episodeResponseJson);
-                        if (!episodeResponseJson.success || episodeResponseJson.success.length === 0) {
-                            resultObject.failed.push(patientObject.patientID);
+                const episodeIDs = successfulObjects.map((patient) => patient.episodeID);
+                return getEpisodeDetailsByIds(episodeIDs).then(
+                    episodeResponseJson => {
+                        const episodeObjects = episodeResponseJson.success;
+                        for (const patientObject of successfulObjects) {
+                            const episodeObject = episodeObjects.find((episode) => episode.episodeID === patientObject.episodeID);
+                            dataArray.push({
+                                patient: patientObject,
+                                episode: episodeObject
+                            });
                         }
-                        this.createNewPatient(patientObject, false, true, episodeResponseJson.success[0]);
-                        resultObject.success.push(patientObject.patientID);
-                    }).catch((error) => {
-                        resultObject.failed.push(patientObject.patientID);
-                        console.log('got patient details for this patient, but failed to fetch episode and create local entity');
-                        console.log(error);
-                    });
-                    allPromises.push(promise);
-                }
-                await Promise.all(allPromises);
+                        return dataArray;
+                    }
+                ).catch(error => {
+                    console.log('failed to get data for episode IDs.');
+                    console.log(error);
+                });
+            }
+        );
+    }
 
+    fetchAndSavePatientsByID(newPatientIDs) {
+        return this.fetchPatientsWithEpisodeData(newPatientIDs).then(
+            responseArray => {
+                const resultObject = {success: [], failed: []};
+                responseArray.forEach(
+                    (patientEpisodeData) => {
+                        const patient = patientEpisodeData.patient;
+                        const episode = patientEpisodeData.episode;
+                        if (episode) {
+                            this.createNewPatient(patient, false, true, episode);
+                            resultObject.success.push(patient.patientID);
+                        } else {
+                            resultObject.failed.push(patient.patientID);
+                        }
+                    }
+                );
                 addressDataService.attemptFetchForPendingAddresses();
                 console.log(resultObject);
                 return resultObject;
-            });
+            }
+        );
     }
 
+
     fetchAndEditPatientsByID(patientIDs) {
-        return this._fetchPatientsByIDAndAdapt(patientIDs)
-            .then((json) => {
-                const successfulObjects = json.success;
-                for (const patientObject of successfulObjects) {
-                    this.editExistingPatient(patientObject, true);
-                }
+        return this.fetchPatientsWithEpisodeData(patientIDs)
+            .then(responseArray => {
+                responseArray.forEach(
+                    (patientEpisodeData) => {
+                        const patient = patientEpisodeData.patient;
+                        const episode = patientEpisodeData.episode;
+                        this.editExistingPatient(patient, true, episode);
+                    }
+                );
                 addressDataService.attemptFetchForPendingAddresses();
-                return successfulObjects.length;
-            });
+                return responseArray.length;
+            }
+        );
     }
 
     updatePatientsInRedux(patients, isServerUpdate = false) {

@@ -315,7 +315,7 @@ const PatientDetailCard = (props) => {
                         {PhysicianDataService.constructName(physicianInfo.firstName, physicianInfo.lastName)}
                         </StyledText>
                         {
-                            physicianInfo.phone1 &&
+                            !!physicianInfo.phone1 &&
                             <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between'}}>
                                 <View style={{flex: 4}}>
                                     <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999', marginTop: 10}}>
@@ -344,7 +344,7 @@ const PatientDetailCard = (props) => {
                             </View>
                         }
                         {
-                            physicianInfo.phone2 &&
+                            !!physicianInfo.phone2 &&
                             <View style={{flexDirection: 'row', flex: 1, justifyContent: 'space-between', marginTop: 15, marginBottom: 10}}>
                                 <View style={{flex: 4}}>
                                     <StyledText style={{...styles.fontStyle, fontSize: 13, color: '#999999'}}>

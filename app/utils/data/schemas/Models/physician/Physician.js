@@ -8,10 +8,6 @@ export class Physician extends Realm.Object {
         return 'Physician';
     }
 
-    static getMandatoryKeys() {
-        return ['id', 'npiId', 'firstName'];
-    }
-
     get name() {
         PhysicianDataService.constructName(this.firstName, this.lastName);
     }
