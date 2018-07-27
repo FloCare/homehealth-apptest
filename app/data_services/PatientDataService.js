@@ -184,12 +184,15 @@ export class PatientDataService {
 
             this.floDB.write(() => {
                 // Edit the corresponding address info
-                if (patient.addressID) {
+                if (isServerUpdate && patient.address && patient.address.addressID) {
+                    addressDataService.addAddressToTransaction(patientObj, patient, patient.address.addressID);
+                }
+                if (!isServerUpdate && patient.addressID) {
                     addressDataService.addAddressToTransaction(patientObj, patient, patient.addressID);
                 }
 
                 // Edit the patient info
-                const patient = this.floDB.create(Patient.schema.name, {
+                const updatedPatient = this.floDB.create(Patient.schema.name, {
                     patientID: patient.patientID,
                     firstName: patient.firstName ? patient.firstName.toString().trim() : undefined,
                     lastName: patient.lastName ? patient.lastName.toString().trim() : undefined,
@@ -214,7 +217,7 @@ export class PatientDataService {
                         faxNo: physicianDetails.fax,
                     };
 
-                    patient.getFirstEpisode().primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
+                    updatedPatient.getFirstEpisode().primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
                 }
             });
             if (this.store) { this.updatePatientsInRedux([patientObj], isServerUpdate); }
