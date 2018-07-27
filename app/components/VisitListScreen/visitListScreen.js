@@ -13,8 +13,8 @@ function VisitListScreen(props) {
             {
                 props.showError &&
                 <View style={{backgroundColor: '#FFF78A', marginTop: 10}}>
-                    <StyledText style={{fontSize: 12, color: '#F51414', alignSelf: 'center', margin: 5}}>
-                        *Please check the order of the visits
+                    <StyledText style={{fontSize: 12, color: '#F51414', textAlign: 'center', margin: 5}}>
+                        *Visit-time order is inconsistent. Please check the order or time(s).
                     </StyledText>
                 </View>
             }
