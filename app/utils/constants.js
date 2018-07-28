@@ -126,6 +126,7 @@ const parameterValues = {
     RESCHEDULE: 'date_reschedule',
     DELETE_VISIT: 'delete_visit',
     ADD_TIME: 'add_time',
+    EDIT_TIME: 'edit_time',
     VIEW_VISIT_CALENDAR: 'view_visit_calendar',
 
 };
