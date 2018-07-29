@@ -28,7 +28,7 @@ export class BaseMessagingService {
 
     }
 
-    async processFromHistory(channels = this.channels) {
+    async processFromHistory(channels = this.channels, suppressNotification = false) {
         console.log('processFromHistory');
         console.log(channels);
 
@@ -48,7 +48,8 @@ export class BaseMessagingService {
                             await this.digestMessage({
                                 message: message.entry,
                                 timestamp: message.timetoken,
-                                channel: channel.name
+                                channel: channel.name,
+                                suppressNotification
                             });
                         } catch (e) {
                             console.log('skipping a message that threw error');
@@ -263,7 +264,7 @@ export class BaseMessagingService {
             return;
         }
         //TODO dont subscribe if history failed
-        this.processFromHistory(channels).then(() => {
+        this.processFromHistory(channels, true).then(() => {
             this.connected = true;
             console.log(`subscribing to channels: ${channels.map(channel => channel.name)}`);
             if (!channels || channels.length === 0) {

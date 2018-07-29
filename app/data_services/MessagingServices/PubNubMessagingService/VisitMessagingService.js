@@ -23,16 +23,20 @@ export class VisitMessagingService extends BaseMessagingService {
                     UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID)
                         .then(() => VisitService.getInstance().fetchAndSaveVisitsByID([visitID]))
                         .then((visits) => {
-                            visits.forEach(visit => {
-                                if (!visit) { return; }
-                                // console.log(visit);
-                                const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
-                                myVisitsForTheDay.forEach(myVisit => {
-                                    if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
-                                        showVisitCollisionNotification(myVisit, visit);
+                            if (!messageObject.suppressNotification) {
+                                visits.forEach(visit => {
+                                    if (!visit) {
+                                        return;
                                     }
+                                    // console.log(visit);
+                                    const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
+                                    myVisitsForTheDay.forEach(myVisit => {
+                                        if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
+                                            showVisitCollisionNotification(myVisit, visit);
+                                        }
+                                    });
                                 });
-                            });
+                            }
                             resolve();
                         }).catch(error => {
                         console.log('error in create');

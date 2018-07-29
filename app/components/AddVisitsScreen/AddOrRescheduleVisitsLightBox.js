@@ -1,3 +1,4 @@
+import moment from 'moment/moment';
 import React, {Component} from 'react';
 import {View, Image, TouchableHighlight, Dimensions} from 'react-native';
 import firebase from 'react-native-firebase';
@@ -34,10 +35,11 @@ class AddOrRescheduleVisitsLightBox extends Component {
     }
 
     onDateSelected(date) {
-        if (!date.isSame(this.state.date, 'day')) {
-            this.setState({date});
+        const dateMidnightUTC = date.startOf('day').add(moment().utcOffset(), 'minutes').utc();
+        if (!dateMidnightUTC.isSame(this.state.date, 'day')) {
+            this.setState({date: dateMidnightUTC});
         }
-        console.log(date.format());
+        console.log(dateMidnightUTC.format());
     }
 
     onSubmit() {
