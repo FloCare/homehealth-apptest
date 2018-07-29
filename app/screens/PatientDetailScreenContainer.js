@@ -50,7 +50,7 @@ class PatientDetailScreenContainer extends Component {
         this.getPatientDetails(this.props.patientId);
         floDB.addListener('change', this.handleDBUpdate);
         const selectedVisitsDate = this.props.selectedVisitsDate || todayMomentInUTCMidnight();
-        const weekStartDate = moment(selectedVisitsDate).startOf('week');
+        const weekStartDate = moment(selectedVisitsDate).startOf('isoWeek');
         const currentWeekVisitData = this.getVisitDataForWeek(weekStartDate.valueOf());
         const visitSectionData = this.getSelectedDateVisits(this.state.selectedVisitsDate, currentWeekVisitData);
         this.setState({
