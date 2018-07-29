@@ -24,6 +24,7 @@ export class VisitMessagingService extends BaseMessagingService {
                         .then(() => VisitService.getInstance().fetchAndSaveVisitsByID([visitID]))
                         .then((visits) => {
                             visits.forEach(visit => {
+                                if (!visit) { return; }
                                 // console.log(visit);
                                 const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
                                 myVisitsForTheDay.forEach(myVisit => {
@@ -51,7 +52,12 @@ export class VisitMessagingService extends BaseMessagingService {
                 case 'UPDATE' :
                     VisitService.getInstance().fetchAndSaveVisitsByID([visitID], true)
                         .then(() => resolve())
-                        .catch(error => reject(error));
+                        .catch(error => {
+                            console.log('error in update');
+                            console.log(error);
+                            resolve();
+                            // reject(error)
+                        });
                     break;
                 default:
                     console.log(`unrecognised message: ${message}`);

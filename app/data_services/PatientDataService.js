@@ -166,6 +166,7 @@ export class PatientDataService {
                 getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
             } catch (e) {
                 console.log('error trying to subscribe to new patient');
+                console.log(e);
             }
         }
     }
@@ -289,7 +290,7 @@ export class PatientDataService {
                 }
                 deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
                 console.log('after sync with server patient list is:');
-                console.log(this.floDB.objects(Patient.getSchemaName()));
+                console.log(this.floDB.objects(Patient.getSchemaName()).length);
                 return {
                     additions,
                     deletions

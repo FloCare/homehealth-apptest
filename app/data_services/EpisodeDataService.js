@@ -22,7 +22,7 @@ export class EpisodeDataService {
     }
 
     getEpisodeByID(episodeID) {
-        this.floDB.objectForPrimaryKey(Episode.getSchemaName(), episodeID);
+        return this.floDB.objectForPrimaryKey(Episode.getSchemaName(), episodeID);
     }
 
     saveVisitToEpisodeID(visit, episodeID) {

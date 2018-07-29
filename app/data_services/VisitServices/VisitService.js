@@ -173,13 +173,15 @@ export class VisitService {
             const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
             console.log(visitByMidnight);
             Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
-                const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false));
-                const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
-                this.floDB.write(() => {
-                    visitOrder.visitList = daysVisits;
-                    console.log(`midnight ${midnightEpochOfVisit}`);
-                    console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
-                });
+                const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
+                if (daysVisits && daysVisits.length > 0) {
+                    const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
+                    this.floDB.write(() => {
+                        visitOrder.visitList = daysVisits;
+                        console.log(`midnight ${midnightEpochOfVisit}`);
+                        console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
+                    });
+                }
             });
         }).catch(error => {
             console.log('error in fetching all preexisting visits');
@@ -206,6 +208,10 @@ export class VisitService {
     }
 
     saveVisitToRealm(visitJson, update = false) {
+        if (!EpisodeDataService.getInstance().getEpisodeByID(visitJson.episodeID)) {
+            console.log(`skipping saveVisitToRealm with the following episodeID because episode doesnt exist: ${visitJson.episodeID}`);
+            return;
+        }
         let visit;
         if (visitJson.plannedStartTime) {
             visitJson.plannedStartTime = new Date(visitJson.plannedStartTime);
