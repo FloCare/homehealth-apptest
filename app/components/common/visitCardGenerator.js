@@ -8,7 +8,7 @@ import {
     Linking,
     Platform,
     TouchableOpacity, Alert, Dimensions,
-} from 'react-native'
+} from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import ActionSheet from 'react-native-actionsheet';
@@ -21,8 +21,8 @@ import {
     PrimaryFontFamily, screenNames, visitSubjects,
 } from '../../utils/constants';
 import {Images} from '../../Images';
-import {VisitService} from '../../data_services/VisitServices/VisitService'
-import {EpisodeDataService} from '../../data_services/EpisodeDataService'
+import {VisitService} from '../../data_services/VisitServices/VisitService';
+import {EpisodeDataService} from '../../data_services/EpisodeDataService';
 import {navigateTo} from '../../utils/MapUtils';
 
 const mapStateToProps = (state, ownProps) => {
@@ -71,7 +71,7 @@ const cardActions = {
     cancel: 'Cancel'
 };
 
-function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
+function VisitCardGenerator({onDoneTogglePress, navigator, updateCardLayout}, showEllipse = true, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
         constructor(props) {
@@ -120,7 +120,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                     placeId: this.props.placeID,
                     visitSubject: this.props.visitSubject,
                     title: 'Reschedule Visit',
-                    date: moment(this.props.midnightEpochOfVisit),
+                    date: moment(this.props.midnightEpochOfVisit).utc(),
                     isReschedule: true,
                     oldVisitId: this.props.visitID
                 },
@@ -185,12 +185,11 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                 minuteInterval={5}
                                 date={startDate}
                                 onConfirm={(date) => {
-                                    if(this.state.visitTime) {
+                                    if (this.state.visitTime) {
                                         firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                                             type: parameterValues.EDIT_TIME
                                         });
-                                    }
-                                    else {
+                                    } else {
                                         firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                                             type: parameterValues.ADD_TIME
                                         });
@@ -354,7 +353,11 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
         handleOtherClinicianDate = (clinicianVisitData) => {
             this.setState({clinicianVisitData});
+            if (updateCardLayout) {
+                updateCardLayout(this.props.visitID);
+            }
         }
+
 
         render() {
             console.log('- - - - - - VisitCard Render- - - - - - - - ');
@@ -411,7 +414,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                     <Image source={Images.dots} />
                                 </View>
                                 <ActionSheet
-                                    ref={element => this.cardActionSheet = element}
+                                    ref={element => { this.cardActionSheet = element; }}
                                     options={this.cardActions.map((action) => action.title)}
                                     cancelButtonIndex={this.cardActions.length - 1}
                                     onPress={(index) => { this.handleCardActionPress(index); }}
