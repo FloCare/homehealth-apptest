@@ -276,7 +276,7 @@ export class VisitService {
         getMessagingServiceInstance(VisitMessagingService).publishVisitDeletes([visit]);
 
         this.visitRealmService.deleteVisitByObject(visit);
-        this.visitReduxService.setVisitOrderInRedux(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList);
+        this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
 
