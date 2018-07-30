@@ -252,11 +252,6 @@ export class VisitService {
             getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
         });
 
-        // Logging the firebase event upon visits being added
-        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-            VALUE: newVisits.length
-        });
-
         const newVisitOrder = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
         if (midnightEpoch === this.visitReduxService.getActiveDate()) {
             this.visitReduxService.addVisitsToRedux(newVisits);
