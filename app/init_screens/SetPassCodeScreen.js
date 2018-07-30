@@ -48,8 +48,10 @@ class SetPassCodeScreen extends Component {
                     console.log('Error in starting app:', err);
                     if (err.name === 'MissingNecessaryInternetConnection') {
                         Alert.alert('Offline', 'Unable to start the app');
-                    } else { Alert.alert('Error', 'Unable to start the app'); } 
-}
+                    } else {
+                        Alert.alert('Error', 'Unable to start the app');
+                    }
+                }
             }, (err) => {
                 console.log(err);
                 Alert.alert('Error', 'Unable to start the app');
@@ -96,7 +98,9 @@ class SetPassCodeScreen extends Component {
 
     onChangeCode(code) {
         this.setState({code});
-        if (code.length === 4) { setTimeout(() => this.setPasscode(code)); }
+        if (code.length === 4) {
+            setTimeout(() => this.setPasscode(code));
+        }
     }
 
     // generateCodeDisplayArea() {

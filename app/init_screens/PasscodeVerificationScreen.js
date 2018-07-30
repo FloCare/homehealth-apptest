@@ -62,6 +62,10 @@ class PasscodeVerificationScreen extends Component {
                     } catch (e) {
                         console.log('Error in starting app:', e);
                         //TODO reset passcode
+                        this.setState({
+                            showMessage: true,
+                            code: '',
+                        });
                         if (e.name === 'MissingNecessaryInternetConnection') {
                             Alert.alert('Offline', 'Unable to start the app');
                         } else { Alert.alert('Error', 'Unable to start the app'); }
