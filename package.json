@@ -32,7 +32,7 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-calendar-strip": "git+https://bitbucket.org/flocarelabs/react-native-calendar-strip.git",
     "react-native-checkbox": "^2.0.0",
-    "react-native-code-push": "^5.3.5",
+    "react-native-code-push": "5.3.5",
     "react-native-confirmation-code-input": "FloCare/react-native-confirmation-code-input",
     "react-native-elements": "^0.19.1",
     "react-native-firebase": "3.3.1",

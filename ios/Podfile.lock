@@ -3,7 +3,7 @@ PODS:
   - boost-for-react-native (1.63.0)
   - BVLinearGradient (2.4.0):
     - React
-  - CodePush (5.4.0):
+  - CodePush (5.3.5):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.7)
     - React
