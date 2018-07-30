@@ -118,17 +118,17 @@ export class PatientDataService {
                 patientID: patientId,
                 firstName: patient.firstName.toString().trim(),
                 lastName: patient.lastName.toString().trim(),
-                primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : '',
-                notes: patient.notes ? patient.notes.toString().trim() : '',
+                primaryContact: patient.primaryContact ? parsePhoneNumber(patient.primaryContact.toString().trim()) : undefined,
+                notes: patient.notes ? patient.notes.toString().trim() : undefined,
                 creationTimestamp,
                 assignmentTimestamp: moment().utc().valueOf(),
                 lastUpdateTimestamp: creationTimestamp,
                 isLocallyOwned,
                 archived: false,
                 dateOfBirth: patient.dateOfBirth,
-                emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : null,
-                emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : null,
-                emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : null,
+                emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : undefined,
+                emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : undefined,
+                emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : undefined,
             }, updateIfExisting);
 
             if (isLocallyOwned) {
