@@ -1,4 +1,5 @@
 import moment from 'moment';
+import firebase from 'react-native-firebase';
 import {Episode, Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {
@@ -6,6 +7,7 @@ import {
     arrayToObjectByKey,
     filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
 } from '../utils/collectionUtils';
+import {eventNames, parameterValues} from '../utils/constants';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
 import {VisitService} from './VisitServices/VisitService';
@@ -161,6 +163,11 @@ export class PatientDataService {
             newPatient.episodes.push(episodeObject);
         });
         if (newPatient) {
+            if(patient.notes) {
+                firebase.analytics().logEvent(eventNames.ADD_NOTE, {
+                    'length': patient.notes.toString().trim().length
+                });
+            }
             this.addPatientsToRedux([newPatient], true);
             try {
                 getMessagingServiceInstance(EpisodeMessagingService).subscribeToEpisodes(newPatient.episodes);

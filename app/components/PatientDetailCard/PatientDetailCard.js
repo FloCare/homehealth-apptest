@@ -279,14 +279,15 @@ const PatientDetailCard = (props) => {
                                 firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                                     'type': parameterValues.VIEW_VISIT_CALENDAR
                                 });
-                                onSelectVisitsDate(moment(date).add(moment().utcOffset(), 'minutes').utc()); 
+                                onSelectVisitsDate(moment(date).utc());
                             }}
                             onWeekChanged={onWeekChanged}
-                            selectedDate={selectedVisitsDate.valueOf()}
+                            selectedDate={selectedVisitsDate}
                             customDatesStyles={getCustomDateStyles(selectedVisitsDate, datesWithVisits)}
                             responsiveSizingOffset={-5}
                             dotMarginEnabled
                             datesStripStyle={{alignSelf: 'center'}}
+                            iconContainer={{padding: 5, paddingTop: 10, paddingBottom: 10}}
                         />
                     </View>
                     <View>

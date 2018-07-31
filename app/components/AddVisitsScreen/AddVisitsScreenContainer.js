@@ -6,7 +6,7 @@ import {ListItem} from 'react-native-elements';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
-import {screenNames, PrimaryColor} from '../../utils/constants';
+import {screenNames, PrimaryColor, eventNames} from '../../utils/constants';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {PatientDataService} from '../../data_services/PatientDataService';
@@ -104,6 +104,7 @@ class AddVisitsScreenContainer extends Component {
         }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'new-stop') {
+                firebase.analytics().logEvent(eventNames.ADD_STOP, {});
                 this.props.navigator.push(newStopNavigatorArg);
             } else if (event.id === 'new-patient') {
                 this.props.navigator.push(newPatientNavigatorArg);
@@ -119,6 +120,7 @@ class AddVisitsScreenContainer extends Component {
                             this.props.navigator.push(newPatientNavigatorArg);
                             break;
                         case 1:
+                            firebase.analytics().logEvent(eventNames.ADD_STOP, {});
                             this.props.navigator.push(newStopNavigatorArg);
                             break;
                         default:
@@ -216,6 +218,10 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onDone() {
+        // Logging the firebase event upon visits being added
+        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+            VALUE: this.state.selectedItems.size
+        });
         VisitService.getInstance().createNewVisits(this.state.selectedItems.values(), this.state.date.valueOf());
         //This is the part where we create the new visit items
         // floDB.write(() => {

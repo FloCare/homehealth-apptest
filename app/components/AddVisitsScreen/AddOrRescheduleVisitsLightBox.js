@@ -35,11 +35,10 @@ class AddOrRescheduleVisitsLightBox extends Component {
     }
 
     onDateSelected(date) {
-        const dateMidnightUTC = date.startOf('day').add(moment().utcOffset(), 'minutes').utc();
-        if (!dateMidnightUTC.isSame(this.state.date, 'day')) {
-            this.setState({date: dateMidnightUTC});
+        if (!date.isSame(this.state.date, 'day')) {
+            this.setState({date});
         }
-        console.log(dateMidnightUTC.format());
+        console.log(date.format());
     }
 
     onSubmit() {
