@@ -288,6 +288,7 @@ const PatientDetailCard = (props) => {
                             dotMarginEnabled
                             updateWeek={false}
                             datesStripStyle={{alignSelf: 'center'}}
+                            iconContainer={{padding: 5, paddingTop: 10, paddingBottom: 10}}
                         />
                     </View>
                     <View>
