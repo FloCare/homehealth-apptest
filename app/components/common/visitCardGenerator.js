@@ -144,7 +144,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 if (this.state.visitTime) {
                     return moment(this.state.visitTime).format('hh:mm');
                 }
-                return ' --:-- ';
+                return '--:--';
             }
             if (place === 'meridian') {
                 if (this.state.visitTime) {
