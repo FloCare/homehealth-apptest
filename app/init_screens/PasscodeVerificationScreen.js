@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import CodePush from 'react-native-code-push';
 import firebase from 'react-native-firebase';
 import LinearGradient from 'react-native-linear-gradient';
 import VirtualKeyboard from 'react-native-virtual-keyboard';
@@ -28,6 +29,7 @@ class PasscodeVerificationScreen extends Component {
     }
 
     async verifyCode(code) {
+        await CodePush.notifyApplicationReady();
         RNSecureKeyStore.get('passCode')
             .then((res) => {
                 if (res === code) {
