@@ -1,7 +1,7 @@
 import queueFactory from 'react-native-queue';
-import {AssignedPatientsMessageService} from './AssignedPatientsMessageService';
+import {AssignedPatientsMessagingService} from './AssignedPatientsMessagingService';
 import {stringToArrayBuffer} from '../../../utils/encryptionUtils';
-import {VisitMessagingService} from './VisitMessagingService';
+import {EpisodeMessagingService} from './EpisodeMessagingService';
 
 const Realm = require('realm');
 
@@ -42,8 +42,8 @@ export class MessagingServiceCoordinator {
         this.queue = await queueFactory();
 
         const messagingServices = {};
-        messagingServices[AssignedPatientsMessageService.identifier] = await new AssignedPatientsMessageService(MessagingServiceCoordinator.getChannelRealm());
-        messagingServices[VisitMessagingService.identifier] = await new VisitMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
+        messagingServices[AssignedPatientsMessagingService.identifier] = await new AssignedPatientsMessagingService(MessagingServiceCoordinator.getChannelRealm());
+        messagingServices[EpisodeMessagingService.identifier] = await new EpisodeMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
 
         MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices);
     }

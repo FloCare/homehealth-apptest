@@ -6,7 +6,7 @@ import {eventNames, parameterValues} from '../../utils/constants';
 import {VisitReduxService} from './VisitReduxService';
 import {VisitRealmService} from './VisitRealmService';
 import {getMessagingServiceInstance} from '../MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
-import {VisitMessagingService} from '../MessagingServices/PubNubMessagingService/VisitMessagingService';
+import {EpisodeMessagingService} from '../MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import {UserDataService} from '../UserDataService';
 import {getAllMyVisits, getVisitsByID} from '../../utils/API/VisitAPI';
 import {EpisodeDataService} from '../EpisodeDataService';
@@ -110,7 +110,7 @@ export class VisitService {
         } else {
             this.markVisitUndone(visit);
         }
-        getMessagingServiceInstance(VisitMessagingService).publishVisitUpdate(visit);
+        getMessagingServiceInstance(EpisodeMessagingService).publishVisitUpdate(visit);
     }
 
     markVisitDone(visit) {
@@ -249,7 +249,7 @@ export class VisitService {
 
         //TODO this is just a stub
         newVisits.forEach(visit => {
-            getMessagingServiceInstance(VisitMessagingService).publishVisitCreate(visit);
+            getMessagingServiceInstance(EpisodeMessagingService).publishVisitCreate(visit);
         });
 
         // Logging the firebase event upon visits being added
@@ -273,7 +273,7 @@ export class VisitService {
         }
         const visitTimeEpoch = visit.midnightEpochOfVisit;
 
-        getMessagingServiceInstance(VisitMessagingService).publishVisitDeletes([visit]);
+        getMessagingServiceInstance(EpisodeMessagingService).publishVisitDeletes([visit]);
 
         this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
@@ -300,7 +300,7 @@ export class VisitService {
         const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
-        getMessagingServiceInstance(VisitMessagingService).publishVisitDeletes(visits);
+        getMessagingServiceInstance(EpisodeMessagingService).publishVisitDeletes(visits);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
@@ -335,7 +335,7 @@ export class VisitService {
         this.visitRealmService.updateVisitStartTimeByID(visitID, startTime);
         this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
 
-        getMessagingServiceInstance(VisitMessagingService).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
+        getMessagingServiceInstance(EpisodeMessagingService).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
     }
 
 }

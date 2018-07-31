@@ -13,7 +13,7 @@ import {VisitService} from './VisitServices/VisitService';
 import * as PatientAPI from '../utils/API/PatientAPI';
 import {QueryHelper} from '../utils/data/queryHelper';
 import {getMessagingServiceInstance} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
-import {VisitMessagingService} from './MessagingServices/PubNubMessagingService/VisitMessagingService';
+import {EpisodeMessagingService} from './MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import {getEpisodeDetailsByIds} from '../utils/API/EpisodeAPI';
 import {PhysicianDataService} from './PhysicianDataService';
 
@@ -163,7 +163,7 @@ export class PatientDataService {
         if (newPatient) {
             this.addPatientsToRedux([newPatient], true);
             try {
-                getMessagingServiceInstance(VisitMessagingService).subscribeToEpisodes(newPatient.episodes);
+                getMessagingServiceInstance(EpisodeMessagingService).subscribeToEpisodes(newPatient.episodes);
             } catch (e) {
                 console.log('error trying to subscribe to new patient');
                 console.log(e);
@@ -235,7 +235,7 @@ export class PatientDataService {
                 this._checkPermissionForEditing([patient]);
             } else {
                 //TODO
-                getMessagingServiceInstance(VisitMessagingService).unsubscribeToEpisodes(patient.episodes);
+                getMessagingServiceInstance(EpisodeMessagingService).unsubscribeToEpisodes(patient.episodes);
             }
 
             this.floDB.write(() => {

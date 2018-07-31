@@ -6,11 +6,11 @@ import {pushNewVisitsToServer, pushVisitDeleteByIDs, pushVisitUpdateToServer} fr
 import {showVisitCollisionNotification} from '../NotificationService';
 import {todayMomentInUTCMidnight} from '../../../utils/utils';
 
-export class VisitMessagingService extends BaseMessagingService {
-    static identifier = 'VisitMessagingService';
+export class EpisodeMessagingService extends BaseMessagingService {
+    static identifier = 'EpisodeMessagingService';
 
     getName() {
-        return VisitMessagingService.identifier;
+        return EpisodeMessagingService.identifier;
     }
 
     onMessage(messageObject) {
@@ -68,6 +68,9 @@ export class VisitMessagingService extends BaseMessagingService {
                             resolve();
                             // reject(error)
                         });
+                    break;
+                case 'USER_UNASSIGNED' :
+                    VisitService
                     break;
                 default:
                     console.log(`unrecognised message: ${message}`);

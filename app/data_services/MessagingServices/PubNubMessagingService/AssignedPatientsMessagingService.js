@@ -4,11 +4,11 @@ import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
 import {UserDataService} from '../../UserDataService';
 
-export class AssignedPatientsMessageService extends BaseMessagingService {
-    static identifier = 'AssignedPatientsMessageService';
+export class AssignedPatientsMessagingService extends BaseMessagingService {
+    static identifier = 'AssignedPatientsMessagingService';
 
     getName() {
-        return AssignedPatientsMessageService.identifier;
+        return AssignedPatientsMessagingService.identifier;
     }
     // async initialChannels() {
     //     return AsyncStorage.getItem('userID').then(res => {
