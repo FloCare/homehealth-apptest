@@ -170,7 +170,7 @@ export class PatientDataService {
             }
             this.addPatientsToRedux([newPatient], true);
             try {
-                getMessagingServiceInstance(EpisodeMessagingService).subscribeToEpisodes(newPatient.episodes);
+                getMessagingServiceInstance(EpisodeMessagingService.identifier).subscribeToEpisodes(newPatient.episodes);
             } catch (e) {
                 console.log('error trying to subscribe to new patient');
                 console.log(e);
@@ -242,7 +242,7 @@ export class PatientDataService {
                 this._checkPermissionForEditing([patient]);
             } else {
                 //TODO
-                getMessagingServiceInstance(EpisodeMessagingService).unsubscribeToEpisodes(patient.episodes);
+                getMessagingServiceInstance(EpisodeMessagingService.identifier).unsubscribeToEpisodes(patient.episodes);
             }
 
             this.floDB.write(() => {

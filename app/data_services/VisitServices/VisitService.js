@@ -110,7 +110,7 @@ export class VisitService {
         } else {
             this.markVisitUndone(visit);
         }
-        getMessagingServiceInstance(EpisodeMessagingService).publishVisitUpdate(visit);
+        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
     markVisitDone(visit) {
@@ -249,7 +249,7 @@ export class VisitService {
 
         //TODO this is just a stub
         newVisits.forEach(visit => {
-            getMessagingServiceInstance(EpisodeMessagingService).publishVisitCreate(visit);
+            getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitCreate(visit);
         });
 
         const newVisitOrder = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
@@ -268,7 +268,7 @@ export class VisitService {
         }
         const visitTimeEpoch = visit.midnightEpochOfVisit;
 
-        getMessagingServiceInstance(EpisodeMessagingService).publishVisitDeletes([visit]);
+        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes([visit]);
 
         this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
@@ -307,7 +307,7 @@ export class VisitService {
         const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
-        // getMessagingServiceInstance(EpisodeMessagingService).publishVisitDeletes(visits);
+        // getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes(visits);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
@@ -342,7 +342,7 @@ export class VisitService {
         this.visitRealmService.updateVisitStartTimeByID(visitID, startTime);
         this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
 
-        getMessagingServiceInstance(EpisodeMessagingService).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
+        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
     }
 
 }

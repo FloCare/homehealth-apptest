@@ -79,10 +79,10 @@ export class MessagingServiceCoordinator {
     }
 }
 
-export function getMessagingServiceInstance(serviceClassName) {
-    const messagingServiceInstance = MessagingServiceCoordinator.getInstance().messageServices[serviceClassName.name];
+export function getMessagingServiceInstance(identifier) {
+    const messagingServiceInstance = MessagingServiceCoordinator.getInstance().messageServices[identifier];
     if (!messagingServiceInstance) {
-        throw new Error(`Requested messaging service ${serviceClassName.name}not found`);
+        throw new Error(`Requested messaging service ${identifier} not found`);
     }
     return messagingServiceInstance;
 }
