@@ -146,10 +146,11 @@ export class BaseMessagingService {
                 message: this.messageEventCallback.bind(this),
             });
 
+            console.log(`base message running for ${this.getName()}`);
             this.taskQueue = taskQueue;
             this.initialiseWorkers();
 
-            const channelsFromRealm = channelRealm.objects('Channel').filtered('handler = $0', this.constructor.name);
+            const channelsFromRealm = channelRealm.objects('Channel').filtered('handler = $0', this.getName());
             if (channelsFromRealm && channelsFromRealm.length > 0) this.channels.push(...channelsFromRealm.values());
 
             if (this.channels.length === 0) {
@@ -260,7 +261,7 @@ export class BaseMessagingService {
 
     _startSubscription(channels) {
         if (channels.length === 0) {
-            console.log(`No channels to subscribe to: ${this.constructor.name}`);
+            console.log(`No channels to subscribe to: ${this.getName()}`);
             return;
         }
         //TODO dont subscribe if history failed

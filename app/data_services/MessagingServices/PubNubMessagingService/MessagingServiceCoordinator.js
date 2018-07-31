@@ -42,8 +42,8 @@ export class MessagingServiceCoordinator {
         this.queue = await queueFactory();
 
         const messagingServices = {};
-        messagingServices[AssignedPatientsMessageService.name] = await new AssignedPatientsMessageService(MessagingServiceCoordinator.getChannelRealm());
-        messagingServices[VisitMessagingService.name] = await new VisitMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
+        messagingServices[AssignedPatientsMessageService.identifier] = await new AssignedPatientsMessageService(MessagingServiceCoordinator.getChannelRealm());
+        messagingServices[VisitMessagingService.identifier] = await new VisitMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
 
         MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices);
     }

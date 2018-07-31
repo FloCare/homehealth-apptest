@@ -5,6 +5,11 @@ import {PatientDataService} from '../../PatientDataService';
 import {UserDataService} from '../../UserDataService';
 
 export class AssignedPatientsMessageService extends BaseMessagingService {
+    static identifier = 'AssignedPatientsMessageService';
+
+    getName() {
+        return AssignedPatientsMessageService.identifier;
+    }
     // async initialChannels() {
     //     return AsyncStorage.getItem('userID').then(res => {
     //         if (res === null) {
@@ -65,7 +70,7 @@ export class AssignedPatientsMessageService extends BaseMessagingService {
         this._subscribeToChannelsByObject([{
             name: `${userID}_assignedPatients`,
             lastMessageTimestamp: assignedVisitLastTimestamp,
-            handler: this.constructor.name,
+            handler: this.getName(),
         }]);
     }
 }

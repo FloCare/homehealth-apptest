@@ -7,6 +7,12 @@ import {showVisitCollisionNotification} from '../NotificationService';
 import {todayMomentInUTCMidnight} from '../../../utils/utils';
 
 export class VisitMessagingService extends BaseMessagingService {
+    static identifier = 'VisitMessagingService';
+
+    getName() {
+        return VisitMessagingService.identifier;
+    }
+
     onMessage(messageObject) {
         const {message, channel} = messageObject;
         return new Promise((resolve, reject) => {
@@ -212,7 +218,7 @@ export class VisitMessagingService extends BaseMessagingService {
             name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
-            handler: this.constructor.name,
+            handler: VisitMessagingService.identifier,
         }));
         this._subscribeToChannelsByObject(channelObjects);
     }
@@ -222,7 +228,7 @@ export class VisitMessagingService extends BaseMessagingService {
             name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
-            handler: this.constructor.name,
+            handler: VisitMessagingService.identifier,
         }));
         this._unsubscribeFromChannelsByObject(channelObjects);
     }
