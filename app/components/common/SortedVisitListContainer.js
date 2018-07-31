@@ -2,9 +2,8 @@ import React, {Component} from 'react';
 import SortableList from 'react-native-sortable-list';
 import firebase from 'react-native-firebase';
 import PropTypes from 'prop-types';
-import {TouchableHighlight, Text} from 'react-native';
 import moment from 'moment/moment';
-import {floDB, Visit, VisitOrder} from '../../utils/data/schema';
+import {floDB, Visit} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 
@@ -141,7 +140,7 @@ class SortedVisitListContainer extends Component {
                     screen: screenNames.patientDetails,
                     passProps: {
                         patientId: visit.getPatient().patientID,
-                        selectedVisitsDate: moment(visit.midnightEpochOfVisit)
+                        selectedVisitsDate: moment(visit.midnightEpochOfVisit).utc()
                     },
                     navigatorStyle: {
                         tabBarHidden: true
@@ -163,6 +162,7 @@ class SortedVisitListContainer extends Component {
                 sortingEnabled={this.props.sortingEnabled}
                 onChangeOrder={this.onOrderChange}
                 onReleaseRow={this.onReleaseRow}
+                manuallyActivateRows
             />
         );
     }
