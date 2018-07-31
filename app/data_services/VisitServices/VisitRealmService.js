@@ -36,12 +36,16 @@ export class VisitRealmService {
 
     getVisitsOfCurrentUserForDate(midnightEpoch) {
         const allVisits = this.floDB.objects(Visit).filtered(`midnightEpochOfVisit = ${midnightEpoch}`);
-        return this.filterUserVisits(allVisits);
+        return this.selectCurrentUserVisits(allVisits);
     }
 
     //TODO create legit user objects
-    filterUserVisits(visits) {
-        return visits.filtered(`user.userID = "${UserDataService.getCurrentUserProps().userID}"`);
+    selectCurrentUserVisits(visits) {
+        return this.filterVisitsByUserID(visits, UserDataService.getCurrentUserProps().userID);
+    }
+
+    filterVisitsByUserID(visits, userID) {
+        return visits.filtered(`user.userID = "${userID}"`);
     }
 
     filterVisitsLessThanDate(visits, date) {

@@ -18,6 +18,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         return new Promise((resolve, reject) => {
             console.log('onMessage called');
             console.log(message);
+            const episodeID = channel.split('_')[1];
             const {actionType, visitID, userID} = message;
             if (userID === UserDataService.getCurrentUserProps().userID) {
                 console.log(`message for my own visit, ignoring, mine:${UserDataService.getCurrentUserProps().userID}`);
@@ -56,6 +57,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
                         VisitService.getInstance().deleteVisitByID(visitID);
                     } catch (e) {
                         reject(e);
+                        return;
                     }
                     resolve();
                     break;
@@ -70,7 +72,15 @@ export class EpisodeMessagingService extends BaseMessagingService {
                         });
                     break;
                 case 'USER_UNASSIGNED' :
-                    VisitService
+                    try {
+                        VisitService.getInstance().deleteVisitsOfEpisodeByUserID(episodeID, userID);
+                    } catch (e) {
+                        console.log('failed to process user_unassignment');
+                        console.log(e);
+                        resolve();
+                        return;
+                    }
+                    resolve();
                     break;
                 default:
                     console.log(`unrecognised message: ${message}`);
@@ -218,7 +228,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
     subscribeToEpisodes(episodes) {
         const channelObjects = episodes.map(episode => ({
-            name: `${episode.episodeID}_visits`,
+            name: `episode_${episode.episodeID}`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: EpisodeMessagingService.identifier,
@@ -228,7 +238,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
     unsubscribeToEpisodes(episodes) {
         const channelObjects = episodes.map(episode => ({
-            name: `${episode.episodeID}_visits`,
+            name: `episode_${episode.episodeID}`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: EpisodeMessagingService.identifier,

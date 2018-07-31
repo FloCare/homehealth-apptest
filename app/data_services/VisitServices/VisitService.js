@@ -79,7 +79,7 @@ export class VisitService {
     }
 
     filterUserVisits(visits) {
-        return this.visitRealmService.filterUserVisits(visits);
+        return this.visitRealmService.selectCurrentUserVisits(visits);
     }
 
     filterVisitsLessThanDate(visits, date) {
@@ -291,6 +291,18 @@ export class VisitService {
         throw new Error('requested visits for unrecognised entity');
     }
 
+    //only use for other user's unassign
+    deleteVisitsOfEpisodeByUserID(episodeID, userID) {
+        console.log('Deleting visits from realm');
+        //TODO delete start point shouldnt be determined by when the user happens to run the code
+        const today = todayMomentInUTCMidnight();
+        const allFutureVisitsForEpisode = EpisodeDataService.getInstance().getEpisodeByID(episodeID).visits.filtered(`midnightEpochOfVisit >= ${today}`);
+        const visits = this.visitRealmService.filterVisitsByUserID(allFutureVisitsForEpisode, userID);
+        this.floDB.write(() => {
+            this.floDB.delete(visits);
+        });
+    }
+
     // Should be a part of a write transaction
     deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
@@ -300,7 +312,7 @@ export class VisitService {
         const visits = this.getAllFutureVisitsForSubject(subject);
         const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
 
-        getMessagingServiceInstance(EpisodeMessagingService).publishVisitDeletes(visits);
+        // getMessagingServiceInstance(EpisodeMessagingService).publishVisitDeletes(visits);
 
         // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
