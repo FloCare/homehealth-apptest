@@ -71,7 +71,7 @@ const cardActions = {
     cancel: 'Cancel'
 };
 
-function VisitCardGenerator({onDoneTogglePress, navigator, updateCardLayout}, showEllipse = true, showCheckBoxLine = true) {
+function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
         constructor(props) {
@@ -360,11 +360,10 @@ function VisitCardGenerator({onDoneTogglePress, navigator, updateCardLayout}, sh
 
         handleOtherClinicianDate = (clinicianVisitData) => {
             this.setState({clinicianVisitData});
-            if (updateCardLayout) {
-                updateCardLayout(this.props.visitID);
+            if (this.props.onItemLayoutUpdate) {
+                this.props.onItemLayoutUpdate(this.props.visitID);
             }
         }
-
 
         render() {
             console.log('- - - - - - VisitCard Render- - - - - - - - ');

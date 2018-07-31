@@ -119,15 +119,8 @@ class SortedVisitListContainer extends Component {
     getAugmentedRenderFunction(renderFunctionGenerator) {
         return renderFunctionGenerator({
             onDoneTogglePress: this.onDoneTogglePress.bind(this),
-            navigator: this.props.navigator,
-            updateCardLayout: this.updateCardLayout.bind(this)
+            navigator: this.props.navigator
         });
-    }
-
-    updateCardLayout(visitID) {
-        if (this.sortableListComponent) {
-            this.sortableListComponent.reComputeLayoutsForItem(visitID);
-        }
     }
 
 
@@ -160,7 +153,6 @@ class SortedVisitListContainer extends Component {
     render() {
        return (
             <SortableList
-                ref={element => { this.sortableListComponent = element; }}
                 style={this.props.style}
                 data={this.state.visitData}
                 order={this.state.order}
