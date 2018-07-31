@@ -286,6 +286,7 @@ const PatientDetailCard = (props) => {
                             customDatesStyles={getCustomDateStyles(selectedVisitsDate, datesWithVisits)}
                             responsiveSizingOffset={-5}
                             dotMarginEnabled
+                            updateWeek={false}
                             datesStripStyle={{alignSelf: 'center'}}
                         />
                     </View>
