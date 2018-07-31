@@ -127,7 +127,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
     async _publishVisitMessage(jobID, payload) {
         await this.pubnub.publish({
-            channel: `$episode_${payload.episodeID}`,
+            channel: `episode_${payload.episodeID}`,
             message: {
                 actionType: payload.actionType,
                 visitID: payload.visitID,
