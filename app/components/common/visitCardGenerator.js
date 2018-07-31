@@ -144,7 +144,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 if (this.state.visitTime) {
                     return moment(this.state.visitTime).format('hh:mm');
                 }
-                return '--:--';
+                return ' --:-- ';
             }
             if (place === 'meridian') {
                 if (this.state.visitTime) {
@@ -166,13 +166,13 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 <View style={{alignSelf: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
                     {
                         showEllipse &&
-                            <View style={{marginRight: 10}}>
+                            <View style={{marginLeft: 2}}>
                                 <Image source={Images.ellipse} />
                             </View>
 
                     }
 
-                    <View style={{alignSelf: 'center'}}>
+                    <View style={{alignSelf: 'center', marginLeft: 6, marginRight: 6}}>
                         <TouchableOpacity
                             onPress={() => { this.showTimePicker(); }}
                             onLongPress={this.handleLongPress}
@@ -286,7 +286,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         minifiedAddress = (addressString) => {
-            const maxAddressCharacters = 25;
+            const maxAddressCharacters = 20;
             if (addressString.length > maxAddressCharacters) {
                 return `${addressString.substr(0, maxAddressCharacters)}...`;
             }
@@ -401,8 +401,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             {
                                 this.renderDatePickerComponent()
                             }
-                            <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
+                            <View style={{flexDirection: 'row', flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1, justifyContent: 'space-between'}}>
                                 <TouchableOpacity
+                                    style={{flex: 6}}
                                     onPress={() => {
                                         if (this.props.patientID) {
                                             navigator.push({
@@ -432,22 +433,22 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                         }
                                     </View>
                                 </TouchableOpacity>
-                            </View>
-                            <View style={{flex: 1}}>
-                                <TouchableOpacity
-                                    onPress={() => { this.showCardActions(); }}
-                                    onLongPress={this.handleLongPress}
-                                >
-                                    <View style={{marginTop: 15, alignSelf: 'center'}}>
-                                        <Image source={Images.dots} />
-                                    </View>
-                                    <ActionSheet
-                                        ref={element => { this.cardActionSheet = element; }}
-                                        options={this.cardActions.map((action) => action.title)}
-                                        cancelButtonIndex={this.cardActions.length - 1}
-                                        onPress={(index) => { this.handleCardActionPress(index); }}
-                                    />
-                                </TouchableOpacity>
+                                <View style={{flex: 1}}>
+                                    <TouchableOpacity
+                                        onPress={() => { this.showCardActions(); }}
+                                        onLongPress={this.handleLongPress}
+                                    >
+                                        <View style={{width: 40, marginTop: 10, marginBottom: 10}}>
+                                            <Image style={{alignSelf: 'center'}} source={Images.dots} />
+                                        </View>
+                                        <ActionSheet
+                                            ref={element => { this.cardActionSheet = element; }}
+                                            options={this.cardActions.map((action) => action.title)}
+                                            cancelButtonIndex={this.cardActions.length - 1}
+                                            onPress={(index) => { this.handleCardActionPress(index); }}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </TouchableWithoutFeedback>
