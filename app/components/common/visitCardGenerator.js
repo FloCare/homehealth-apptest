@@ -7,7 +7,7 @@ import {
     Image,
     Linking,
     Platform,
-    TouchableOpacity, Alert, Dimensions,
+    TouchableOpacity, Alert, Dimensions, TouchableWithoutFeedback
 } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -154,6 +154,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator, updateCardLayout}, sh
             }
         }
 
+        handleLongPress = () => {
+            if (this.props.toggleRowActive) {
+                this.props.toggleRowActive();
+            }
+        }
+
         renderDatePickerComponent = () => {
             const startDate = this.state.visitTime ? this.state.visitTime : moment().hours(12).minutes(0).seconds(0).toDate();
             return (
@@ -169,6 +175,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator, updateCardLayout}, sh
                     <View style={{alignSelf: 'center'}}>
                         <TouchableOpacity
                             onPress={() => { this.showTimePicker(); }}
+                            onLongPress={this.handleLongPress}
                         >
                             <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
                                 {this.timeDisplayString('time')}
@@ -381,47 +388,70 @@ function VisitCardGenerator({onDoneTogglePress, navigator, updateCardLayout}, sh
                             />
                         </View>
                     </View>
-                    <View
-                        style={[
-                            styles.cardContainerStyle,
-                            this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
-                            this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
-                            {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
-                        ]}
+                    <TouchableWithoutFeedback
+                        onLongPress={this.handleLongPress}
                     >
+                        <View
+                            style={[
+                                styles.cardContainerStyle,
+                                this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
+                                this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
+                                {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
+                            ]}
+                        >
                             {
                                 this.renderDatePickerComponent()
                             }
-                        <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
-                            <View style={{margin: 10}}>
-                                <Text style={styles.nameStyle}>{this.props.name}</Text>
-                                <View style={{flexDirection: 'row', marginTop: 2}}>
-                                    <Image source={Images.location} style={{marginRight: 8}} />
-                                    <Text style={styles.addressStyle}>
-                                        {this.minifiedAddress(this.props.formattedAddress)}
-                                    </Text>
-                                </View>
-                                {
-                                    this.renderClinicianVisitData(this.state.clinicianVisitData)
-                                }
+                            <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        if (this.props.patientID) {
+                                            navigator.push({
+                                                screen: screenNames.patientDetails,
+                                                passProps: {
+                                                    patientId: this.props.patientID,
+                                                    selectedVisitsDate: moment(this.props.midnightEpochOfVisit).utc()
+                                                },
+                                                navigatorStyle: {
+                                                    tabBarHidden: true
+                                                }
+                                            });
+                                        }
+                                    }}
+                                    onLongPress={this.handleLongPress}
+                                >
+                                    <View style={{margin: 10}}>
+                                        <Text style={styles.nameStyle}>{this.props.name}</Text>
+                                        <View style={{flexDirection: 'row', marginTop: 2}}>
+                                            <Image source={Images.location} style={{marginRight: 8}} />
+                                            <Text style={styles.addressStyle}>
+                                                {this.minifiedAddress(this.props.formattedAddress)}
+                                            </Text>
+                                        </View>
+                                        {
+                                            this.renderClinicianVisitData(this.state.clinicianVisitData)
+                                        }
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{flex: 1}}>
+                                <TouchableOpacity
+                                    onPress={() => { this.showCardActions(); }}
+                                    onLongPress={this.handleLongPress}
+                                >
+                                    <View style={{marginTop: 15, alignSelf: 'center'}}>
+                                        <Image source={Images.dots} />
+                                    </View>
+                                    <ActionSheet
+                                        ref={element => { this.cardActionSheet = element; }}
+                                        options={this.cardActions.map((action) => action.title)}
+                                        cancelButtonIndex={this.cardActions.length - 1}
+                                        onPress={(index) => { this.handleCardActionPress(index); }}
+                                    />
+                                </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flex: 1}}>
-                            <TouchableOpacity
-                                onPress={() => { this.showCardActions(); }}
-                            >
-                                <View style={{marginTop: 15, alignSelf: 'center'}}>
-                                    <Image source={Images.dots} />
-                                </View>
-                                <ActionSheet
-                                    ref={element => { this.cardActionSheet = element; }}
-                                    options={this.cardActions.map((action) => action.title)}
-                                    cancelButtonIndex={this.cardActions.length - 1}
-                                    onPress={(index) => { this.handleCardActionPress(index); }}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    </TouchableWithoutFeedback>
                 </View>
             );
         }

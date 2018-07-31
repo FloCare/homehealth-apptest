@@ -116,11 +116,9 @@ function visitSummaryToday(props) {
                 <StyledText style={{fontSize: 12, color: '#999999'}}>
                     Next Visit
                 </StyledText>
-                <TouchableHighlight underlayColor={'clear'} onPress={() => onPressCard(props.visitID, props.navigator)}>
-                    <VisitCard
-                        data={props.visitID}
-                    />
-                </TouchableHighlight>
+                <VisitCard
+                    data={props.visitID}
+                />
             </View>
         </View>
     );

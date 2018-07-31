@@ -33,7 +33,6 @@ function VisitListScreen(props) {
                 style={{flex: 1, marginLeft: 5}}
                 orderedVisitID={props.orderedVisitID}
                 renderFunctionGenerator={VisitCardGenerator}
-                tapForDetails
                 onOrderChange={props.onOrderChange}
             />
             <SimpleButton
