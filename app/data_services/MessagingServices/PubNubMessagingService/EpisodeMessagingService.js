@@ -221,7 +221,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
             name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
-            handler: VisitMessagingService.identifier,
+            handler: EpisodeMessagingService.identifier,
         }));
         this._subscribeToChannelsByObject(channelObjects);
     }
@@ -231,7 +231,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
             name: `${episode.episodeID}_visits`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
-            handler: VisitMessagingService.identifier,
+            handler: EpisodeMessagingService.identifier,
         }));
         this._unsubscribeFromChannelsByObject(channelObjects);
     }
