@@ -162,7 +162,6 @@ class SortedVisitListContainer extends Component {
                 sortingEnabled={this.props.sortingEnabled}
                 onChangeOrder={this.onOrderChange}
                 onReleaseRow={this.onReleaseRow}
-                manuallyActivateRows
             />
         );
     }
