@@ -170,7 +170,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         <TouchableOpacity
                             onPress={() => { this.showTimePicker(); }}
                         >
-                            <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 15}}>
+                            <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 13}}>
                                 {this.timeDisplayString('time')}
                             </Text>
                             <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 13}}>
@@ -370,10 +370,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             showCheckBoxLine &&
                             <View style={{width: '50%', flex: 1, alignSelf: 'flex-end', borderLeftWidth: 1, borderLeftColor: '#E9E7E7'}} />
                         }
-                        <View style={{position: 'absolute', alignSelf: 'center', paddingTop: 15, marginTop: 2, marginBottom: 2}}>
+                        <View style={{height: '100%', position: 'absolute', alignSelf: 'center', paddingTop: 2, marginTop: 2, marginBottom: 2}}>
                             <CustomCheckBox
                                 checked={this.props.isDone}
                                 onPress={safeOnDoneTogglePress}
+                                checkBoxStyle={{width: 20, height: 20, alignSelf: 'flex-start', marginTop: 10}}
+                                checkBoxContainerStyle={{width: 40, height: '100%', justifyContent: 'center'}}
                             />
                         </View>
                     </View>
@@ -388,8 +390,8 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             {
                                 this.renderDatePickerComponent()
                             }
-                        <View style={{flex: 7, borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
-                            <View style={{margin: 10}}>
+                        <View style={{flex: 8, flexDirection: 'row', borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
+                            <View style={{margin: 10, flex: 1}}>
                                 <Text style={styles.nameStyle}>{this.props.name}</Text>
                                 <View style={{flexDirection: 'row', marginTop: 2}}>
                                     <Image source={Images.location} style={{marginRight: 8}} />
@@ -401,21 +403,21 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                     this.renderClinicianVisitData(this.state.clinicianVisitData)
                                 }
                             </View>
-                        </View>
-                        <View style={{flex: 1}}>
-                            <TouchableOpacity
-                                onPress={() => { this.showCardActions(); }}
-                            >
-                                <View style={{marginTop: 15, alignSelf: 'center'}}>
-                                    <Image source={Images.dots} />
-                                </View>
-                                <ActionSheet
-                                    ref={element => { this.cardActionSheet = element; }}
-                                    options={this.cardActions.map((action) => action.title)}
-                                    cancelButtonIndex={this.cardActions.length - 1}
-                                    onPress={(index) => { this.handleCardActionPress(index); }}
-                                />
-                            </TouchableOpacity>
+                            <View style={{width: 40}}>
+                                <TouchableOpacity
+                                    onPress={() => { this.showCardActions(); }}
+                                >
+                                    <View style={{alignItems: 'center', margin: 10}}>
+                                        <Image source={Images.dots} />
+                                    </View>
+                                    <ActionSheet
+                                        ref={element => { this.cardActionSheet = element; }}
+                                        options={this.cardActions.map((action) => action.title)}
+                                        cancelButtonIndex={this.cardActions.length - 1}
+                                        onPress={(index) => { this.handleCardActionPress(index); }}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </View>
