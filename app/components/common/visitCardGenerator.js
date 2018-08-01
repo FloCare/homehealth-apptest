@@ -144,7 +144,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 if (this.state.visitTime) {
                     return moment(this.state.visitTime).format('hh:mm');
                 }
-                return '--:--';
+                return ' --:--';
             }
             if (place === 'meridian') {
                 if (this.state.visitTime) {
@@ -157,7 +157,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         renderDatePickerComponent = () => {
             const startDate = this.state.visitTime ? this.state.visitTime : moment().hours(12).minutes(0).seconds(0).toDate();
             return (
-                <View style={{alignSelf: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
+                <View style={{alignItems: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
                     {
                         showEllipse &&
                             <View style={{marginLeft: 2}}>
@@ -166,9 +166,10 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
                     }
 
-                    <View style={{alignSelf: 'center', marginLeft: 6, marginRight: 6}}>
+                    <View style={{alignSelf: 'center', marginLeft: 6, marginRight: 6, height: '100%'}}>
                         <TouchableOpacity
                             onPress={() => { this.showTimePicker(); }}
+                            style={{flex: 1, justifyContent: 'center'}}
                         >
                             <Text style={{alignSelf: 'center', color: '#222222', fontFamily: PrimaryFontFamily, fontSize: 13}}>
                                 {this.timeDisplayString('time')}
