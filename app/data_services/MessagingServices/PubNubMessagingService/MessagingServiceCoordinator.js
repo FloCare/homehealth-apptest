@@ -1,4 +1,5 @@
 import queueFactory from 'react-native-queue';
+import {NetInfo} from 'react-native';
 import {AssignedPatientsMessagingService} from './AssignedPatientsMessagingService';
 import {stringToArrayBuffer} from '../../../utils/encryptionUtils';
 import {EpisodeMessagingService} from './EpisodeMessagingService';
@@ -39,13 +40,13 @@ export class MessagingServiceCoordinator {
 
     static async initialiseService(channelRealmKey) {
         MessagingServiceCoordinator.initialiseRealm(channelRealmKey);
-        this.queue = await queueFactory();
+        const queue = await queueFactory();
 
         const messagingServices = {};
         messagingServices[AssignedPatientsMessagingService.identifier] = await new AssignedPatientsMessagingService(MessagingServiceCoordinator.getChannelRealm());
-        messagingServices[EpisodeMessagingService.identifier] = await new EpisodeMessagingService(MessagingServiceCoordinator.getChannelRealm(), this.queue);
+        messagingServices[EpisodeMessagingService.identifier] = await new EpisodeMessagingService(MessagingServiceCoordinator.getChannelRealm(), queue);
 
-        MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices);
+        MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices, queue);
     }
 
     static getInstance() {
@@ -56,8 +57,31 @@ export class MessagingServiceCoordinator {
         return MessagingServiceCoordinator.messagingServiceCoordinator;
     }
 
-    constructor(messageServices) {
+    constructor(messageServices, queue) {
         this.messageServices = messageServices;
+        this.queue = queue;
+
+        NetInfo.addEventListener('connectionChange', this.onConnectionStatusChange.bind(this));
+        if (NetInfo.isConnected) { this.queue.start(); }
+    }
+
+    onConnectionStatusChange(connectionInfo) {
+        console.log(`Connection change, type: ${connectionInfo.type}, effectiveType: ${connectionInfo.effectiveType}`);
+        if (connectionInfo.type !== 'none' && connectionInfo.type !== 'unknown' && NetInfo.isConnected) {
+            console.log('detected going online, making a call to queue start');
+            this.startQueue();
+        } else {
+            console.log('detected going offline, making a call to queue stop');
+            this.stopQueue();
+        }
+    }
+
+    stopQueue() {
+        this.queue.stop();
+    }
+
+    startQueue() {
+        this.queue.start();
     }
 
     onNotificationRegister(token) {

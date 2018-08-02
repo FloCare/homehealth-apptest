@@ -121,8 +121,18 @@ export class EpisodeMessagingService extends BaseMessagingService {
     // }
 
     initialiseWorkers() {
-        this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this));
-        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this));
+        this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this), {
+            concurrency: 3,
+            onFailed: (id, payload) => {
+                console.log(`Publish to server Job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
+            }
+        });
+        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this), {
+            concurrency: 3,
+            onFailed: (id, payload) => {
+                console.log(`Publish to server job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
+            }
+        });
     }
 
     async _publishVisitMessage(jobID, payload) {
@@ -189,6 +199,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
                 actionType: action,
                 userID: UserDataService.getCurrentUserProps().userID,
                 makePeersRefresh: payload.action === 'CREATE'
+            }, {
+                attempts: 5
             });
         });
     }
@@ -208,6 +220,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
         this.taskQueue.createJob('publishToServer', {
             action: 'CREATE',
             visits: [this._getFlatVisitPayload(visit)]
+        }, {
+            attempts: 5
         });
     }
 
@@ -216,6 +230,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
         this.taskQueue.createJob('publishToServer', {
             action: 'UPDATE',
             visits: [this._getFlatVisitPayload(visit)]
+        }, {
+            attempts: 5
         });
     }
 
@@ -223,6 +239,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
         this.taskQueue.createJob('publishToServer', {
             action: 'DELETE',
             visits: visits.filter(visit => !visit.getPlace()).map(visit => this._getFlatVisitPayload(visit))
+        }, {
+            attempts: 5
         });
     }
 
