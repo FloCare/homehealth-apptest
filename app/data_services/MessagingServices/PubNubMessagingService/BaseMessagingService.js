@@ -165,10 +165,10 @@ export class BaseMessagingService {
         });
     }
 
-    _subscribeToChannelsByObject(channelObjects) {
+    _subscribeToChannelsByObject(channelObjects, suppressNotificationFromHistory = false) {
         const liveChannelObjects = this.saveChannelToRealm(channelObjects);
         this.channels.push(...liveChannelObjects);
-        this._startSubscription(liveChannelObjects);
+        this._startSubscription(liveChannelObjects, suppressNotificationFromHistory);
         this.registerDeviceOnChannels(this.notificationToken, liveChannelObjects);
     }
 
@@ -259,13 +259,13 @@ export class BaseMessagingService {
         );
     }
 
-    _startSubscription(channels) {
+    _startSubscription(channels, suppressNotificationFromHistory = false) {
         if (channels.length === 0) {
             console.log(`No channels to subscribe to: ${this.getName()}`);
             return;
         }
         //TODO dont subscribe if history failed
-        this.processFromHistory(channels, true).then(() => {
+        this.processFromHistory(channels, suppressNotificationFromHistory).then(() => {
             this.connected = true;
             console.log(`subscribing to channels: ${channels.map(channel => channel.name)}`);
             if (!channels || channels.length === 0) {

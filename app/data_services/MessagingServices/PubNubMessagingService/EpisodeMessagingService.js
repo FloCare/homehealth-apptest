@@ -226,14 +226,14 @@ export class EpisodeMessagingService extends BaseMessagingService {
         });
     }
 
-    subscribeToEpisodes(episodes) {
+    subscribeToEpisodes(episodes, suppressNotificationFromHistory = false) {
         const channelObjects = episodes.map(episode => ({
             name: `episode_${episode.episodeID}`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: EpisodeMessagingService.identifier,
         }));
-        this._subscribeToChannelsByObject(channelObjects);
+        this._subscribeToChannelsByObject(channelObjects, suppressNotificationFromHistory);
     }
 
     unsubscribeToEpisodes(episodes) {
@@ -254,6 +254,6 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
         console.log('bootstrapping chanels');
         // episodes.forEach(episode => console.log(episode.episodeID));
-        this.subscribeToEpisodes(episodes);
+        this.subscribeToEpisodes(episodes, true);
     }
 }
