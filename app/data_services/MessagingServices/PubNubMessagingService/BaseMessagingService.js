@@ -5,7 +5,7 @@ import {MessagingServiceCoordinator} from './MessagingServiceCoordinator';
 
 export class BaseMessagingService {
     deviceToken = null;
-    connected = false;
+    caughtUpOnHistory = false;
     channels = [];
     notificationToken;
 
@@ -75,19 +75,19 @@ export class BaseMessagingService {
         switch (statusEvent.category) {
             // case 'PNConnectedCategory':
             //     this.processFromHistory().then(() => {
-            //         this.connected = true;
+            //         this.caughtUpOnHistory = true;
             //     });
             //     break;
             case 'PNTimeoutCategory':
             case 'PNNetworkIssuesCategory':
             case 'PNNetworkDownCategory':
-                this.connected = false;
+                this.caughtUpOnHistory = false;
                 this.onDisconnect(statusEvent);
                 break;
             case 'PNReconnectedCategory':
             case 'PNNetworkUpCategory':
                 this.processFromHistory(this.channels).then(() => {
-                    this.connected = true;
+                    this.caughtUpOnHistory = true;
                 });
                 break;
             default:
@@ -113,10 +113,10 @@ export class BaseMessagingService {
         console.log(message);
 
         //TODO scope for error, if during history catchup new messages arrive
-        if (this.connected) {
+        if (this.caughtUpOnHistory) {
             this.digestMessage({message: message.message, timestamp: message.timetoken, channel: message.channel});
         } else {
-            console.log('but  this.connected is false');
+            console.log('but  this.caughtUpOnHistory is false');
         }
     }
 
@@ -266,7 +266,7 @@ export class BaseMessagingService {
         }
         //TODO dont subscribe if history failed
         this.processFromHistory(channels, suppressNotificationFromHistory).then(() => {
-            this.connected = true;
+            this.caughtUpOnHistory = true;
             console.log(`subscribing to channels: ${channels.map(channel => channel.name)}`);
             if (!channels || channels.length === 0) {
                 return;
