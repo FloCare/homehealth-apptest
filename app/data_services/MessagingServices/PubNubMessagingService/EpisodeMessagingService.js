@@ -1,3 +1,4 @@
+import {NetInfo} from 'react-native';
 import {BaseMessagingService} from './BaseMessagingService';
 import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
@@ -154,7 +155,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
             console.log(payload);
             console.log(result);
         }).catch(error => {
-            console.log('error publishing');
+            console.log('error publishing visit message on pubnub');
+            console.log(error);
             throw new Error(`could not publish message ${error}`);
         });
     }
@@ -171,10 +173,10 @@ export class EpisodeMessagingService extends BaseMessagingService {
                     break;
                 case 'UPDATE':
                     console.log('update body');
-                    await visits.forEach(async visit => {
+                    await Promise.all(visits.map(async visit => {
                         console.log(JSON.stringify(visit));
                         await pushVisitUpdateToServer(visit);
-                    });
+                    }));
                     break;
                 case 'DELETE':
                     serverResponse = await pushVisitDeleteByIDs(visits.map(visit => visit.visitID));
@@ -215,32 +217,39 @@ export class EpisodeMessagingService extends BaseMessagingService {
         };
     }
 
+    isVisitOfCommonInterest(visit) {
+        return !(visit.getPlace() || visit.getPatient().isLocallyOwned);
+    }
+
+    _createPublishToServerJob(payload) {
+        console.log('creating publish to server job');
+        NetInfo.isConnected.fetch().then(isConnected => {
+            this.taskQueue.createJob('publishToServer', payload, {attempts: 5}, isConnected);
+        });
+    }
+
     publishVisitCreate(visit) {
-        if (visit.getPlace()) return;
-        this.taskQueue.createJob('publishToServer', {
+        if (!this.isVisitOfCommonInterest(visit)) { return; }
+
+        this._createPublishToServerJob({
             action: 'CREATE',
             visits: [this._getFlatVisitPayload(visit)]
-        }, {
-            attempts: 5
         });
     }
 
     publishVisitUpdate(visit) {
-        if (visit.getPlace()) return;
-        this.taskQueue.createJob('publishToServer', {
+        if (!this.isVisitOfCommonInterest(visit)) { return; }
+
+        this._createPublishToServerJob({
             action: 'UPDATE',
             visits: [this._getFlatVisitPayload(visit)]
-        }, {
-            attempts: 5
         });
     }
 
     publishVisitDeletes(visits) {
-        this.taskQueue.createJob('publishToServer', {
+        this._createPublishToServerJob({
             action: 'DELETE',
-            visits: visits.filter(visit => !visit.getPlace()).map(visit => this._getFlatVisitPayload(visit))
-        }, {
-            attempts: 5
+            visits: visits.filter(visit => this.isVisitOfCommonInterest(visit)).map(visit => this._getFlatVisitPayload(visit))
         });
     }
 

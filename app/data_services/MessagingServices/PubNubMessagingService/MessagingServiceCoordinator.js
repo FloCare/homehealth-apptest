@@ -62,12 +62,14 @@ export class MessagingServiceCoordinator {
         this.queue = queue;
 
         NetInfo.addEventListener('connectionChange', this.onConnectionStatusChange.bind(this));
-        if (NetInfo.isConnected) { this.queue.start(); }
+        NetInfo.isConnected.fetch().then(isConnected => {
+            if (isConnected) this.startQueue();
+        });
     }
 
     onConnectionStatusChange(connectionInfo) {
         console.log(`Connection change, type: ${connectionInfo.type}, effectiveType: ${connectionInfo.effectiveType}`);
-        if (connectionInfo.type !== 'none' && connectionInfo.type !== 'unknown' && NetInfo.isConnected) {
+        if (connectionInfo.type !== 'none' && connectionInfo.type !== 'unknown') {
             console.log('detected going online, making a call to queue start');
             this.startQueue();
         } else {
@@ -77,10 +79,12 @@ export class MessagingServiceCoordinator {
     }
 
     stopQueue() {
+        console.log('stopping queue');
         this.queue.stop();
     }
 
     startQueue() {
+        console.log('starting queue');
         this.queue.start();
     }
 
