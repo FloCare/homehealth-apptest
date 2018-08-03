@@ -366,8 +366,8 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
             const newOtherUsersVisits = this.getOtherUsersVisits(newClinicianVisitData);
 
-            const currentNoOfRows = Math.floor((currentOtherUsersVisits.length + 1) / numberOfCliniciansInRow);
-            const newNoOfRows = Math.floor((newOtherUsersVisits.length + 1) / numberOfCliniciansInRow);
+            const currentNoOfRows = Math.ceil((currentOtherUsersVisits.length) / numberOfCliniciansInRow);
+            const newNoOfRows = Math.floor((newOtherUsersVisits.length) / numberOfCliniciansInRow);
 
             return (currentNoOfRows !== newNoOfRows);
         }
