@@ -2,6 +2,7 @@ import PubNub from 'pubnub';
 import {AsyncStorage, Platform} from 'react-native';
 import {pubnubPubKey, pubnubSubKey} from '../../../utils/constants';
 import {MessagingServiceCoordinator} from './MessagingServiceCoordinator';
+import {UserDataService} from '../../UserDataService';
 
 export class BaseMessagingService {
     deviceToken = null;
@@ -138,31 +139,25 @@ export class BaseMessagingService {
     }
 
     constructor(channelRealm, taskQueue) {
-        return AsyncStorage.getItem('userID').then(userID => {
-            this.pubnub = this.newClient(userID);
-        }).then(() => {
-            this.pubnub.addListener({
-                status: this.statusHandler.bind(this),
-                message: this.messageEventCallback.bind(this),
-            });
-
-            console.log(`base message running for ${this.getName()}`);
-            this.taskQueue = taskQueue;
-            this.initialiseWorkers();
-
-            const channelsFromRealm = channelRealm.objects('Channel').filtered('handler = $0', this.getName());
-            if (channelsFromRealm && channelsFromRealm.length > 0) this.channels.push(...channelsFromRealm.values());
-
-            if (this.channels.length === 0) {
-                this._bootstrapChannels();
-            } else {
-                this._startSubscription(this.channels);
-            }
-
-            return this;
-        }).catch(error => {
-            throw new Error(`error initialising messaging service: ${error}`);
+        this.pubnub = this.newClient(UserDataService.getCurrentUserProps().userID);
+        this.pubnub.addListener({
+            status: this.statusHandler.bind(this),
+            message: this.messageEventCallback.bind(this),
         });
+
+        console.log(`base message running for ${this.getName()}`);
+        this.taskQueue = taskQueue;
+        this.initialiseWorkers();
+
+        const channelsFromRealm = channelRealm.objects('Channel').filtered('handler = $0', this.getName());
+        if (channelsFromRealm && channelsFromRealm.length > 0) this.channels.push(...channelsFromRealm.values());
+
+        if (this.channels.length === 0) {
+            this._bootstrapChannels();
+        } else {
+            this._startSubscription(this.channels);
+        }
+        return this;
     }
 
     _subscribeToChannelsByObject(channelObjects, suppressNotificationFromHistory = false) {
