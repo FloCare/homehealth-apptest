@@ -86,9 +86,9 @@ class MoreScreen extends Component {
                     }}
                 >
                     {
-                        list.map((listItem) => {
+                        list.map((listItem, index) => {
                             if (listItem === 'div') {
-                                return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
+                                return <Divider key={index} style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
                             }
 
                             return (<ListItem
@@ -98,6 +98,7 @@ class MoreScreen extends Component {
                                     paddingTop: 10,
                                     paddingBottom: 10
                                 }}
+                                key={index}
                                 avatarOverlayContainerStyle={{
                                     backgroundColor: 'white',
                                 }}

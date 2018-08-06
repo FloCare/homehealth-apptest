@@ -40,7 +40,7 @@ class SectionedList extends Component {
                 onPress={({e}) => this.props.onItemPressed({item}, e)}
             >
                 <View
-                    style={{marginLeft: 5, backgroundColor: item.recentlyUpdated ? PrimaryColor : 'clear', width: 7, height: 7, borderRadius: 7}}
+                    style={{marginLeft: 5, backgroundColor: item.recentlyUpdated ? PrimaryColor : 'transparent', width: 7, height: 7, borderRadius: 7}}
                 />
                 <View>
                     <StyledText style={styles.nameStyle}>{item.name}</StyledText>
