@@ -2,9 +2,17 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import codePush from 'react-native-code-push';
-import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
+import {
+    View,
+    Alert,
+    NetInfo,
+    Dimensions,
+    Platform,
+    AsyncStorage,
+} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
+import Instabug from 'instabug-reactnative';
 import {HomeScreen} from './HomeScreen';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import Fab from '../common/Fab';
@@ -47,6 +55,35 @@ class HomeScreenContainer extends Component {
         );
 
         SplashScreen.hide();
+        this.showInstabugOnboardingMessage();
+    }
+
+    setOnboardingStatus = (onBoardingStatus) => {
+        AsyncStorage.setItem('onBoardingMessagesStatus', JSON.stringify(onBoardingStatus));
+    }
+
+    getOnboardingStatus = async () => {
+        try {
+            return JSON.parse(await AsyncStorage.getItem('onBoardingMessagesStatus'));
+        } catch (error) {
+            return { };
+        }
+    }
+
+    isInstaBugOnboardingMessageShown = (onBoardingStatusObject) => (
+        onBoardingStatusObject && onBoardingStatusObject.instaBugStatus
+    )
+
+    showInstabugOnboardingMessage = async () => {
+        const onboardingStatus = await this.getOnboardingStatus();
+        if (!this.isInstaBugOnboardingMessageShown(onboardingStatus)) {
+            Instabug.showWelcomeMessage(Instabug.welcomeMessageMode.live);
+            const updatedOnBoardingStatus = {
+                ...onboardingStatus,
+                instaBugStatus: true
+            };
+            this.setOnboardingStatus(updatedOnBoardingStatus);
+        }
     }
 
     onNavigatorEvent(event) {
