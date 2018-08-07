@@ -7,6 +7,11 @@ import {StyleSheet, Text, View, Image, Alert, AsyncStorage, Dimensions} from 're
 import StartApp from '../screens/App';
 import {screenNames, eventNames, parameterValues, PrimaryColor, PrimaryFontFamily} from '../utils/constants';
 
+const passCodeScreenStates = {
+    FIRST_ENTRY_SCREEN: 0,
+    CONFIRM_SCREEN: 1
+};
+
 class SetPassCodeScreen extends Component {
     static navigatorStyle = {
         navBarHidden: true
@@ -15,9 +20,12 @@ class SetPassCodeScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            code: ''
+            code: '',
+            screenState: passCodeScreenStates.FIRST_ENTRY_SCREEN,
+            enteredPassCode: null,
+            confirmationFailed: false
         };
-        this.setPasscode = this.setPasscode.bind(this);
+        this.handleInputPassCode = this.handleInputPassCode.bind(this);
         this.setKey = this.setKey.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     }
@@ -59,48 +67,63 @@ class SetPassCodeScreen extends Component {
     }
 
 // Secure the entered passcode in the keystore
-    setPasscode(passcode) {
+    handleInputPassCode(passcode) {
+        console.log('handling input passcode: ' + passcode);
         // Save the passcode to keystore
-        RNSecureKeyStore.set('passCode', passcode)
-            .then((res) => {
-                // Open VerifyPasscode Screen next time
-                AsyncStorage.setItem('isFirstVisit', 'false');
-                firebase.analytics().logEvent(eventNames.PASSCODE, {
-                    status: parameterValues.SUCCESS
-                });
-
-                this.setKey();
-                // // if key already set, use it
-                // console.log('Trying to get the key ...');
-                // RNSecureKeyStore.get('flokey')
-                //     .then((k) => {
-                //         // Connect to realm, Register new screens
-                //         // Navigate to the Tab Based App
-                //         try {
-                //             StartApp(k);
-                //         } catch (e) {
-                //             console.log('Error in starting app:', e);
-                //             Alert.alert('Error', 'Unable to retrieve data');
-                //         }
-                //     }, (err) => {
-                //         console.log('Key not already set', err);
-                //         this.setKey();
-                //     });
-            }, (err) => {
-                console.log(err);
-                firebase.analytics().logEvent(eventNames.PASSCODE, {
-                    status: parameterValues.FAILURE
-                });
-                Alert.alert('Error', 'Unable to update passcode');
-                return;
+        if (this.state.screenState === passCodeScreenStates.FIRST_ENTRY_SCREEN) {
+            this.setState({
+                screenState: passCodeScreenStates.CONFIRM_SCREEN,
+                code: '',
+                enteredPassCode: passcode,
+                confirmationFailed: false
             });
+            if (this.virtualKeyBoard) {
+                this.virtualKeyBoard.resetText();
+            }
+        } else if (this.state.screenState === passCodeScreenStates.CONFIRM_SCREEN) {
+            if (passcode === this.state.enteredPassCode) {
+                console.log('saving key');
+                this.savePassCode(passcode);
+            } else {
+                console.log('going back to first entry screen');
+                this.setState({
+                    screenState: passCodeScreenStates.FIRST_ENTRY_SCREEN,
+                    code: '',
+                    enteredPassCode: null,
+                    confirmationFailed: true
+                });
+                if (this.virtualKeyBoard) {
+                    this.virtualKeyBoard.resetText();}
+            }
+        }
     }
+
 
     onChangeCode(code) {
         this.setState({code});
         if (code.length === 4) {
-            setTimeout(() => this.setPasscode(code));
+            setTimeout(() => this.handleInputPassCode(code));
         }
+    }
+
+    savePassCode = (passcode) => {
+        RNSecureKeyStore.set('passCode', passcode)
+        .then((res) => {
+            // Open VerifyPasscode Screen next time
+            AsyncStorage.setItem('isFirstVisit', 'false');
+            firebase.analytics().logEvent(eventNames.PASSCODE, {
+                status: parameterValues.SUCCESS
+            });
+
+            this.setKey();
+        }, (err) => {
+            console.log(err);
+            firebase.analytics().logEvent(eventNames.PASSCODE, {
+                status: parameterValues.FAILURE
+            });
+            Alert.alert('Error', 'Unable to update passcode');
+            return;
+        });
     }
 
     // generateCodeDisplayArea() {
@@ -124,6 +147,7 @@ class SetPassCodeScreen extends Component {
         const primaryColor = PrimaryColor;
         const secondary = '#34da92';
         const {width, height} = Dimensions.get('window');
+        const header = this.state.screenState === passCodeScreenStates.FIRST_ENTRY_SCREEN ? 'Set a Passcode' : 'Confirm passcode';
         return (
             <LinearGradient
                 colors={[primaryColor, secondary]}
@@ -142,13 +166,19 @@ class SetPassCodeScreen extends Component {
                     </View>
                     <View>
                         <Text style={styles.topSectionStyle}>
-                            Set a Passcode
+                            {header}
                         </Text>
                     </View>
                     <View>
                         <Text style={styles.middleSectionStyle}>
                             Note: Once set, the passcode cannot be changed
                         </Text>
+                        {
+                            this.state.confirmationFailed &&
+                            <Text style={[styles.middleSectionStyle, {color: 'red'}]}>
+                                * Passcodes did not match. Please try again.
+                            </Text>
+                        }
                     </View>
                     {/*<View>*/}
                         {/*<Image*/}
@@ -168,6 +198,7 @@ class SetPassCodeScreen extends Component {
                     </View>
                     <View style={{width, height: height * 0.5}}>
                         <VirtualKeyboard
+                            ref={e => { this.virtualKeyBoard = e; }}
                             color='white'
                             pressMode='string'
                             onPress={(val) => this.onChangeCode(val)}
