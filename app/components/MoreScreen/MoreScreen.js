@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {View, Image} from 'react-native';
 import {Divider, List, ListItem} from 'react-native-elements';
 import firebase from 'react-native-firebase';
-import BugReporting from 'instabug-reactnative';
+import {BugReporting} from 'instabug-reactnative';
 import {Images} from '../../Images';
 import {screenNames} from '../../utils/constants';
 
@@ -34,9 +34,11 @@ const list = navigator => [
     'div',
     {
         icon: Images.accessCode,
-        title: 'Report',
+        title: 'Report and Feedback',
+        hideChevron: true,
         onPress: () => {
             BugReporting.setPromptOptionsEnabled(false, true, true);
+            BugReporting.setInvocationOptions([BugReporting.invocationOptions.emailFieldHidden]);
             BugReporting.invoke();
         }
     },
@@ -121,6 +123,7 @@ class MoreScreen extends Component {
                                 avatarStyle={{resizeMode: Image.resizeMode.contain}}
                                 title={listItem.title}
                                 disabled={listItem.disabled}
+                                hideChevron={listItem.hideChevron}
                                 onPress={() => listItem.onPress()}
                             />);
                         })

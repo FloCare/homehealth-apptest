@@ -1,5 +1,5 @@
 import {Navigation} from 'react-native-navigation';
-import {AsyncStorage} from 'react-native';
+import {AsyncStorage, processColor} from 'react-native';
 import Instabug from 'instabug-reactnative';
 import SplashScreen from 'react-native-splash-screen';
 import {screenNames, PrimaryColor} from './utils/constants';
@@ -32,7 +32,8 @@ const StartApp = async () => {
     Instabug.startWithToken('29d3f443148b83202e3213845ff10c87', [Instabug.invocationEvent.shake]);
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
     Instabug.setStringToKey('Shake the device to report bug \nor\nGo to More and click report', Instabug.strings.shakeHint);
-
+    //TODO Check color to be shown
+    Instabug.setPrimaryColor(processColor(PrimaryColor));
 	if (!await isFirstRun()) {
 		Navigation.startSingleScreenApp({
 			screen: {
