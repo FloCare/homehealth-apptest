@@ -106,7 +106,7 @@ class MoreScreen extends Component {
                                     paddingLeft: 15
                                 }}
                                 avatar={listItem.icon}
-                                avatarStyle={{resizeMode: Image.resizeMode.contain}}
+                                avatarStyle={{resizeMode: 'contain'}}
                                 title={listItem.title}
                                 disabled={listItem.onPress === undefined}
                                 onPress={() => this.props.navigator.push(listItem.onPress)}
