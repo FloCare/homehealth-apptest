@@ -60,7 +60,6 @@ class SetPassCodeScreen extends Component {
 
 // Secure the entered passcode in the keystore
     setPasscode(passcode) {
-        console.log('passcode');
         // Save the passcode to keystore
         RNSecureKeyStore.set('passCode', passcode)
             .then((res) => {
