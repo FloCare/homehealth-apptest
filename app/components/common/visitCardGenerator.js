@@ -24,7 +24,6 @@ import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {EpisodeDataService} from '../../data_services/EpisodeDataService';
 import {navigateTo} from '../../utils/MapUtils';
-import { todayMomentInUTCMidnight } from '../../utils/utils'
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
