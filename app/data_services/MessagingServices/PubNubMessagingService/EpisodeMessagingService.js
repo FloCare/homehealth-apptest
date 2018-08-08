@@ -1,4 +1,6 @@
 import {NetInfo} from 'react-native';
+import firebase from 'react-native-firebase';
+import {eventNames, parameterValues} from '../../../utils/constants';
 import {BaseMessagingService} from './BaseMessagingService';
 import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
@@ -40,6 +42,9 @@ export class EpisodeMessagingService extends BaseMessagingService {
                                     const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
                                     myVisitsForTheDay.forEach(myVisit => {
                                         if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
+                                            firebase.analytics().logEvent(eventNames.COLLABORATION, {
+                                                'type': 1
+                                            });
                                             showVisitCollisionNotification(myVisit, visit);
                                         }
                                     });
