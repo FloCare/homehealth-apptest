@@ -102,15 +102,36 @@ async function getProcessedDataForOrderedList(coordinates) {
 }
 
 
-const navigateTo = (latitude, longitude, address) => {
-    const scheme = Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
+const navigateTo = async (latitude, longitude, address) => {
+    let scheme = null;
+    let hasGoogleMaps = false;
+    if (Platform.OS === 'android'){
+        //Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
+        scheme = `geo:0,0?q=`;
+    } else if (Platform.OS === 'ios'){
+        await Linking.canOpenURL(`comgooglemaps://?daddr=${latitude},${longitude}`)
+            .then(supported => {
+                if (supported) {
+                    hasGoogleMaps = true;
+                    scheme = `comgooglemaps://?daddr=`;
+                } else {
+                    scheme = `maps:0,0?q=`;
+                }
+            }).catch(err => {
+                console.log('Error in checking google maps scheme:', err);
+                scheme = `maps:0,0?q=`;
+            });
+    } else {
+        return;
+    }
     const latLng = `${latitude},${longitude}`;
     const label = address;
     const url = Platform.select({
-        ios: `${scheme}${label}@${latLng}`,
+        ios: hasGoogleMaps ? `${scheme}${latLng}`: `${scheme}${label}@${latLng}`,
         android: `${scheme}${latLng}(${label})`
     });
-    Linking.openURL(url).catch(err => console.error('An error occurred', err));
+    // console.log('Opening the URL:', url);
+    Linking.openURL(url).catch(err => console.error('Error in opening Maps:', err));
 };
 
 export {getViewPortFromBounds, callDirectionsApiForPoints, extractInformationFromDirectionApiResponse, getProcessedDataForOrderedList, navigateTo};

@@ -74,5 +74,9 @@
 	<true/>
 	<key>CodePushDeploymentKey</key>
 	<string>codepushiOSKey</string>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+     <string>comgooglemaps</string>
+    </array>
 </dict>
 </plist>
