@@ -24,6 +24,7 @@ import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {EpisodeDataService} from '../../data_services/EpisodeDataService';
 import {navigateTo} from '../../utils/MapUtils';
+import { todayMomentInUTCMidnight } from '../../utils/utils'
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
@@ -157,7 +158,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         renderDatePickerComponent = () => {
-            const startDate = this.state.visitTime ? this.state.visitTime : moment().hours(12).minutes(0).seconds(0).toDate();
+            const startDate = this.state.visitTime ? this.state.visitTime :
+                moment(this.props.midnightEpochOfVisit).subtract(moment().utcOffset(), 'minutes')
+                .hours(12)
+                .minutes(0)
+                .seconds(0)
+                .toDate();
             return (
                 <View style={{alignItems: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
                     {
