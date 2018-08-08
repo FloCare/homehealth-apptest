@@ -7,6 +7,8 @@ import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties, apiServerU
 import StyledText from '../components/common/StyledText';
 import {SimpleButton} from '../components/common/SimpleButton';
 import {UserDataService} from '../data_services/UserDataService';
+import Instabug from 'instabug-reactnative'
+import { PatientDataService } from '../data_services/PatientDataService'
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -30,6 +32,10 @@ class LoginScreen extends Component {
       //     this.onSubmit();
       // });
     }
+
+    setUserForInstabug = (email, name) => {
+        Instabug.identifyUserWithEmail(email, name);
+    };
 
     onSubmit() {
         const {email, password} = this.state;
@@ -71,7 +77,9 @@ class LoginScreen extends Component {
                 firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.org);
 
                 AsyncStorage.setItem('myUserDetails', JSON.stringify(userPropsJson));
-
+                // TODO Change backend to give email also
+                const userName = PatientDataService.constructName(userPropsJson.firstName, userPropsJson.lastName);
+                this.setUserForInstabug(userPropsJson.email, userName);
                 this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,
                     title: 'Welcome',

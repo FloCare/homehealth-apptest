@@ -5,6 +5,7 @@ import firebase from 'react-native-firebase';
 import {BugReporting} from 'instabug-reactnative';
 import {Images} from '../../Images';
 import {screenNames} from '../../utils/constants';
+import {setAutoScreenShotForInstabug} from '../../utils/instabugUtils';
 
 const list = navigator => [
     {
@@ -34,16 +35,6 @@ const list = navigator => [
     'div',
     {
         icon: Images.accessCode,
-        title: 'Report and Feedback',
-        hideChevron: true,
-        onPress: () => {
-            BugReporting.setPromptOptionsEnabled(false, true, true);
-            BugReporting.setInvocationOptions([BugReporting.invocationOptions.emailFieldHidden]);
-            BugReporting.invoke();
-        }
-    },
-    {
-        icon: Images.accessCode,
         title: 'Access Code',
         disabled: true
     },
@@ -63,6 +54,17 @@ const list = navigator => [
                 largeTitle: false,
             }
         })
+    },
+    'div',
+    {
+        icon: Images.sendfeedback,
+        title: 'Send Feedback',
+        hideChevron: true,
+        onPress: () => {
+            setAutoScreenShotForInstabug(false);
+            BugReporting.invokeWithInvocationModeAndOptions(BugReporting.invocationMode.newFeedback, [BugReporting.invocationOptions.emailFieldOptional]);
+            BugReporting.onSDKDismissedHandler(() => setAutoScreenShotForInstabug(true));
+        }
     },
 ];
 
@@ -103,24 +105,21 @@ class MoreScreen extends Component {
                     {
                         list(this.props.navigator).map((listItem) => {
                             if (listItem === 'div') {
-                                return <Divider style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
+                                return <Divider style={{backgroundColor: '#dddddd', marginVertical: 10}} />;
                             }
 
                             return (<ListItem
                                 containerStyle={{
                                     borderTopWidth: 0,
                                     borderBottomWidth: 0,
-                                    paddingTop: 10,
-                                    paddingBottom: 10
+                                    paddingTop: 5,
+                                    paddingBottom: 5
                                 }}
                                 avatarOverlayContainerStyle={{
                                     backgroundColor: 'white',
                                 }}
-                                titleContainerStyle={{
-                                    paddingLeft: 15
-                                }}
                                 avatar={listItem.icon}
-                                avatarStyle={{resizeMode: Image.resizeMode.contain}}
+                                avatarStyle={{width: 20, height: 20, resizeMode: Image.resizeMode.contain}}
                                 title={listItem.title}
                                 disabled={listItem.disabled}
                                 hideChevron={listItem.hideChevron}

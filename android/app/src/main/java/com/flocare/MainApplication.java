@@ -38,6 +38,8 @@ public class MainApplication extends NavigationApplication implements ReactInsta
     return BuildConfig.DEBUG;
   }
 
+  static String PrimaryColor = "#45ceb1";
+
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
             new RealmReactPackage(),
@@ -51,7 +53,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG),
             new RNInstabugReactnativePackage.Builder("29d3f443148b83202e3213845ff10c87", MainApplication.this)
               .setInvocationEvent("shake")
-              .setPrimaryColor("black")
+              .setPrimaryColor(PrimaryColor)
               .build()
     );
   }

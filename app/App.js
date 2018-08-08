@@ -1,9 +1,10 @@
 import {Navigation} from 'react-native-navigation';
 import {AsyncStorage, processColor} from 'react-native';
-import Instabug from 'instabug-reactnative';
+import Instabug, {BugReporting} from 'instabug-reactnative';
 import SplashScreen from 'react-native-splash-screen';
-import {screenNames, PrimaryColor} from './utils/constants';
+import {screenNames, PrimaryColor, instabugKey} from './utils/constants';
 import RegisterInitScreens from './init_screens';
+import {setAutoScreenShotForInstabug} from './utils/instabugUtils';
 
 RegisterInitScreens();
 
@@ -28,12 +29,18 @@ const isFirstRun = async () => {
     }
 };
 
-const StartApp = async () => {
-    Instabug.startWithToken('29d3f443148b83202e3213845ff10c87', [Instabug.invocationEvent.shake]);
+const setupInstaBug = () => {
+    Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.shake]);
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
-    Instabug.setStringToKey('Shake the device to report bug \nor\nGo to More and click report', Instabug.strings.shakeHint);
+    Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
+    Instabug.setPromptOptionsEnabled(false, false, true);
+    setAutoScreenShotForInstabug(true);
     //TODO Check color to be shown
     Instabug.setPrimaryColor(processColor(PrimaryColor));
+};
+
+const StartApp = async () => {
+    setupInstaBug();
 	if (!await isFirstRun()) {
 		Navigation.startSingleScreenApp({
 			screen: {

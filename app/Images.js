@@ -35,6 +35,7 @@ export const Images = {
     savedPlaces: require('../resources/savedPlaces.png'),
     secureAccess: require('../resources/secureAccess.png'),
     secureData: require('../resources/secure.png'),
+    sendfeedback: require('../resources/sendfeedback.png'),
     setting: require('../resources/setting.png'),
     threeDotButton: require('../resources/threeDotButton.png'),
     tickMarkDone: require('../resources/tickmarkDone.png'),
