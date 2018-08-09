@@ -30,9 +30,10 @@ const isFirstRun = async () => {
 };
 
 const setShakingThreshold = () => {
-    const shakingThreshold = 250;
-    BugReporting.setShakingThresholdForAndroid(shakingThreshold);
-    BugReporting.setShakingThresholdForiPhone(shakingThreshold);
+    const shakingThresholdAndroid = 250;
+    const shakingThresholdIphone = 2.0;
+    BugReporting.setShakingThresholdForAndroid(shakingThresholdAndroid);
+    BugReporting.setShakingThresholdForiPhone(shakingThresholdIphone);
 };
 
 const setupInstaBug = () => {
