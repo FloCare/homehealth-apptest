@@ -29,12 +29,19 @@ const isFirstRun = async () => {
     }
 };
 
+const setShakingThreshold = () => {
+    const shakingThreshold = 250;
+    BugReporting.setShakingThresholdForAndroid(shakingThreshold);
+    BugReporting.setShakingThresholdForiPhone(shakingThreshold);
+};
+
 const setupInstaBug = () => {
     Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.shake]);
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
     Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
     Instabug.setPromptOptionsEnabled(false, false, true);
     setAutoScreenShotForInstabug(true);
+    setShakingThreshold();
     //TODO Check color to be shown
     Instabug.setPrimaryColor(processColor(PrimaryColor));
 };
