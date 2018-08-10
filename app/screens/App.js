@@ -17,7 +17,7 @@ import {dateService, initialiseService as initialiseDate} from '../data_services
 import {configure as configureNotification} from '../data_services/MessagingServices/NotificationService';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {MessagingServiceCoordinator} from '../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
-import {initialiseStore} from '../utils/InMemoryStore';
+import {initialiseStoreAndSetInstabug} from '../utils/InMemoryStore';
 import {UserDataService} from '../data_services/UserDataService';
 import {EpisodeDataService} from '../data_services/EpisodeDataService';
 import {PhysicianDataService} from '../data_services/PhysicianDataService';
@@ -51,7 +51,7 @@ function getLargeNavBarOrSubstitute() {
 const StartApp = async (key) => {
     // Initialize the DB
     try {
-        await initialiseStore();
+        await initialiseStoreAndSetInstabug();
         await FloDBProvider.initialize(key);
     } catch (err) {
         console.log('Error in initializing DB: ', err);

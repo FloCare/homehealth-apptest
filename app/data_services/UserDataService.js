@@ -33,6 +33,7 @@ export class UserDataService {
             const primaryContact = userPropsJson.primaryContact;
             const role = userPropsJson.roles[0].role;
             const org = userPropsJson.roles[0].org;
+            const email = userPropsJson.email;
 
             console.log('fetched userprops');
             console.log({
@@ -41,7 +42,8 @@ export class UserDataService {
                 lastName,
                 primaryContact,
                 role,
-                org
+                org,
+                email
             });
 
             return {
@@ -50,7 +52,8 @@ export class UserDataService {
                 lastName,
                 primaryContact,
                 role,
-                org
+                org,
+                email
             };
         }).catch((error) => {
             console.log('error in fetchUserProps');

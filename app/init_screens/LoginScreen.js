@@ -7,6 +7,8 @@ import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties, apiServerU
 import StyledText from '../components/common/StyledText';
 import {SimpleButton} from '../components/common/SimpleButton';
 import {UserDataService} from '../data_services/UserDataService';
+import {PatientDataService} from '../data_services/PatientDataService';
+import {setUserForInstabug} from '../utils/instabugUtils';
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -71,7 +73,8 @@ class LoginScreen extends Component {
                 firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.org);
 
                 AsyncStorage.setItem('myUserDetails', JSON.stringify(userPropsJson));
-
+                const userName = PatientDataService.constructName(userPropsJson.firstName, userPropsJson.lastName);
+                setUserForInstabug(userPropsJson.email, userName);
                 this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,
                     title: 'Welcome',

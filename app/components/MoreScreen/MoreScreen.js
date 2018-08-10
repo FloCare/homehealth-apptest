@@ -2,22 +2,26 @@ import React, {Component} from 'react';
 import {View, Image} from 'react-native';
 import {Divider, List, ListItem} from 'react-native-elements';
 import firebase from 'react-native-firebase';
+import {BugReporting} from 'instabug-reactnative';
 import {Images} from '../../Images';
 import {screenNames} from '../../utils/constants';
+import {setAutoScreenShotForInstabug} from '../../utils/instabugUtils';
 
-const list = [
+const list = navigator => [
     {
         icon: Images.visitLog,
         title: 'Visit Log',
+        disabled: true
     },
     {
         icon: Images.milesLog,
         title: 'Miles Log',
+        disabled: true
     },
     {
         icon: Images.savedPlaces,
         title: 'Saved Places',
-        onPress: {
+        onPress: () => navigator.push({
             screen: screenNames.stopList,
             animated: true,
             animationType: 'slide-horizontal',
@@ -26,28 +30,41 @@ const list = [
                 tabBarHidden: true,
                 largeTitle: false,
             }
-        }
+        })
     },
     'div',
     {
         icon: Images.accessCode,
         title: 'Access Code',
+        disabled: true
     },
     {
         icon: Images.setting,
         title: 'Settings',
+        disabled: true
     },
     {
         icon: Images.legal,
         title: 'Legal',
-        onPress: {
+        onPress: () => navigator.push({
             screen: screenNames.legal,
             title: 'Legal',
             navigatorStyle: {
                 tabBarHidden: true,
                 largeTitle: false,
             }
-        },
+        })
+    },
+    'div',
+    {
+        icon: Images.sendfeedback,
+        title: 'Send Feedback',
+        hideChevron: true,
+        onPress: () => {
+            setAutoScreenShotForInstabug(false);
+            BugReporting.invokeWithInvocationModeAndOptions(BugReporting.invocationMode.newFeedback, [BugReporting.invocationOptions.emailFieldHidden]);
+            BugReporting.onSDKDismissedHandler(() => setAutoScreenShotForInstabug(true));
+        }
     },
 ];
 
@@ -86,30 +103,28 @@ class MoreScreen extends Component {
                     }}
                 >
                     {
-                        list.map((listItem, index) => {
+                        list(this.props.navigator).map((listItem, index) => {
                             if (listItem === 'div') {
-                                return <Divider key={index} style={{backgroundColor: '#dddddd', marginVertical: 20}} />;
+                                return <Divider key={index} style={{backgroundColor: '#dddddd', marginVertical: 10}} />;
                             }
 
                             return (<ListItem
                                 containerStyle={{
                                     borderTopWidth: 0,
                                     borderBottomWidth: 0,
-                                    paddingTop: 10,
-                                    paddingBottom: 10
+                                    paddingTop: 5,
+                                    paddingBottom: 5
                                 }}
                                 key={index}
                                 avatarOverlayContainerStyle={{
                                     backgroundColor: 'white',
                                 }}
-                                titleContainerStyle={{
-                                    paddingLeft: 15
-                                }}
                                 avatar={listItem.icon}
-                                avatarStyle={{resizeMode: Image.resizeMode.contain}}
+                                avatarStyle={{width: 20, height: 20, resizeMode: Image.resizeMode.contain}}
                                 title={listItem.title}
-                                disabled={listItem.onPress === undefined}
-                                onPress={() => this.props.navigator.push(listItem.onPress)}
+                                disabled={listItem.disabled}
+                                hideChevron={listItem.hideChevron}
+                                onPress={() => listItem.onPress()}
                             />);
                         })
                     }

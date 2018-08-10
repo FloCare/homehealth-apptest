@@ -3,6 +3,7 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.microsoft.codepush.react.CodePush;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
@@ -37,6 +38,9 @@ public class MainApplication extends NavigationApplication implements ReactInsta
     return BuildConfig.DEBUG;
   }
 
+  static String PrimaryColor = "#45ceb1";
+  static String instabugKey = "29d3f443148b83202e3213845ff10c87";
+
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
             new RealmReactPackage(),
@@ -47,7 +51,11 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new RNImmediatePhoneCallPackage(),
             new SplashScreenReactPackage(),
             new RNFirebaseAnalyticsPackage(),
-            new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG)
+            new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG),
+            new RNInstabugReactnativePackage.Builder(instabugKey, MainApplication.this)
+              .setInvocationEvent("shake")
+              .setPrimaryColor(PrimaryColor)
+              .build()
     );
   }
 
