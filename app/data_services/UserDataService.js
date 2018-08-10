@@ -78,6 +78,25 @@ export class UserDataService {
         });
     }
 
+    fetchAndUpdateUserInRealm(id) {
+        const user = this.getUserByID(id);
+        console.log('fetch and update user');
+        if (!user) {
+            console.log('didnt find user, skipping update');
+            return;
+        }
+        console.log('found local copy of the user, performing a server update');
+
+        return UserDataService.fetchUserProps(id).then(userJson => {
+            console.log('successfully fetched user props');
+            return this.saveUserToRealm(userJson);
+        }).catch(error => {
+            console.log('error in fetch and save user');
+            console.log(error);
+            throw error;
+        });
+    }
+
     saveUserToRealm(user) {
         let userObject;
         console.log('save to realm');
