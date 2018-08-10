@@ -66,10 +66,14 @@ class SetPassCodeScreen extends Component {
             });
     }
 
+    resetVirtualKeyboardTextState = () => {
+        if (this.virtualKeyBoard) {
+            this.virtualKeyBoard.resetText();
+        }
+    }
+
 // Secure the entered passcode in the keystore
     handleInputPassCode(passcode) {
-        console.log('handling input passcode: ' + passcode);
-        // Save the passcode to keystore
         if (this.state.screenState === passCodeScreenStates.FIRST_ENTRY_SCREEN) {
             this.setState({
                 screenState: passCodeScreenStates.CONFIRM_SCREEN,
@@ -77,23 +81,18 @@ class SetPassCodeScreen extends Component {
                 enteredPassCode: passcode,
                 confirmationFailed: false
             });
-            if (this.virtualKeyBoard) {
-                this.virtualKeyBoard.resetText();
-            }
+            this.resetVirtualKeyboardTextState();
         } else if (this.state.screenState === passCodeScreenStates.CONFIRM_SCREEN) {
             if (passcode === this.state.enteredPassCode) {
-                console.log('saving key');
                 this.savePassCode(passcode);
             } else {
-                console.log('going back to first entry screen');
                 this.setState({
                     screenState: passCodeScreenStates.FIRST_ENTRY_SCREEN,
                     code: '',
                     enteredPassCode: null,
                     confirmationFailed: true
                 });
-                if (this.virtualKeyBoard) {
-                    this.virtualKeyBoard.resetText();}
+                this.resetVirtualKeyboardTextState();
             }
         }
     }
@@ -107,6 +106,7 @@ class SetPassCodeScreen extends Component {
     }
 
     savePassCode = (passcode) => {
+        // Save the passcode to keystore
         RNSecureKeyStore.set('passCode', passcode)
         .then((res) => {
             // Open VerifyPasscode Screen next time
