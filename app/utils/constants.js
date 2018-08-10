@@ -162,7 +162,7 @@ export const pubnubPubKey = 'pubnubPubKey';
 //ending in 524 is dev key
 export const pubnubSubKey = 'pubnubSubKey';
 
-export const instabugKey = 'instabugKey';
+export const instabugKey = '984af667b49f14c4f8cf7dff6a7fb4e4';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
 export const apiServerURL = 'https://app-9707.on-aptible.com';
