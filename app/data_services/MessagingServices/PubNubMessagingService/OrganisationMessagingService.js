@@ -52,9 +52,13 @@ export class OrganisationMessagingService extends BaseMessagingService {
     }
 
     async _bootstrapChannels() {
-        const organisationID = UserDataService.getCurrentUserProps().org;
+        const organisationID = UserDataService.getCurrentUserProps().orgID;
 
-        console.log('bootstrapping organisation channel');
-        this.subscribeToOrganisation(organisationID, true);
+        if (organisationID) {
+            console.log('bootstrapping organisation channel');
+            this.subscribeToOrganisation(organisationID, true);
+        } else {
+            console.log('bootstrapping organisation channel skipped due to missing orgID');
+        }
     }
 }

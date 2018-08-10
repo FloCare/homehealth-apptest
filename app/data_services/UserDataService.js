@@ -33,6 +33,7 @@ export class UserDataService {
             const primaryContact = userPropsJson.primaryContact;
             const role = userPropsJson.roles[0].role;
             const org = userPropsJson.roles[0].org;
+            const orgID = userPropsJson.roles[0].orgID;
             const email = userPropsJson.email;
 
             console.log('fetched userprops');
@@ -43,6 +44,7 @@ export class UserDataService {
                 primaryContact,
                 role,
                 org,
+                orgID,
                 email
             });
 
@@ -53,6 +55,7 @@ export class UserDataService {
                 primaryContact,
                 role,
                 org,
+                orgID,
                 email
             };
         }).catch((error) => {
