@@ -29,25 +29,16 @@ const isFirstRun = async () => {
     }
 };
 
-const setShakingThreshold = () => {
-    const shakingThresholdAndroid = 250;
-    const shakingThresholdIphone = 2.0;
-    BugReporting.setShakingThresholdForAndroid(shakingThresholdAndroid);
-    BugReporting.setShakingThresholdForiPhone(shakingThresholdIphone);
-};
-
 const setupInstaBug = () => {
     if (Platform.OS === 'ios') {
         // ios specific code for instabug
-        Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.shake]);
+        Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.screenshot]);
         Instabug.setPrimaryColor(processColor(PrimaryColor));
     }
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
     BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldHidden]);
-    Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
     setFeedbackOptionOnly();
     setAutoScreenShotForInstabug(true);
-    setShakingThreshold();
 };
 
 const StartApp = async () => {
