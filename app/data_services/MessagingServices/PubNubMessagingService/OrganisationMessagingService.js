@@ -41,9 +41,9 @@ export class OrganisationMessagingService extends BaseMessagingService {
         // });
     }
 
-    subscribeToOrganisation(organisation, suppressNotificationFromHistory = false) {
+    subscribeToOrganisation(organisationID, suppressNotificationFromHistory = false) {
         const channelObject = {
-            name: `organisation_${organisation.organisationID}`,
+            name: `organisation_${organisationID}`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: OrganisationMessagingService.identifier,
@@ -51,20 +51,14 @@ export class OrganisationMessagingService extends BaseMessagingService {
         this._subscribeToChannelsByObject([channelObject], suppressNotificationFromHistory);
     }
 
-    unsubscribeToOrganisations(organisations) {
-        const channelObjects = organisations.map(organisation => ({
-            name: `organisation_${organisation.organisationID}`,
-            //TODO this should be more sophisticated
-            lastMessageTimestamp: '0',
-            handler: OrganisationMessagingService.identifier,
-        }));
-        this._unsubscribeFromChannelsByObject(channelObjects);
-    }
-
     async _bootstrapChannels() {
-        const organisation = UserDataService.getCurrentUserProps().org;
+        const organisationID = UserDataService.getCurrentUserProps().orgID;
 
-        console.log('bootstrapping organisation channel');
-        this.subscribeToOrganisation(organisation, true);
+        if (organisationID) {
+            console.log('bootstrapping organisation channel');
+            this.subscribeToOrganisation(organisationID, true);
+        } else {
+            console.log('bootstrapping organisation channel skipped due to missing orgID');
+        }
     }
 }
