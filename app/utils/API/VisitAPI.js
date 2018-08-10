@@ -22,6 +22,11 @@ export function pushNewVisitsToServer(visits) {
                 return response.json();
             }
             throw new Error('HTTP request not OK');
+        })
+        .catch(error => {
+            console.log('api call error');
+            console.log(error);
+            throw error;
         });
 }
 
@@ -44,6 +49,11 @@ export function pushVisitUpdateToServer(visit) {
                 return response.json();
             }
             throw new Error('HTTP request not OK');
+        })
+        .catch(error => {
+            console.log('api call error');
+            console.log(error);
+            throw error;
         });
 }
 
@@ -65,6 +75,11 @@ export function getVisitsByID(visitIDs) {
             return response.json();
         }
         throw new Error('HTTP request not OK');
+    })
+        .catch(error => {
+            console.log('api call error');
+            console.log(error);
+            throw error;
     });
 }
 
@@ -82,6 +97,11 @@ export function getAllMyVisits() {
             return response.json();
         }
         throw new Error('HTTP request not OK');
+    })
+        .catch(error => {
+            console.log('api call error');
+            console.log(error);
+            throw error;
     });
 }
 
@@ -103,5 +123,10 @@ export function pushVisitDeleteByIDs(visitIDs) {
             return response.json();
         }
         throw new Error('HTTP request not OK');
+    })
+        .catch(error => {
+            console.log('api call error');
+            console.log(error);
+            throw error;
     });
 }

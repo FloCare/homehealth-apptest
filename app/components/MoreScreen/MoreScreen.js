@@ -103,9 +103,9 @@ class MoreScreen extends Component {
                     }}
                 >
                     {
-                        list(this.props.navigator).map((listItem) => {
+                        list(this.props.navigator).map((listItem, index) => {
                             if (listItem === 'div') {
-                                return <Divider style={{backgroundColor: '#dddddd', marginVertical: 10}} />;
+                                return <Divider key={index} style={{backgroundColor: '#dddddd', marginVertical: 10}} />;
                             }
 
                             return (<ListItem
@@ -115,6 +115,7 @@ class MoreScreen extends Component {
                                     paddingTop: 5,
                                     paddingBottom: 5
                                 }}
+                                key={index}
                                 avatarOverlayContainerStyle={{
                                     backgroundColor: 'white',
                                 }}

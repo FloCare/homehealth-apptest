@@ -1,3 +1,6 @@
+import {NetInfo} from 'react-native';
+import firebase from 'react-native-firebase';
+import {eventNames, parameterValues} from '../../../utils/constants';
 import {BaseMessagingService} from './BaseMessagingService';
 import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
@@ -39,6 +42,9 @@ export class EpisodeMessagingService extends BaseMessagingService {
                                     const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
                                     myVisitsForTheDay.forEach(myVisit => {
                                         if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
+                                            firebase.analytics().logEvent(eventNames.COLLABORATION, {
+                                                'type': 1
+                                            });
                                             showVisitCollisionNotification(myVisit, visit);
                                         }
                                     });
@@ -121,8 +127,18 @@ export class EpisodeMessagingService extends BaseMessagingService {
     // }
 
     initialiseWorkers() {
-        this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this));
-        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this));
+        this.taskQueue.addWorker('publishVisitMessage', this._publishVisitMessage.bind(this), {
+            concurrency: 3,
+            onFailed: (id, payload) => {
+                console.log(`Publish to server Job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
+            }
+        });
+        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this), {
+            concurrency: 3,
+            onFailed: (id, payload) => {
+                console.log(`Publish to server job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
+            }
+        });
     }
 
     async _publishVisitMessage(jobID, payload) {
@@ -144,7 +160,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
             console.log(payload);
             console.log(result);
         }).catch(error => {
-            console.log('error publishing');
+            console.log('error publishing visit message on pubnub');
+            console.log(error);
             throw new Error(`could not publish message ${error}`);
         });
     }
@@ -161,10 +178,10 @@ export class EpisodeMessagingService extends BaseMessagingService {
                     break;
                 case 'UPDATE':
                     console.log('update body');
-                    await visits.forEach(async visit => {
+                    await Promise.all(visits.map(async visit => {
                         console.log(JSON.stringify(visit));
                         await pushVisitUpdateToServer(visit);
-                    });
+                    }));
                     break;
                 case 'DELETE':
                     serverResponse = await pushVisitDeleteByIDs(visits.map(visit => visit.visitID));
@@ -189,6 +206,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
                 actionType: action,
                 userID: UserDataService.getCurrentUserProps().userID,
                 makePeersRefresh: payload.action === 'CREATE'
+            }, {
+                attempts: 5
             });
         });
     }
@@ -203,37 +222,50 @@ export class EpisodeMessagingService extends BaseMessagingService {
         };
     }
 
+    isVisitOfCommonInterest(visit) {
+        return !(visit.getPlace() || visit.getPatient().isLocallyOwned);
+    }
+
+    _createPublishToServerJob(payload) {
+        console.log('creating publish to server job');
+        NetInfo.isConnected.fetch().then(isConnected => {
+            this.taskQueue.createJob('publishToServer', payload, {attempts: 5}, isConnected);
+        });
+    }
+
     publishVisitCreate(visit) {
-        if (visit.getPlace()) return;
-        this.taskQueue.createJob('publishToServer', {
+        if (!this.isVisitOfCommonInterest(visit)) { return; }
+
+        this._createPublishToServerJob({
             action: 'CREATE',
             visits: [this._getFlatVisitPayload(visit)]
         });
     }
 
     publishVisitUpdate(visit) {
-        if (visit.getPlace()) return;
-        this.taskQueue.createJob('publishToServer', {
+        if (!this.isVisitOfCommonInterest(visit)) { return; }
+
+        this._createPublishToServerJob({
             action: 'UPDATE',
             visits: [this._getFlatVisitPayload(visit)]
         });
     }
 
     publishVisitDeletes(visits) {
-        this.taskQueue.createJob('publishToServer', {
+        this._createPublishToServerJob({
             action: 'DELETE',
-            visits: visits.filter(visit => !visit.getPlace()).map(visit => this._getFlatVisitPayload(visit))
+            visits: visits.filter(visit => this.isVisitOfCommonInterest(visit)).map(visit => this._getFlatVisitPayload(visit))
         });
     }
 
-    subscribeToEpisodes(episodes) {
+    subscribeToEpisodes(episodes, suppressNotificationFromHistory = false) {
         const channelObjects = episodes.map(episode => ({
             name: `episode_${episode.episodeID}`,
             //TODO this should be more sophisticated
             lastMessageTimestamp: '0',
             handler: EpisodeMessagingService.identifier,
         }));
-        this._subscribeToChannelsByObject(channelObjects);
+        this._subscribeToChannelsByObject(channelObjects, suppressNotificationFromHistory);
     }
 
     unsubscribeToEpisodes(episodes) {
@@ -254,6 +286,6 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
         console.log('bootstrapping chanels');
         // episodes.forEach(episode => console.log(episode.episodeID));
-        this.subscribeToEpisodes(episodes);
+        this.subscribeToEpisodes(episodes, true);
     }
 }

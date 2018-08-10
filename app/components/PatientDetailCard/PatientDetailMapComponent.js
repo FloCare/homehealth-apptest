@@ -32,7 +32,7 @@ export function PatientDetailMapComponent(props) {
             <Marker
                 coordinate={props.patientCoordinates}
                 ref={props.setMarkerRef}
-                onPress={() => onPress(props.patientCoordinates, props.patientAddress)}
+                // onPress={() => onPress(props.patientCoordinates, props.patientAddress)}
                 // Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err));
             >
                 <MapMarker />

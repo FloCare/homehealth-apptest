@@ -104,6 +104,7 @@ const eventNames = {
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
+    COLLABORATION: 'Collaboration',
 };
 
 const parameterValues = {

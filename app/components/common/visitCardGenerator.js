@@ -74,6 +74,8 @@ const cardActions = {
 function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
     class RenderRow extends PureComponent {
 
+        static numberOfCliniciansInRow = 2;
+
         constructor(props) {
             super(props);
             const episodeID = this.props.episodeID;
@@ -82,7 +84,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             this.visitDataSubscriber = null;
             if (episodeID) {
                 this.visitDataSubscriber = EpisodeDataService.getInstance()
-                .subscribeToVisitsForDays(episodeID, startDate, endDate, this.handleOtherClinicianDate);
+                .subscribeToVisitsForDays(episodeID, startDate, endDate, this.onVisitDataChange);
             }
 
             this.state = {
@@ -155,7 +157,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         renderDatePickerComponent = () => {
-            const startDate = this.state.visitTime ? this.state.visitTime : moment().hours(12).minutes(0).seconds(0).toDate();
+            const startDate = this.state.visitTime ? this.state.visitTime :
+                moment(this.props.midnightEpochOfVisit).subtract(moment().utcOffset(), 'minutes')
+                .hours(12)
+                .minutes(0)
+                .seconds(0)
+                .toDate();
             return (
                 <View style={{alignItems: 'center', flex: 2, flexDirection: 'row', justifyContent: 'center'}}>
                     {
@@ -331,14 +338,18 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             );
         }
 
-        renderClinicianVisitData = (clinicianVisitData) => {
-            const numberOfCliniciansInRow = 2;
-            const clinicianRows = [];
+        getOtherUsersVisits = (clinicianVisitData) => {
             let filteredVisits = [];
             if (clinicianVisitData && clinicianVisitData[this.props.midnightEpochOfVisit]) {
-                // filter out own visits
                 filteredVisits = clinicianVisitData[this.props.midnightEpochOfVisit].filter((visit) => !visit.ownVisit);
             }
+            return filteredVisits;
+        }
+
+        renderClinicianVisitData = (clinicianVisitData) => {
+            const numberOfCliniciansInRow = RenderRow.numberOfCliniciansInRow;
+            const clinicianRows = [];
+            const filteredVisits = this.getOtherUsersVisits(clinicianVisitData);
             if (filteredVisits.length > 0) {
                 for (let itemIndex = 0; itemIndex < filteredVisits.length;) {
                     clinicianRows.push(this.renderClinicianVisitRow(filteredVisits.slice(itemIndex, itemIndex + numberOfCliniciansInRow)));
@@ -352,7 +363,24 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             }
         }
 
-        handleOtherClinicianDate = (clinicianVisitData) => {
+        willLayoutSizeChange = (newClinicianVisitData) => {
+            const numberOfCliniciansInRow = RenderRow.numberOfCliniciansInRow;
+
+            const currentClinicianVisitData = this.state.clinicianVisitData;
+            const currentOtherUsersVisits = this.getOtherUsersVisits(currentClinicianVisitData);
+
+            const newOtherUsersVisits = this.getOtherUsersVisits(newClinicianVisitData);
+
+            const currentNoOfRows = Math.ceil((currentOtherUsersVisits.length) / numberOfCliniciansInRow);
+            const newNoOfRows = Math.ceil((newOtherUsersVisits.length) / numberOfCliniciansInRow);
+
+            return (currentNoOfRows !== newNoOfRows);
+        }
+
+        onVisitDataChange = (clinicianVisitData) => {
+            if (this.props.onItemLayoutUpdate && this.willLayoutSizeChange(clinicianVisitData)) {
+                this.props.onItemLayoutUpdate(this.props.visitID);
+            }
             this.setState({clinicianVisitData});
         }
 
