@@ -39,11 +39,11 @@ const setShakingThreshold = () => {
 const setupInstaBug = () => {
     Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.shake]);
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
+    BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldOptional]);
     Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
     Instabug.setPromptOptionsEnabled(false, false, true);
     setAutoScreenShotForInstabug(true);
     setShakingThreshold();
-    //TODO Check color to be shown
     Instabug.setPrimaryColor(processColor(PrimaryColor));
 };
 

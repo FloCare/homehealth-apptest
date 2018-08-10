@@ -1,12 +1,16 @@
 import {AsyncStorage} from "react-native";
 import {UserDataService} from "../data_services/UserDataService";
+import {setUserForInstabug} from './instabugUtils';
+import {PatientDataService} from '../data_services/PatientDataService';
 
 const store = {};
 
-export async function initialiseStore() {
+export async function initialiseStoreAndSetInstabug() {
     const myUserDetails = await AsyncStorage.getItem('myUserDetails').then(async res => {
-        if (res === null) {
+        if (res === null || !res.email) {
             const userProps = await UserDataService.fetchUserProps();
+            const userName = PatientDataService.constructName(userProps.firstName, userProps.lastName);
+            setUserForInstabug(userProps.email, userName);
             AsyncStorage.setItem('myUserDetails', JSON.stringify(userProps));
             res = JSON.stringify(userProps);
         }
