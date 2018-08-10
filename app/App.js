@@ -4,7 +4,7 @@ import Instabug, {BugReporting} from 'instabug-reactnative';
 import SplashScreen from 'react-native-splash-screen';
 import {screenNames, PrimaryColor, instabugKey} from './utils/constants';
 import RegisterInitScreens from './init_screens';
-import {setAutoScreenShotForInstabug} from './utils/instabugUtils';
+import {setAutoScreenShotForInstabug, setFeedbackOptionOnly} from './utils/instabugUtils';
 
 RegisterInitScreens();
 
@@ -41,7 +41,7 @@ const setupInstaBug = () => {
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
     BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldOptional]);
     Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
-    Instabug.setPromptOptionsEnabled(false, false, true);
+    setFeedbackOptionOnly();
     setAutoScreenShotForInstabug(true);
     setShakingThreshold();
     Instabug.setPrimaryColor(processColor(PrimaryColor));

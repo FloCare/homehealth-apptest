@@ -39,6 +39,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
   }
 
   static String PrimaryColor = "#45ceb1";
+  static String instabugKey = "29d3f443148b83202e3213845ff10c87";
 
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
@@ -51,7 +52,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new SplashScreenReactPackage(),
             new RNFirebaseAnalyticsPackage(),
             new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG),
-            new RNInstabugReactnativePackage.Builder("29d3f443148b83202e3213845ff10c87", MainApplication.this)
+            new RNInstabugReactnativePackage.Builder(instabugKey, MainApplication.this)
               .setInvocationEvent("shake")
               .setPrimaryColor(PrimaryColor)
               .build()
