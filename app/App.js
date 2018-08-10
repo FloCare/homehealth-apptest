@@ -43,7 +43,7 @@ const setupInstaBug = () => {
         Instabug.setPrimaryColor(processColor(PrimaryColor));
     }
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
-    BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldOptional]);
+    BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldHidden]);
     Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
     setFeedbackOptionOnly();
     setAutoScreenShotForInstabug(true);

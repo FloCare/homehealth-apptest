@@ -62,7 +62,7 @@ const list = navigator => [
         hideChevron: true,
         onPress: () => {
             setAutoScreenShotForInstabug(false);
-            BugReporting.invokeWithInvocationModeAndOptions(BugReporting.invocationMode.newFeedback, [BugReporting.invocationOptions.emailFieldOptional]);
+            BugReporting.invokeWithInvocationModeAndOptions(BugReporting.invocationMode.newFeedback, [BugReporting.invocationOptions.emailFieldHidden]);
             BugReporting.onSDKDismissedHandler(() => setAutoScreenShotForInstabug(true));
         }
     },
