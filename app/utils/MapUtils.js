@@ -106,7 +106,7 @@ const navigateTo = async (latitude, longitude, address) => {
     let scheme = null;
     let hasGoogleMaps = false;
     if (Platform.OS === 'android'){
-        //Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
+        //Platform.select({ios: 'maps:0,0?daddr=', android: 'geo:0,0?q='});
         scheme = `geo:0,0?q=`;
     } else if (Platform.OS === 'ios'){
         await Linking.canOpenURL(`comgooglemaps://?daddr=${latitude},${longitude}`)
@@ -115,11 +115,11 @@ const navigateTo = async (latitude, longitude, address) => {
                     hasGoogleMaps = true;
                     scheme = `comgooglemaps://?daddr=`;
                 } else {
-                    scheme = `maps:0,0?q=`;
+                    scheme = `maps:0,0?daddr=`;
                 }
             }).catch(err => {
                 console.log('Error in checking google maps scheme:', err);
-                scheme = `maps:0,0?q=`;
+                scheme = `maps:0,0?daddr=`;
             });
     } else {
         return;
@@ -127,7 +127,7 @@ const navigateTo = async (latitude, longitude, address) => {
     const latLng = `${latitude},${longitude}`;
     const label = address;
     const url = Platform.select({
-        ios: hasGoogleMaps ? `${scheme}${latLng}`: `${scheme}${label}@${latLng}`,
+        ios: hasGoogleMaps ? `${scheme}${latLng}`: `${scheme}${label}@${address}`,
         android: `${scheme}${latLng}(${label})`
     });
     // console.log('Opening the URL:', url);
