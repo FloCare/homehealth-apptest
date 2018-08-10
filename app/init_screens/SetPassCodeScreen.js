@@ -21,7 +21,6 @@ class SetPassCodeScreen extends Component {
         super(props);
         this.state = {
             code: '',
-            screenState: passCodeScreenStates.FIRST_ENTRY_SCREEN,
             enteredPassCode: null,
             confirmationFailed: false
         };
@@ -66,6 +65,10 @@ class SetPassCodeScreen extends Component {
             });
     }
 
+    getScreenState = () => (
+        this.state.enteredPassCode ? passCodeScreenStates.CONFIRM_SCREEN : passCodeScreenStates.FIRST_ENTRY_SCREEN
+    )
+
     resetVirtualKeyboardTextState = () => {
         if (this.virtualKeyBoard) {
             this.virtualKeyBoard.resetText();
@@ -74,21 +77,17 @@ class SetPassCodeScreen extends Component {
 
 // Secure the entered passcode in the keystore
     handlePassCodeInput(passcode) {
-        if (this.state.screenState === passCodeScreenStates.FIRST_ENTRY_SCREEN) {
+        if (this.getScreenState() === passCodeScreenStates.FIRST_ENTRY_SCREEN) {
             this.setState({
-                screenState: passCodeScreenStates.CONFIRM_SCREEN,
-                code: '',
                 enteredPassCode: passcode,
                 confirmationFailed: false
             });
             this.resetVirtualKeyboardTextState();
-        } else if (this.state.screenState === passCodeScreenStates.CONFIRM_SCREEN) {
+        } else if (this.getScreenState() === passCodeScreenStates.CONFIRM_SCREEN) {
             if (passcode === this.state.enteredPassCode) {
                 this.savePassCode(passcode);
             } else {
                 this.setState({
-                    screenState: passCodeScreenStates.FIRST_ENTRY_SCREEN,
-                    code: '',
                     enteredPassCode: null,
                     confirmationFailed: true
                 });
@@ -147,7 +146,7 @@ class SetPassCodeScreen extends Component {
         const primaryColor = PrimaryColor;
         const secondary = '#34da92';
         const {width, height} = Dimensions.get('window');
-        const header = this.state.screenState === passCodeScreenStates.FIRST_ENTRY_SCREEN ? 'Set a Passcode' : 'Confirm passcode';
+        const header = this.getScreenState() === passCodeScreenStates.FIRST_ENTRY_SCREEN ? 'Set a Passcode' : 'Confirm passcode';
         return (
             <LinearGradient
                 colors={[primaryColor, secondary]}
