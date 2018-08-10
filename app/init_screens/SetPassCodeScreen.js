@@ -25,7 +25,7 @@ class SetPassCodeScreen extends Component {
             enteredPassCode: null,
             confirmationFailed: false
         };
-        this.handleInputPassCode = this.handleInputPassCode.bind(this);
+        this.handlePassCodeInput = this.handlePassCodeInput.bind(this);
         this.setKey = this.setKey.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     }
@@ -73,7 +73,7 @@ class SetPassCodeScreen extends Component {
     }
 
 // Secure the entered passcode in the keystore
-    handleInputPassCode(passcode) {
+    handlePassCodeInput(passcode) {
         if (this.state.screenState === passCodeScreenStates.FIRST_ENTRY_SCREEN) {
             this.setState({
                 screenState: passCodeScreenStates.CONFIRM_SCREEN,
@@ -101,7 +101,7 @@ class SetPassCodeScreen extends Component {
     onChangeCode(code) {
         this.setState({code});
         if (code.length === 4) {
-            setTimeout(() => this.handleInputPassCode(code));
+            setTimeout(() => this.handlePassCodeInput(code));
         }
     }
 
