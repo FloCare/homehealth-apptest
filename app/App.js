@@ -1,5 +1,5 @@
 import {Navigation} from 'react-native-navigation';
-import {AsyncStorage, processColor} from 'react-native';
+import {AsyncStorage, processColor, Platform} from 'react-native';
 import Instabug, {BugReporting} from 'instabug-reactnative';
 import SplashScreen from 'react-native-splash-screen';
 import {screenNames, PrimaryColor, instabugKey} from './utils/constants';
@@ -37,14 +37,17 @@ const setShakingThreshold = () => {
 };
 
 const setupInstaBug = () => {
-    Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.shake]);
+    if (Platform.OS === 'ios') {
+        // ios specific code for instabug
+        Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.shake]);
+        Instabug.setPrimaryColor(processColor(PrimaryColor));
+    }
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
     BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldOptional]);
     Instabug.setStringToKey('Shake the device to give feedback\nor\nGo to More and click Send feedback', Instabug.strings.shakeHint);
     setFeedbackOptionOnly();
     setAutoScreenShotForInstabug(true);
     setShakingThreshold();
-    Instabug.setPrimaryColor(processColor(PrimaryColor));
 };
 
 const StartApp = async () => {

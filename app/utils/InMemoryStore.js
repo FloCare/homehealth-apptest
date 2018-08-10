@@ -7,12 +7,12 @@ const store = {};
 
 export async function initialiseStoreAndSetInstabug() {
     const myUserDetails = await AsyncStorage.getItem('myUserDetails').then(async res => {
-        // TODO email check temporary for instabug to be removed
-        // https://flocare.atlassian.net/browse/FC-62
-        if (res === null || !res.email) {
+        if (res === null) {
             const userProps = await UserDataService.fetchUserProps();
+
             const userName = PatientDataService.constructName(userProps.firstName, userProps.lastName);
             setUserForInstabug(userProps.email, userName);
+
             AsyncStorage.setItem('myUserDetails', JSON.stringify(userProps));
             res = JSON.stringify(userProps);
         }
