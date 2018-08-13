@@ -15,8 +15,18 @@ export async function initialiseStoreAndSetInstabug() {
 
             AsyncStorage.setItem('myUserDetails', JSON.stringify(userProps));
             res = JSON.stringify(userProps);
+        } else {
+            const resJson = JSON.parse(res);
+            if (!resJson.email || !resJson.orgID) {
+                UserDataService.fetchUserProps().then(userProps => {
+                    const userName = PatientDataService.constructName(userProps.firstName, userProps.lastName);
+                    setUserForInstabug(userProps.email, userName);
+
+                    AsyncStorage.setItem('myUserDetails', JSON.stringify(userProps));
+                })
+            }
+            return resJson;
         }
-        return JSON.parse(res);
     });
     setItem('myUserDetails', myUserDetails);
 }
