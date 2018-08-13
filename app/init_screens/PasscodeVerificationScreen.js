@@ -15,7 +15,7 @@ class PasscodeVerificationScreen extends Component {
 
     componentDidMount() {
       firebase.analytics().setCurrentScreen(screenNames.passcodeVerification, screenNames.passcodeVerification);
-      firebase.analytics().setUserProperty(userProperties.OTA_VERSION, '0.3.2');
+      firebase.analytics().setUserProperty(userProperties.OTA_VERSION, '0.4.0');
     }
 
     constructor(props) {
