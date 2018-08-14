@@ -1,6 +1,7 @@
 import {User} from '../utils/data/schema';
-import {getItem} from '../utils/InMemoryStore';
+import {getItem, setItem} from '../utils/InMemoryStore';
 import {getUserProps} from '../utils/API/UserAPI';
+import {AsyncStorage} from 'react-native';
 
 export class UserDataService {
     static userDataService;
@@ -33,6 +34,7 @@ export class UserDataService {
             const primaryContact = userPropsJson.primaryContact;
             const role = userPropsJson.roles[0].role;
             const org = userPropsJson.roles[0].org;
+            const orgID = userPropsJson.roles[0].orgID;
             const email = userPropsJson.email;
 
             console.log('fetched userprops');
@@ -43,6 +45,7 @@ export class UserDataService {
                 primaryContact,
                 role,
                 org,
+                orgID,
                 email
             });
 
@@ -53,6 +56,7 @@ export class UserDataService {
                 primaryContact,
                 role,
                 org,
+                orgID,
                 email
             };
         }).catch((error) => {
@@ -92,6 +96,10 @@ export class UserDataService {
 
         return UserDataService.fetchUserProps(id).then(userJson => {
             console.log('successfully fetched user props');
+            if (!id || id === UserDataService.getCurrentUserProps().userID) {
+                AsyncStorage.setItem('myUserDetails', JSON.stringify(userJson));
+                setItem('myUserDetails', userJson);
+            }
             return this.saveUserToRealm(userJson);
         }).catch(error => {
             console.log('error in fetch and save user');

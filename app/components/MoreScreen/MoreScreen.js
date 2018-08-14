@@ -120,7 +120,7 @@ class MoreScreen extends Component {
                                     backgroundColor: 'white',
                                 }}
                                 avatar={listItem.icon}
-                                avatarStyle={{width: 20, height: 20, resizeMode: Image.resizeMode.contain}}
+                                avatarStyle={{width: 20, height: 20, resizeMode: 'contain'}}
                                 title={listItem.title}
                                 disabled={listItem.disabled}
                                 hideChevron={listItem.hideChevron}

@@ -17,11 +17,17 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2.1</string>
+	<string>0.4.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>1</string>
+	<key>CodePushDeploymentKey</key>
+	<string>codepushiOSKey</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -38,7 +44,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
@@ -55,6 +61,9 @@
 		<string>SF-Pro-Display-Regular.otf</string>
 		<string>SF-Pro-Text-Regular.otf</string>
 		<string>SF-Pro-Text-Semibold.otf</string>
+		<string>FontAwesome5_Brands.ttf</string>
+		<string>FontAwesome5_Regular.ttf</string>
+		<string>FontAwesome5_Solid.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
@@ -72,11 +81,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>CodePushDeploymentKey</key>
-	<string>codepushiOSKey</string>
-	<key>LSApplicationQueriesSchemes</key>
-    <array>
-     <string>comgooglemaps</string>
-    </array>
+	<key>NSMicrophoneUsageDescription</key>
+    <string> FloCare needs access to the microphone to be able to attach voice notes </string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string> FloCare needs access to your photo library for you to be able to attach images</string>
 </dict>
 </plist>
