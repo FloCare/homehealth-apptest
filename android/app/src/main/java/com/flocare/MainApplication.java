@@ -53,7 +53,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new RNFirebaseAnalyticsPackage(),
             new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG),
             new RNInstabugReactnativePackage.Builder(instabugKey, MainApplication.this)
-              .setInvocationEvent("shake")
+              .setInvocationEvent("screenshot")
               .setPrimaryColor(PrimaryColor)
               .build()
     );

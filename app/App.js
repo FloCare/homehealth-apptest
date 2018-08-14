@@ -35,6 +35,9 @@ const setupInstaBug = () => {
         Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.screenshot]);
         Instabug.setPrimaryColor(processColor(PrimaryColor));
     }
+    if (Platform.OS === 'android') {
+        Instabug.enable();
+    }
     Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
     BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldHidden]);
     setFeedbackOptionOnly();
