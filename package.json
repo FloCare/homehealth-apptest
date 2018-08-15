@@ -21,7 +21,7 @@
     "geojson-bounds": "^1.0.1",
     "immutability-helper": "^2.6.6",
     "immutable": "^3.8.2",
-    "instabug-reactnative": "^8.0.4",
+    "instabug-reactnative": "^8.0.8",
     "lodash": "^4.17.5",
     "moment": "^2.22.1",
     "prop-types": "^15.6.1",

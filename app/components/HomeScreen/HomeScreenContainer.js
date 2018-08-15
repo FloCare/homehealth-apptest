@@ -55,7 +55,7 @@ class HomeScreenContainer extends Component {
         );
 
         SplashScreen.hide();
-        this.showInstabugOnboardingMessage();
+        setTimeout(() => { this.showInstabugOnboardingMessage(); }, 1000);
     }
 
     setOnboardingStatus = (onBoardingStatus) => {
