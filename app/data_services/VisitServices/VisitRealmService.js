@@ -96,6 +96,15 @@ export class VisitRealmService {
         );
     }
 
+    updateMilesDataByVisitObject(visit, odometerStart, odometerEnd, totalMiles, milesComments) {
+        this.floDB.write(() => {
+            visit.odometerStart = odometerStart;
+            visit.odometerEnd = odometerEnd;
+            visit.totalMiles = totalMiles;
+            visit.milesComments = milesComments;
+        });
+    }
+
     insertNewVisits(visits, midnightEpoch) {
         const visitOrderObject = this.getVisitOrderForDate(midnightEpoch);
 

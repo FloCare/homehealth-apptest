@@ -1,6 +1,7 @@
 import {Platform} from 'react-native';
 
 const PrimaryColor = '#45ceb1';
+const ErrorMessageColor = '#F51414';
 const TransparentPrimaryColor = (opacity) => 
     // Todo: Can use a method to convert PrimaryColor in hexcode 
     // Todo: to rgba
@@ -126,6 +127,7 @@ const parameterValues = {
     DETAILS: 'details',
     REFRESH: 'refresh',
     RESCHEDULE: 'date_reschedule',
+    EDIT_MILES: 'edit_miles',
     DELETE_VISIT: 'delete_visit',
     ADD_TIME: 'add_time',
     EDIT_TIME: 'edit_time',
@@ -169,5 +171,5 @@ export const apiServerURL = 'https://app-9707.on-aptible.com';
 
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
-    screenNames, visitType, PrimaryColor, TransparentPrimaryColor,
+    screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
     PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects};

@@ -4,6 +4,7 @@ import {VisitCardGenerator} from '../common/visitCardGenerator';
 import {SortedVisitListContainer} from '../common/SortedVisitListContainer';
 import {SimpleButton} from '../common/SimpleButton';
 import StyledText from '../common/StyledText';
+import {ErrorMessageColor} from '../../utils/constants';
 
 function VisitListScreen(props) {
     return (
@@ -13,7 +14,7 @@ function VisitListScreen(props) {
             {
                 props.showError &&
                 <View style={{backgroundColor: '#FFF78A', marginTop: 10}}>
-                    <StyledText style={{fontSize: 12, color: '#F51414', textAlign: 'center', margin: 5}}>
+                    <StyledText style={{fontSize: 12, color: ErrorMessageColor, textAlign: 'center', margin: 5}}>
                         *Visit-time order is inconsistent. Please check the order or time(s).
                     </StyledText>
                 </View>

@@ -10,6 +10,7 @@ import {EpisodeMessagingService} from '../MessagingServices/PubNubMessagingServi
 import {UserDataService} from '../UserDataService';
 import {getAllMyVisits, getVisitsByID} from '../../utils/API/VisitAPI';
 import {EpisodeDataService} from '../EpisodeDataService';
+import {stringToFloat} from '../../utils/parsingUtils';
 
 export class VisitService {
     static visitService;
@@ -38,7 +39,11 @@ export class VisitService {
             placeID: !isPatientVisit ? visit.getPlace().placeID : null,
             plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
-            isPatientVisit
+            isPatientVisit,
+            odometerStart: visit.odometerStart,
+            odometerEnd: visit.odometerEnd,
+            totalMiles: visit.totalMiles,
+            milesComments: visit.milesComments
         };
     }
 
@@ -343,6 +348,20 @@ export class VisitService {
         this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
 
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
+    }
+
+    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, totalMiles, milesComments) {
+        const visit = this.visitRealmService.getVisitByID(visitID);
+        this.visitRealmService.updateMilesDataByVisitObject(
+            visit,
+            stringToFloat(odometerStart),
+            stringToFloat(odometerEnd),
+            stringToFloat(totalMiles),
+            milesComments
+        );
+
+        this.visitReduxService.updateVisitToRedux(visit);
+        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
 }

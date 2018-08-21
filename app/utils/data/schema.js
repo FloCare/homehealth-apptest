@@ -140,29 +140,8 @@ class FloDBProvider {
                     const allPatients = oldRealm.objects(Patient.getSchemaName());
                     await getPatientsByOldID(allPatients.filtered('isLocallyOwned = false').map(patient => patient.patientID))
                         .then(responseJson => {
-                            // console.log(allPatients.map(patient => patient.patientID));
-                            // console.log(responseJson);
-                            //
-                            // if (!responseJson.success || responseJson.success.length !== allPatients.length) {
-                            //     Alert.alert('Note', 'Please check to make sure all current patients are synced with your device.');
-                            // }
-                            // console.log('prereq2');
                             const patientJsonByOldID = arrayToObjectByKey(responseJson.success, 'id');
                             setItem('patientJsonByOldID', patientJsonByOldID);
-                            // console.log('prereq3');
-                            // console.log(allPatients);
-                            //
-                            // allPatients.forEach(patient => {
-                            //     const newJson = patientJsonByOldID[patient.patientID];
-                            //     if (newJson) {
-                            //         oldRealm.write(() => {
-                            //             patient.patientID = newJson.patientID;
-                            //             patient.episodes[0].episodeID = newJson.episodeID;
-                            //         });
-                            //     } else oldRealm.delete(patient);
-                            // });
-                            //
-                            // console.log(allPatients);
                         }).catch(error => {
                             console.log('error in prereq for migrating patient ids');
                             console.log(error);
@@ -170,6 +149,15 @@ class FloDBProvider {
                         });
                 },
                 migration: Migrations.v007,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1],
+                schemaVersion: 8,
+                migration: () => { console.log('Migration to v8. Adding miles information'); },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             }

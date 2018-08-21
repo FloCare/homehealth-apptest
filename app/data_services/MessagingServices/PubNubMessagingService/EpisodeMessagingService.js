@@ -218,7 +218,11 @@ export class EpisodeMessagingService extends BaseMessagingService {
             episodeID: visit.getEpisode().episodeID,
             midnightEpochOfVisit: visit.midnightEpochOfVisit,
             isDone: visit.isDone,
-            plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined
+            plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined,
+            odometerStart: visit.odometerStart,
+            odometerEnd: visit.odometerEnd,
+            totalMiles: visit.totalMiles,
+            milesComments: visit.milesComments
         };
     }
 
