@@ -170,10 +170,10 @@ dependencies {
         exclude group: 'com.google.android.gms', module: 'play-services-maps'
     }
     // Firebase dependencies
-    compile 'com.google.android.gms:play-services-base:11.8.0'
-    compile 'com.google.android.gms:play-services-maps:11.8.0'
-    compile "com.google.firebase:firebase-core:11.8.0"
-    compile 'com.android.support:multidex:1.0.0'
+    compile "com.google.android.gms:play-services-base:15.0.1"
+    compile "com.google.firebase:firebase-core:16.0.1"
+    compile 'com.google.android.gms:play-services-maps:15.0.1'
+    compile 'com.android.support:multidex:1.0.3'
 }
 
 // Run this once to be able to run the application with BUCK
@@ -184,3 +184,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply plugin: 'com.google.gms.google-services'
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
