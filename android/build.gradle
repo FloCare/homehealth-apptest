@@ -33,3 +33,15 @@ ext {
     targetSdkVersion = 26
     supportLibVersion = "26.1.0"
 }
+
+//following code added due to build failure, as suggested on a github page i cant find right now
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 26
+                buildToolsVersion "26.0.3"
+            }
+        }
+    }
+}
