@@ -1,32 +1,38 @@
 import {View, Dimensions, TextInput} from 'react-native';
-import React from 'react';
+import React, {Component} from 'react';
 import StyledText from './StyledText';
 
-export const InputField = React.forwardRef((props, ref) => (
-    <View
-        style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
-    >
-        <StyledText
-            style={{color: 'white', textAlign: 'left', ...props.titleStyle}}
-        >
-            {props.title}
-        </StyledText>
-        <TextInput
-            ref={ref}
-            keyboardType={props.keyboardType}
-            value={props.value}
-            autoFocus={props.autoFocus}
-            placeholder={props.placeholder}
-            secureTextEntry={props.secureTextEntry}
-            onChangeText={props.onChangeText}
-            onSubmitEditing={props.onSubmitEditing}
+export class InputField extends Component {
+    render() {
+        return (
+            <View
+                style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
+            >
+                <StyledText
+                    style={{color: 'white', textAlign: 'left', ...this.props.titleStyle}}
+                >
+                    {this.props.title}
+                </StyledText>
+                <TextInput
+                    keyboardType={this.props.keyboardType}
+                    value={this.props.value}
+                    autoFocus={this.props.autoFocus}
+                    editable={this.props.editable}
+                    placeholder={this.props.placeholder}
+                    fontSize={this.props.fontSize}
+                    secureTextEntry={this.props.secureTextEntry}
+                    onChangeText={this.props.onChangeText}
+                    onSubmitEditing={this.props.onSubmitEditing}
 
-            autoCapitalize={'none'}
-            selectionColor={props.selectionColor || 'rgba(255,255,255,0.5)'}
-            underlineColorAndroid={'white'}
-            autoCorrect={false}
-            style={{color: 'white', ...props.style}}
-            placeholderTextColor={props.placeholderTextColor || 'rgba(255,255,255,0.35)'}
-        />
-    </View>
-));
+                    autoCapitalize={'none'}
+                    selectionColor={this.props.selectionColor || 'rgba(255,255,255,0.5)'}
+                    underlineColorAndroid={'white'}
+                    autoCorrect={false}
+                    style={{color: 'white', ...this.props.style}}
+                    placeholderTextColor={this.props.placeholderTextColor || 'rgba(255,255,255,0.35)'}
+                />
+            </View>
+        );
+    }
+}
+

@@ -13,11 +13,7 @@ export const VisitSchemaV3 = {
         isDone: {type: 'bool', default: false},
         timeOfCompletion: 'int?',
         isDeleted: {type: 'bool', default: false},
-
-        // miles related information
-        odometerStart: {type: 'float?'},
-        odometerEnd: {type: 'float?'},
-        totalMiles: {type: 'float?'},
-        milesComments: {type: 'string?'}
+        visitMiles: 'VisitMiles',
+        reportItems: {type: 'linkingObjects', objectType: 'ReportItem', property: 'visit'},
     }
 };

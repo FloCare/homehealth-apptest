@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {PrimaryColor} from '../../utils/constants';
+import { PrimaryColor, PrimaryFontFamily } from '../../utils/constants'
 
 export const styles = StyleSheet.create({
     // container: {
@@ -75,6 +75,16 @@ export const styles = StyleSheet.create({
         margin: 10,
         marginLeft: 5,
         marginRight: 15,
+    },
+    milesHeadingStyle: {
+        fontSize: 11,
+        color: '#999999',
+        fontFamily: PrimaryFontFamily
+    },
+    milesDataStyle: {
+        fontSize: 9,
+        color: '#222222',
+        fontFamily: PrimaryFontFamily
     }
     // containerStyle: {
     //     flex: 1,

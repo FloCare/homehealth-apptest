@@ -4,6 +4,7 @@ import {AssignedPatientsMessagingService} from './AssignedPatientsMessagingServi
 import {stringToArrayBuffer} from '../../../utils/encryptionUtils';
 import {EpisodeMessagingService} from './EpisodeMessagingService';
 import {OrganisationMessagingService} from './OrganisationMessagingService';
+import {ReportMessagingService} from './ReportMessagingService';
 
 const Realm = require('realm');
 
@@ -47,6 +48,7 @@ export class MessagingServiceCoordinator {
         messagingServices[AssignedPatientsMessagingService.identifier] = await new AssignedPatientsMessagingService(MessagingServiceCoordinator.getChannelRealm());
         messagingServices[EpisodeMessagingService.identifier] = await new EpisodeMessagingService(MessagingServiceCoordinator.getChannelRealm(), queue);
         messagingServices[OrganisationMessagingService.identifier] = await new OrganisationMessagingService(MessagingServiceCoordinator.getChannelRealm(), queue);
+        messagingServices[ReportMessagingService.identifier] = await new ReportMessagingService(MessagingServiceCoordinator.getChannelRealm(), queue);
 
         MessagingServiceCoordinator.messagingServiceCoordinator = new MessagingServiceCoordinator(messagingServices, queue);
     }

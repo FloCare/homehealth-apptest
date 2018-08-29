@@ -33,7 +33,8 @@ function onPressCard(visitID, navigator) {
 function visitSummaryToday(props) {
     const showEllipse = false;
     const showCheckBoxLine = false;
-    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => VisitService.getInstance().toggleVisitDone(visitID), navigator: props.navigator}, showEllipse, showCheckBoxLine);
+    const showDetailedMilesView = true;
+    const VisitCard = VisitCardGenerator({onDoneTogglePress: (visitID) => VisitService.getInstance().toggleVisitDone(visitID), navigator: props.navigator}, showEllipse, showCheckBoxLine, showDetailedMilesView);
 
     const primaryColor = PrimaryColor;
     const secondary = '#34da92';

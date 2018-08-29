@@ -213,16 +213,20 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     _getFlatVisitPayload(visit) {
+        const visitMiles = visit.visitMiles;
         return {
             visitID: visit.visitID,
             episodeID: visit.getEpisode().episodeID,
             midnightEpochOfVisit: visit.midnightEpochOfVisit,
             isDone: visit.isDone,
             plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined,
-            odometerStart: visit.odometerStart,
-            odometerEnd: visit.odometerEnd,
-            totalMiles: visit.totalMiles,
-            milesComments: visit.milesComments
+            visitMiles: {
+                odometerStart: visitMiles.odometerStart,
+                odometerEnd: visitMiles.odometerEnd,
+                totalMiles: visitMiles.totalMiles,
+                milesComments: visitMiles.milesComments
+            }
+
         };
     }
 

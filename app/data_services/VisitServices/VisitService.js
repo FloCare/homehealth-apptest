@@ -1,5 +1,11 @@
 import firebase from 'react-native-firebase';
-import {Patient, Visit, VisitOrder, Place} from '../../utils/data/schema';
+import {
+    Patient,
+    Visit,
+    VisitOrder,
+    Place,
+    Report,
+} from '../../utils/data/schema';
 import {arrayToObjectByKey, arrayToObjectListByKey} from '../../utils/collectionUtils';
 import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
@@ -11,6 +17,10 @@ import {UserDataService} from '../UserDataService';
 import {getAllMyVisits, getVisitsByID} from '../../utils/API/VisitAPI';
 import {EpisodeDataService} from '../EpisodeDataService';
 import {stringToFloat} from '../../utils/parsingUtils';
+import {ReportService} from './ReportService';
+import {VisitMilesService} from './VisitMilesService';
+import {ReportMessagingService} from '../MessagingServices/PubNubMessagingService/ReportMessagingService';
+import {getReportDetailsByIds} from '../../utils/API/ReportAPI';
 
 export class VisitService {
     static visitService;
@@ -31,6 +41,7 @@ export class VisitService {
         const isPatientVisit = visit.getPatient() !== undefined;
 
         // if (!isPatientVisit && !visit.getPlace()) { console.log('break'); console.log(visit.getEpisode()); console.log(visit.getEpisode().patient[0]); }
+        const visitMiles = visit.visitMiles;
         return {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
@@ -40,10 +51,12 @@ export class VisitService {
             plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
             isPatientVisit,
-            odometerStart: visit.odometerStart,
-            odometerEnd: visit.odometerEnd,
-            totalMiles: visit.totalMiles,
-            milesComments: visit.milesComments
+            visitMiles: {
+                odometerStart: visitMiles.odometerStart,
+                odometerEnd: visitMiles.odometerEnd,
+                totalMiles: visitMiles.totalMiles,
+                milesComments: visitMiles.milesComments
+            }
         };
     }
 
@@ -56,6 +69,8 @@ export class VisitService {
 
         this.visitRealmService = VisitRealmService.initialiseService(floDB);
         this.visitReduxService = VisitReduxService.initialiseService(store);
+        this.reportService = ReportService.initialiseService(floDB);
+        this.visitMilesService = VisitMilesService.initialiseService(floDB);
     }
 
     isVisitOwn(visit) {
@@ -175,18 +190,32 @@ export class VisitService {
 
     fetchAndSaveMyVisitsFromServer() {
         return getAllMyVisits().then(visits => {
-            const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
-            console.log(visitByMidnight);
-            Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
-                const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
-                if (daysVisits && daysVisits.length > 0) {
-                    const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
-                    this.floDB.write(() => {
-                        visitOrder.visitList = daysVisits;
-                        console.log(`midnight ${midnightEpochOfVisit}`);
-                        console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
+            const reportIDs = visits.map(visit => visit.reportID).filter(reportID => reportID);
+            const uniqueReportIDs = [...new Set(reportIDs)];
+            getReportDetailsByIds(uniqueReportIDs).then(reportsJSONData => {
+                const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
+                Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
+                    const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
+                    if (daysVisits && daysVisits.length > 0) {
+                        const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
+                        this.floDB.write(() => {
+                            visitOrder.visitList = daysVisits;
+                            console.log(`midnight ${midnightEpochOfVisit}`);
+                            console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
+                        });
+                    }
+                });
+                this.floDB.write(() => {
+                    reportsJSONData.forEach(reportData => {
+                        const reportObject = this.reportService.createReport(reportData.id, Report.reportStateEnum.ACCEPTED);
+                        reportData.reportItems.forEach(
+                            reportItemData => (this.reportService.createReportItem(
+                                reportItemData.reportItemId,
+                                reportObject,
+                                this.visitRealmService.getVisitByID(reportItemData.visitID)))
+                        );
                     });
-                }
+                });
             });
         }).catch(error => {
             console.log('error in fetching all preexisting visits');
@@ -221,12 +250,18 @@ export class VisitService {
         if (visitJson.plannedStartTime) {
             visitJson.plannedStartTime = new Date(visitJson.plannedStartTime);
         }
-        // console.log('saving visit');
-        // console.log(visitJson);
+        const visitMiles = visitJson.visitMiles;
+        const visitMilesData = {
+            odometerStart: visitMiles ? visitMiles.odometerStart : null,
+            odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
+            totalMiles: visitMiles ? visitMiles.totalMiles : null,
+            milesComments: visitMiles ? visitMiles.milesComments : null,
+        };
         this.floDB.write(() => {
             const user = UserDataService.getInstance().getUserByID(visitJson.userID);
             if (!user) throw new Error(`no user found for visit being saved: ${visitJson.userID}`);
             visit = this.floDB.create(Visit, visitJson, update);
+            this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
             visit.user = user;
         });
         // console.log('visitsaved');
@@ -238,6 +273,12 @@ export class VisitService {
 
     createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
+        const visitMilesData = {
+            odometerStart: null,
+            odometerEnd: null,
+            totalMiles: null,
+            milesComments: null
+        };
         this.floDB.write(() => {
             for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
@@ -245,6 +286,7 @@ export class VisitService {
                     user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
                     midnightEpochOfVisit: midnightEpoch
                 });
+                this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
                 newVisits.push(visit);
                 if (visitSubject instanceof Patient) {
                     visitSubject.episodes[0].visits.push(visit);
@@ -289,6 +331,19 @@ export class VisitService {
             return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
         }
         throw new Error('requested visits for unrecognised entity');
+    }
+
+    getSubmittedMilesLogVisits() {
+        const userVisits = this.visitRealmService.getCurrentUserVisits();
+        const reportedVisits = this.reportService.filterReportedVisits(userVisits);
+        return this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit');
+    }
+
+    getActiveMilesLogVisits() {
+        const doneUserVisits = this.visitRealmService.getDoneUserVisits();
+        const milesActiveVisits = this.visitMilesService.filterMilesInformationCompleteVisits(doneUserVisits);
+        const nonReportedVisits = this.reportService.filterNonReportedVisits(milesActiveVisits);
+        return this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
     }
 
     //only use for other user's unassign
@@ -362,6 +417,16 @@ export class VisitService {
 
         this.visitReduxService.updateVisitToRedux(visit);
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
+    }
+
+    generateReportAndSubmitVisits = (visitIDs) => {
+        const visits = this.visitRealmService.getVisitsByIDs(visitIDs);
+        const report = this.reportService.generateReportForVisits(visits);
+        getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
+    }
+
+    markReportAccepted = (reportID) => {
+        this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
     }
 
 }

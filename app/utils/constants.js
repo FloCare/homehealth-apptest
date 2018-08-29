@@ -56,6 +56,7 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
+    milesLogScreen: 'MilesLogScreen',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
     visitDayViewScreen: 'VisitDayViewScreen',

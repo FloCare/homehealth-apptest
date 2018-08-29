@@ -1,5 +1,5 @@
 import {arrayToObjectByKey, filterResultObjectByListMembership} from '../../utils/collectionUtils';
-import {Visit, VisitOrder} from '../../utils/data/schema';
+import {Visit, VisitOrder, VisitMiles} from '../../utils/data/schema';
 import {UserDataService} from '../UserDataService';
 
 export class VisitRealmService {
@@ -71,6 +71,25 @@ export class VisitRealmService {
         return this.floDB.objectForPrimaryKey(Visit, visitID);
     }
 
+    getVisitsByIDs(visitIDs) {
+        return this.floDB.objects(Visit).filtered(visitIDs.map((id) => `visitID == '${id}'`).join(' OR '));
+    }
+
+    getCurrentUserVisits = () => {
+        const visits = this.floDB.objects(Visit);
+        return this.selectCurrentUserVisits(visits);
+    }
+
+    getDoneUserVisits = () => {
+        const userVisits = this.getCurrentUserVisits();
+        return this.filterDoneVisits(userVisits, true);
+    }
+
+    createVisitMilesForVisit(visit, visitMilesData) {
+        visit.visitMiles = this.floDB.create(VisitMiles, visitMilesData);
+    }
+
+    // TODO Delete all visit related information - like visit miles
     deleteVisitByObject(visit) {
         this.floDB.write(() => {
             this.floDB.delete(visit);
@@ -97,11 +116,12 @@ export class VisitRealmService {
     }
 
     updateMilesDataByVisitObject(visit, odometerStart, odometerEnd, totalMiles, milesComments) {
+        const visitMilesObject = visit.visitMiles;
         this.floDB.write(() => {
-            visit.odometerStart = odometerStart;
-            visit.odometerEnd = odometerEnd;
-            visit.totalMiles = totalMiles;
-            visit.milesComments = milesComments;
+            visitMilesObject.odometerStart = odometerStart;
+            visitMilesObject.odometerEnd = odometerEnd;
+            visitMilesObject.totalMiles = totalMiles;
+            visitMilesObject.milesComments = milesComments;
         });
     }
 

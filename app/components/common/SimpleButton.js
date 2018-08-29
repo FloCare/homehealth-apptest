@@ -22,7 +22,7 @@ export const ButtonTextStyles = {
         fontSize: 18,
         fontFamily: Platform.select({ios: 'SFProDisplay-Regular', android: 'SF-Pro-Display-Regular'}),
     }
-}
+};
 
 const styles = {
     buttonStyle: {
