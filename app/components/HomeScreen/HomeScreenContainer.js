@@ -3,12 +3,13 @@ import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import codePush from 'react-native-code-push';
 import {
-    View,
+    SafeAreaView,
     Alert,
     NetInfo,
     Dimensions,
     Platform,
     AsyncStorage,
+    ScrollView,
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
@@ -20,6 +21,8 @@ import Fab from '../common/Fab';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
 import {dateService} from '../../data_services/DateService';
 import {setItem} from '../../utils/InMemoryStore';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
+import {CalendarStripStyled} from '../common/CalendarStripStyled';
 
 const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1};
 
@@ -222,7 +225,7 @@ class HomeScreenContainer extends Component {
 
     render() {
         return (
-            <View
+            <SafeAreaView
                 style={[
                     {backgroundColor: '#F8F8F8'},
                     Platform.select({
@@ -230,19 +233,30 @@ class HomeScreenContainer extends Component {
                         android: {flex: 1}
                     })]}
             >
-                <HomeScreen
-                    visitID={this.props.nextVisitID}
-                    navigator={this.props.navigator}
-                    navigateToVisitMapScreen={this.navigateToVisitMapScreen}
-                    navigateToVisitListScreen={this.navigateToVisitListScreen}
+                <CalendarStripStyled
+                    dateRowAtBottom
+                    showMonth
+                    paddingTop={Platform.select({ios: 20, android: 20})}
                     date={moment(this.props.date).utc()}
-                    totalVisitsCount={this.props.totalVisits}
-                    remainingVisitsCount={this.props.remainingVisits}
+                    // noRounding={props.remainingVisitsCount === 0}
                     onDateSelected={this.onDateSelected}
-                    // onOrderChange={this.onOrderChange}
-                    onPressAddVisit={this.navigateToAddVisit}
-                    onPressAddVisitZeroState={this.navigateToAddVisitFAB}
                 />
+                <ScrollView style={{flex: 1}}>
+                    <HomeScreen
+                        visitID={this.props.nextVisitID}
+                        navigator={this.props.navigator}
+                        dateMinusToday={this.props.dateMinusToday}
+                        navigateToVisitMapScreen={this.navigateToVisitMapScreen}
+                        navigateToVisitListScreen={this.navigateToVisitListScreen}
+                        date={moment(this.props.date).utc()}
+                        totalVisitsCount={this.props.totalVisits}
+                        remainingVisitsCount={this.props.remainingVisits}
+                        onDateSelected={this.onDateSelected}
+                        // onOrderChange={this.onOrderChange}
+                        onPressAddVisit={this.navigateToAddVisit}
+                        onPressAddVisitZeroState={this.navigateToAddVisitFAB}
+                    />
+                </ScrollView>
                 <Fab
                     onPressAddNote={this.navigateToAddNote}
                     onPressAddVisit={() => {         
@@ -253,7 +267,7 @@ class HomeScreenContainer extends Component {
                     }}
                     onPressAddPatient={this.navigateToAddPatient}
                 />
-            </View>
+            </SafeAreaView>
         );
     }
 }
@@ -276,10 +290,10 @@ function stateToProps(state) {
     return {
         nextVisitID: state.visitOrder[0],
         date: state.date,
+        dateMinusToday: state.date < todayMomentInUTCMidnight().valueOf() ? -1 : (state.date === todayMomentInUTCMidnight().valueOf() ? 0 : 1),
         remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (isVisitDone(visitID) ? 0 : 1), 0),
         totalVisits: state.visitOrder.length,
     };
 }
 
-HomeScreenContainer = codePush(codePushOptions)(HomeScreenContainer);
-export default connect(stateToProps)(HomeScreenContainer);
+export default connect(stateToProps)(codePush(codePushOptions)(HomeScreenContainer));
