@@ -4,7 +4,7 @@ import {WebView} from 'react-native';
 function LegalScreen() {
     return (
         <WebView
-            source={{uri: 'https://flocare.health/legal'}}
+            source={{uri: 'https://www.flocare.health/privacy.html'}}
             style={{marginTop: 20}}
         />
     );
