@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView, AsyncStorage} from 'react-native';
+import {View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView, AsyncStorage, TextInput} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import RNSecureKeyStore from 'react-native-secure-key-store';
@@ -9,7 +9,6 @@ import {SimpleButton} from '../components/common/SimpleButton';
 import {UserDataService} from '../data_services/UserDataService';
 import {PatientDataService} from '../data_services/PatientDataService';
 import {setUserForInstabug} from '../utils/instabugUtils';
-import {InputField} from '../components/common/InputField';
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -197,6 +196,36 @@ class LoginScreen extends Component {
         );
     }
 }
+
+const InputField = React.forwardRef((props, ref) => (
+        <View
+            style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
+        >
+            <StyledText
+                style={{color: 'white', textAlign: 'left'}}
+            >
+                {props.title}
+            </StyledText>
+            <TextInput
+                ref={ref}
+                keyboardType={props.keyboardType}
+                value={props.value}
+                autoFocus={props.autoFocus}
+                placeholder={props.placeholder}
+                secureTextEntry={props.secureTextEntry}
+                onChangeText={props.onChangeText}
+                onSubmitEditing={props.onSubmitEditing}
+
+                autoCapitalize={'none'}
+                selectionColor={'rgba(255,255,255,0.5)'}
+                underlineColorAndroid={'white'}
+                autoCorrect={false}
+                style={{color: 'white'}}
+                placeholderTextColor={'rgba(255,255,255,0.35)'}
+            />
+        </View>
+    )
+);
 
 const styles = {
     errorTextStyle: {
