@@ -343,7 +343,7 @@ export class VisitService {
     getSubmittedMilesLogVisits() {
         const userVisits = this.visitRealmService.getCurrentUserVisits();
         const reportedVisits = this.reportService.filterReportedVisits(userVisits);
-        return this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit');
+        return this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
     }
 
     getActiveMilesLogVisits() {
