@@ -5,12 +5,8 @@ import {InputField} from '../common/InputField';
 import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
-import {styles} from './styles';
+import {grayColor, blackColor, styles} from './styles';
 import {milesRenderString} from '../../utils/renderFormatUtils';
-
-const grayColor = '#999999';
-const blackColor = '#222222';
-const textInputColor = blackColor;
 
 export default class AddOrEditMilesModal extends Component {
 
@@ -34,16 +30,16 @@ export default class AddOrEditMilesModal extends Component {
                 fontSize={15}
                 onChangeText={(text) => onChange(text)}
                 value={value}
-                style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: textInputColor}}
+                style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: blackColor}}
                 placeholderTextColor={grayColor}
-                selectionColor={textInputColor}
+                selectionColor={blackColor}
             />
         );
     }
 
     saveMilesData = () => {
         const {odometerStart, odometerEnd, totalMiles, comments} = this.state;
-        // TODO Sanitise input as required
+        // TODO Sanitise input when total miles is added
         VisitService.getInstance().updateMilesDataByVisitID(this.props.visitID,
             odometerStart, odometerEnd, totalMiles, comments);
     }
@@ -62,9 +58,9 @@ export default class AddOrEditMilesModal extends Component {
             keyboardType={'default'}
             onChangeText={(text) => this.setState({comments: text})}
             value={this.state.comments}
-            style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: textInputColor}}
+            style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: blackColor}}
             placeholderTextColor={grayColor}
-            selectionColor={textInputColor}
+            selectionColor={blackColor}
         />
     );
 
@@ -94,10 +90,10 @@ export default class AddOrEditMilesModal extends Component {
                     titleStyle={{...styles.inputTitleStyle, fontSize: 10}}
                     onChangeText={(text) => this.setState({totalMiles: text})}
                     value={this.state.totalMiles}
-                    style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: textInputColor}}
+                    style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: blackColor}}
                     placeHolder={'00'}
                     placeholderTextColor={grayColor}
-                    selectionColor={textInputColor}
+                    selectionColor={blackColor}
                 />
                 <Text style={{fontSize: 12, color: blackColor, marginBottom: 10}}>
                     {' Mi'}

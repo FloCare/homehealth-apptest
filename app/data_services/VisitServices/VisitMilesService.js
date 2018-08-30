@@ -1,3 +1,5 @@
+import { VisitMiles } from '../../utils/data/schema'
+
 export class VisitMilesService {
     static visitMilesService;
 
@@ -19,6 +21,14 @@ export class VisitMilesService {
 
     filterMilesInformationCompleteVisits(visits) {
         return visits.filtered('visitMiles.odometerStart != null && visitMiles.odometerEnd != null');
+    }
+
+    createVisitMilesForVisit(visit, visitMilesData) {
+        visit.visitMiles = this.floDB.create(VisitMiles, visitMilesData);
+    }
+
+    deleteVisitMilesByObject(visitMiles) {
+        this.floDB.delete(visitMiles);
     }
 
 }

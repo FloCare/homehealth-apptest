@@ -61,7 +61,7 @@ export default class MilesLogScreen extends Component {
                             </Text>
                             {
                                 isVisitReportPending &&
-                                <Text style={{...styles.milesDataStyle, fontSize: 10, marginRight: 10}}>
+                                <Text style={{...styles.addressStyle, fontSize: 10, marginRight: 10}}>
                                     Queued
                                 </Text>
                             }

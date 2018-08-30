@@ -265,7 +265,7 @@ export class VisitService {
                     totalMiles: visitMiles ? visitMiles.totalMiles : null,
                     milesComments: visitMiles ? visitMiles.milesComments : null,
                 };
-                this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
+                this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
             }
             visit.user = user;
         });
@@ -292,7 +292,7 @@ export class VisitService {
                         totalMiles: null,
                         milesComments: null
                     };
-                    this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
+                    this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
                 }
                 newVisits.push(visit);
                 if (visitSubject instanceof Patient) {
@@ -392,6 +392,11 @@ export class VisitService {
         const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.write(() => {
             this.floDB.delete(visits);
+            visits.forEach(visit => {
+                if (VisitService.isVisitOwn(visit)) {
+                    this.visitMilesService.deleteVisitMilesByObject(visit.visitMiles);
+                }
+            });
         });
 
         if (visitOrders) {

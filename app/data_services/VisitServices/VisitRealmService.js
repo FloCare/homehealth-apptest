@@ -1,6 +1,7 @@
 import {arrayToObjectByKey, filterResultObjectByListMembership} from '../../utils/collectionUtils';
-import {Visit, VisitOrder, VisitMiles} from '../../utils/data/schema';
+import {Visit, VisitOrder} from '../../utils/data/schema';
 import {UserDataService} from '../UserDataService';
+import {VisitService} from './VisitService';
 
 export class VisitRealmService {
     static visitRealmService;
@@ -85,14 +86,13 @@ export class VisitRealmService {
         return this.filterDoneVisits(userVisits, true);
     }
 
-    createVisitMilesForVisit(visit, visitMilesData) {
-        visit.visitMiles = this.floDB.create(VisitMiles, visitMilesData);
-    }
-
     // TODO Delete all visit related information - like visit miles
     deleteVisitByObject(visit) {
         this.floDB.write(() => {
             this.floDB.delete(visit);
+            if (VisitService.isVisitOwn(visit)) {
+                this.floDB.delete(visit.visitMiles);
+            }
         });
     }
 
