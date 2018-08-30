@@ -323,8 +323,17 @@ export class VisitService {
         const visitTimeEpoch = visit.midnightEpochOfVisit;
 
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes([visit]);
+        this.floDB.write(() => {
+            if (VisitService.isVisitOwn(visit)) {
+                this.visitMilesService.deleteVisitMilesByObject(visit.visitMiles);
+            }
+            const reportItem = visit.getReportItem();
+            if (reportItem) {
+                this.reportService.deleteReportItemByObject(reportItem);
+            }
+            this.visitRealmService.deleteVisitByObject(visit);
+        });
 
-        this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
@@ -391,12 +400,16 @@ export class VisitService {
         }
         const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.write(() => {
-            this.floDB.delete(visits);
             visits.forEach(visit => {
                 if (VisitService.isVisitOwn(visit)) {
                     this.visitMilesService.deleteVisitMilesByObject(visit.visitMiles);
                 }
+                const reportItem = visit.getReportItem();
+                if (reportItem) {
+                    this.reportService.deleteReportItemByObject(reportItem);
+                }
             });
+            this.floDB.delete(visits);
         });
 
         if (visitOrders) {

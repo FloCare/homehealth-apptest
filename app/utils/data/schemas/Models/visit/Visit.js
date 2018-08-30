@@ -79,4 +79,11 @@ export class Visit extends Realm.Object {
         return null;
     }
 
+    getReportItem() {
+        if (this.reportItems.length > 0) {
+            return this.reportItems[0];
+        }
+        return null;
+    }
+
 }

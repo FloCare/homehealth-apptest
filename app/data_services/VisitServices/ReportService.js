@@ -43,6 +43,10 @@ export class ReportService {
         });
     }
 
+    deleteReportItemByObject(reportItem) {
+        this.floDB.delete(reportItem);
+    }
+
     generateReportForVisits = (visits) => {
         let reportObject = null;
         this.floDB.write(() => {

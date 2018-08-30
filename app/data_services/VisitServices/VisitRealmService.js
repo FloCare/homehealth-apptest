@@ -86,14 +86,8 @@ export class VisitRealmService {
         return this.filterDoneVisits(userVisits, true);
     }
 
-    // TODO Delete all visit related information - like visit miles
     deleteVisitByObject(visit) {
-        this.floDB.write(() => {
-            this.floDB.delete(visit);
-            if (VisitService.isVisitOwn(visit)) {
-                this.floDB.delete(visit.visitMiles);
-            }
-        });
+        this.floDB.delete(visit);
     }
 
     getVisitOrderForDate(midnightEpoch) {
