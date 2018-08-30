@@ -257,6 +257,7 @@ export class VisitService {
             const user = UserDataService.getInstance().getUserByID(visitJson.userID);
             if (!user) throw new Error(`no user found for visit being saved: ${visitJson.userID}`);
             visit = this.floDB.create(Visit, visitJson, update);
+            visit.user = user;
             if (VisitService.isVisitOwn(visit)) {
                 const visitMiles = visitJson.visitMiles;
                 const visitMilesData = {
@@ -267,7 +268,6 @@ export class VisitService {
                 };
                 this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
             }
-            visit.user = user;
         });
         // console.log('visitsaved');
         if (!update) {
