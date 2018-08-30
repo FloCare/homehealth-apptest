@@ -11,9 +11,6 @@ import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles'
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Report} from '../../utils/data/schema';
 
-const ActiveTabComponent = () => <Text> Active </Text>;
-const SubmittedTabComponent = () => <Text> Submitted </Text>;
-
 export default class MilesLogScreen extends Component {
 
     formatDate = (date) => (
@@ -140,14 +137,12 @@ export default class MilesLogScreen extends Component {
     }
 
     render() {
-        //TODO Move to container
-        const buttons = [{element: ActiveTabComponent}, {element: SubmittedTabComponent}];
         return (
             <View>
                 <ButtonGroup
                     onPress={this.updateIndex}
                     selectedIndex={this.props.selectedIndex}
-                    buttons={buttons}
+                    buttons={this.props.buttons}
                     containerStyle={{height: 30}}
                     selectedButtonStyle={{borderBottomColor: PrimaryColor, borderBottomWidth: 2}}
                 />

@@ -1,10 +1,15 @@
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, View, Text} from 'react-native';
 import MilesLogScreen from './MilesLogScreen';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 
 const ACTIVE_TAB_INDEX = 0;
 const SUBMITTED_TAB_INDEX = 1;
+
+const ActiveTabComponent = () => <Text> Active </Text>;
+const SubmittedTabComponent = () => <Text> Submitted </Text>;
+
+const buttons = [{element: ActiveTabComponent}, {element: SubmittedTabComponent}];
 
 export default class MilesLogScreenContainer extends Component {
 
@@ -152,6 +157,7 @@ export default class MilesLogScreenContainer extends Component {
         return (
             <View style={{flex: 1, backgroundColor: '#F8F8F8'}}>
                 <MilesLogScreen
+                    buttons={buttons}
                     selectedIndex={this.state.selectedIndex}
                     sectionData={this.getSectionToRenderBasedOnTab()}
                     showCheckBox={this.state.selectedIndex === ACTIVE_TAB_INDEX}
@@ -161,7 +167,6 @@ export default class MilesLogScreenContainer extends Component {
                     updateIndex={this.updateIndex}
                 />
             </View>
-
         );
     }
 }
