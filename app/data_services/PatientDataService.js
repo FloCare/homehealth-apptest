@@ -41,6 +41,7 @@ export class PatientDataService {
             addressID: patient.address.addressID,
             primaryContact: patient.primaryContact,
             notes: patient.notes,
+            isLocallyOwned: patient.isLocallyOwned,
             //TODO this will need work if more than one episode per patient
             visits: VisitService.getInstance().filterUserVisits(
                 patient.episodes[0].visits).map(visit => visit.visitID),
@@ -163,9 +164,9 @@ export class PatientDataService {
             newPatient.episodes.push(episodeObject);
         });
         if (newPatient) {
-            if(patient.notes) {
+            if (patient.notes) {
                 firebase.analytics().logEvent(eventNames.ADD_NOTE, {
-                    'length': patient.notes.toString().trim().length
+                    length: patient.notes.toString().trim().length
                 });
             }
             this.addPatientsToRedux([newPatient], true);

@@ -52,6 +52,7 @@ const mapStateToProps = (state, ownProps) => {
         const patientID = visit.patientID;
         visitSubject = state.patients[patientID];
         props.patientID = visit.patientID;
+        props.isLocalPatient = visitSubject.isLocallyOwned;
         props.visitSubject = visitSubjects.PATIENT;
     } else {
         const placeID = visit.placeID;
@@ -260,7 +261,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 cardActionsMap.push({index, title: cardActions.goToAddress});
                 index++;
             }
-            cardActionsMap.push({index: index++, title: cardActions.addOrEditMiles});
+            if (this.isMilesEnabled()) {
+                cardActionsMap.push({index: index++, title: cardActions.addOrEditMiles});
+            }
             cardActionsMap.push({index: index++, title: cardActions.reschedule});
             cardActionsMap.push({index: index++, title: cardActions.deleteVisit});
             cardActionsMap.push({index: index++, title: 'Cancel'});
@@ -403,6 +406,12 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         // Miles Section
+
+        isMilesEnabled = () => {
+            const isPlaceVisit = this.props.visitSubject === visitSubjects.PLACE;
+            const isLocalPatient = this.props.isLocalPatient;
+            return !(isPlaceVisit || isLocalPatient);
+        }
 
         dismissMilesModal = () => {
             this.setState({milesModalVisible: false});
@@ -584,7 +593,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                         />
                                     </TouchableOpacity>
                                     {
-                                        this.props.isDone && !showDetailedMilesView &&
+                                        this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
                                         <View>
                                             {
                                                 this.renderTotalMiles()
@@ -595,32 +604,34 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                 </View>
                             </View>
                         </View>
-                        <View style={{borderTopColor: cardBorderColor, borderTopWidth: 1}}>
-                            <TouchableOpacity
-                                onPress={() => { this.onPressAddOrEditMiles(); }}
-                            >
-                                <Modal
-                                    isVisible={this.state.milesModalVisible}
-                                    onBackButtonPress={() => this.dismissMilesModal()}
-                                    avoidKeyboard
-                                    backdropOpacity={0.8}
+                        {
+                            this.isMilesEnabled() &&
+                            <View style={{borderTopColor: cardBorderColor, borderTopWidth: 1}}>
+                                <TouchableOpacity
+                                    onPress={() => { this.onPressAddOrEditMiles(); }}
                                 >
-                                    <AddOrEditMilesModal
-                                        name={this.props.name}
-                                        visitID={this.props.visitID}
-                                        odometerStart={this.props.odometerStart}
-                                        odometerEnd={this.props.odometerEnd}
-                                        totalMiles={this.props.totalMiles}
-                                        comments={this.props.milesComments}
-                                        dismissMilesModal={this.dismissMilesModal}
-                                    />
-                                </Modal>
-                                {
-                                    showDetailedMilesView && this.renderDetailedMilesView()
-                                }
-                            </TouchableOpacity>
-                        </View>
-
+                                    <Modal
+                                        isVisible={this.state.milesModalVisible}
+                                        onBackButtonPress={() => this.dismissMilesModal()}
+                                        avoidKeyboard
+                                        backdropOpacity={0.8}
+                                    >
+                                        <AddOrEditMilesModal
+                                            name={this.props.name}
+                                            visitID={this.props.visitID}
+                                            odometerStart={this.props.odometerStart}
+                                            odometerEnd={this.props.odometerEnd}
+                                            totalMiles={this.props.totalMiles}
+                                            comments={this.props.milesComments}
+                                            dismissMilesModal={this.dismissMilesModal}
+                                        />
+                                    </Modal>
+                                    {
+                                        showDetailedMilesView && this.renderDetailedMilesView()
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                        }
                     </View>
                 </View>
             );
