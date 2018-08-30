@@ -1,7 +1,7 @@
 import {NetInfo} from 'react-native';
 import {BaseMessagingService} from './BaseMessagingService';
 import {pushReportInformation} from '../../../utils/API/ReportAPI';
-import { VisitService } from '../../VisitServices/VisitService'
+import {VisitService} from '../../VisitServices/VisitService';
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -18,7 +18,8 @@ export class ReportMessagingService extends BaseMessagingService {
         this.taskQueue.addWorker(ReportMessagingService.jobs.publishReportToServer, this._publishReportToServer.bind(this), {
             concurrency: 3,
             onFailed: (id, payload) => {
-                console.log(`Publish report to server Job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
+                console.log(`Publish report to server Job with id ${id} had an attempt end in failure. Payload:`);
+                console.log(payload);
             }
         });
     }

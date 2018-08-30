@@ -41,8 +41,7 @@ export class VisitService {
         const isPatientVisit = visit.getPatient() !== undefined;
 
         // if (!isPatientVisit && !visit.getPlace()) { console.log('break'); console.log(visit.getEpisode()); console.log(visit.getEpisode().patient[0]); }
-        const visitMiles = visit.visitMiles;
-        return {
+        const flatVisit = {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
             episodeID: isPatientVisit ? visit.episode[0].episodeID : null,
@@ -50,14 +49,18 @@ export class VisitService {
             placeID: !isPatientVisit ? visit.getPlace().placeID : null,
             plannedStartTime: visit.plannedStartTime,
             isDone: visit.isDone,
-            isPatientVisit,
-            visitMiles: {
+            isPatientVisit
+        };
+        if (VisitService.isVisitOwn(visit)) {
+            const visitMiles = visit.visitMiles;
+            flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
                 totalMiles: visitMiles.totalMiles,
                 milesComments: visitMiles.milesComments
-            }
-        };
+            };
+        }
+        return flatVisit;
     }
 
     static getFlatVisitMap(visits) {
@@ -73,7 +76,7 @@ export class VisitService {
         this.visitMilesService = VisitMilesService.initialiseService(floDB);
     }
 
-    isVisitOwn(visit) {
+    static isVisitOwn(visit) {
         return UserDataService.getCurrentUserProps().userID === visit.user.userID;
     }
 
@@ -250,18 +253,20 @@ export class VisitService {
         if (visitJson.plannedStartTime) {
             visitJson.plannedStartTime = new Date(visitJson.plannedStartTime);
         }
-        const visitMiles = visitJson.visitMiles;
-        const visitMilesData = {
-            odometerStart: visitMiles ? visitMiles.odometerStart : null,
-            odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
-            totalMiles: visitMiles ? visitMiles.totalMiles : null,
-            milesComments: visitMiles ? visitMiles.milesComments : null,
-        };
         this.floDB.write(() => {
             const user = UserDataService.getInstance().getUserByID(visitJson.userID);
             if (!user) throw new Error(`no user found for visit being saved: ${visitJson.userID}`);
             visit = this.floDB.create(Visit, visitJson, update);
-            this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
+            if (VisitService.isVisitOwn(visit)) {
+                const visitMiles = visitJson.visitMiles;
+                const visitMilesData = {
+                    odometerStart: visitMiles ? visitMiles.odometerStart : null,
+                    odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
+                    totalMiles: visitMiles ? visitMiles.totalMiles : null,
+                    milesComments: visitMiles ? visitMiles.milesComments : null,
+                };
+                this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
+            }
             visit.user = user;
         });
         // console.log('visitsaved');
@@ -273,12 +278,6 @@ export class VisitService {
 
     createNewVisits(visitSubjects, midnightEpoch) {
         const newVisits = [];
-        const visitMilesData = {
-            odometerStart: null,
-            odometerEnd: null,
-            totalMiles: null,
-            milesComments: null
-        };
         this.floDB.write(() => {
             for (const visitSubject of visitSubjects) {
                 const visit = this.floDB.create(Visit, {
@@ -286,7 +285,15 @@ export class VisitService {
                     user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
                     midnightEpochOfVisit: midnightEpoch
                 });
-                this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
+                if (VisitService.isVisitOwn(visit)) {
+                    const visitMilesData = {
+                        odometerStart: null,
+                        odometerEnd: null,
+                        totalMiles: null,
+                        milesComments: null
+                    };
+                    this.visitRealmService.createVisitMilesForVisit(visit, visitMilesData);
+                }
                 newVisits.push(visit);
                 if (visitSubject instanceof Patient) {
                     visitSubject.episodes[0].visits.push(visit);

@@ -45,7 +45,7 @@ export class EpisodeDataService {
         const flatVisitForVisit = visit => {
             const user = visit.user;
             return {
-                ownVisit: VisitService.getInstance().isVisitOwn(visit),
+                ownVisit: VisitService.isVisitOwn(visit),
                 role: user.role,
                 primaryContact: user.primaryContact,
                 plannedStartTime: visit.plannedStartTime,

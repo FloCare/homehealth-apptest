@@ -418,7 +418,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 :
                 (
                     <Text style={{...styles.milesDataStyle, color: ErrorMessageColor}}>
-                        {'Pending'}
+                        {'____'}
                     </Text>
                 )
         );
