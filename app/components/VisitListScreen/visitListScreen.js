@@ -35,6 +35,7 @@ function VisitListScreen(props) {
                 orderedVisitID={props.orderedVisitID}
                 renderFunctionGenerator={VisitCardGenerator}
                 tapForDetails
+                keyboardShouldPersistTaps
                 onOrderChange={props.onOrderChange}
             />
             <SimpleButton
