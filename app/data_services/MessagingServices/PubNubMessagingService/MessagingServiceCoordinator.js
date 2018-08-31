@@ -93,6 +93,8 @@ export class MessagingServiceCoordinator {
     }
 
     onNotificationRegister(token) {
+        console.log('MSC got notification token arg');
+        console.log(token);
         for (const serviceName in this.messageServices) {
             if (this.messageServices.hasOwnProperty(serviceName)) {
                 this.messageServices[serviceName].onNotificationRegister(token);
@@ -100,7 +102,7 @@ export class MessagingServiceCoordinator {
         }
     }
 
-    onNotification(notification) {
+    onContentAvailable() {
         const allPromises = [];
         for (const serviceName in this.messageServices) {
             if (this.messageServices.hasOwnProperty(serviceName)) {

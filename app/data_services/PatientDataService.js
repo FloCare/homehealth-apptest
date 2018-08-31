@@ -161,8 +161,11 @@ export class PatientDataService {
                 episode.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
             }
             const episodeObject = this.floDB.create(Episode, episode, true);
-            newPatient.episodes.push(episodeObject);
+            if (!newPatient.episodes.map(e => e.episodeID).includes(episodeObject.episodeID)) {
+                newPatient.episodes.push(episodeObject);
+            }
         });
+
         if (newPatient) {
             if (patient.notes) {
                 firebase.analytics().logEvent(eventNames.ADD_NOTE, {
@@ -243,6 +246,9 @@ export class PatientDataService {
                 this._checkPermissionForEditing([patient]);
             } else {
                 //TODO
+                console.log(`archiving patient ${patientId}, unsubscribing from episodes`);
+                console.log(patient.episodes.length);
+                console.log(patient.episodes);
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).unsubscribeToEpisodes(patient.episodes);
             }
 
