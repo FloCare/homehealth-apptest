@@ -1,24 +1,19 @@
 import React, {Component} from 'react';
-import {Alert, View, Text} from 'react-native';
+import {Alert, View} from 'react-native';
 import MilesLogScreen from './MilesLogScreen';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 
-const ACTIVE_TAB_INDEX = 0;
-const SUBMITTED_TAB_INDEX = 1;
-
-const ActiveTabComponent = () => <Text> Active </Text>;
-const SubmittedTabComponent = () => <Text> Submitted </Text>;
-
-const buttons = [{element: ActiveTabComponent}, {element: SubmittedTabComponent}];
-
 export default class MilesLogScreenContainer extends Component {
+
+    static ACTIVE_TAB_INDEX = 0;
+    static SUBMITTED_TAB_INDEX = 1;
 
     constructor(props) {
         super(props);
         const activeVisits = this.getActiveVisits();
         this.state = {
             selectedIndex: 0,
-            sectionedActiveVisits: this.getSectionedDataFromVisits(activeVisits, ACTIVE_TAB_INDEX),
+            sectionedActiveVisits: this.getSectionedDataFromVisits(activeVisits, MilesLogScreenContainer.ACTIVE_TAB_INDEX),
             sectionedSubmittedVisits: null,
             selectedVisitsSet: new Set([])
         };
@@ -69,7 +64,7 @@ export default class MilesLogScreenContainer extends Component {
     }
 
     getSectionedDataFromVisits = (visits, screenIndex) => {
-        let title = screenIndex === ACTIVE_TAB_INDEX ? 'Select All' : null;
+        let title = screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? 'Select All' : null;
         if (visits.length === 0) title = null;
         return [{
             title,
@@ -83,11 +78,11 @@ export default class MilesLogScreenContainer extends Component {
     )
 
     setActiveVisits = (visits) => {
-        this.setState({sectionedActiveVisits: this.getSectionedDataFromVisits(visits, ACTIVE_TAB_INDEX)});
+        this.setState({sectionedActiveVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.ACTIVE_TAB_INDEX)});
     }
 
     setSubmittedVisits = (visits) => {
-        this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(visits, SUBMITTED_TAB_INDEX)});
+        this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
     }
 
     getSubmittedVisits = () => (
@@ -95,9 +90,9 @@ export default class MilesLogScreenContainer extends Component {
     )
 
     getSectionToRenderBasedOnTab = () => {
-        if (this.state.selectedIndex === ACTIVE_TAB_INDEX) {
+        if (this.state.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
             return this.state.sectionedActiveVisits;
-        } else if (this.state.selectedIndex === SUBMITTED_TAB_INDEX) {
+        } else if (this.state.selectedIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
             return this.state.sectionedSubmittedVisits;
         }
     }
@@ -130,16 +125,16 @@ export default class MilesLogScreenContainer extends Component {
         this.setState({selectedVisitsSet: newSelectedVisitsSet});
     }
 
-    updateIndex = (selectedIndex) => {
-        if (selectedIndex === SUBMITTED_TAB_INDEX){
+    updateSelectedTabIndex = (selectedIndex) => {
+        if (selectedIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
             this.props.navigator.setButtons({
                 rightButtons: []
             });
             if (!this.state.sectionedSubmittedVisits) {
                 const submittedVisits = this.getSubmittedVisits();
-                this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(submittedVisits, SUBMITTED_TAB_INDEX)});
+                this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(submittedVisits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
             }
-        } else if (selectedIndex === ACTIVE_TAB_INDEX) {
+        } else if (selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
             this.props.navigator.setButtons({
                 rightButtons: [
                     {
@@ -157,14 +152,13 @@ export default class MilesLogScreenContainer extends Component {
         return (
             <View style={{flex: 1, backgroundColor: '#F8F8F8'}}>
                 <MilesLogScreen
-                    buttons={buttons}
                     selectedIndex={this.state.selectedIndex}
                     sectionData={this.getSectionToRenderBasedOnTab()}
-                    showCheckBox={this.state.selectedIndex === ACTIVE_TAB_INDEX}
+                    showCheckBox={this.state.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
                     toggleVisitSelected={this.toggleVisitSelected}
                     toggleSectionSelected={this.toggleSectionSelected}
                     selectedVisitsSet={this.state.selectedVisitsSet}
-                    updateIndex={this.updateIndex}
+                    updateSelectedTabIndex={this.updateSelectedTabIndex}
                 />
             </View>
         );

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, SectionList, Image} from 'react-native';
-import {ButtonGroup} from 'react-native-elements';
+import {View, Text, SectionList, Image, TouchableOpacity} from 'react-native';
 import moment from 'moment/moment';
 import {PrimaryColor} from '../../utils/constants';
 import {CustomCheckBox} from '../common/CustomCheckBox';
@@ -10,6 +9,7 @@ import {Images} from '../../Images';
 import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles';
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Report} from '../../utils/data/schema';
+import MilesLogScreenContainer from './MilesLogScreenContainer';
 
 export default class MilesLogScreen extends Component {
 
@@ -19,7 +19,7 @@ export default class MilesLogScreen extends Component {
     )
 
     updateIndex = (selectedIndex) => {
-        this.props.updateIndex(selectedIndex);
+        this.props.updateSelectedTabIndex(selectedIndex);
     }
 
     isVisitSelected = (visitID) => (this.props.selectedVisitsSet.has(visitID))
@@ -119,7 +119,7 @@ export default class MilesLogScreen extends Component {
             isSectionSelected = visitIDs.every(visitID => this.isVisitSelected(visitID));
         }
         return (
-            <View style={{flexDirection: 'row', flex: 1, borderBottomColor: '#E1E1E1', borderBottomWidth: 1, alignItems: 'center'}}>
+            <View style={{flexDirection: 'row', flex: 1, borderBottomColor: '#E1E1E1', borderBottomWidth: 1, alignItems: 'center', marginTop: 5}}>
                 <View style={{width: 40}}>
                     {
                         this.props.showCheckBox &&
@@ -137,15 +137,36 @@ export default class MilesLogScreen extends Component {
     }
 
     render() {
+        const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
         return (
             <View>
-                <ButtonGroup
-                    onPress={this.updateIndex}
-                    selectedIndex={this.props.selectedIndex}
-                    buttons={this.props.buttons}
-                    containerStyle={{height: 30}}
-                    selectedButtonStyle={{borderBottomColor: PrimaryColor, borderBottomWidth: 2}}
-                />
+                <View
+                    style={{flexDirection: 'row',
+                        elevation: 3,
+                        shadowColor: 'black',
+                        shadowOpacity: 0.3,
+                        shadowOffset: {width: 2, height: 2},
+                        shadowRadius: 2,
+                        backgroundColor: 'white'
+                    }}
+                >
+                    <TouchableOpacity
+                        style={[{flex: 1, alignItems: 'center'}, this.props.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? selectedTabStyle : {}]}
+                        onPress={() => this.props.updateSelectedTabIndex(MilesLogScreenContainer.ACTIVE_TAB_INDEX)}
+                    >
+                        <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
+                            Active Logs
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[{flex: 1, alignItems: 'center'}, this.props.selectedIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX ? selectedTabStyle : {}]}
+                        onPress={() => this.props.updateSelectedTabIndex(MilesLogScreenContainer.SUBMITTED_TAB_INDEX)}
+                    >
+                        <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
+                            Submitted Logs
+                        </Text>
+                    </TouchableOpacity>
+                </View>
                 <SectionList
                     renderItem={({item}) => this.renderItem(item)}
                     renderSectionHeader={({section: {title}}) => this.renderSectionHeader(title)}

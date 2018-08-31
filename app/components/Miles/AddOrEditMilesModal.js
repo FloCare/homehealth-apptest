@@ -65,14 +65,14 @@ export default class AddOrEditMilesModal extends Component {
     );
 
     renderOdometerInputSection = () => (
-        <View style={{marginBottom: 5}}>
+        <View>
             {
                 this.getOdometerInputField('Odometer Start', this.state.odometerStart, text => this.setState({odometerStart: text}))
             }
             {
                 this.getOdometerInputField('Odometer End', this.state.odometerEnd, text => this.setState({odometerEnd: text}))
             }
-            <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center'}}>
+            <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center', marginTop: 5, marginBottom: 0}}>
                     {`Total Miles : ${milesRenderString(this.totalMilesFromOdometerInput())} Mi`}
             </Text>
         </View>
@@ -108,7 +108,7 @@ export default class AddOrEditMilesModal extends Component {
             <View style={{margin: 10, backgroundColor: 'white', borderRadius: 5}}>
                 <View style={{marginLeft: 20, margin: 10}}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Text style={{marginTop: 10, marginBottom: 10}}>
+                        <Text style={{...styles.milesDataStyle, fontSize: 15, marginTop: 10, marginBottom: 10}}>
                             {title}
                         </Text>
                         <TouchableOpacity onPress={() => this.props.dismissMilesModal()} style={{width: 40, height: 40, alignItems: 'center', justifyContent: 'center'}}>

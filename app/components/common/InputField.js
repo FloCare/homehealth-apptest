@@ -28,7 +28,7 @@ export class InputField extends Component {
                     selectionColor={this.props.selectionColor || 'rgba(255,255,255,0.5)'}
                     underlineColorAndroid={'white'}
                     autoCorrect={false}
-                    style={{color: 'white', ...this.props.style}}
+                    style={{color: 'white', padding: 0, ...this.props.style}}
                     placeholderTextColor={this.props.placeholderTextColor || 'rgba(255,255,255,0.35)'}
                 />
             </View>
