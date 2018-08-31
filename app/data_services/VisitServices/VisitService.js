@@ -178,8 +178,8 @@ export class VisitService {
                     const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
                     this.floDB.write(() => {
                         visitOrder.visitList = daysVisits;
-                        console.log(`midnight ${midnightEpochOfVisit}`);
-                        console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
+                        // console.log(`midnight ${midnightEpochOfVisit}`);
+                        // console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
                     });
                 }
             });

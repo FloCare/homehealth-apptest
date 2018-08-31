@@ -18,10 +18,13 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.facebook.react.ReactInstanceManager;
-
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 // Add CodePush imports
 import com.microsoft.codepush.react.ReactInstanceHolder;
 import com.microsoft.codepush.react.CodePush;
+
+import com.facebook.soloader.SoLoader;
 
 import com.reactnativenavigation.NavigationApplication;
 
@@ -55,7 +58,9 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new RNInstabugReactnativePackage.Builder(instabugKey, MainApplication.this)
               .setInvocationEvent("screenshot")
               .setPrimaryColor(PrimaryColor)
-              .build()
+              .build(),
+            new RNFirebaseMessagingPackage(),
+            new RNFirebaseNotificationsPackage()
     );
   }
 
@@ -80,4 +85,10 @@ public class MainApplication extends NavigationApplication implements ReactInsta
         // CodePush must be told how to find React Native instance
         return getReactNativeHost().getReactInstanceManager();
     }
+
+    @Override
+      public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+      }
 }
