@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, TouchableWithoutFeedback, TouchableHighlight, Text} from 'react-native';
-import {Icon} from 'react-native-elements';
+import {View, TouchableWithoutFeedback, TouchableHighlight, Text, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import {VisitCardGenerator} from '../common/visitCardGenerator';
@@ -10,6 +9,7 @@ import EmptyStateButton from '../common/EmptyStateButton';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {floDB, Visit} from '../../utils/data/schema';
 import {styles} from '../common/styles';
+import {Images} from '../../Images';
 
 function onPressCard(visitID, navigator) {
     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
@@ -61,24 +61,18 @@ function navigationButtons(props) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     height: 35,
-                    borderRightWidth: 1,
-                    borderColor: 'white'
                 }}
             >
-                {/*<Image*/}
-                {/*style={{height: 35, resizeMode: 'contain'}}*/}
-                {/*source={Images.list}*/}
-                {/*/>*/}
-                <Icon
-                    name='map'
-                    color={'white'}
+                <Image
+                    style={{marginLeft: 10, height: 35, resizeMode: 'contain'}}
+                    source={Images.map}
                 />
                 <Text style={{marginHorizontal: 10, alignSelf: 'center', color: '#ffffff'}}>
                     Map
                 </Text>
             </LinearGradient>
         </TouchableWithoutFeedback>
-
+        <View style={{width: 1, backgroundColor: 'white'}} />
         <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
             <LinearGradient
                 colors={['#34da92', PrimaryColor]}
@@ -94,13 +88,9 @@ function navigationButtons(props) {
                     height: 35,
                 }}
             >
-                {/*<Image*/}
-                {/*style={{height: 35, resizeMode: 'contain'}}*/}
-                {/*source={Images.map}*/}
-                {/*/>*/}
-                <Icon
-                    name='list'
-                    color={'white'}
+                <Image
+                style={{height: 35, resizeMode: 'contain'}}
+                source={Images.list}
                 />
                 <Text style={{marginHorizontal: 10, alignSelf: 'center', color: '#ffffff'}}>
                     List

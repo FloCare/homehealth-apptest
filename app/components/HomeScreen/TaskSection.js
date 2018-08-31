@@ -4,6 +4,7 @@ import {styles} from '../common/styles';
 import {CustomCheckBox} from '../common/CustomCheckBox';
 import StyledText from '../common/StyledText';
 import {TaskService} from '../../data_services/TaskService';
+import {screenNames} from '../../utils/constants';
 
 function taskCard(task, onPressCard, checkBoxDisabled = false) {
     return (
@@ -72,6 +73,13 @@ export class TaskSection extends Component {
         this.setState({tasks});
     }
 
+    newTaskSubmitHandler(text) {
+        this.props.navigator.dismissLightBox();
+        if (text && text.length !== 0) {
+            TaskService.getInstance().createNewTask(text, this.props.midnightEpoch);
+        }
+    }
+
     render() {
         if ((!this.state.tasks || this.state.tasks.length === 0) && (this.props.dateMinusToday < 0)) {
             return null;
@@ -84,7 +92,19 @@ export class TaskSection extends Component {
                     {'My Task'}
                 </StyledText>
                 {
-                    this.props.dateMinusToday >= 0 ? taskCard({body: '+ Add Task'}, () => TaskService.getInstance().createNewTask(`yoo${Math.random()}`, this.props.midnightEpoch), true) : undefined
+                    this.props.dateMinusToday >= 0 ?
+                        taskCard({body: '+ Add Task'}, () => this.props.navigator.showLightBox({
+                            screen: screenNames.addTaskComponent,
+                            style: {
+                                backgroundBlur: 'dark',
+                                backgroundColor: '#00000070',
+                                tapBackgroundToDismiss: true
+                            },
+                            passProps: {
+                                onSubmit: this.newTaskSubmitHandler.bind(this)
+                            }
+                        }), true)
+                        : undefined
                 }
                 {
                     this.state.tasks ? this.state.tasks.map(task => taskCard(task)) : undefined

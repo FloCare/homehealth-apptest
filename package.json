@@ -42,6 +42,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.6.0",
     "react-native-linear-gradient": "github:react-native-community/react-native-linear-gradient",
     "react-native-maps": "^0.21.0",
+    "react-native-modal": "^6.5.0",
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-modal-selector": "0.0.27",
     "react-native-navigation": "^1.1.479",

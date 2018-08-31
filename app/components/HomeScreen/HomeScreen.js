@@ -22,6 +22,7 @@ function HomeScreen(props) {
                 style={{height: 1, backgroundColor: '#e6e6e6'}}
             />
             <TaskSection
+                navigator={props.navigator}
                 midnightEpoch={props.date.valueOf()}
                 dateMinusToday={props.dateMinusToday}
             />
