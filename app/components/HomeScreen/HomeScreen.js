@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import {VisitSection} from './VisitSection';
-// import {TaskSection} from "./TaskSection";
+import {TaskSection} from './TaskSection';
 
 function HomeScreen(props) {
     return (
@@ -18,7 +18,14 @@ function HomeScreen(props) {
                 navigateToVisitMapScreen={props.navigateToVisitMapScreen}
                 onPressAddVisit={props.onPressAddVisitZeroState}
             />
-            {/*<TaskSection/>*/}
+            <View
+                style={{height: 1, backgroundColor: '#e6e6e6'}}
+            />
+            <TaskSection
+                navigator={props.navigator}
+                midnightEpoch={props.date.valueOf()}
+                dateMinusToday={props.dateMinusToday}
+            />
         </View>
     );
 }

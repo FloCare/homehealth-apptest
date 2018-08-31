@@ -21,6 +21,7 @@ import {initialiseStoreAndSetInstabug} from '../utils/InMemoryStore';
 import {UserDataService} from '../data_services/UserDataService';
 import {EpisodeDataService} from '../data_services/EpisodeDataService';
 import {PhysicianDataService} from '../data_services/PhysicianDataService';
+import {TaskService} from '../data_services/TaskService';
 
 const navigatorStyle = {
     navBarBackgroundColor: PrimaryColor,
@@ -68,6 +69,7 @@ const StartApp = async (key) => {
     EpisodeDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
+    TaskService.initialiseService(FloDBProvider.db, store);
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);

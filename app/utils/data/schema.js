@@ -1,5 +1,4 @@
 import moment from 'moment/moment';
-import {Alert} from 'react-native';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
 import * as Migrations from './schemas/migrations/MigrationsIndex';
@@ -11,6 +10,7 @@ import {User} from './schemas/Models/user/User';
 import {Visit} from './schemas/Models/visit/Visit';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
 import {Physician} from './schemas/Models/physician/Physician';
+import {Task} from './schemas/Models/task/Task'
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
@@ -19,6 +19,7 @@ import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
 import * as PhysicianSchemas from './schemas/Models/physician/schemaVersions/SchemaIndex';
+import * as TaskSchemas from './schemas/Models/task/schemaVersions/SchemaIndex';
 import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 import {UserDataService} from '../../data_services/UserDataService';
 import {getPatientsByOldID} from '../API/PatientAPI';
@@ -172,11 +173,19 @@ class FloDBProvider {
                 migration: Migrations.v007,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV2, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, TaskSchemas.TaskSchemaV1],
+                schemaVersion: 8,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
-        const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User, Physician];
+        const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User, Physician, Task];
 
         let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (existingSchemaVersion >= 0) {
@@ -318,5 +327,5 @@ function CreateAndSaveDummies() {
 
 export {
     FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
-    VisitOrder, User, Physician, CreateAndSaveDummies
+    VisitOrder, User, Physician, Task, CreateAndSaveDummies
 };
