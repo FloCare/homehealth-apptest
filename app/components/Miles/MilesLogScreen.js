@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, SectionList, Image, TouchableOpacity} from 'react-native';
 import moment from 'moment/moment';
+import Modal from 'react-native-modal';
 import {PrimaryColor} from '../../utils/constants';
 import {CustomCheckBox} from '../common/CustomCheckBox';
 import {Address} from '../../utils/data/schemas/Models/address/Address';
@@ -10,8 +11,30 @@ import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles'
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Report} from '../../utils/data/schema';
 import MilesLogScreenContainer from './MilesLogScreenContainer';
+import AddOrEditMilesModal from './AddOrEditMilesModal';
 
 export default class MilesLogScreen extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            milesModalVisible: false
+        };
+    }
+
+    dismissEditMilesModal = () => {
+        this.setState({milesModalVisible: false});
+    }
+
+    showEditMilesModal = () => {
+        this.setState({milesModalVisible: true});
+    }
+
+    handleItemClick = () => {
+        if (this.props.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
+            this.showEditMilesModal();
+        }
+    }
 
     formatDate = (date) => (
         // TODO Validate in multiple time zones
@@ -43,69 +66,90 @@ export default class MilesLogScreen extends Component {
                     }
                 </View>
 
-
-                <View style={{flex: 1}}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, alignItems: 'center'}}>
-                        <View>
-                            <Text style={{...styles.nameStyle, fontSize: 15}}>{visit.getAssociatedName()}</Text>
-                            <View style={{flexDirection: 'row', marginTop: 2}}>
-                                <Image source={Images.location} style={{marginRight: 8}} />
-                                <Text style={styles.addressStyle}>
-                                    {Address.minifiedAddress(visit.getAddress().formattedAddress)}
-                                </Text>
-                            </View>
-                        </View>
-                        <View>
-                            <Text style={{...styles.milesDataStyle, fontSize: 10, marginRight: 10}}>
-                                {this.formatDate(parseInt(visit.midnightEpochOfVisit, 10))}
-                            </Text>
-                            {
-                                isVisitReportPending &&
-                                <Text style={{...styles.addressStyle, fontSize: 10, marginRight: 10}}>
-                                    Queued
-                                </Text>
-                            }
-                        </View>
-                    </View>
-                    <View style={{flex: 1, marginTop: 5}}>
-                        <Text style={styles.milesHeadingStyle}>
-                            Odometer Reading
-                        </Text>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, marginTop: 5}}>
-                            <View style={{flexDirection: 'row', flex: 1}}>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
-                                        Start:
-                                    </Text>
-                                    <Text style={{...styles.milesDataStyle, fontSize: 10, marginLeft: 3}}>
-                                        {milesRenderString(visit.visitMiles.odometerStart)}
-                                    </Text>
-                                </View>
-                                <View style={{flexDirection: 'row', marginLeft: 20}}>
-                                    <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
-                                        End:
-                                    </Text>
-                                    <Text style={{...styles.milesDataStyle, fontSize: 10, marginLeft: 3}}>
-                                        {milesRenderString(visit.visitMiles.odometerEnd)}
+                <TouchableOpacity
+                    style={{flex: 1}}
+                    onPress={() => { this.handleItemClick(); }}
+                >
+                    <Modal
+                        isVisible={this.state.milesModalVisible}
+                        onBackButtonPress={() => this.dismissEditMilesModal()}
+                        avoidKeyboard
+                        backdropOpacity={0.8}
+                    >
+                        <AddOrEditMilesModal
+                            name={visit.getAssociatedName()}
+                            visitID={visit.visitID}
+                            odometerStart={visit.visitMiles.odometerStart}
+                            odometerEnd={visit.visitMiles.odometerEnd}
+                            totalMiles={visit.visitMiles.totalMiles}
+                            comments={visit.visitMiles.milesComments}
+                            dismissMilesModal={this.dismissEditMilesModal}
+                        />
+                    </Modal>
+                    <View style={{flex: 1}}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, alignItems: 'center'}}>
+                            <View>
+                                <Text style={{...styles.nameStyle, fontSize: 15}}>{visit.getAssociatedName()}</Text>
+                                <View style={{flexDirection: 'row', marginTop: 2}}>
+                                    <Image source={Images.location} style={{marginRight: 8}} />
+                                    <Text style={styles.addressStyle}>
+                                        {Address.minifiedAddress(visit.getAddress().formattedAddress)}
                                     </Text>
                                 </View>
                             </View>
-                            <View style={{marginRight: 15}}>
-                                <Text style={{...styles.milesDataStyle, fontSize: 12}}>
-                                    {`${milesRenderString(milesTravelled)} Mi`}
+                            <View>
+                                <Text style={{...styles.milesDataStyle, fontSize: 10, marginRight: 10}}>
+                                    {this.formatDate(parseInt(visit.midnightEpochOfVisit, 10))}
                                 </Text>
+                                {
+                                    isVisitReportPending &&
+                                    <Text style={{...styles.addressStyle, fontSize: 10, marginRight: 10}}>
+                                        Queued
+                                    </Text>
+                                }
                             </View>
                         </View>
-                        <View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5}}>
+                        <View style={{flex: 1, marginTop: 5}}>
                             <Text style={styles.milesHeadingStyle}>
-                                Comments:
+                                Odometer Reading
                             </Text>
-                            <Text style={{...styles.milesDataStyle, fontSize: 11, marginLeft: 3}}>
-                                {visit.visitMiles.milesComments}
-                            </Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, marginTop: 5}}>
+                                <View style={{flexDirection: 'row', flex: 1}}>
+                                    <View style={{flexDirection: 'row'}}>
+                                        <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
+                                            Start:
+                                        </Text>
+                                        <Text style={{...styles.milesDataStyle, fontSize: 10, marginLeft: 3}}>
+                                            {milesRenderString(visit.visitMiles.odometerStart)}
+                                        </Text>
+                                    </View>
+                                    <View style={{flexDirection: 'row', marginLeft: 20}}>
+                                        <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
+                                            End:
+                                        </Text>
+                                        <Text style={{...styles.milesDataStyle, fontSize: 10, marginLeft: 3}}>
+                                            {milesRenderString(visit.visitMiles.odometerEnd)}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={{marginRight: 15}}>
+                                    <Text style={{...styles.milesDataStyle, fontSize: 12}}>
+                                        {`${milesRenderString(milesTravelled)} Mi`}
+                                    </Text>
+                                </View>
+                            </View>
+                            <View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5}}>
+                                <Text style={styles.milesHeadingStyle}>
+                                    Comments:
+                                </Text>
+                                <Text style={{...styles.milesDataStyle, fontSize: 11, marginLeft: 3}}>
+                                    {visit.visitMiles.milesComments}
+                                </Text>
+                            </View>
                         </View>
                     </View>
-                </View>
+                </TouchableOpacity>
+
             </View>
         );
     }
