@@ -149,7 +149,6 @@ export default class MilesLogScreen extends Component {
                         </View>
                     </View>
                 </TouchableOpacity>
-
             </View>
         );
     }

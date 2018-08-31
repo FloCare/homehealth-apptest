@@ -2,11 +2,17 @@ import React, {Component} from 'react';
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import {Button} from 'react-native-elements';
 import {InputField} from '../common/InputField';
-import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
+import {
+    ErrorMessageColor,
+    PrimaryColor,
+    PrimaryFontFamily,
+} from '../../utils/constants';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {grayColor, blackColor, styles} from './styles';
 import {milesRenderString} from '../../utils/renderFormatUtils';
+import {UserDataService} from '../../data_services/UserDataService';
+import {PatientDataService} from '../../data_services/PatientDataService';
 
 export default class AddOrEditMilesModal extends Component {
 
@@ -16,7 +22,8 @@ export default class AddOrEditMilesModal extends Component {
             odometerStart: props.odometerStart ? milesRenderString(props.odometerStart) : null,
             odometerEnd: props.odometerEnd ? milesRenderString(props.odometerEnd) : null,
             totalMiles: props.totalMiles ? milesRenderString(props.totalMiles) : null,
-            comments: props.comments
+            comments: props.comments,
+            showOdometerEndErrorMessage: false
         };
     }
 
@@ -37,11 +44,24 @@ export default class AddOrEditMilesModal extends Component {
         );
     }
 
-    saveMilesData = () => {
+    saveMilesDataAndDismissModal = () => {
         const {odometerStart, odometerEnd, totalMiles, comments} = this.state;
-        // TODO Sanitise input when total miles is added
         VisitService.getInstance().updateMilesDataByVisitID(this.props.visitID,
             odometerStart, odometerEnd, totalMiles, comments);
+        this.props.dismissMilesModal();
+    }
+
+    handleSaveClick = () => {
+        const {odometerStart, odometerEnd} = this.state;
+        if (odometerStart && odometerEnd) {
+            if (parseFloat(odometerStart) <= parseFloat(odometerEnd)) {
+                this.saveMilesDataAndDismissModal();
+            } else {
+                this.setState({showOdometerEndErrorMessage: true});
+            }
+        } else {
+            this.saveMilesDataAndDismissModal();
+        }
     }
 
     totalMilesFromOdometerInput = () => {
@@ -64,13 +84,50 @@ export default class AddOrEditMilesModal extends Component {
         />
     );
 
+    // TODO - Restrict to one decimal after controlled text input is fixed
+    // https://github.com/facebook/react-native/issues/5370
+    handleOdometerStartInputChange = (text) => {
+        this.setState({
+            odometerStart: text,
+            showOdometerEndErrorMessage: false
+        });
+    }
+
+    handleOdometerEndInputChange = (text) => {
+        this.setState({
+            odometerEnd: text,
+            showOdometerEndErrorMessage: false
+        });
+    }
+
+    // TODO - Delete this when merging.
+    // TODO SHOULD NOT GO TO PRODUCTION
+    getErrorMessage = () => {
+        const firstName = UserDataService.getCurrentUserProps().firstName;
+        const lastName = UserDataService.getCurrentUserProps().lastName;
+        const email = UserDataService.getCurrentUserProps().email;
+        let errorMessage = 'End should not be greater than start';
+        if (email && email.includes('flocare.health')) {
+            console.log('email includes');
+            const name = PatientDataService.constructName(firstName, lastName);
+            errorMessage = `Dude WTF! ${name}. Check your eyes and save again`;
+        }
+        return errorMessage;
+    }
+
     renderOdometerInputSection = () => (
         <View>
             {
-                this.getOdometerInputField('Odometer Start', this.state.odometerStart, text => this.setState({odometerStart: text}))
+                this.getOdometerInputField('Odometer Start', this.state.odometerStart, this.handleOdometerStartInputChange)
             }
             {
-                this.getOdometerInputField('Odometer End', this.state.odometerEnd, text => this.setState({odometerEnd: text}))
+                this.getOdometerInputField('Odometer End', this.state.odometerEnd, this.handleOdometerEndInputChange)
+            }
+            {
+                this.state.showOdometerEndErrorMessage &&
+                    <Text style={{color: ErrorMessageColor, fontSize: 10, textAlign: 'center'}}>
+                        {this.getErrorMessage()}
+                    </Text>
             }
             <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center', marginTop: 5, marginBottom: 0}}>
                     {`Total Miles : ${milesRenderString(this.totalMilesFromOdometerInput())} Mi`}
@@ -86,7 +143,7 @@ export default class AddOrEditMilesModal extends Component {
                     title={'Total Miles'}
                     editable={!(this.state.odometerStart && this.state.odometerEnd)}
                     containerWidth={60}
-                    keyboardType={'numeric'}
+                    keyboardType={'decimal-pad'}
                     titleStyle={{...styles.inputTitleStyle, fontSize: 10}}
                     onChangeText={(text) => this.setState({totalMiles: text})}
                     value={this.state.totalMiles}
@@ -135,8 +192,7 @@ export default class AddOrEditMilesModal extends Component {
                     }}
                     title='Save'
                     onPress={() => {
-                        this.saveMilesData();
-                        this.props.dismissMilesModal();
+                        this.handleSaveClick();
                     }}
                     textStyle={{
                         fontFamily: PrimaryFontFamily,
