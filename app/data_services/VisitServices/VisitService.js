@@ -80,6 +80,10 @@ export class VisitService {
         return UserDataService.getCurrentUserProps().userID === visit.user.userID;
     }
 
+    getVisitsByIDs(visitIDs) {
+        return this.visitRealmService.getVisitsByIDs(visitIDs);
+    }
+
     getVisitsByEpisodeID(episodeID) {
         if (!episodeID) {
             throw new Error('requested visits for empty episodeID');
@@ -445,13 +449,17 @@ export class VisitService {
     }
 
     generateReportAndSubmitVisits = (visitIDs) => {
-        const visits = this.visitRealmService.getVisitsByIDs(visitIDs);
+        const visits = this.getVisitsByIDs(visitIDs);
         const report = this.reportService.generateReportForVisits(visits);
         getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
     }
 
     markReportAccepted = (reportID) => {
         this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
+    }
+
+    deleteReportAndItems = (reportID) => {
+        this.reportService.deleteReportAndItemsByReportID(reportID);
     }
 
 }

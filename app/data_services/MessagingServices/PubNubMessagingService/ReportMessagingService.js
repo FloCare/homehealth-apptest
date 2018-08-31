@@ -2,6 +2,8 @@ import {NetInfo} from 'react-native';
 import {BaseMessagingService} from './BaseMessagingService';
 import {pushReportInformation} from '../../../utils/API/ReportAPI';
 import {VisitService} from '../../VisitServices/VisitService';
+import {EpisodeMessagingService} from './EpisodeMessagingService';
+import {getMessagingServiceInstance} from './MessagingServiceCoordinator';
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -25,9 +27,7 @@ export class ReportMessagingService extends BaseMessagingService {
     }
 
     _getFlatReportPayload(report) {
-        const reportItems = Object.values(report.reportItems);
-        console.log('report item in flat payload');
-        console.log(reportItems);
+        const reportItems = report.reportItemsList;
         return {
             reportID: report.reportID,
             reportItems: reportItems.map(reportItem => ({
@@ -65,7 +65,25 @@ export class ReportMessagingService extends BaseMessagingService {
                     serverResponse = await pushReportInformation(report);
                     if (serverResponse.ok) {
                         VisitService.getInstance().markReportAccepted(report.reportID);
+                    } else if (serverResponse.status === 400) {
+                        try {
+                            serverResponse.json().then(response => {
+                                const missingVisitIDs = response.missingVisitIDs;
+                                console.log('missingVisitIDs');
+                                console.log(missingVisitIDs);
+                                if (missingVisitIDs) {
+                                    const visits = VisitService.getInstance().getVisitsByIDs(missingVisitIDs);
+                                    getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitCreateBulk(visits);
+                                 }
+                            });
+                        } catch (e) {
+                            console.log('Failed to parse server failure response');
+                        }
+                        VisitService.getInstance().deleteReportAndItems(report.reportID);
+                    //    TODO Show notification
                     } else {
+                        console.log('server response');
+                        console.log(serverResponse);
                         throw new Error('Error sending report to backend');
                     }
                     break;

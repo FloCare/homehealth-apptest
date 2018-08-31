@@ -11,4 +11,8 @@ export class Report extends Realm.Object {
         return 'Report';
     }
 
+    get reportItemsList() {
+        return Object.values(this.reportItems);
+    }
+
 }

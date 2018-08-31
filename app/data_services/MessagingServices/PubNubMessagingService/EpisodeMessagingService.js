@@ -167,7 +167,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     async _publishToServer(jobID, payload) {
-        console.log(`publish job here${payload}`);
+        console.log('publish job here');
+        console.log(payload);
         const {action, visits} = payload;
         let serverResponse;
         try {
@@ -244,11 +245,15 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitCreate(visit) {
-        if (!this.isVisitOfCommonInterest(visit)) { return; }
+        this.publishVisitCreateBulk([visit]);
+    }
+
+    publishVisitCreateBulk(visits) {
+        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit));
 
         this._createPublishToServerJob({
             action: 'CREATE',
-            visits: [this._getFlatVisitPayload(visit)]
+            visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
         });
     }
 

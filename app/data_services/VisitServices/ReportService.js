@@ -43,6 +43,19 @@ export class ReportService {
         });
     }
 
+    getReportByID(reportID) {
+        return this.floDB.objectForPrimaryKey(Report, reportID);
+    }
+
+    deleteReportAndItemsByReportID(reportID) {
+        const report = this.getReportByID(reportID);
+        const reportItemsList = report.reportItemsList;
+        this.floDB.write(() => {
+            this.floDB.delete(report);
+            this.floDB.delete(reportItemsList);
+        });
+    }
+
     deleteReportItemByObject(reportItem) {
         this.floDB.delete(reportItem);
     }
