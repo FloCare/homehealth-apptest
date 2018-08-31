@@ -4,6 +4,8 @@ import {pushReportInformation} from '../../../utils/API/ReportAPI';
 import {VisitService} from '../../VisitServices/VisitService';
 import {EpisodeMessagingService} from './EpisodeMessagingService';
 import {getMessagingServiceInstance} from './MessagingServiceCoordinator';
+import { showNotification } from '../NotificationService'
+import { generateUUID } from '../../../utils/utils'
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -53,6 +55,11 @@ export class ReportMessagingService extends BaseMessagingService {
         });
     }
 
+    static showReportFailedNotification() {
+        const body = 'Sending report failed. Please try again later';
+        const notificationID = `${generateUUID()}_${Date.now()}`;
+        showNotification(body, {}, notificationID);
+    }
 
     async _publishReportToServer(jobID, payload) {
         console.log(`publish job here${payload}`);
@@ -80,7 +87,7 @@ export class ReportMessagingService extends BaseMessagingService {
                             console.log('Failed to parse server failure response');
                         }
                         VisitService.getInstance().deleteReportAndItems(report.reportID);
-                    //    TODO Show notification
+                        ReportMessagingService.showReportFailedNotification();
                     } else {
                         console.log('server response');
                         console.log(serverResponse);
