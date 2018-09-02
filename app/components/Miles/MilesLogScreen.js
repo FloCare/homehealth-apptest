@@ -18,21 +18,21 @@ export default class MilesLogScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            milesModalVisible: false
+            visitIDForMilesModal: null
         };
     }
 
     dismissEditMilesModal = () => {
-        this.setState({milesModalVisible: false});
+        this.setState({visitIDForMilesModal: null});
     }
 
-    showEditMilesModal = () => {
-        this.setState({milesModalVisible: true});
+    showEditMilesModalForVisitID = (visitID) => {
+        this.setState({visitIDForMilesModal: visitID});
     }
 
-    handleItemClick = () => {
+    handleItemClick = (visitID) => {
         if (this.props.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
-            this.showEditMilesModal();
+            this.showEditMilesModalForVisitID(visitID);
         }
     }
 
@@ -68,10 +68,10 @@ export default class MilesLogScreen extends Component {
 
                 <TouchableOpacity
                     style={{flex: 1}}
-                    onPress={() => { this.handleItemClick(); }}
+                    onPress={() => { this.handleItemClick(visit.visitID); }}
                 >
                     <Modal
-                        isVisible={this.state.milesModalVisible}
+                        isVisible={this.state.visitIDForMilesModal === visit.visitID}
                         onBackButtonPress={() => this.dismissEditMilesModal()}
                         avoidKeyboard
                         backdropOpacity={0.8}
