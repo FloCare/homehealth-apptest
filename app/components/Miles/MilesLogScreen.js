@@ -142,7 +142,7 @@ export default class MilesLogScreen extends Component {
                                 <Text style={styles.milesHeadingStyle}>
                                     Comments:
                                 </Text>
-                                <Text style={{...styles.milesDataStyle, fontSize: 11, marginLeft: 3}}>
+                                <Text style={{...styles.milesDataStyle, fontSize: 11, marginLeft: 3, flex: 1, flexWrap: 'wrap'}}>
                                     {visit.visitMiles.milesComments}
                                 </Text>
                             </View>
