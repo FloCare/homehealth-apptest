@@ -11,8 +11,6 @@ import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {grayColor, blackColor, styles} from './styles';
 import {milesRenderString} from '../../utils/renderFormatUtils';
-import {UserDataService} from '../../data_services/UserDataService';
-import {PatientDataService} from '../../data_services/PatientDataService';
 
 export default class AddOrEditMilesModal extends Component {
 
@@ -100,21 +98,6 @@ export default class AddOrEditMilesModal extends Component {
         });
     }
 
-    // TODO - Delete this when merging.
-    // TODO SHOULD NOT GO TO PRODUCTION
-    getErrorMessage = () => {
-        const firstName = UserDataService.getCurrentUserProps().firstName;
-        const lastName = UserDataService.getCurrentUserProps().lastName;
-        const email = UserDataService.getCurrentUserProps().email;
-        let errorMessage = 'End should not be greater than start';
-        if (email && email.includes('flocare.health')) {
-            console.log('email includes');
-            const name = PatientDataService.constructName(firstName, lastName);
-            errorMessage = `Dude WTF! ${name}. Check your eyes and save again`;
-        }
-        return errorMessage;
-    }
-
     renderOdometerInputSection = () => (
         <View>
             {
@@ -126,7 +109,7 @@ export default class AddOrEditMilesModal extends Component {
             {
                 this.state.showOdometerEndErrorMessage &&
                     <Text style={{color: ErrorMessageColor, fontSize: 10, textAlign: 'center'}}>
-                        {this.getErrorMessage()}
+                        End should not be greater than start
                     </Text>
             }
             <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center', marginTop: 5, marginBottom: 0}}>
