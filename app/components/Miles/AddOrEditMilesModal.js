@@ -112,7 +112,7 @@ export default class AddOrEditMilesModal extends Component {
                         End should be greater than start
                     </Text>
             }
-            <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center', marginTop: 5, marginBottom: 0}}>
+            <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center'}}>
                     {`Total Miles : ${milesRenderString(this.totalMilesFromOdometerInput())} Mi`}
             </Text>
         </View>

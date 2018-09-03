@@ -6,7 +6,7 @@ export class InputField extends Component {
     render() {
         return (
             <View
-                style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
+                style={{width: Dimensions.get('window').width * 0.7, marginVertical: 5}}
             >
                 <StyledText
                     style={{color: 'white', textAlign: 'left', ...this.props.titleStyle}}
@@ -28,7 +28,7 @@ export class InputField extends Component {
                     selectionColor={this.props.selectionColor || 'rgba(255,255,255,0.5)'}
                     underlineColorAndroid={'white'}
                     autoCorrect={false}
-                    style={{color: 'white', padding: 0, ...this.props.style}}
+                    style={{color: 'white', padding: 5, ...this.props.style}}
                     placeholderTextColor={this.props.placeholderTextColor || 'rgba(255,255,255,0.35)'}
                 />
             </View>
