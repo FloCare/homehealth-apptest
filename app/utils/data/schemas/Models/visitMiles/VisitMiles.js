@@ -7,7 +7,7 @@ export class VisitMiles extends Realm.Object {
     }
 
     static getMiles(odometerStart, odometerEnd) {
-        if (odometerStart && odometerEnd) {
+        if (typeof (odometerStart) === 'number' && typeof (odometerEnd) === 'number') {
             return odometerEnd - odometerStart;
         }
         return null;

@@ -17,9 +17,9 @@ export default class AddOrEditMilesModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            odometerStart: props.odometerStart ? milesRenderString(props.odometerStart) : null,
-            odometerEnd: props.odometerEnd ? milesRenderString(props.odometerEnd) : null,
-            totalMiles: props.totalMiles ? milesRenderString(props.totalMiles) : null,
+            odometerStart: typeof (props.odometerStart) === 'number' ? milesRenderString(props.odometerStart) : null,
+            odometerEnd: typeof (props.odometerEnd) === 'number' ? milesRenderString(props.odometerEnd) : null,
+            totalMiles: typeof (props.totalMiles) === 'number' ? milesRenderString(props.totalMiles) : null,
             comments: props.comments,
             showOdometerEndErrorMessage: false
         };
