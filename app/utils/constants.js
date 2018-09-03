@@ -2,7 +2,7 @@ import {Platform} from 'react-native';
 
 const PrimaryColor = '#45ceb1';
 const ErrorMessageColor = '#F51414';
-const TransparentPrimaryColor = (opacity) => 
+const TransparentPrimaryColor = (opacity) =>
     // Todo: Can use a method to convert PrimaryColor in hexcode 
     // Todo: to rgba
      `rgba(69, 206, 177, ${opacity})`;
@@ -56,6 +56,7 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
+    addTaskComponent: 'addTaskComponent',
     milesLogScreen: 'MilesLogScreen',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',

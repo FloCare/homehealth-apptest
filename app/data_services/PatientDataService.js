@@ -7,7 +7,7 @@ import {
     arrayToObjectByKey,
     filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
 } from '../utils/collectionUtils';
-import {eventNames, parameterValues} from '../utils/constants';
+import {eventNames} from '../utils/constants';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
 import {VisitService} from './VisitServices/VisitService';

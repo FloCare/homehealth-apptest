@@ -14,6 +14,7 @@ const CustomCheckBox = (props) => {
             checked={props.checked}
             label={''}
             checkboxStyle={props.checkBoxStyle}
+            disabled={props.disabled}
             containerStyle={{...checkBoxContainerStyle, ...props.checkBoxContainerStyle}}
             checkedImage={Images.tickMarkDone}
             uncheckedImage={Images.tickMarkNotDone}

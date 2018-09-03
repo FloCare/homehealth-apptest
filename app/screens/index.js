@@ -19,6 +19,7 @@ import {LegalScreen} from '../components/LegalScreen';
 import LockOnInactivity from '../components/common/LockOnInactivity';
 import {VisitDayViewScreen} from '../components/VisitDayViewScreen';
 import MilesLogScreenContainer from '../components/Miles/MilesLogScreenContainer';
+import {AddTaskComponent} from '../components/HomeScreen/AddTaskComponent';
 
 const RegisterScreens = (store, Provider) => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -59,6 +60,7 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.addStop, () => LockOnInactivity(AddStopScreenContainer));
     Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.addOrRescheduleVisitsLightBox, () => LockOnInactivity(AddOrRescheduleVisitsLightBox));
+    Navigation.registerComponent(screenNames.addTaskComponent, () => LockOnInactivity(AddTaskComponent));
     Navigation.registerComponent(screenNames.milesLogScreen, () => LockOnInactivity(MilesLogScreenContainer));
 };
 

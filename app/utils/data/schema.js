@@ -1,5 +1,4 @@
 import moment from 'moment/moment';
-import {Alert} from 'react-native';
 import {todayMomentInUTCMidnight} from '../utils';
 import {stringToArrayBuffer} from '../encryptionUtils';
 import * as Migrations from './schemas/migrations/MigrationsIndex';
@@ -11,6 +10,10 @@ import {User} from './schemas/Models/user/User';
 import {Visit} from './schemas/Models/visit/Visit';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
 import {Physician} from './schemas/Models/physician/Physician';
+import {Task} from './schemas/Models/task/Task';
+import {VisitMiles} from './schemas/Models/visitMiles/VisitMiles';
+import {ReportItem} from './schemas/Models/reportItem/ReportItem';
+import {Report} from './schemas/Models/report/Report';
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
@@ -19,6 +22,7 @@ import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
 import * as PhysicianSchemas from './schemas/Models/physician/schemaVersions/SchemaIndex';
+import * as TaskSchemas from './schemas/Models/task/schemaVersions/SchemaIndex';
 import * as VisitMilesSchemas from './schemas/Models/visitMiles/schemaVersions/SchemaIndex';
 import * as ReportItemSchemas from './schemas/Models/reportItem/schemaVersions/SchemaIndex';
 import * as ReportSchemas from './schemas/Models/report/schemaVersions/SchemaIndex';
@@ -27,9 +31,6 @@ import {UserDataService} from '../../data_services/UserDataService';
 import {getPatientsByOldID} from '../API/PatientAPI';
 import {arrayToObjectByKey} from '../collectionUtils';
 import {setItem} from '../InMemoryStore';
-import {VisitMiles} from './schemas/Models/visitMiles/VisitMiles';
-import {ReportItem} from './schemas/Models/reportItem/ReportItem';
-import {Report} from './schemas/Models/report/Report';
 
 const Realm = require('realm');
 
@@ -162,7 +163,7 @@ class FloDBProvider {
                 schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
                     UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
-                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1],
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1],
                 schemaVersion: 8,
                 migration: Migrations.v008,
                 path: 'database.realm',
@@ -172,7 +173,7 @@ class FloDBProvider {
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
         const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User,
-            Physician, VisitMiles, ReportItem, Report];
+            Physician, VisitMiles, ReportItem, Report, Task];
 
         let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (existingSchemaVersion >= 0) {
@@ -314,5 +315,5 @@ function CreateAndSaveDummies() {
 
 export {
     FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
-    VisitOrder, User, Physician, CreateAndSaveDummies, VisitMiles, Report, ReportItem
+    VisitOrder, User, Physician, VisitMiles, Report, ReportItem, Task, CreateAndSaveDummies
 };
