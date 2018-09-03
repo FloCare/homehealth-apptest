@@ -162,6 +162,7 @@ class SortedVisitListContainer extends Component {
                 sortingEnabled={this.props.sortingEnabled}
                 onChangeOrder={this.onOrderChange}
                 onReleaseRow={this.onReleaseRow}
+                keyboardShouldPersistTaps={this.props.keyboardShouldPersistTaps}
             />
         );
     }

@@ -104,4 +104,6 @@ const ParseGooglePlacesAPIResponse = (data, details) => {
     return response;
 };
 
-export {ParseGooglePlacesAPIResponse};
+const stringToFloat = (value) => (value ? parseFloat(value) : null);
+
+export {ParseGooglePlacesAPIResponse, stringToFloat};

@@ -1,7 +1,8 @@
 import {Platform} from 'react-native';
 
 const PrimaryColor = '#45ceb1';
-const TransparentPrimaryColor = (opacity) => 
+const ErrorMessageColor = '#F51414';
+const TransparentPrimaryColor = (opacity) =>
     // Todo: Can use a method to convert PrimaryColor in hexcode 
     // Todo: to rgba
      `rgba(69, 206, 177, ${opacity})`;
@@ -56,6 +57,7 @@ const screenNames = {
     addVisitScreen: 'AddVisitScreen',
     addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
     addTaskComponent: 'addTaskComponent',
+    milesLogScreen: 'MilesLogScreen',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
     visitDayViewScreen: 'VisitDayViewScreen',
@@ -106,6 +108,9 @@ const eventNames = {
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
     COLLABORATION: 'Collaboration',
+    ADD_EDIT_MILES: 'AddOrEditMiles',
+    SEND_REPORT: 'SendReport',
+    SEND_REPORT_RESPONSE: 'SendReportResponse',
 };
 
 const parameterValues = {
@@ -166,9 +171,9 @@ export const pubnubSubKey = 'pubnubSubKey';
 export const instabugKey = 'instabugKey';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
-export const apiServerURL = 'https://app-9707.on-aptible.com';
+export const apiServerURL = 'https://app-11293.on-aptible.com';
 
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
-    screenNames, visitType, PrimaryColor, TransparentPrimaryColor,
+    screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
     PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects};

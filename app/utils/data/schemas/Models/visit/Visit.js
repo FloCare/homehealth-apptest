@@ -71,4 +71,20 @@ export class Visit extends Realm.Object {
         }
         return false;
     }
+
+    getReportStatus() {
+        if (this.reportItems.length > 0) {
+            const report = this.reportItems[0].getReport();
+            return report ? report.status : null;
+        }
+        return null;
+    }
+
+    getReportItem() {
+        if (this.reportItems.length > 0) {
+            return this.reportItems[0];
+        }
+        return null;
+    }
+
 }

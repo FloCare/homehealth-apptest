@@ -65,4 +65,12 @@ export class Address extends Realm.Object {
             (this.longitude !== null)
         ));
     }
+
+    static minifiedAddress = (addressString) => {
+        const maxAddressCharacters = 17;
+        if (addressString.length > maxAddressCharacters) {
+            return `${addressString.substr(0, maxAddressCharacters)}...`;
+        }
+        return addressString;
+    }
 }

@@ -173,7 +173,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     async _publishToServer(jobID, payload) {
-        console.log(`publish job here${payload}`);
+        console.log('publish job here');
+        console.log(payload);
         const {action, visits} = payload;
         let serverResponse;
         try {
@@ -219,13 +220,23 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     _getFlatVisitPayload(visit) {
-        return {
+        const flatVisit = {
             visitID: visit.visitID,
             episodeID: visit.getEpisode().episodeID,
             midnightEpochOfVisit: visit.midnightEpochOfVisit,
             isDone: visit.isDone,
-            plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined
+            plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined,
         };
+        if (VisitService.isVisitOwn(visit)) {
+            const visitMiles = visit.visitMiles;
+            flatVisit.visitMiles = {
+                odometerStart: visitMiles.odometerStart,
+                odometerEnd: visitMiles.odometerEnd,
+                totalMiles: visitMiles.totalMiles,
+                milesComments: visitMiles.milesComments
+            };
+        }
+        return flatVisit;
     }
 
     isVisitOfCommonInterest(visit) {
@@ -240,11 +251,15 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitCreate(visit) {
-        if (!this.isVisitOfCommonInterest(visit)) { return; }
+        this.publishVisitCreateBulk([visit]);
+    }
+
+    publishVisitCreateBulk(visits) {
+        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit));
 
         this._createPublishToServerJob({
             action: 'CREATE',
-            visits: [this._getFlatVisitPayload(visit)]
+            visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
         });
     }
 

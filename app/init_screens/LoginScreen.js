@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {TextInput, View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView, AsyncStorage} from 'react-native';
+import {View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView, AsyncStorage, TextInput} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import RNSecureKeyStore from 'react-native-secure-key-store';

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Image} from 'react-native';
+import {View} from 'react-native';
 import {Divider, List, ListItem} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {BugReporting} from 'instabug-reactnative';
@@ -16,7 +16,17 @@ const list = navigator => [
     {
         icon: Images.milesLog,
         title: 'Miles Log',
-        disabled: true
+        disabled: false,
+        onPress: () => navigator.push({
+            screen: screenNames.milesLogScreen,
+            animated: true,
+            animationType: 'slide-horizontal',
+            title: 'Miles Log',
+            navigatorStyle: {
+                tabBarHidden: true,
+                largeTitle: false,
+            }
+        })
     },
     {
         icon: Images.savedPlaces,

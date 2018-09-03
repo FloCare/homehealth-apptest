@@ -18,6 +18,7 @@ import {MoreScreen} from '../components/MoreScreen/MoreScreen';
 import {LegalScreen} from '../components/LegalScreen';
 import LockOnInactivity from '../components/common/LockOnInactivity';
 import {VisitDayViewScreen} from '../components/VisitDayViewScreen';
+import MilesLogScreenContainer from '../components/Miles/MilesLogScreenContainer';
 import {AddTaskComponent} from '../components/HomeScreen/AddTaskComponent';
 
 const RegisterScreens = (store, Provider) => {
@@ -60,6 +61,7 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.stopList, () => LockOnInactivity(StopListScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.addOrRescheduleVisitsLightBox, () => LockOnInactivity(AddOrRescheduleVisitsLightBox));
     Navigation.registerComponent(screenNames.addTaskComponent, () => LockOnInactivity(AddTaskComponent));
+    Navigation.registerComponent(screenNames.milesLogScreen, () => LockOnInactivity(MilesLogScreenContainer));
 };
 
 export {RegisterScreens};

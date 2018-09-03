@@ -1,5 +1,11 @@
 import firebase from 'react-native-firebase';
-import {Patient, Visit, VisitOrder, Place} from '../../utils/data/schema';
+import {
+    Patient,
+    Visit,
+    VisitOrder,
+    Place,
+    Report,
+} from '../../utils/data/schema';
 import {arrayToObjectByKey, arrayToObjectListByKey} from '../../utils/collectionUtils';
 import {generateUUID, todayMomentInUTCMidnight} from '../../utils/utils';
 import {eventNames, parameterValues} from '../../utils/constants';
@@ -10,6 +16,11 @@ import {EpisodeMessagingService} from '../MessagingServices/PubNubMessagingServi
 import {UserDataService} from '../UserDataService';
 import {getAllMyVisits, getVisitsByID} from '../../utils/API/VisitAPI';
 import {EpisodeDataService} from '../EpisodeDataService';
+import {stringToFloat} from '../../utils/parsingUtils';
+import {ReportService} from './ReportService';
+import {VisitMilesService} from './VisitMilesService';
+import {ReportMessagingService} from '../MessagingServices/PubNubMessagingService/ReportMessagingService';
+import {getReportDetailsByIds} from '../../utils/API/ReportAPI';
 
 export class VisitService {
     static visitService;
@@ -30,7 +41,7 @@ export class VisitService {
         const isPatientVisit = visit.getPatient() !== undefined;
 
         // if (!isPatientVisit && !visit.getPlace()) { console.log('break'); console.log(visit.getEpisode()); console.log(visit.getEpisode().patient[0]); }
-        return {
+        const flatVisit = {
             visitID: visit.visitID,
             patientID: isPatientVisit ? visit.getPatient().patientID : null,
             episodeID: isPatientVisit ? visit.episode[0].episodeID : null,
@@ -40,6 +51,16 @@ export class VisitService {
             isDone: visit.isDone,
             isPatientVisit
         };
+        if (VisitService.isVisitOwn(visit)) {
+            const visitMiles = visit.visitMiles;
+            flatVisit.visitMiles = {
+                odometerStart: visitMiles.odometerStart,
+                odometerEnd: visitMiles.odometerEnd,
+                totalMiles: visitMiles.totalMiles,
+                milesComments: visitMiles.milesComments
+            };
+        }
+        return flatVisit;
     }
 
     static getFlatVisitMap(visits) {
@@ -51,10 +72,16 @@ export class VisitService {
 
         this.visitRealmService = VisitRealmService.initialiseService(floDB);
         this.visitReduxService = VisitReduxService.initialiseService(store);
+        this.reportService = ReportService.initialiseService(floDB);
+        this.visitMilesService = VisitMilesService.initialiseService(floDB);
     }
 
-    isVisitOwn(visit) {
+    static isVisitOwn(visit) {
         return UserDataService.getCurrentUserProps().userID === visit.user.userID;
+    }
+
+    getVisitsByIDs(visitIDs) {
+        return this.visitRealmService.getVisitsByIDs(visitIDs);
     }
 
     getVisitsByEpisodeID(episodeID) {
@@ -170,18 +197,30 @@ export class VisitService {
 
     fetchAndSaveMyVisitsFromServer() {
         return getAllMyVisits().then(visits => {
-            const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
-            console.log(visitByMidnight);
-            Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
-                const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
-                if (daysVisits && daysVisits.length > 0) {
-                    const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
-                    this.floDB.write(() => {
-                        visitOrder.visitList = daysVisits;
-                        // console.log(`midnight ${midnightEpochOfVisit}`);
-                        // console.log(this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit)));
+            const reportIDs = visits.map(visit => visit.reportID).filter(reportID => reportID);
+            const uniqueReportIDs = [...new Set(reportIDs)];
+            getReportDetailsByIds(uniqueReportIDs).then(reportsJSONData => {
+                const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
+                Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
+                    const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
+                    if (daysVisits && daysVisits.length > 0) {
+                        const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
+                        this.floDB.write(() => {
+                            visitOrder.visitList = daysVisits;
+                        });
+                    }
+                });
+                this.floDB.write(() => {
+                    reportsJSONData.forEach(reportData => {
+                        const reportObject = this.reportService.createReport(reportData.id, Report.reportStateEnum.ACCEPTED);
+                        reportObject.reportItems = reportData.reportItems.map(
+                            reportItemData => (this.reportService.createReportItem(
+                                reportItemData.reportItemId,
+                                this.visitRealmService.getVisitByID(reportItemData.visitID
+                            )))
+                        );
                     });
-                }
+                });
             });
         }).catch(error => {
             console.log('error in fetching all preexisting visits');
@@ -216,13 +255,21 @@ export class VisitService {
         if (visitJson.plannedStartTime) {
             visitJson.plannedStartTime = new Date(visitJson.plannedStartTime);
         }
-        // console.log('saving visit');
-        // console.log(visitJson);
         this.floDB.write(() => {
             const user = UserDataService.getInstance().getUserByID(visitJson.userID);
             if (!user) throw new Error(`no user found for visit being saved: ${visitJson.userID}`);
             visit = this.floDB.create(Visit, visitJson, update);
             visit.user = user;
+            if (VisitService.isVisitOwn(visit)) {
+                const visitMiles = visitJson.visitMiles;
+                const visitMilesData = {
+                    odometerStart: visitMiles ? visitMiles.odometerStart : null,
+                    odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
+                    totalMiles: visitMiles ? visitMiles.totalMiles : null,
+                    milesComments: visitMiles ? visitMiles.milesComments : null,
+                };
+                this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
+            }
         });
         // console.log('visitsaved');
         if (!update) {
@@ -240,6 +287,15 @@ export class VisitService {
                     user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
                     midnightEpochOfVisit: midnightEpoch
                 });
+                if (VisitService.isVisitOwn(visit)) {
+                    const visitMilesData = {
+                        odometerStart: null,
+                        odometerEnd: null,
+                        totalMiles: null,
+                        milesComments: null
+                    };
+                    this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
+                }
                 newVisits.push(visit);
                 if (visitSubject instanceof Patient) {
                     visitSubject.episodes[0].visits.push(visit);
@@ -269,8 +325,17 @@ export class VisitService {
         const visitTimeEpoch = visit.midnightEpochOfVisit;
 
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes([visit]);
+        this.floDB.write(() => {
+            if (VisitService.isVisitOwn(visit)) {
+                this.visitMilesService.deleteVisitMilesByObject(visit.visitMiles);
+            }
+            const reportItem = visit.getReportItem();
+            if (reportItem) {
+                this.reportService.deleteReportItemByObject(reportItem);
+            }
+            this.visitRealmService.deleteVisitByObject(visit);
+        });
 
-        this.visitRealmService.deleteVisitByObject(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
@@ -284,6 +349,31 @@ export class VisitService {
             return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
         }
         throw new Error('requested visits for unrecognised entity');
+    }
+
+    subscribeToSubmittedVisits(callbackFunction) {
+        const userVisits = this.visitRealmService.getCurrentUserVisits();
+        const reportedVisits = this.reportService.filterReportedVisits(userVisits);
+        const visitsResult = this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
+        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
+        visitsResult.addListener(realmListener);
+        return {
+            currentData: visitsResult,
+            unsubscribe: () => visitsResult.removeListener(realmListener),
+        };
+    }
+
+    subscribeToActiveVisits(callbackFunction) {
+        const doneUserVisits = this.visitRealmService.getDoneUserVisits();
+        const milesActiveVisits = this.visitMilesService.filterMilesInformationCompleteVisits(doneUserVisits);
+        const nonReportedVisits = this.reportService.filterNonReportedVisits(milesActiveVisits);
+        const visitsResult = this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
+        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
+        visitsResult.addListener(realmListener);
+        return {
+            currentData: visitsResult,
+            unsubscribe: () => visitsResult.removeListener(realmListener),
+        };
     }
 
     //only use for other user's unassign
@@ -324,6 +414,15 @@ export class VisitService {
         }
         const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.write(() => {
+            visits.forEach(visit => {
+                if (VisitService.isVisitOwn(visit)) {
+                    this.visitMilesService.deleteVisitMilesByObject(visit.visitMiles);
+                }
+                const reportItem = visit.getReportItem();
+                if (reportItem) {
+                    this.reportService.deleteReportItemByObject(reportItem);
+                }
+            });
             this.floDB.delete(visits);
         });
 
@@ -343,6 +442,40 @@ export class VisitService {
         this.visitReduxService.updateVisitPropertyInRedux(visitID, 'plannedStartTime', startTime);
 
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
+    }
+
+    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, totalMiles, milesComments) {
+        const visit = this.visitRealmService.getVisitByID(visitID);
+        this.visitRealmService.updateMilesDataByVisitObject(
+            visit,
+            stringToFloat(odometerStart),
+            stringToFloat(odometerEnd),
+            stringToFloat(totalMiles),
+            milesComments
+        );
+
+        this.visitReduxService.updateVisitToRedux(visit);
+        //TODO Remove this. As others don't care about this.
+        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
+    }
+
+    generateReportAndSubmitVisits = (visitIDs) => {
+        const visits = this.getVisitsByIDs(visitIDs);
+        const report = this.reportService.generateReportForVisits(visits);
+        const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
+        firebase.analytics().logEvent(eventNames.SEND_REPORT, {
+            VALUE: totalMiles,
+            NO_OF_VISITS: visits.length
+        });
+        getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
+    }
+
+    markReportAccepted = (reportID) => {
+        this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
+    }
+
+    deleteReportAndItems = (reportID) => {
+        this.reportService.deleteReportAndItemsByReportID(reportID);
     }
 
 }

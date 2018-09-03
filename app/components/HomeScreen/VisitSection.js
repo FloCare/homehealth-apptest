@@ -215,10 +215,11 @@ function visitSummary(props) {
 
 function cardArea(props) {
     if (props.dateMinusToday === 0 && props.remainingVisitsCount > 0) {
+        const showDetailedMilesView = true;
         const VisitCard = VisitCardGenerator({
             onDoneTogglePress: (visitID) => VisitService.getInstance().toggleVisitDone(visitID),
             navigator: props.navigator
-        }, false, false);
+        }, false, false, showDetailedMilesView);
 
         return (<View style={{alignItems: 'center'}}>
             <StyledText style={{fontSize: 12, color: '#999999', marginVertical: 5}}>

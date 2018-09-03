@@ -10,20 +10,26 @@ import {
     TouchableOpacity, Alert, Dimensions,
 } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import Modal from 'react-native-modal';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import ActionSheet from 'react-native-actionsheet';
 import moment from 'moment/moment';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {
+    ErrorMessageColor,
     eventNames,
-    parameterValues,
+    parameterValues, PrimaryColor,
     PrimaryFontFamily, screenNames, visitSubjects,
 } from '../../utils/constants';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {EpisodeDataService} from '../../data_services/EpisodeDataService';
 import {navigateTo} from '../../utils/MapUtils';
+import AddOrEditMilesModal from '../Miles/AddOrEditMilesModal';
+import {milesRenderString} from '../../utils/renderFormatUtils';
+import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles';
+import {Address} from '../../utils/data/schemas/Models/address/Address';
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
@@ -33,7 +39,12 @@ const mapStateToProps = (state, ownProps) => {
         visitID: visit.visitID,
         isDone: visit.isDone,
         episodeID: visit.episodeID,
-        midnightEpochOfVisit: visit.midnightEpochOfVisit
+        midnightEpochOfVisit: visit.midnightEpochOfVisit,
+        // miles related information
+        odometerStart: visit.visitMiles.odometerStart,
+        odometerEnd: visit.visitMiles.odometerEnd,
+        totalMiles: visit.visitMiles.totalMiles,
+        milesComments: visit.visitMiles.milesComments
     };
 
     let visitSubject;
@@ -41,6 +52,7 @@ const mapStateToProps = (state, ownProps) => {
         const patientID = visit.patientID;
         visitSubject = state.patients[patientID];
         props.patientID = visit.patientID;
+        props.isLocalPatient = visitSubject.isLocallyOwned;
         props.visitSubject = visitSubjects.PATIENT;
     } else {
         const placeID = visit.placeID;
@@ -66,12 +78,15 @@ const mapStateToProps = (state, ownProps) => {
 const cardActions = {
     call: 'Call Patient',
     goToAddress: 'Go To Address',
+    addOrEditMiles: 'Add/Edit Miles',
     reschedule: 'Reschedule Visit',
     deleteVisit: 'Delete Visit',
     cancel: 'Cancel'
 };
 
-function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true) {
+const cardBorderColor = '#E9E9E7';
+
+function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, showCheckBoxLine = true, showDetailedMilesView = false) {
     class RenderRow extends PureComponent {
 
         static numberOfCliniciansInRow = 2;
@@ -89,6 +104,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
             this.state = {
                 isTimePickerVisible: false,
+                milesModalVisible: false,
                 visitTime: this.props.visitTime,
                 modalVisible: false,
                 clinicianVisitData: this.visitDataSubscriber ? this.visitDataSubscriber.currentData : null
@@ -127,6 +143,10 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                     oldVisitId: this.props.visitID
                 },
             });
+        }
+
+        onPressAddOrEditMiles = () => {
+            this.setState({milesModalVisible: true});
         }
 
         // Time Picker related Functions
@@ -238,6 +258,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 cardActionsMap.push({index, title: cardActions.goToAddress});
                 index++;
             }
+            if (this.isMilesEnabled()) {
+                cardActionsMap.push({index: index++, title: cardActions.addOrEditMiles});
+            }
             cardActionsMap.push({index: index++, title: cardActions.reschedule});
             cardActionsMap.push({index: index++, title: cardActions.deleteVisit});
             cardActionsMap.push({index: index++, title: 'Cancel'});
@@ -269,6 +292,9 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         navigateTo(this.props.coordinates.latitude, this.props.coordinates.longitude, this.props.formattedAddress);
                     }
                     break;
+                case cardActions.addOrEditMiles:
+                    this.onPressAddOrEditMiles();
+                    break;
                 case cardActions.reschedule:
                     firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
                         type: parameterValues.RESCHEDULE
@@ -284,14 +310,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 default:
                     break;
             }
-        }
-
-        minifiedAddress = (addressString) => {
-            const maxAddressCharacters = 20;
-            if (addressString.length > maxAddressCharacters) {
-                return `${addressString.substr(0, maxAddressCharacters)}...`;
-            }
-            return addressString;
         }
 
         showCardActions = () => {
@@ -384,6 +402,130 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             this.setState({clinicianVisitData});
         }
 
+        // Miles Section
+
+        isMilesEnabled = () => {
+            const isPlaceVisit = this.props.visitSubject === visitSubjects.PLACE;
+            const isLocalPatient = this.props.isLocalPatient;
+            return !(isPlaceVisit || isLocalPatient);
+        }
+
+        dismissMilesModal = () => {
+            this.setState({milesModalVisible: false});
+        }
+
+        getOdometerDataComponent = (odometerValue) => (
+            typeof (odometerValue) === 'number' ?
+                (
+                    <Text style={styles.milesDataStyle}>
+                        {milesRenderString(odometerValue)}
+                    </Text>
+                )
+                :
+                (
+                    <Text style={{...styles.milesDataStyle, color: ErrorMessageColor}}>
+                        {'____'}
+                    </Text>
+                )
+        );
+
+        getMilesTravelledComponentInDetailedView = (totalMiles) => {
+            if (totalMiles) {
+                return (
+                    <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 15}}>
+                        <Text style={{...styles.milesDataStyle, fontSize: 15}}>
+                            {milesRenderString(totalMiles)}
+                        </Text>
+                        <Text style={styles.milesDataStyle}>
+                            {' mi'}
+                        </Text>
+                    </View>
+                );
+            }
+            return (
+                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 15}}>
+                    <Text style={{...styles.milesDataStyle, color: ErrorMessageColor}}>
+                        {' _____ mi'}
+                    </Text>
+                </View>
+            );
+        }
+
+        renderAddMilesButton = () => (
+            <TouchableOpacity
+                style={{marginTop: 8, marginBottom: 8, alignItems: 'center'}}
+                onPress={this.onPressAddOrEditMiles}
+            >
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Image source={Images.plus} style={{height: 9, width: 9, marginRight: 5}} />
+                    <Text
+                        style={{fontSize: 16, color: PrimaryColor, fontFamily: PrimaryFontFamily}}
+                    >
+                        {'Add Miles'}
+                    </Text>
+                </View>
+
+            </TouchableOpacity>
+        )
+
+        renderDetailedMilesView = () => {
+            const {odometerStart, odometerEnd} = this.props;
+            if (!odometerStart && !odometerEnd) {
+                return this.renderAddMilesButton();
+            }
+            return (
+                <View style={{marginLeft: 10, marginBottom: 5, marginTop: 5}}>
+                    <Text style={styles.milesHeadingStyle}>
+                        Odometer Reading
+                    </Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <View style={{flexDirection: 'row', marginTop: 5}}>
+                            <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 10}}>
+                                <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
+                                    {'Start: '}
+                                </Text>
+                                {this.getOdometerDataComponent(odometerStart, 'start')}
+                            </View>
+                            <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 10}}>
+                                <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
+                                    {'End '}
+                                </Text>
+                                {this.getOdometerDataComponent(odometerEnd, 'end')}
+                            </View>
+                        </View>
+                        {
+                            this.getMilesTravelledComponentInDetailedView(VisitMiles.getMiles(odometerStart, odometerEnd))
+                        }
+                    </View>
+                </View>
+            );
+        }
+
+        // Shows up below three dots button
+        renderMiniMilesSummary = () => {
+            const {odometerStart, odometerEnd} = this.props;
+            const milesTravelled = VisitMiles.getMiles(odometerStart, odometerEnd);
+            const milesSection = milesTravelled ?
+                (
+                    <Text style={{...styles.milesDataStyle, fontSize: 10}}>
+                        {`${milesRenderString(milesTravelled)} Mi`}
+                    </Text>
+                )
+                :
+                (
+                    <Text style={{...styles.milesDataStyle, fontSize: 10, color: ErrorMessageColor}}>
+                        {'__ Mi'}
+                    </Text>
+                );
+            return (
+                <View>
+                    {
+                        milesSection
+                    }
+                </View>
+            );
+        };
+
         render() {
             console.log('- - - - - - VisitCard Render- - - - - - - - ');
             const safeOnDoneTogglePress = () => {
@@ -414,41 +556,80 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             this.props.cardStyle,
                             this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
                             this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
-                            {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
+                            {flex: 8, marginTop: 2, marginBottom: 2}
                         ]}
                     >
+                        <View style={{flexDirection: 'row'}}>
                             {
                                 this.renderDatePickerComponent()
                             }
-                        <View style={{flex: 8, flexDirection: 'row', borderLeftColor: '#E9E9E7', borderLeftWidth: 1}}>
-                            <View style={{margin: 10, flex: 1}}>
-                                <Text style={styles.nameStyle}>{this.props.name}</Text>
-                                <View style={{flexDirection: 'row', marginTop: 2}}>
-                                    <Image source={Images.location} style={{marginRight: 8}} />
-                                    <Text style={styles.addressStyle}>
-                                        {this.minifiedAddress(this.props.formattedAddress)}
-                                    </Text>
-                                </View>
-                                {
-                                    this.renderClinicianVisitData(this.state.clinicianVisitData)
-                                }
-                            </View>
-                            <View style={{width: 40}}>
-                                <TouchableOpacity
-                                    onPress={() => { this.showCardActions(); }}
-                                >
-                                    <View style={{alignItems: 'center', margin: 10}}>
-                                        <Image source={Images.dots} />
+                            <View style={{flex: 8, flexDirection: 'row', borderLeftColor: cardBorderColor, borderLeftWidth: 1}}>
+                                <View style={{margin: 10, flex: 1}}>
+                                    <Text style={{...styles.nameStyle, fontSize: 15}}>{this.props.name}</Text>
+                                    <View style={{flexDirection: 'row', marginTop: 2}}>
+                                        <Image source={Images.location} style={{marginRight: 8}} />
+                                        <Text style={styles.addressStyle}>
+                                            {Address.minifiedAddress(this.props.formattedAddress)}
+                                        </Text>
                                     </View>
-                                    <ActionSheet
-                                        ref={element => { this.cardActionSheet = element; }}
-                                        options={this.cardActions.map((action) => action.title)}
-                                        cancelButtonIndex={this.cardActions.length - 1}
-                                        onPress={(index) => { this.handleCardActionPress(index); }}
-                                    />
-                                </TouchableOpacity>
+                                    {
+                                        this.renderClinicianVisitData(this.state.clinicianVisitData)
+                                    }
+                                </View>
+                                <View style={{width: 40}}>
+                                    <TouchableOpacity
+                                        onPress={() => { this.showCardActions(); }}
+                                    >
+                                        <View style={{alignItems: 'center', margin: 10}}>
+                                            <Image source={Images.dots} />
+                                        </View>
+                                        <ActionSheet
+                                            ref={element => { this.cardActionSheet = element; }}
+                                            options={this.cardActions.map((action) => action.title)}
+                                            cancelButtonIndex={this.cardActions.length - 1}
+                                            onPress={(index) => { this.handleCardActionPress(index); }}
+                                        />
+                                    </TouchableOpacity>
+                                    {
+                                        this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
+                                        <View>
+                                            {
+                                                this.renderMiniMilesSummary()
+                                            }
+                                        </View>
+                                    }
+
+                                </View>
                             </View>
                         </View>
+                        {
+                            this.isMilesEnabled() &&
+                            <View style={{borderTopColor: cardBorderColor, borderTopWidth: 1}}>
+                                <TouchableOpacity
+                                    onPress={() => { this.onPressAddOrEditMiles(); }}
+                                >
+                                    <Modal
+                                        isVisible={this.state.milesModalVisible}
+                                        onBackButtonPress={() => this.dismissMilesModal()}
+                                        avoidKeyboard
+                                        backdropOpacity={0.8}
+                                    >
+                                        <AddOrEditMilesModal
+                                            name={this.props.name}
+                                            visitID={this.props.visitID}
+                                            odometerStart={this.props.odometerStart}
+                                            odometerEnd={this.props.odometerEnd}
+                                            totalMiles={this.props.totalMiles}
+                                            comments={this.props.milesComments}
+                                            dismissMilesModal={this.dismissMilesModal}
+                                        />
+                                    </Modal>
+                                    {
+                                        showDetailedMilesView && this.renderDetailedMilesView()
+                                    }
+                                </TouchableOpacity>
+                            </View>
+                        }
                     </View>
                 </View>
             );

@@ -1,4 +1,3 @@
-import moment from 'moment/moment';
 import React, {Component} from 'react';
 import {View, Image, TouchableHighlight, Dimensions} from 'react-native';
 import firebase from 'react-native-firebase';

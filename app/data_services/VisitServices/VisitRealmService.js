@@ -1,6 +1,7 @@
 import {arrayToObjectByKey, filterResultObjectByListMembership} from '../../utils/collectionUtils';
 import {Visit, VisitOrder} from '../../utils/data/schema';
 import {UserDataService} from '../UserDataService';
+import {VisitService} from './VisitService';
 
 export class VisitRealmService {
     static visitRealmService;
@@ -71,10 +72,22 @@ export class VisitRealmService {
         return this.floDB.objectForPrimaryKey(Visit, visitID);
     }
 
+    getVisitsByIDs(visitIDs) {
+        return this.floDB.objects(Visit).filtered(visitIDs.map((id) => `visitID == '${id}'`).join(' OR '));
+    }
+
+    getCurrentUserVisits = () => {
+        const visits = this.floDB.objects(Visit);
+        return this.selectCurrentUserVisits(visits);
+    }
+
+    getDoneUserVisits = () => {
+        const userVisits = this.getCurrentUserVisits();
+        return this.filterDoneVisits(userVisits, true);
+    }
+
     deleteVisitByObject(visit) {
-        this.floDB.write(() => {
-            this.floDB.delete(visit);
-        });
+        this.floDB.delete(visit);
     }
 
     getVisitOrderForDate(midnightEpoch) {
@@ -94,6 +107,16 @@ export class VisitRealmService {
                 visit.plannedStartTime = startTime;
             }
         );
+    }
+
+    updateMilesDataByVisitObject(visit, odometerStart, odometerEnd, totalMiles, milesComments) {
+        const visitMilesObject = visit.visitMiles;
+        this.floDB.write(() => {
+            visitMilesObject.odometerStart = odometerStart;
+            visitMilesObject.odometerEnd = odometerEnd;
+            visitMilesObject.totalMiles = totalMiles;
+            visitMilesObject.milesComments = milesComments;
+        });
     }
 
     insertNewVisits(visits, midnightEpoch) {
