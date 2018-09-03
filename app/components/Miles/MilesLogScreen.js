@@ -30,7 +30,7 @@ export default class MilesLogScreen extends Component {
     }
 
     handleItemClick = (visitID) => {
-        if (this.props.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
+        if (this.props.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
             this.showEditMilesModalForVisitID(visitID);
         }
     }
@@ -39,10 +39,6 @@ export default class MilesLogScreen extends Component {
         // TODO Validate in multiple time zones
         moment(date).subtract(moment().utcOffset(), 'minutes').format('MMMM DD')
     )
-
-    updateIndex = (selectedIndex) => {
-        this.props.updateSelectedTabIndex(selectedIndex);
-    }
 
     isVisitSelected = (visitID) => (this.props.selectedVisitsSet.has(visitID))
 
@@ -193,16 +189,16 @@ export default class MilesLogScreen extends Component {
                     }}
                 >
                     <TouchableOpacity
-                        style={[{flex: 1, alignItems: 'center'}, this.props.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? selectedTabStyle : {}]}
-                        onPress={() => this.props.updateSelectedTabIndex(MilesLogScreenContainer.ACTIVE_TAB_INDEX)}
+                        style={[{flex: 1, alignItems: 'center'}, this.props.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? selectedTabStyle : {}]}
+                        onPress={() => this.props.updateScreenIndex(MilesLogScreenContainer.ACTIVE_TAB_INDEX)}
                     >
                         <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
                             Active Logs
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[{flex: 1, alignItems: 'center'}, this.props.selectedIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX ? selectedTabStyle : {}]}
-                        onPress={() => this.props.updateSelectedTabIndex(MilesLogScreenContainer.SUBMITTED_TAB_INDEX)}
+                        style={[{flex: 1, alignItems: 'center'}, this.props.screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX ? selectedTabStyle : {}]}
+                        onPress={() => this.props.updateScreenIndex(MilesLogScreenContainer.SUBMITTED_TAB_INDEX)}
                     >
                         <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
                             Submitted Logs

@@ -12,20 +12,12 @@ export default class MilesLogScreenContainer extends Component {
         super(props);
         const activeVisits = this.getActiveVisits();
         this.state = {
-            selectedIndex: 0,
+            screenIndex: MilesLogScreenContainer.ACTIVE_TAB_INDEX,
             sectionedActiveVisits: this.getSectionedDataFromVisits(activeVisits, MilesLogScreenContainer.ACTIVE_TAB_INDEX),
             sectionedSubmittedVisits: null,
             selectedVisitsSet: new Set([])
         };
-        this.props.navigator.setButtons({
-            rightButtons: [
-                {
-                    id: 'send-report',
-                    title: 'Send Report',
-                    buttonFontSize: 12
-                }
-            ]
-        });
+        this.setNavigatorButtonsForActiveLogs();
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.activeVisitListener = this.addListenerForActiveVisits();
         this.submittedVisitListener = this.addListenerForSubmittedVisits();
@@ -50,6 +42,19 @@ export default class MilesLogScreenContainer extends Component {
             }
         }
     }
+
+    setNavigatorButtonsForActiveLogs() {
+        this.props.navigator.setButtons({
+            rightButtons: [
+                {
+                    id: 'send-report',
+                    title: 'Send Report',
+                    buttonFontSize: 12
+                }
+            ]
+        });
+    }
+
 
     addListenerForActiveVisits = () => {
         const activeVisitsResult = VisitService.getInstance().getActiveMilesLogVisits();
@@ -90,9 +95,9 @@ export default class MilesLogScreenContainer extends Component {
     )
 
     getSectionToRenderBasedOnTab = () => {
-        if (this.state.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
+        if (this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
             return this.state.sectionedActiveVisits;
-        } else if (this.state.selectedIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
+        } else if (this.state.screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
             return this.state.sectionedSubmittedVisits;
         }
     }
@@ -125,8 +130,8 @@ export default class MilesLogScreenContainer extends Component {
         this.setState({selectedVisitsSet: newSelectedVisitsSet});
     }
 
-    updateSelectedTabIndex = (selectedIndex) => {
-        if (selectedIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
+    updateScreenIndex = (screenIndex) => {
+        if (screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
             this.props.navigator.setButtons({
                 rightButtons: []
             });
@@ -134,31 +139,23 @@ export default class MilesLogScreenContainer extends Component {
                 const submittedVisits = this.getSubmittedVisits();
                 this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(submittedVisits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
             }
-        } else if (selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
-            this.props.navigator.setButtons({
-                rightButtons: [
-                    {
-                        id: 'send-report',
-                        title: 'Send Report',
-                        buttonFontSize: 12
-                    }
-                ]
-            });
+        } else if (screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
+            this.setNavigatorButtonsForActiveLogs();
         }
-        this.setState({selectedIndex});
+        this.setState({screenIndex});
     }
 
     render() {
         return (
             <View style={{flex: 1, backgroundColor: '#F8F8F8'}}>
                 <MilesLogScreen
-                    selectedIndex={this.state.selectedIndex}
+                    screenIndex={this.state.screenIndex}
+                    updateScreenIndex={this.updateScreenIndex}
                     sectionData={this.getSectionToRenderBasedOnTab()}
-                    showCheckBox={this.state.selectedIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
+                    showCheckBox={this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
                     toggleVisitSelected={this.toggleVisitSelected}
                     toggleSectionSelected={this.toggleSectionSelected}
                     selectedVisitsSet={this.state.selectedVisitsSet}
-                    updateSelectedTabIndex={this.updateSelectedTabIndex}
                 />
             </View>
         );
