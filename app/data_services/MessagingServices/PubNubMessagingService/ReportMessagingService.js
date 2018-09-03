@@ -86,9 +86,9 @@ export class ReportMessagingService extends BaseMessagingService {
                     } else if (serverResponse.status === 400) {
                         try {
                             serverResponse.json().then(response => {
+                                console.log('server response');
+                                console.log(response);
                                 const missingVisitIDs = response.missingVisitIDs;
-                                console.log('missingVisitIDs');
-                                console.log(missingVisitIDs);
                                 if (missingVisitIDs) {
                                     const visits = VisitService.getInstance().getVisitsByIDs(missingVisitIDs);
                                     getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitCreateBulk(visits);
