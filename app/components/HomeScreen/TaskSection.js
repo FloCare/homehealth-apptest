@@ -7,7 +7,7 @@ import {TaskService} from '../../data_services/TaskService';
 import {screenNames} from '../../utils/constants';
 
 const shadowStyle = {
-    shadowRadius: 9,
+    shadowRadius: 5,
     shadowColor: 'rgba(36, 23, 38, 0.16)',
     shadowOffset: {
         width: -0.1,
@@ -44,7 +44,7 @@ function taskCard(task, onPressCard, checkBoxDisabled = false) {
                     {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
                 ]}
             >
-                <View style={{flex: 1, margin: 15, marginLeft: 25}}>
+                <View style={{flex: 1, margin: 8, marginLeft: 25}}>
                     <StyledText style={{marginVertical: 5, color: task.color}}>
                         {task.body}
                     </StyledText>
@@ -111,7 +111,7 @@ export class TaskSection extends Component {
         return (
             <View style={{flex: 1, marginVertical: 20, alignItems: 'center'}}>
                 <StyledText
-                    style={{fontSize: 12}}
+                    style={{fontSize: 12, color: '#999999'}}
                 >
                     {'My Task'}
                 </StyledText>
