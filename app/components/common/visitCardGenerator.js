@@ -411,6 +411,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                     <View
                         style={[
                             styles.cardContainerStyle,
+                            this.props.cardStyle,
                             this.props.sortingActive && !this.props.active ? {opacity: 0.7} : {},
                             this.props.active ? {elevation: 6, borderColor: '#74dbc4', borderWidth: 1} : {},
                             {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}

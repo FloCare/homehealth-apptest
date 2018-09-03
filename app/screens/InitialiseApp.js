@@ -11,6 +11,7 @@ import {FloDBProvider} from "../utils/data/schema";
 import {UserDataService} from "../data_services/UserDataService";
 import {initialiseService as initialiseAddressService} from "../data_services/AddressDataService";
 import {PhysicianDataService} from "../data_services/PhysicianDataService";
+import {TaskService} from '../data_services/TaskService';
 import RNSecureKeyStore from "react-native-secure-key-store";
 import {todayMomentInUTCMidnight} from "../utils/utils";
 import {Provider} from "react-redux";
@@ -45,6 +46,7 @@ export async function initialiseApp(key) {
     EpisodeDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
+    TaskService.initialiseService(FloDBProvider.db)
     initialiseStopService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
