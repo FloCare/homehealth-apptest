@@ -418,7 +418,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         getOdometerDataComponent = (odometerValue) => (
-            odometerValue ?
+            typeof (odometerValue) === 'number' ?
                 (
                     <Text style={styles.milesDataStyle}>
                         {milesRenderString(odometerValue)}

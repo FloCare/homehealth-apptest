@@ -4,8 +4,8 @@ import {pushReportInformation} from '../../../utils/API/ReportAPI';
 import {VisitService} from '../../VisitServices/VisitService';
 import {EpisodeMessagingService} from './EpisodeMessagingService';
 import {getMessagingServiceInstance} from './MessagingServiceCoordinator';
-import { showNotification } from '../NotificationService'
-import { generateUUID } from '../../../utils/utils'
+import {showNotification} from '../NotificationService';
+import {generateUUID} from '../../../utils/utils';
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -24,19 +24,23 @@ export class ReportMessagingService extends BaseMessagingService {
             onFailed: (id, payload) => {
                 console.log(`Publish report to server Job with id ${id} had an attempt end in failure. Payload:`);
                 console.log(payload);
+                VisitService.getInstance().deleteReportAndItems(payload.reportPayload.reportID);
+                ReportMessagingService.showReportFailedNotification();
             }
         });
     }
 
     _getFlatReportPayload(report) {
         const reportItems = report.reportItemsList;
+        const visits = reportItems.map(reportItem => reportItem.visit);
+        const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
         return {
             reportID: report.reportID,
             reportItems: reportItems.map(reportItem => ({
                 visitID: reportItem.visit.visitID,
                 reportItemId: reportItem.reportItemID
-            }))
-        //    TODO Add total miles check
+            })),
+            totalMiles
         };
     }
 
@@ -51,7 +55,7 @@ export class ReportMessagingService extends BaseMessagingService {
     publishReportToBackend(report) {
         this._createPublishReportToServerJob({
             action: 'CREATE_REPORT',
-            report: this._getFlatReportPayload(report)
+            reportPayload: this._getFlatReportPayload(report)
         });
     }
 
@@ -62,16 +66,18 @@ export class ReportMessagingService extends BaseMessagingService {
     }
 
     async _publishReportToServer(jobID, payload) {
-        console.log(`publish job here${payload}`);
-        const {action, report} = payload;
+        console.log('publish report to server job here');
+        console.log(payload);
+        const {action, reportPayload} = payload;
         let serverResponse;
         try {
             switch (action) {
                 case 'CREATE_REPORT':
-                    console.log(JSON.stringify({report}));
-                    serverResponse = await pushReportInformation(report);
+                    console.log(JSON.stringify({reportPayload}));
+                    serverResponse = await pushReportInformation(reportPayload);
                     if (serverResponse.ok) {
-                        VisitService.getInstance().markReportAccepted(report.reportID);
+                        console.log('marking reportPayload accepeted');
+                        VisitService.getInstance().markReportAccepted(reportPayload.reportID);
                     } else if (serverResponse.status === 400) {
                         try {
                             serverResponse.json().then(response => {
@@ -86,12 +92,12 @@ export class ReportMessagingService extends BaseMessagingService {
                         } catch (e) {
                             console.log('Failed to parse server failure response');
                         }
-                        VisitService.getInstance().deleteReportAndItems(report.reportID);
+                        VisitService.getInstance().deleteReportAndItems(reportPayload.reportID);
                         ReportMessagingService.showReportFailedNotification();
                     } else {
                         console.log('server response');
                         console.log(serverResponse);
-                        throw new Error('Error sending report to backend');
+                        throw new Error('Error sending reportPayload to backend');
                     }
                     break;
                 default:

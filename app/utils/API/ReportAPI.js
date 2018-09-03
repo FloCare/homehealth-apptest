@@ -1,7 +1,7 @@
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {apiServerURL} from '../constants';
 
-export function pushReportInformation(report) {
+export function pushReportInformation(reportPayload) {
     return RNSecureKeyStore.get('accessToken').catch(error => {
         console.log('error in getting access token');
         throw error;
@@ -11,10 +11,7 @@ export function pushReportInformation(report) {
             Authorization: `Token ${token}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            reportID: report.reportID,
-            reportItems: report.reportItems
-        })
+        body: JSON.stringify(reportPayload)
     })).then(response => {
         return response;
     })

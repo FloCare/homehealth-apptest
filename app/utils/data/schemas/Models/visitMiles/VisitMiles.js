@@ -13,4 +13,9 @@ export class VisitMiles extends Realm.Object {
         return null;
     }
 
+    get MilesTravelled() {
+        return VisitMiles.getMiles(this.odometerStart, this.odometerEnd);
+    }
+
+
 }

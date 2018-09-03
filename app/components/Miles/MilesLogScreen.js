@@ -7,7 +7,6 @@ import {CustomCheckBox} from '../common/CustomCheckBox';
 import {Address} from '../../utils/data/schemas/Models/address/Address';
 import {styles} from '../common/styles';
 import {Images} from '../../Images';
-import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles';
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Report} from '../../utils/data/schema';
 import MilesLogScreenContainer from './MilesLogScreenContainer';
@@ -50,7 +49,7 @@ export default class MilesLogScreen extends Component {
     toggleVisitSelected = (visitID) => (this.props.toggleVisitSelected(visitID))
 
     renderItem = (visit) => {
-        const milesTravelled = VisitMiles.getMiles(visit.visitMiles.odometerStart, visit.visitMiles.odometerEnd);
+        const milesTravelled = visit.visitMiles.MilesTravelled;
         const isVisitReportPending = visit.getReportStatus() === Report.reportStateEnum.CREATED;
         return (
             <View style={{flexDirection: 'row', flex: 1, marginTop: 5, marginBottom: 5, borderBottomColor: '#E1E1E1', borderBottomWidth: 1}}>
