@@ -6,7 +6,18 @@ import StyledText from '../common/StyledText';
 import {TaskService} from '../../data_services/TaskService';
 import {screenNames} from '../../utils/constants';
 
+const shadowStyle = {
+    shadowRadius: 9,
+    shadowColor: 'rgba(36, 23, 38, 0.16)',
+    shadowOffset: {
+        width: -0.1,
+        height: 1.5
+    },
+    shadowOpacity: 1,
+};
+
 function taskCard(task, onPressCard, checkBoxDisabled = false) {
+    const CardContainer = onPressCard ? TouchableOpacity : View;
     return (
         <View
             style={{
@@ -25,15 +36,16 @@ function taskCard(task, onPressCard, checkBoxDisabled = false) {
                     checkBoxContainerStyle={{width: 40, justifyContent: 'center'}}
                 />
             </View>
-            <TouchableOpacity
+            <CardContainer
                 onPress={onPressCard}
                 style={[
                     styles.cardContainerStyle,
-                    {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row', shadowRadius: 1}
+                    shadowStyle,
+                    {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
                 ]}
             >
                 <View style={{flex: 1, margin: 15, marginLeft: 25}}>
-                    <StyledText style={{marginVertical: 5}}>
+                    <StyledText style={{marginVertical: 5, color: task.color}}>
                         {task.body}
                     </StyledText>
                     {
@@ -45,7 +57,7 @@ function taskCard(task, onPressCard, checkBoxDisabled = false) {
                         </StyledText>
                     }
                 </View>
-            </TouchableOpacity>
+            </CardContainer>
         </View>
     );
 }
@@ -81,9 +93,21 @@ export class TaskSection extends Component {
     }
 
     render() {
-        if ((!this.state.tasks || this.state.tasks.length === 0) && (this.props.dateMinusToday < 0)) {
-            return null;
-        }
+        let firstTaskCard;
+        if (this.props.dateMinusToday >= 0) {
+            firstTaskCard = taskCard({body: '+ Add Task'}, () => this.props.navigator.showLightBox({
+                screen: screenNames.addTaskComponent,
+                style: {
+                    backgroundBlur: 'dark',
+                    backgroundColor: '#00000070',
+                    tapBackgroundToDismiss: true
+                },
+                passProps: {
+                    onSubmit: this.newTaskSubmitHandler.bind(this)
+                }
+            }), true);
+        } else if (!this.state.tasks || this.state.tasks.length === 0) { firstTaskCard = taskCard({body: "You didn't have any tasks", color: 'grey'}, undefined, true); } else firstTaskCard = undefined;
+
         return (
             <View style={{flex: 1, marginVertical: 20, alignItems: 'center'}}>
                 <StyledText
@@ -91,21 +115,7 @@ export class TaskSection extends Component {
                 >
                     {'My Task'}
                 </StyledText>
-                {
-                    this.props.dateMinusToday >= 0 ?
-                        taskCard({body: '+ Add Task'}, () => this.props.navigator.showLightBox({
-                            screen: screenNames.addTaskComponent,
-                            style: {
-                                backgroundBlur: 'dark',
-                                backgroundColor: '#00000070',
-                                tapBackgroundToDismiss: true
-                            },
-                            passProps: {
-                                onSubmit: this.newTaskSubmitHandler.bind(this)
-                            }
-                        }), true)
-                        : undefined
-                }
+                {firstTaskCard}
                 {
                     this.state.tasks ? this.state.tasks.map(task => taskCard(task)) : undefined
                 }

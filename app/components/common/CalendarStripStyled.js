@@ -4,7 +4,7 @@ import {PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
 
 function CalendarStripStyled(props) {
-    const selectedDateRadius = 40;
+    const selectedDateRadius = 10;
     const radius = {
         borderRadius: props.noRounding ? 0 : selectedDateRadius,
         // borderBottomLeftRadius: props.noRounding ? 0 : selectedDateRadius,

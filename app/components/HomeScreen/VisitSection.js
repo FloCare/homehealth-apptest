@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TouchableWithoutFeedback, TouchableHighlight, Text, Image} from 'react-native';
+import {View, TouchableWithoutFeedback, TouchableHighlight, Text, Image, Dimensions} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import {VisitCardGenerator} from '../common/visitCardGenerator';
@@ -29,8 +29,17 @@ function onPressCard(visitID, navigator) {
     }
 }
 
+const shadowStyle = {
+    shadowRadius: 5,
+    shadowColor: 'rgba(0, 0, 0, 0.17)',
+    shadowOffset: {
+        width: -0.1,
+        height: 1.5
+    },
+    shadowOpacity: 1,
+};
+
 function navigationButtons(props) {
-    if (props.totalVisitsCount === 0) return;
     return (<View
         style={{
             flexDirection: 'row',
@@ -39,13 +48,7 @@ function navigationButtons(props) {
             position: 'relative',
             top: -20,
             paddingHorizontal: 50,
-            shadowRadius: 5,
-            shadowColor: 'rgba(0, 0, 0, 0.21)',
-            shadowOffset: {
-                width: -0.1,
-                height: 1.5
-            },
-            shadowOpacity: 1,
+            ...shadowStyle
         }}
     >
         <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
@@ -89,8 +92,8 @@ function navigationButtons(props) {
                 }}
             >
                 <Image
-                style={{height: 35, resizeMode: 'contain'}}
-                source={Images.list}
+                    style={{height: 35, resizeMode: 'contain'}}
+                    source={Images.list}
                 />
                 <Text style={{marginHorizontal: 10, alignSelf: 'center', color: '#ffffff'}}>
                     List
@@ -125,13 +128,43 @@ function visitSummary(props) {
 
     const vertLine = <View style={{width: 1, backgroundColor: '#e6e6e6'}} />;
 
-    let whiteBoxContents = [
-        cellGenerator(props.totalVisitsCount, 'Total Visits'),
-        props.dateMinusToday === 0 ? vertLine : undefined,
-        props.dateMinusToday === 0 ? cellGenerator(props.totalVisitsCount - props.remainingVisitsCount, 'Completed') : undefined,
-        props.dateMinusToday === 0 ? vertLine : undefined,
-        props.dateMinusToday === 0 ? cellGenerator(props.remainingVisitsCount, 'Remaining') : undefined,
-    ];
+    let whiteBoxContents;
+
+    if (props.dateMinusToday === 0) {
+        whiteBoxContents = [
+            cellGenerator(props.totalVisitsCount, 'Total Visits'),
+            vertLine,
+            cellGenerator(props.totalVisitsCount - props.remainingVisitsCount, 'Completed'),
+            vertLine,
+            cellGenerator(props.remainingVisitsCount, 'Remaining'),
+        ];
+    } else if (props.dateMinusToday > 0) {
+        whiteBoxContents = [
+            <StyledText
+                style={{
+                    fontWeight: '300',
+                    fontSize: 20,
+                    color: 'grey',
+                    // paddingHorizontal: 20,
+                    textAlign: 'center',
+                    marginTop: 10
+                }}
+            >{`${props.remainingVisitsCount} Visits Planned`}</StyledText>,
+        ];
+    } else {
+        whiteBoxContents = [
+            <StyledText
+                style={{
+                    fontWeight: '300',
+                    fontSize: 20,
+                    color: 'grey',
+                    // paddingHorizontal: 20,
+                    textAlign: 'center',
+                    marginTop: 10
+                }}
+            >{`${props.remainingVisitsCount} of ${props.totalVisitsCount} planned visits unfinished`}</StyledText>,
+        ];
+    }
 
     if (props.remainingVisitsCount === 0) {
         whiteBoxContents = [
@@ -140,11 +173,11 @@ function visitSummary(props) {
                     fontWeight: '300',
                     fontSize: 20,
                     color: 'grey',
-                    paddingHorizontal: 20,
+                    // paddingHorizontal: 20,
                     textAlign: 'center',
-                    marginVertical: 10
+                    // marginVertical: 10
                 }}
-            >{props.totalVisitsCount !== 0 ? 'Great job! All planned visits completed' : 'No Day\'s Summary'}</StyledText>,
+            >{props.totalVisitsCount !== 0 ? (props.dateMinusToday < 0 ? `All planned visits completed. Awesome!` : 'Great job! All planned visits completed'): (props.dateMinusToday < 0 ? "You didn't have any visits" : 'No Visit Summary')}</StyledText>,
         ];
     }
 
@@ -152,12 +185,14 @@ function visitSummary(props) {
         (<View
             style={{
                 flexDirection: props.remainingVisitsCount !== 0 ? 'row' : 'column',
+                height: Dimensions.get('window').height * 0.18,
                 ...styles.cardContainerStyle,
                 justifyContent: 'space-evenly',
+                // alignItems: 'center',
                 shadowRadius: 3,
                 paddingHorizontal: 22,
-                paddingTop: 20,
-                paddingBottom: props.remainingVisitsCount !== 0 ? 35 : 20
+                paddingTop: 25,
+                paddingBottom: props.showVisitListButtons ? 35 : 25
             }}
         >
             {whiteBoxContents}
@@ -167,12 +202,13 @@ function visitSummary(props) {
         <View
             style={{
                 flex: 1,
+                height: Dimensions.get('window').height * 0.22,
                 borderRadius: 5,
                 marginHorizontal: 20,
             }}
         >
             {whiteBox}
-            {navigationButtons(props)}
+            {props.showVisitListButtons ? navigationButtons(props) : undefined}
         </View>
     );
 }
@@ -191,6 +227,7 @@ function cardArea(props) {
             <TouchableHighlight underlayColor={'clear'} onPress={() => onPressCard(props.visitID, props.navigator)}>
                 <VisitCard
                     data={props.visitID}
+                    cardStyle={shadowStyle}
                 />
             </TouchableHighlight>
         </View>);
@@ -204,12 +241,12 @@ function cardArea(props) {
                         margin: 20,
                         marginTop: 5,
                         fontSize: 14,
-                        color: 'grey'
+                        color: props.totalVisitsCount !== 0 && props.remainingVisitsCount !== 0 ? 'transparent' : 'grey'
                     }}
                 >{
                     props.totalVisitsCount !== 0 ?
-                        (props.remainingVisitsCount === 0 ? 'If you missed adding any visit for the day' : undefined) :
-                        'By adding patients and visits you\'ll be able to see a summary of the visits for the day'
+                        (props.remainingVisitsCount === 0 ? 'If you missed adding any visit for the day' : 'dummy placeholder') :
+                        'Get started by adding visits'
                 }
                 </StyledText>
                 <EmptyStateButton
@@ -226,7 +263,7 @@ function cardArea(props) {
 export function VisitSection(props) {
     return (
         <View style={{flex: 1, marginVertical: 20}}>
-            {visitSummary(props)}
+            {visitSummary({...props, showVisitListButtons: props.totalVisitsCount !== 0})}
             {cardArea(props)}
         </View>
     );

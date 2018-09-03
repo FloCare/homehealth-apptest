@@ -204,6 +204,7 @@ class AddVisitsScreenContainer extends Component {
         return (
             <ListItem
                 key={item.key}
+                containerStyle={{borderBottomColor: '#e1e1e1'}}
                 title={item.object.name}
                 subtitle={item.object.address.formattedAddress}
                 avatar={avatar}
