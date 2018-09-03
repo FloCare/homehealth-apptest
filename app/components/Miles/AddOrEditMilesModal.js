@@ -109,7 +109,7 @@ export default class AddOrEditMilesModal extends Component {
             {
                 this.state.showOdometerEndErrorMessage &&
                     <Text style={{color: ErrorMessageColor, fontSize: 10, textAlign: 'center'}}>
-                        End should not be greater than start
+                        End should be greater than start
                     </Text>
             }
             <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center', marginTop: 5, marginBottom: 0}}>
