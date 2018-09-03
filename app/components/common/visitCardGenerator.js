@@ -432,7 +432,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 )
         );
 
-        getTotalMilesComponent =(totalMiles) => {
+        getMilesTravelledComponentInDetailedView = (totalMiles) => {
             if (totalMiles) {
                 return (
                     <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 15}}>
@@ -458,7 +458,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             <TouchableOpacity
                 style={{marginTop: 8, marginBottom: 8, alignItems: 'center'}}
                 onPress={this.onPressAddOrEditMiles}
-                underlayColor={'transparent'}
             >
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Image source={Images.plus} style={{height: 9, width: 9, marginRight: 5}} />
@@ -498,14 +497,15 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             </View>
                         </View>
                         {
-                            this.getTotalMilesComponent(VisitMiles.getMiles(odometerStart, odometerEnd))
+                            this.getMilesTravelledComponentInDetailedView(VisitMiles.getMiles(odometerStart, odometerEnd))
                         }
                     </View>
                 </View>
             );
         }
 
-        renderTotalMiles = () => {
+        // Shows up below three dots button
+        renderMiniMilesSummary = () => {
             const {odometerStart, odometerEnd} = this.props;
             const milesTravelled = VisitMiles.getMiles(odometerStart, odometerEnd);
             const milesSection = milesTravelled ?
@@ -596,7 +596,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                         this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
                                         <View>
                                             {
-                                                this.renderTotalMiles()
+                                                this.renderMiniMilesSummary()
                                             }
                                         </View>
                                     }

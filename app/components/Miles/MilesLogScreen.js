@@ -210,7 +210,7 @@ export default class MilesLogScreen extends Component {
                     renderSectionHeader={({section: {title}}) => this.renderSectionHeader(title)}
                     sections={this.props.sectionData}
                     keyboardShouldPersistTaps
-                    keyExtractor={(item, index) => item + index}
+                    keyExtractor={(item) => item.visitID}
                     stickySectionHeadersEnabled={false}
                 />
             </View>

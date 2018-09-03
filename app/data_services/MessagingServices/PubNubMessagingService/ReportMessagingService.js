@@ -1,4 +1,5 @@
 import {NetInfo} from 'react-native';
+import firebase from 'react-native-firebase';
 import {BaseMessagingService} from './BaseMessagingService';
 import {pushReportInformation} from '../../../utils/API/ReportAPI';
 import {VisitService} from '../../VisitServices/VisitService';
@@ -6,6 +7,7 @@ import {EpisodeMessagingService} from './EpisodeMessagingService';
 import {getMessagingServiceInstance} from './MessagingServiceCoordinator';
 import {showNotification} from '../NotificationService';
 import {generateUUID} from '../../../utils/utils';
+import {eventNames, parameterValues} from '../../../utils/constants';
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -30,7 +32,7 @@ export class ReportMessagingService extends BaseMessagingService {
         });
     }
 
-    _getFlatReportPayload(report) {
+    _getReportDetailsPayload(report) {
         const reportItems = report.reportItemsList;
         const visits = reportItems.map(reportItem => reportItem.visit);
         const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
@@ -55,7 +57,7 @@ export class ReportMessagingService extends BaseMessagingService {
     publishReportToBackend(report) {
         this._createPublishReportToServerJob({
             action: 'CREATE_REPORT',
-            reportPayload: this._getFlatReportPayload(report)
+            reportPayload: this._getReportDetailsPayload(report)
         });
     }
 
@@ -78,6 +80,9 @@ export class ReportMessagingService extends BaseMessagingService {
                     if (serverResponse.ok) {
                         console.log('marking reportPayload accepeted');
                         VisitService.getInstance().markReportAccepted(reportPayload.reportID);
+                        firebase.analytics().logEvent(eventNames.SEND_REPORT_RESPONSE, {
+                            type: parameterValues.SUCCESS
+                        });
                     } else if (serverResponse.status === 400) {
                         try {
                             serverResponse.json().then(response => {
@@ -94,9 +99,15 @@ export class ReportMessagingService extends BaseMessagingService {
                         }
                         VisitService.getInstance().deleteReportAndItems(reportPayload.reportID);
                         ReportMessagingService.showReportFailedNotification();
+                        firebase.analytics().logEvent(eventNames.SEND_REPORT_RESPONSE, {
+                            type: parameterValues.FAILURE
+                        });
                     } else {
                         console.log('server response');
                         console.log(serverResponse);
+                        firebase.analytics().logEvent(eventNames.SEND_REPORT_RESPONSE, {
+                            type: parameterValues.FAILURE
+                        });
                         throw new Error('Error sending reportPayload to backend');
                     }
                     break;

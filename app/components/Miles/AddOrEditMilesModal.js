@@ -64,7 +64,7 @@ export default class AddOrEditMilesModal extends Component {
 
     totalMilesFromOdometerInput = () => {
         if (this.state.odometerStart && this.state.odometerEnd) {
-            return this.state.odometerEnd - this.state.odometerStart;
+            return parseFloat(this.state.odometerEnd) - parseFloat(this.state.odometerStart);
         }
         return 0;
     }

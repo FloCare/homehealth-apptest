@@ -351,17 +351,29 @@ export class VisitService {
         throw new Error('requested visits for unrecognised entity');
     }
 
-    getSubmittedMilesLogVisits() {
+    subscribeToSubmittedVisits(callbackFunction) {
         const userVisits = this.visitRealmService.getCurrentUserVisits();
         const reportedVisits = this.reportService.filterReportedVisits(userVisits);
-        return this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
+        const visitsResult = this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
+        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
+        visitsResult.addListener(realmListener);
+        return {
+            currentData: visitsResult,
+            unsubscribe: () => visitsResult.removeListener(realmListener),
+        };
     }
 
-    getActiveMilesLogVisits() {
+    subscribeToActiveVisits(callbackFunction) {
         const doneUserVisits = this.visitRealmService.getDoneUserVisits();
         const milesActiveVisits = this.visitMilesService.filterMilesInformationCompleteVisits(doneUserVisits);
         const nonReportedVisits = this.reportService.filterNonReportedVisits(milesActiveVisits);
-        return this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
+        const visitsResult = this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
+        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
+        visitsResult.addListener(realmListener);
+        return {
+            currentData: visitsResult,
+            unsubscribe: () => visitsResult.removeListener(realmListener),
+        };
     }
 
     //only use for other user's unassign

@@ -10,22 +10,21 @@ export default class MilesLogScreenContainer extends Component {
 
     constructor(props) {
         super(props);
-        const activeVisits = this.getActiveVisits();
+        this.setNavigatorButtonsForActiveLogs();
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.activeVisitSubscriber = VisitService.getInstance().subscribeToActiveVisits(this.setActiveVisits);
+        this.submittedVisitsSubscriber = VisitService.getInstance().subscribeToSubmittedVisits(this.setSubmittedVisits);
         this.state = {
             screenIndex: MilesLogScreenContainer.ACTIVE_TAB_INDEX,
-            sectionedActiveVisits: this.getSectionedDataFromVisits(activeVisits, MilesLogScreenContainer.ACTIVE_TAB_INDEX),
+            sectionedActiveVisits: this.getSectionedDataFromVisits(this.activeVisitSubscriber.currentData, MilesLogScreenContainer.ACTIVE_TAB_INDEX),
             sectionedSubmittedVisits: null,
             selectedVisitsSet: new Set([])
         };
-        this.setNavigatorButtonsForActiveLogs();
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-        this.activeVisitListener = this.addListenerForActiveVisits();
-        this.submittedVisitListener = this.addListenerForSubmittedVisits();
     }
 
     componentWillUnmount() {
-        this.activeVisitListener.removeListener(this.setActiveVisits);
-        this.submittedVisitListener.removeListener(this.setSubmittedVisits);
+        this.activeVisitSubscriber.unsubscribe();
+        this.submittedVisitsSubscriber.unsubscribe();
     }
 
     onNavigatorEvent(event) {
@@ -55,32 +54,15 @@ export default class MilesLogScreenContainer extends Component {
         });
     }
 
-
-    addListenerForActiveVisits = () => {
-        const activeVisitsResult = VisitService.getInstance().getActiveMilesLogVisits();
-        activeVisitsResult.addListener(this.setActiveVisits);
-        return activeVisitsResult;
-    }
-
-    addListenerForSubmittedVisits = () => {
-        const submittedVisits = VisitService.getInstance().getSubmittedMilesLogVisits();
-        submittedVisits.addListener(this.setSubmittedVisits);
-        return submittedVisits;
-    }
-
     getSectionedDataFromVisits = (visits, screenIndex) => {
         let title = screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? 'Select All' : null;
         if (visits.length === 0) title = null;
+        // TODO Change this to one section per week/similar
         return [{
             title,
             data: visits
         }];
-        // createSectionedListByField(visits, 'NULL')
     }
-
-    getActiveVisits = () => (
-        VisitService.getInstance().getActiveMilesLogVisits()
-    )
 
     setActiveVisits = (visits) => {
         this.setState({sectionedActiveVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.ACTIVE_TAB_INDEX)});
@@ -89,10 +71,6 @@ export default class MilesLogScreenContainer extends Component {
     setSubmittedVisits = (visits) => {
         this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
     }
-
-    getSubmittedVisits = () => (
-        VisitService.getInstance().getSubmittedMilesLogVisits()
-    )
 
     getSectionToRenderBasedOnTab = () => {
         if (this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
@@ -136,7 +114,7 @@ export default class MilesLogScreenContainer extends Component {
                 rightButtons: []
             });
             if (!this.state.sectionedSubmittedVisits) {
-                const submittedVisits = this.getSubmittedVisits();
+                const submittedVisits = this.submittedVisitsSubscriber.currentData;
                 this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(submittedVisits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
             }
         } else if (screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
