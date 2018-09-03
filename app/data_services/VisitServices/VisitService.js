@@ -213,11 +213,11 @@ export class VisitService {
                 this.floDB.write(() => {
                     reportsJSONData.forEach(reportData => {
                         const reportObject = this.reportService.createReport(reportData.id, Report.reportStateEnum.ACCEPTED);
-                        reportData.reportItems.forEach(
+                        reportObject.reportItems = reportData.reportItems.map(
                             reportItemData => (this.reportService.createReportItem(
                                 reportItemData.reportItemId,
-                                reportObject,
-                                this.visitRealmService.getVisitByID(reportItemData.visitID)))
+                                this.visitRealmService.getVisitByID(reportItemData.visitID
+                            )))
                         );
                     });
                 });

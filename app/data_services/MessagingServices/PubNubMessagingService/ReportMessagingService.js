@@ -33,7 +33,7 @@ export class ReportMessagingService extends BaseMessagingService {
     }
 
     _getReportDetailsPayload(report) {
-        const reportItems = report.reportItemsList;
+        const reportItems = report.reportItems;
         const visits = reportItems.map(reportItem => reportItem.visit);
         const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
         return {

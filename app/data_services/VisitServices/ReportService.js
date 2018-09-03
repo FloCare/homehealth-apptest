@@ -20,13 +20,9 @@ export class ReportService {
         this.floDB = floDB;
     }
 
-    filterNonReportedVisits = (visits) => {
-        return visits.filtered('reportItems.@size == 0');
-    }
+    filterNonReportedVisits = (visits) => visits.filtered('reportItems.@size == 0')
 
-    filterReportedVisits = (visits) => {
-        return visits.filtered('reportItems.@size == 1');
-    }
+    filterReportedVisits = (visits) => visits.filtered('reportItems.@size == 1')
 
     createReport(reportID, status) {
         return this.floDB.create(Report, {
@@ -35,10 +31,9 @@ export class ReportService {
         });
     }
 
-    createReportItem(reportItemID, report, visit) {
+    createReportItem(reportItemID, visit) {
         return this.floDB.create(ReportItem, {
             reportItemID,
-            report,
             visit
         });
     }
@@ -49,10 +44,10 @@ export class ReportService {
 
     deleteReportAndItemsByReportID(reportID) {
         const report = this.getReportByID(reportID);
-        const reportItemsList = report.reportItemsList;
+        const reportItemsList = report.reportItems;
         this.floDB.write(() => {
-            this.floDB.delete(report);
             this.floDB.delete(reportItemsList);
+            this.floDB.delete(report);
         });
     }
 
@@ -64,10 +59,7 @@ export class ReportService {
         let reportObject = null;
         this.floDB.write(() => {
             const report = this.createReport(generateUUID(), Report.reportStateEnum.CREATED);
-            visits.forEach(visit => {
-                    this.createReportItem(generateUUID(), report, visit);
-                }
-            );
+            report.reportItems = visits.map(visit => this.createReportItem(generateUUID(), visit));
             reportObject = report;
         });
         return reportObject;

@@ -5,7 +5,7 @@ export const ReportItemSchemaV1 = {
     primaryKey: 'reportItemID',
     properties: {
         reportItemID: {type: 'string'},
-        report: 'Report',
+        reports: {type: 'linkingObjects', objectType: 'Report', property: 'reportItems'}, // only 1 report for report item
         visit: 'Visit',
     }
 };

@@ -74,7 +74,8 @@ export class Visit extends Realm.Object {
 
     getReportStatus() {
         if (this.reportItems.length > 0) {
-            return this.reportItems[0].report.status;
+            const report = this.reportItems[0].getReport();
+            return report ? report.status : null;
         }
         return null;
     }

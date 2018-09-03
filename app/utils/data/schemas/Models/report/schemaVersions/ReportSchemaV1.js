@@ -6,6 +6,6 @@ export const ReportSchemaV1 = {
     properties: {
         reportID: {type: 'string'},
         status: {type: 'string'},
-        reportItems: {type: 'linkingObjects', objectType: 'ReportItem', property: 'report'},
+        reportItems: 'ReportItem[]',
     }
 };
