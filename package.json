@@ -40,7 +40,7 @@
     "react-native-google-places-autocomplete": "github:FloCare/react-native-google-places-autocomplete",
     "react-native-immediate-phone-call": "^1.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.6.0",
-    "react-native-linear-gradient": "github:react-native-community/react-native-linear-gradient",
+    "react-native-linear-gradient": "github:react-native-community/react-native-linear-gradient#290ad1c455780374437544bc671467fc3b8ab80b",
     "react-native-maps": "^0.21.0",
     "react-native-modal": "^6.5.0",
     "react-native-modal-datetime-picker": "^6.0.0",

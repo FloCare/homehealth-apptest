@@ -44,7 +44,7 @@ const setupInstaBug = () => {
     setAutoScreenShotForInstabug(true);
 };
 
-const StartApp = async () => {
+export const StartApp = async () => {
     setupInstaBug();
 	if (!await isFirstRun()) {
 		Navigation.startSingleScreenApp({
@@ -69,5 +69,3 @@ const StartApp = async () => {
 	}
 	SplashScreen.hide();
 };
-
-StartApp();

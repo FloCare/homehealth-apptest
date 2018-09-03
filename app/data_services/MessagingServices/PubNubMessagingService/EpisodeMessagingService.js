@@ -43,7 +43,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
                                     myVisitsForTheDay.forEach(myVisit => {
                                         if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
                                             firebase.analytics().logEvent(eventNames.COLLABORATION, {
-                                                'type': 1
+                                                type: 1
                                             });
                                             showVisitCollisionNotification(myVisit, visit);
                                         }
@@ -153,7 +153,13 @@ export class EpisodeMessagingService extends BaseMessagingService {
                         aps: {
                             'content-available': 1
                         },
-                    } : undefined
+                    } : undefined,
+                pn_gcm: payload.makePeersRefresh ?
+                    {
+                        data: {
+                            content_available: true
+                        },
+                    } : undefined,
             }
         }).then(result => {
             console.log('publish visit result');
