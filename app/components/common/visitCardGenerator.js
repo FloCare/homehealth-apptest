@@ -146,9 +146,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         }
 
         onPressAddOrEditMiles = () => {
-            firebase.analytics().logEvent(eventNames.VISIT_ACTIONS, {
-                type: parameterValues.EDIT_MILES
-            });
             this.setState({milesModalVisible: true});
         }
 

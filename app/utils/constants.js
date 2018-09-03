@@ -107,6 +107,9 @@ const eventNames = {
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
     COLLABORATION: 'Collaboration',
+    ADD_EDIT_MILES: 'AddOrEditMiles',
+    SEND_REPORT: 'SendReport',
+    SEND_REPORT_RESPONSE: 'SendReportResponse',
 };
 
 const parameterValues = {
@@ -128,7 +131,6 @@ const parameterValues = {
     DETAILS: 'details',
     REFRESH: 'refresh',
     RESCHEDULE: 'date_reschedule',
-    EDIT_MILES: 'edit_miles',
     DELETE_VISIT: 'delete_visit',
     ADD_TIME: 'add_time',
     EDIT_TIME: 'edit_time',
@@ -168,7 +170,7 @@ export const pubnubSubKey = 'pubnubSubKey';
 export const instabugKey = 'instabugKey';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
-export const apiServerURL = 'https://app-9707.on-aptible.com';
+export const apiServerURL = 'https://app-11293.on-aptible.com';
 
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,

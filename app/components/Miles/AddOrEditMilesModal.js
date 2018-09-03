@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity, Image} from 'react-native';
+import firebase from 'react-native-firebase';
 import {Button} from 'react-native-elements';
 import {InputField} from '../common/InputField';
 import {
-    ErrorMessageColor,
+    ErrorMessageColor, eventNames,
     PrimaryColor,
     PrimaryFontFamily,
 } from '../../utils/constants';
@@ -53,6 +54,9 @@ export default class AddOrEditMilesModal extends Component {
         const {odometerStart, odometerEnd} = this.state;
         if (odometerStart && odometerEnd) {
             if (parseFloat(odometerStart) <= parseFloat(odometerEnd)) {
+                firebase.analytics().logEvent(eventNames.ADD_EDIT_MILES, {
+                    VALUE: parseFloat(odometerEnd) - parseFloat(odometerStart)
+                });
                 this.saveMilesDataAndDismissModal();
             } else {
                 this.setState({showOdometerEndErrorMessage: true});

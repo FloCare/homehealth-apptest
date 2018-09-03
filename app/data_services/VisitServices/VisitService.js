@@ -455,12 +455,18 @@ export class VisitService {
         );
 
         this.visitReduxService.updateVisitToRedux(visit);
+        //TODO Remove this. As others don't care about this.
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
     generateReportAndSubmitVisits = (visitIDs) => {
         const visits = this.getVisitsByIDs(visitIDs);
         const report = this.reportService.generateReportForVisits(visits);
+        const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
+        firebase.analytics().logEvent(eventNames.SEND_REPORT, {
+            VALUE: totalMiles,
+            NO_OF_VISITS: visits.length
+        });
         getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
     }
 
