@@ -42,6 +42,15 @@ export class TaskService {
         return () => tasks.removeListener(listener);
     }
 
+    editTask(taskBody, taskID) {
+        const task = this.floDB.objectForPrimaryKey(Task, taskID);
+        if (task) {
+            this.floDB.write(() => {
+                task.body = taskBody;
+            });
+        }
+    }
+
     createNewTask(taskBody, midnightEpoch, patient) {
         const taskId = generateUUID();
         this.floDB.write(() => {

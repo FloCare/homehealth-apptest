@@ -16,61 +16,11 @@ const shadowStyle = {
     shadowOpacity: 1,
 };
 
-function taskCard(task, onPressCard, checkBoxDisabled = false) {
-    const CardContainer = onPressCard ? TouchableOpacity : View;
-    return (
-        <View
-            style={{
-                flexDirection: 'row',
-                marginRight: 10,
-                width: 0.95 * Dimensions.get('screen').width,
-                marginVertical: 3
-            }}
-        >
-            <View style={{justifyContent: 'space-around'}}>
-                <CustomCheckBox
-                    checked={task.isDone}
-                    disabled={checkBoxDisabled}
-                    onPress={() => TaskService.getInstance().flipTaskDoneStatus(task.taskID)}
-                    checkBoxStyle={{width: 20, height: 20, alignSelf: 'flex-start', marginTop: 10}}
-                    checkBoxContainerStyle={{width: 40, justifyContent: 'center'}}
-                />
-            </View>
-            <CardContainer
-                onPress={onPressCard}
-                style={[
-                    styles.cardContainerStyle,
-                    shadowStyle,
-                    {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
-                ]}
-            >
-                <View style={{flex: 1, margin: 8, marginLeft: 25}}>
-                    <StyledText style={{marginVertical: 5, color: task.color}}>
-                        {task.body}
-                    </StyledText>
-                    {
-                        task.patientName
-                        && <StyledText
-                            style={{fontSize: 9, fontWeight: '300'}}
-                        >
-                            {task.patientName}
-                        </StyledText>
-                    }
-                </View>
-            </CardContainer>
-        </View>
-    );
-}
-
 export class TaskSection extends Component {
     constructor(props) {
         super(props);
         this.subscriber = TaskService.getInstance().subscribeToFlatTasksForDay(props.midnightEpoch, this.setTasks.bind(this));
         this.state = {};
-    }
-
-    componentWillUnmount() {
-        this.subscriber();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -81,21 +31,65 @@ export class TaskSection extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.subscriber();
+    }
+
     setTasks(tasks) {
         this.setState({tasks});
     }
 
-    newTaskSubmitHandler(text) {
-        this.props.navigator.dismissLightBox();
-        if (text && text.length !== 0) {
-            TaskService.getInstance().createNewTask(text, this.props.midnightEpoch);
+    taskCard(task, onPressCard, checkBoxDisabled = false) {
+        if (!onPressCard && task.taskID) {
+            onPressCard = this.taskModalGenerator(task.body, task.taskID);
         }
+        return (
+            <View
+                style={{
+                    flexDirection: 'row',
+                    marginRight: 10,
+                    width: 0.95 * Dimensions.get('screen').width,
+                    marginVertical: 3
+                }}
+            >
+                <View style={{justifyContent: 'space-around'}}>
+                    <CustomCheckBox
+                        checked={task.isDone}
+                        disabled={checkBoxDisabled}
+                        onPress={() => TaskService.getInstance().flipTaskDoneStatus(task.taskID)}
+                        checkBoxStyle={{width: 20, height: 20, alignSelf: 'flex-start', marginTop: 10}}
+                        checkBoxContainerStyle={{width: 40, justifyContent: 'center'}}
+                    />
+                </View>
+                <TouchableOpacity
+                    onPress={onPressCard}
+                    style={[
+                        styles.cardContainerStyle,
+                        shadowStyle,
+                        {flex: 8, marginTop: 2, marginBottom: 2, flexDirection: 'row'}
+                    ]}
+                >
+                    <View style={{flex: 1, margin: 8, marginLeft: 25}}>
+                        <StyledText style={{marginVertical: 5, color: task.color}}>
+                            {task.body}
+                        </StyledText>
+                        {
+                            task.patientName
+                            && <StyledText
+                                style={{fontSize: 9, fontWeight: '300'}}
+                            >
+                                {task.patientName}
+                            </StyledText>
+                        }
+                    </View>
+                </TouchableOpacity>
+            </View>
+        );
     }
 
-    render() {
-        let firstTaskCard;
-        if (this.props.dateMinusToday >= 0) {
-            firstTaskCard = taskCard({body: '+ Add Task'}, () => this.props.navigator.showLightBox({
+    taskModalGenerator(taskBody, taskID) {
+        const func = () => {
+            this.props.navigator.showLightBox({
                 screen: screenNames.addTaskComponent,
                 style: {
                     backgroundBlur: 'dark',
@@ -103,10 +97,31 @@ export class TaskSection extends Component {
                     tapBackgroundToDismiss: true
                 },
                 passProps: {
-                    onSubmit: this.newTaskSubmitHandler.bind(this)
+                    existingText: taskBody,
+                    onSubmit: ((text) => this.taskSubmitHandler(text, taskID)),
+                    onDismiss: (() => this.props.navigator.dismissLightBox())
                 }
-            }), true);
-        } else if (!this.state.tasks || this.state.tasks.length === 0) { firstTaskCard = taskCard({body: "You didn't have any tasks", color: 'grey'}, undefined, true); } else firstTaskCard = undefined;
+            });
+        };
+        return func.bind(this);
+    }
+
+    taskSubmitHandler(text, taskID) {
+        this.props.navigator.dismissLightBox();
+        if (text && text.length !== 0) {
+            if (!taskID) {
+                TaskService.getInstance().createNewTask(text, this.props.midnightEpoch);
+            } else { TaskService.getInstance().editTask(text, taskID); }
+        }
+    }
+
+    render() {
+        let firstTaskCard;
+        if (this.props.dateMinusToday >= 0) {
+            firstTaskCard = this.taskCard({body: '+ Add Task'}, this.taskModalGenerator(), true);
+        } else if (!this.state.tasks || this.state.tasks.length === 0) {
+            firstTaskCard = this.taskCard({body: "You didn't have any tasks", color: 'grey'}, undefined, true);
+        } else firstTaskCard = undefined;
 
         return (
             <View style={{flex: 1, marginVertical: 20, alignItems: 'center'}}>
@@ -117,7 +132,7 @@ export class TaskSection extends Component {
                 </StyledText>
                 {firstTaskCard}
                 {
-                    this.state.tasks ? this.state.tasks.map(task => taskCard(task)) : undefined
+                    this.state.tasks ? this.state.tasks.map(task => this.taskCard(task)) : undefined
                 }
             </View>
         );
