@@ -45,6 +45,7 @@ function navigationButtons(props) {
             flexDirection: 'row',
             justifyContent: 'space-around',
             height: 35,
+            elevation: 15,
             position: 'relative',
             top: -20,
             paddingHorizontal: 50,

@@ -70,7 +70,7 @@ export class TaskSection extends Component {
                     ]}
                 >
                     <View style={{flex: 1, margin: 8, marginLeft: 25}}>
-                        <StyledText style={{marginVertical: 5, color: task.color}}>
+                        <StyledText style={{marginVertical: 5, color: task.color, fontSize: 16}}>
                             {task.body}
                         </StyledText>
                         {
@@ -132,7 +132,7 @@ export class TaskSection extends Component {
                 </StyledText>
                 {firstTaskCard}
                 {
-                    this.state.tasks ? this.state.tasks.map(task => this.taskCard(task)) : undefined
+                    this.state.tasks ? this.state.tasks.map(task => this.taskCard({...task, color: 'black'})) : undefined
                 }
             </View>
         );
