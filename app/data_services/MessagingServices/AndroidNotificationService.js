@@ -14,6 +14,7 @@ export function displayLocalNotificationAndroid({body, data = {}, notificationID
     notification.android.setAutoCancel(true);
     notification.android.setSmallIcon('ic_notif');
     notification.android.setPriority(firebase.notifications.Android.Priority.High);
+    notification.android.setBigText(body);
     firebase.notifications().displayNotification(notification)
         .catch(error => {
             console.log('error in displaying notification');
