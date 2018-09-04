@@ -199,14 +199,15 @@ export class VisitService {
         return getAllMyVisits().then(visits => {
             const reportIDs = visits.map(visit => visit.reportID).filter(reportID => reportID);
             const uniqueReportIDs = [...new Set(reportIDs)];
-            getReportDetailsByIds(uniqueReportIDs).then(reportsJSONData => {
+            return getReportDetailsByIds(uniqueReportIDs).then(reportsJSONData => {
                 const visitByMidnight = arrayToObjectListByKey(visits, 'midnightEpochOfVisit');
                 Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
                     const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
-                    if (daysVisits && daysVisits.length > 0) {
+                    const daysVisitsSortedByDone = daysVisits.sort((visit1, visit2) => visit1.isDone - visit2.isDone);
+                    if (daysVisitsSortedByDone && daysVisitsSortedByDone.length > 0) {
                         const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
                         this.floDB.write(() => {
-                            visitOrder.visitList = daysVisits;
+                            visitOrder.visitList = daysVisitsSortedByDone;
                         });
                     }
                 });
