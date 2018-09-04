@@ -28,8 +28,7 @@ function VisitMapRowGenerator() {
     class RenderRow extends PureComponent {
         render() {
             const {index, name, sortingActive, active} = this.props;
-            const visitTime = this.props.plannedStartTime ? moment(this.props.plannedStartTime).format('HH:mm A') : '--:-- ';
-            const displayLabel = `${visitTime} ${name}`;
+            const visitTime = this.props.plannedStartTime ? moment(this.props.plannedStartTime).format('hh:mm A') : '--:-- ';
             return (
                 <View
                     style={[
