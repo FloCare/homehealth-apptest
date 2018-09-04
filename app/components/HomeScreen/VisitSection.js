@@ -192,8 +192,7 @@ function visitSummary(props) {
                 // alignItems: 'center',
                 shadowRadius: 3,
                 paddingHorizontal: 22,
-                paddingTop: 25,
-                paddingBottom: props.showVisitListButtons ? 35 : 25
+                paddingVertical: 25,
             }}
         >
             {whiteBoxContents}
@@ -264,7 +263,7 @@ function cardArea(props) {
 
 export function VisitSection(props) {
     return (
-        <View style={{flex: 1, marginVertical: 20}}>
+        <View style={{marginVertical: 20}}>
             {visitSummary({...props, showVisitListButtons: props.totalVisitsCount !== 0})}
             {cardArea(props)}
         </View>
