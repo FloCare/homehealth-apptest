@@ -1,6 +1,8 @@
+import firebase from 'react-native-firebase';
 import {Task} from '../utils/data/schema';
 import {PatientDataService} from './PatientDataService';
 import {generateUUID} from '../utils/utils';
+import {eventNames} from '../utils/constants';
 
 export class TaskService {
     static taskService;
@@ -61,11 +63,15 @@ export class TaskService {
                 patient,
             });
         });
+        firebase.analytics().logEvent(eventNames.ADD_TASK, {
+            TASK_LENGTH: taskBody.length
+        });
     }
 
     flipTaskDoneStatus(taskID) {
         const task = this.floDB.objectForPrimaryKey(Task, taskID);
         if (task) {
+            if (!task.isDone) { firebase.analytics().logEvent(eventNames.MARK_TASK_DONE); }
             this.floDB.write(() => {
                 task.isDone = !task.isDone;
             });
