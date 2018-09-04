@@ -111,6 +111,8 @@ const eventNames = {
     ADD_EDIT_MILES: 'AddOrEditMiles',
     SEND_REPORT: 'SendReport',
     SEND_REPORT_RESPONSE: 'SendReportResponse',
+    ADD_TASK: 'AddTask',
+    MARK_TASK_DONE: 'MarkTaskDone',
 };
 
 const parameterValues = {
