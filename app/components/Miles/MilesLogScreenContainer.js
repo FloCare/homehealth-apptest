@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert} from 'react-native';
 import MilesLogScreen from './MilesLogScreen';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 
@@ -125,17 +125,15 @@ export default class MilesLogScreenContainer extends Component {
 
     render() {
         return (
-            <View style={{flex: 1, backgroundColor: '#F8F8F8'}}>
-                <MilesLogScreen
-                    screenIndex={this.state.screenIndex}
-                    updateScreenIndex={this.updateScreenIndex}
-                    sectionData={this.getSectionToRenderBasedOnTab()}
-                    showCheckBox={this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
-                    toggleVisitSelected={this.toggleVisitSelected}
-                    toggleSectionSelected={this.toggleSectionSelected}
-                    selectedVisitsSet={this.state.selectedVisitsSet}
-                />
-            </View>
+            <MilesLogScreen
+                screenIndex={this.state.screenIndex}
+                updateScreenIndex={this.updateScreenIndex}
+                sectionData={this.getSectionToRenderBasedOnTab()}
+                showCheckBox={this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
+                toggleVisitSelected={this.toggleVisitSelected}
+                toggleSectionSelected={this.toggleSectionSelected}
+                selectedVisitsSet={this.state.selectedVisitsSet}
+            />
         );
     }
 }

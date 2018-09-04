@@ -176,7 +176,7 @@ export default class MilesLogScreen extends Component {
     render() {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
         return (
-            <View>
+            <View style={{flex: 1, backgroundColor: '#F8F8F8'}}>
                 <View
                     style={{flexDirection: 'row',
                         elevation: 3,
