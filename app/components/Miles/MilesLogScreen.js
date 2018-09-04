@@ -36,7 +36,6 @@ export default class MilesLogScreen extends Component {
     }
 
     formatDate = (date) => (
-        // TODO Validate in multiple time zones
         moment(date).subtract(moment().utcOffset(), 'minutes').format('MMMM DD')
     )
 

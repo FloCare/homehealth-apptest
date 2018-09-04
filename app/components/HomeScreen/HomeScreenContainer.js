@@ -241,7 +241,10 @@ class HomeScreenContainer extends Component {
                     // noRounding={props.remainingVisitsCount === 0}
                     onDateSelected={this.onDateSelected}
                 />
-                <ScrollView style={{flex: 1}}>
+                <ScrollView
+                    style={{flex: 1}}
+                    keyboardShouldPersistTaps
+                >
                     <HomeScreen
                         visitID={this.props.nextVisitID}
                         navigator={this.props.navigator}
