@@ -124,7 +124,7 @@ export class TaskSection extends Component {
         } else firstTaskCard = undefined;
 
         return (
-            <View style={{flex: 1, marginVertical: 20, alignItems: 'center'}}>
+            <View style={{marginVertical: 20, alignItems: 'center'}}>
                 <StyledText
                     style={{fontSize: 12, color: '#999999'}}
                 >
