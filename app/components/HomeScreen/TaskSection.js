@@ -43,6 +43,7 @@ export class TaskSection extends Component {
         if (!onPressCard && task.taskID) {
             onPressCard = this.taskModalGenerator(task.body, task.taskID);
         }
+        const TaskComponent = onPressCard ? TouchableOpacity : View;
         return (
             <View
                 style={{
@@ -61,7 +62,7 @@ export class TaskSection extends Component {
                         checkBoxContainerStyle={{width: 40, justifyContent: 'center'}}
                     />
                 </View>
-                <TouchableOpacity
+                <TaskComponent
                     onPress={onPressCard}
                     style={[
                         styles.cardContainerStyle,
@@ -82,7 +83,7 @@ export class TaskSection extends Component {
                             </StyledText>
                         }
                     </View>
-                </TouchableOpacity>
+                </TaskComponent>
             </View>
         );
     }
