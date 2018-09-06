@@ -192,7 +192,7 @@ function visitSummary(props) {
                 // alignItems: 'center',
                 shadowRadius: 3,
                 paddingHorizontal: 22,
-                paddingVertical: 25,
+                paddingVertical: 20,
             }}
         >
             {whiteBoxContents}
