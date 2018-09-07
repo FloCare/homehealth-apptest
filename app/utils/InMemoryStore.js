@@ -5,7 +5,8 @@ import {PatientDataService} from '../data_services/PatientDataService';
 
 const store = {};
 
-export async function initialiseStoreAndSetInstabug() {
+export async function initialiseStoreAndSetUserForInstabug() {
+    if (getItem('myUserDetails')) return;
     const myUserDetails = await AsyncStorage.getItem('myUserDetails').then(async res => {
         if (res === null) {
             const userProps = await UserDataService.fetchUserProps();
@@ -17,6 +18,7 @@ export async function initialiseStoreAndSetInstabug() {
             res = JSON.stringify(userProps);
         } else {
             const resJson = JSON.parse(res);
+            //TODO Remove these checks
             if (!resJson.email || !resJson.orgID) {
                 UserDataService.fetchUserProps().then(userProps => {
                     const userName = PatientDataService.constructName(userProps.firstName, userProps.lastName);
