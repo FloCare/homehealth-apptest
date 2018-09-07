@@ -8,7 +8,7 @@ const TransparentPrimaryColor = (opacity) =>
      `rgba(69, 206, 177, ${opacity})`;
 const PrimaryFontFamily = Platform.select({ios: 'SFProText-Regular', android: 'SF-Pro-Text-Regular'});
 
-const MaxFailedAttempts = 3;
+const MaxFailedAttempts = 4;
 const LockTimeOnFailedAttempts = 1; // minutes
 
 const diagnosisList = [

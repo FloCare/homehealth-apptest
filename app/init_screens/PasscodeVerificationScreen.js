@@ -69,18 +69,18 @@ class PasscodeVerificationScreen extends Component {
         });
     }
 
+    setLockTimeRefreshCounter = () => {
+        this.setLockTimeRemaining();
+        this.lockTimeRefreshCounter = setInterval(this.setLockTimeRemaining, 1000);
+    }
+
     clearCounterForLockTime = () => {
-        if (this.counter) {
-            clearInterval(this.counter);
+        if (this.lockTimeRefreshCounter) {
+            clearInterval(this.lockTimeRefreshCounter);
         }
     }
 
-    setLockTimeRefreshCounter = () => {
-        this.setLockTimeRemaining();
-        this.counter = setInterval(this.setLockTimeRemaining, 1000);
-    }
-
-    isLocked = () => (this.state.lockTimeRemaining);
+    isLocked = () => (!!this.state.lockTimeRemaining);
 
     async verifyCode(code) {
         await CodePush.notifyApplicationReady();
@@ -187,11 +187,12 @@ class PasscodeVerificationScreen extends Component {
                         <Text style={{color: this.state.code.length > 3 ? 'white' : 'rgba(255,255,255,0.3)', fontSize: 60, fontWeight: '500', marginHorizontal: 10}}>*</Text>
                     </View>
                 </SafeAreaView>
-                <Text style={styles.errorTextStyle}>
-                    {
-                        this.isLocked() ? `You can try again in ${this.state.lockTimeRemaining} seconds` : ' '
-                    }
-                </Text>
+                {
+                    this.isLocked() &&
+                    <Text style={{...styles.errorTextStyle, marginBottom: 5}}>
+                        {`You can try again in ${this.state.lockTimeRemaining} seconds`}
+                    </Text>
+                }
                 <Text
                     style={styles.errorTextStyle}
                 >
