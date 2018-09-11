@@ -23,6 +23,7 @@ import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
 import * as PhysicianSchemas from './schemas/Models/physician/schemaVersions/SchemaIndex';
 import * as TaskSchemas from './schemas/Models/task/schemaVersions/SchemaIndex';
+import * as NotificationSchemas from './schemas/Models/notification/schemaVersions/SchemaIndex';
 import * as VisitMilesSchemas from './schemas/Models/visitMiles/schemaVersions/SchemaIndex';
 import * as ReportItemSchemas from './schemas/Models/reportItem/schemaVersions/SchemaIndex';
 import * as ReportSchemas from './schemas/Models/report/schemaVersions/SchemaIndex';
@@ -166,6 +167,15 @@ class FloDBProvider {
                     ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1],
                 schemaVersion: 8,
                 migration: Migrations.v008,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1, NotificationSchemas.NotificationSchemaV1],
+                schemaVersion: 9,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             }
