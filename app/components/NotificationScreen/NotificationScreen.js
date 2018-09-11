@@ -49,7 +49,7 @@ export class NotificationScreen extends Component {
             } else earlier.data.push(notification);
         });
 
-        this.setState({notificationSections: [recent, earlier]});
+        this.setState({notificationSections: [recent, earlier].filter(section => section.data.length)});
     }
 
     onNavigatorEvent(event) {
@@ -163,6 +163,12 @@ export class NotificationScreen extends Component {
         );
     }
 
+    renderSeparator() {
+        return (
+            <View style={{...styles.seperatorStyle, marginLeft: undefined}} />
+        );
+    }
+    
     render() {
         if (this.state.notificationSections) {
             return (
@@ -170,6 +176,8 @@ export class NotificationScreen extends Component {
                     renderItem={this.renderNotification.bind(this)}
                     renderSectionHeader={renderSectionHeader}
                     sections={this.state.notificationSections}
+                    ItemSeparatorComponent={this.renderSeparator}
+
                 />
             );
         }
