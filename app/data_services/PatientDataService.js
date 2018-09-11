@@ -91,7 +91,7 @@ export class PatientDataService {
     }
 
     getAssignmentNotification(patientID, messageObject) {
-        const body = 'You have a new patient assigned';
+        const body = `A new patient ${this.getPatientByID(patientID).name} is assigned to you.`;
         return {
             notificationID: `${patientID}_assignmentNotification`,
             type: notificationType.NEW_PATIENT,

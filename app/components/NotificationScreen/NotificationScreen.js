@@ -59,6 +59,7 @@ export class NotificationScreen extends Component {
                 break;
             case 'didAppear':
                 this.didAppear();
+                break;
             case 'willDisappear':
                 this.willDisappear();
                 break;

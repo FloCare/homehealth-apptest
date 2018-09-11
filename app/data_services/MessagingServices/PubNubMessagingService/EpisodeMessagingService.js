@@ -39,7 +39,7 @@ function getVisitCollisionNotificationCenterObject(myVisit, collidingVisit, mess
     const dateString = moment(collidingVisit.midnightEpochOfVisit).format('Do MMM');
 
     const myVisitTime = myVisit.plannedStartTime ? moment(myVisit.plannedStartTime).format('LT') : undefined;
-    const body = `${coworkerName} added a visit to ${myVisit.getPatient().name} for ${today ? 'today' : dateString}. You are visiting the patient${myVisitTime ? ` at ${myVisitTime}` : ' on the same day. Set a time for the visit.'}`;
+    const body = `${coworkerName} added a visit to ${myVisit.getPatient().name} for ${today ? 'today' : dateString}. You ${myVisitTime ? '' : 'too '}are visiting this patient${myVisitTime ? ` at ${myVisitTime}` : `${today ? ' today.' : ' on that day.'} Set a time for the visit.`}`;
     return {
         notificationID: notificationObject.notificationID,
         type: notificationType.VISIT_COLLISION,
