@@ -120,7 +120,7 @@ export class NotificationScreen extends Component {
                 }}
                 onPress={() => {
                     const passProps = JSON.parse(item.passProps);
-                    if (passProps.midnightEpoch !== dateService.getDate()) dateService.setDate(passProps.midnightEpoch);
+                    if (passProps.midnightEpoch && passProps.midnightEpoch !== dateService.getDate()) dateService.setDate(passProps.midnightEpoch);
 
                     this.props.navigator.push({
                         screen: item.screenName,

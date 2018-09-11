@@ -3,6 +3,7 @@ import moment from 'moment/moment';
 import {BaseMessagingService} from './BaseMessagingService';
 import {PatientDataService} from '../../PatientDataService';
 import {UserDataService} from '../../UserDataService';
+import {NotificationService} from '../NotificationService';
 
 export class AssignedPatientsMessagingService extends BaseMessagingService {
     static identifier = 'AssignedPatientsMessagingService';
@@ -35,7 +36,11 @@ export class AssignedPatientsMessagingService extends BaseMessagingService {
             switch (actionType) {
                 case 'ASSIGN' :
                     PatientDataService.getInstance().fetchAndSavePatientsByID([patientID])
-                        .then(() => resolve())
+                        .then(() => {
+                            const notification = PatientDataService.getInstance().getAssignmentNotification(patientID, messageObject);
+                            NotificationService.getInstance().addNotificationToCenter(notification);
+                            resolve();
+                        })
                         .catch(error => reject(error));
                     break;
                 case 'UNASSIGN' :
