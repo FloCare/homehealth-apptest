@@ -1,9 +1,7 @@
 import {AppState, Platform} from 'react-native';
-import moment from 'moment/moment';
-import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {configureNotificationAndroid, displayLocalNotificationAndroid} from './AndroidNotificationService';
 import {configureNotificationIOS, displayLocalNotificationIOS} from './IOSNotificationService';
-import {screenNames} from '../../utils/constants';
+import {Notification} from '../../utils/data/schemas/Models/notification/Notification';
 
 export function configure() {
     AppState.addEventListener('change', nextState => console.log(nextState));
@@ -24,23 +22,48 @@ export function showNotification(body, data, notificationID) {
     });
 }
 
-export function showVisitCollisionNotification(myVisit, collidingVisit) {
-    const coworkerName = collidingVisit.user.firstName;
-    const today = todayMomentInUTCMidnight().valueOf() === collidingVisit.midnightEpochOfVisit;
-    const dateString = moment(collidingVisit.midnightEpochOfVisit).format('Do MMM');
+export class NotificationService {
+    static notificationService;
 
-    const myVisitTime = myVisit.plannedStartTime ? moment(myVisit.plannedStartTime).format('LT') : undefined;
+    static initialiseService(floDB) {
+        NotificationService.notificationService = new NotificationService(floDB);
+    }
 
-    const body = `${coworkerName} added a visit for ${today ? 'today' : dateString}. You too are visiting the patient ${today ? 'today' : `on ${dateString}`}${myVisitTime ? ` at ${myVisitTime}` : '. Set a time for the visit.'}`;
-    const data = {
-        navigateTo: screenNames.visitDayViewScreen,
-            tabBarHidden: true,
-            payload: {
-            selectedScreen: 'list',
-                visitID: myVisit.visitID,
-                midnightEpoch: myVisit.midnightEpochOfVisit,
+    static getInstance() {
+        if (!NotificationService.notificationService) {
+            throw new Error('Notification service requested before being initialised');
         }
-    };
-    const notificationID = `${myVisit.visitID}_${collidingVisit.visitID}_${Date.now()}`;
-    showNotification(body, data, notificationID);
+
+        return NotificationService.notificationService;
+    }
+
+    static getFlatNotification(notification) {
+        return notification;
+    }
+
+    constructor(floDB) {
+        this.floDB = floDB;
+    }
+
+    addNotificationToCenter(notification) {
+        if (!notification) { throw new Error('notification cant be null'); }
+        try {
+            this.floDB.write(() => {
+                this.floDB.create(Notification, notification);
+            });
+        } catch (e) {
+            console.log('error in writing to notification center');
+            console.log(notification);
+            throw e;
+        }
+    }
+
+    subscribeToNotification(callback) {
+        const results = this.floDB.objects(Notification).sorted('createdTime', true);
+        console.log(`exisiting size ${results.length}`);
+        results.addListener(notifications => {
+            callback(notifications.map(notification => NotificationService.getFlatNotification(notification)));
+        });
+        callback(results);
+    }
 }

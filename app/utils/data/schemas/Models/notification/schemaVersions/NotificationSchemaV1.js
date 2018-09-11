@@ -6,12 +6,13 @@ export const NotificationSchemaV1 = {
     properties: {
         notificationID: 'string',
 
-        createdTime: 'date',
+        createdTime: {type: 'int', indexed: true},
         type: 'string',
 
         body: 'string',
-        onClick: 'string?',
-        onClickProps: 'string?',
+        screenName: 'string?',
+        passProps: 'string?',
+        navigatorStyle: 'string?',
         metaData: 'string?'
     }
 };

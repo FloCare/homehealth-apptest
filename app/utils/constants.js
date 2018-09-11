@@ -142,6 +142,11 @@ const parameterValues = {
 
 };
 
+const notificationType = {
+    VISIT_COLLISION: 'VISIT_COLLISION',
+    NEW_PATIENT: 'NEW_PATIENT'
+};
+
 const visitSubjects = {
     PLACE: 'Place',
     PATIENT: 'Patient'
@@ -179,4 +184,5 @@ export const apiServerURL = 'https://app-11293.on-aptible.com';
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
     screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
-    PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects};
+    PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects,
+    notificationType};

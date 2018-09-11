@@ -14,6 +14,7 @@ import {Task} from './schemas/Models/task/Task';
 import {VisitMiles} from './schemas/Models/visitMiles/VisitMiles';
 import {ReportItem} from './schemas/Models/reportItem/ReportItem';
 import {Report} from './schemas/Models/report/Report';
+import {Notification} from './schemas/Models/notification/Notification';
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
@@ -174,7 +175,8 @@ class FloDBProvider {
                 schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
                     UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
-                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1, NotificationSchemas.NotificationSchemaV1],
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1],
                 schemaVersion: 9,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
@@ -183,7 +185,7 @@ class FloDBProvider {
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
         const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User,
-            Physician, VisitMiles, ReportItem, Report, Task];
+            Physician, VisitMiles, ReportItem, Report, Task, Notification];
 
         let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (existingSchemaVersion >= 0) {
