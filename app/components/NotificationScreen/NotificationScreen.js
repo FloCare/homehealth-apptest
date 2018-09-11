@@ -5,6 +5,7 @@ import {PrimaryColor} from '../../utils/constants';
 import StyledText from '../common/StyledText';
 import styles from '../common/SectionedList/styles';
 import {NotificationService} from '../../data_services/MessagingServices/NotificationService';
+import {dateService} from '../../data_services/DateService';
 
 function renderSectionHeader({section}) {
     return (
@@ -57,7 +58,7 @@ export class NotificationScreen extends Component {
             case 'willAppear':
                 break;
             case 'didAppear':
-                break;
+                this.didAppear();
             case 'willDisappear':
                 this.willDisappear();
                 break;
@@ -87,6 +88,11 @@ export class NotificationScreen extends Component {
         });
     }
 
+    didAppear() {
+        // this.appDateStateCache = dateService.getDate();
+        // console.log(`recorded date as ${this.appDateStateCache}`);
+    }
+
     willDisappear() {
         const mostRecentNotification = this.state.notificationSections[0].data[0] || this.state.notificationSections[0].data[1];
         AsyncStorage.setItem('lastSeenNotificationTimestamp', mostRecentNotification.createdTime.toString());
@@ -111,6 +117,16 @@ export class NotificationScreen extends Component {
                 style={{
                     marginVertical: 3,
                     paddingRight: 20
+                }}
+                onPress={() => {
+                    const passProps = JSON.parse(item.passProps);
+                    if (passProps.midnightEpoch !== dateService.getDate()) dateService.setDate(passProps.midnightEpoch);
+
+                    this.props.navigator.push({
+                        screen: item.screenName,
+                        passProps,
+                        navigatorStyle: JSON.parse(item.navigatorStyle)
+                    });
                 }}
             >
                 <View
