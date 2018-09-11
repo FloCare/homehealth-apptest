@@ -20,6 +20,7 @@ import LockOnInactivity from '../components/common/LockOnInactivity';
 import {VisitDayViewScreen} from '../components/VisitDayViewScreen';
 import MilesLogScreenContainer from '../components/Miles/MilesLogScreenContainer';
 import {AddTaskComponent} from '../components/HomeScreen/AddTaskComponent';
+import {NotificationScreen} from '../components/NotificationScreen/NotificationScreen';
 
 const RegisterScreens = (store, Provider) => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -51,6 +52,7 @@ const RegisterScreens = (store, Provider) => {
     Navigation.registerComponent(screenNames.patientDetails, () => LockOnInactivity(PatientDetailScreenContainer));
     Navigation.registerComponent(screenNames.patientList, () => LockOnInactivity(PatientListScreenContainer));
     Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer), store, Provider);
+    Navigation.registerComponent(screenNames.notificationScreen, () => LockOnInactivity(NotificationScreen));
     Navigation.registerComponent(screenNames.moreScreen, () => LockOnInactivity(MoreScreen));
     Navigation.registerComponent(screenNames.legal, () => LockOnInactivity(LegalScreen));
     // Navigation.registerComponent(screenNames.visitListScreen, () => LockOnInactivity(VisitListScreenContainer), store, Provider);
