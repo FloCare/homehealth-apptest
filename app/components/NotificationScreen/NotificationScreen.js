@@ -19,7 +19,7 @@ export class NotificationScreen extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.state = {};
         AsyncStorage.getItem('lastSeenNotificationTimestamp').then(lastSeenNotificationTimestamp => {
-           this.setState({lastSeenNotificationTimestamp: lastSeenNotificationTimestamp ? parseInt(lastSeenNotificationTimestamp) : 0});
+            this.setState({lastSeenNotificationTimestamp: lastSeenNotificationTimestamp ? parseInt(lastSeenNotificationTimestamp) : 0});
         });
 
         NotificationService.getInstance().subscribeToNotification(this.onNotificationRefresh.bind(this));
@@ -95,9 +95,11 @@ export class NotificationScreen extends Component {
     }
 
     willDisappear() {
-        const mostRecentNotification = this.state.notificationSections[0].data[0] || this.state.notificationSections[0].data[1];
-        AsyncStorage.setItem('lastSeenNotificationTimestamp', mostRecentNotification.createdTime.toString());
-        this.setState({lastSeenNotificationTimestamp: mostRecentNotification.createdTime});
+        if (this.state.notificationSections && this.state.notificationSections.length > 0) {
+            const mostRecentNotification = this.state.notificationSections[0].data[0] || this.state.notificationSections[0].data[1];
+            AsyncStorage.setItem('lastSeenNotificationTimestamp', mostRecentNotification.createdTime.toString());
+            this.setState({lastSeenNotificationTimestamp: mostRecentNotification.createdTime});
+        }
     }
 
     renderNotification({item}) {
@@ -185,7 +187,7 @@ export class NotificationScreen extends Component {
             <View style={{...styles.seperatorStyle, marginLeft: undefined}} />
         );
     }
-    
+
     render() {
         if (this.state.notificationSections) {
             return (
