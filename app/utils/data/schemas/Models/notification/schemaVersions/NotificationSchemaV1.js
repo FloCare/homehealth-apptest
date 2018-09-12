@@ -13,6 +13,6 @@ export const NotificationSchemaV1 = {
         screenName: 'string?',
         passProps: 'string?',
         navigatorStyle: 'string?',
-        metaData: 'string?'
+        metadata: 'string?'
     }
 };

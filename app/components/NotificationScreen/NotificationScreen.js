@@ -1,11 +1,13 @@
 import moment from 'moment/moment';
 import React, {Component} from 'react';
-import {View, TouchableOpacity, SectionList, AsyncStorage} from 'react-native';
+import {View, TouchableOpacity, SectionList, AsyncStorage, Alert} from 'react-native';
 import {PrimaryColor} from '../../utils/constants';
 import StyledText from '../common/StyledText';
 import styles from '../common/SectionedList/styles';
 import {NotificationService} from '../../data_services/MessagingServices/NotificationService';
 import {dateService} from '../../data_services/DateService';
+import {PatientDataService} from '../../data_services/PatientDataService';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 
 function renderSectionHeader({section}) {
     return (
@@ -122,6 +124,23 @@ export class NotificationScreen extends Component {
                     paddingRight: 20
                 }}
                 onPress={() => {
+                    if (item.metadata) {
+                        const metadata = JSON.parse(item.metadata);
+                        if (metadata.patientID) {
+                            const patient = PatientDataService.getInstance().getPatientByID(metadata.patientID);
+                            if (!patient || patient.archived) {
+                                Alert.alert('The patient doesn\'t exist. Please contact the admin');
+                                return;
+                            }
+                        }
+                        if (metadata.visitID) {
+                            const visit = VisitService.getInstance().visitRealmService.getVisitByID(metadata.visitID);
+                            if (!visit) {
+                                Alert.alert('The visit is deleted from your schedule.');
+                                return;
+                            }
+                        }
+                    }
                     const passProps = JSON.parse(item.passProps);
                     if (passProps.midnightEpoch && passProps.midnightEpoch !== dateService.getDate()) dateService.setDate(passProps.midnightEpoch);
 

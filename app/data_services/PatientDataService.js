@@ -103,6 +103,9 @@ export class PatientDataService {
             }),
             navigatorStyle: JSON.stringify({
                 tabBarHidden: true
+            }),
+            metadata: JSON.stringify({
+                patientID
             })
         };
     }

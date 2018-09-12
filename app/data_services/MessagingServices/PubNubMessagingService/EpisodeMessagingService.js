@@ -51,6 +51,10 @@ function getVisitCollisionNotificationCenterObject(myVisit, collidingVisit, mess
         }),
         navigatorStyle: JSON.stringify({
             tabBarHidden: true
+        }),
+        metadata: JSON.stringify({
+            visitID: myVisit.visitID,
+            patientID: myVisit.getPatient().patientID
         })
     };
 }
