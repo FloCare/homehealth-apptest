@@ -189,7 +189,7 @@ export class NotificationScreen extends Component {
     }
 
     render() {
-        if (this.state.notificationSections) {
+        if (this.state.notificationSections && this.state.notificationSections.length > 0) {
             return (
                 <SectionList
                     renderItem={this.renderNotification.bind(this)}
@@ -201,6 +201,25 @@ export class NotificationScreen extends Component {
             );
         }
 
-        return null;
+        return (
+            <View
+                style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+            >
+                <StyledText
+                    style={{
+                        color: 'grey'
+                    }}
+                >
+                    No Notifications
+                </StyledText>
+                <StyledText
+                    style={{
+                        color: '#eeeeee'
+                    }}
+                >
+                    ...Yet
+                </StyledText>
+            </View>
+        );
     }
 }
