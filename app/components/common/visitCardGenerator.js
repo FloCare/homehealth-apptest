@@ -52,7 +52,6 @@ const mapStateToProps = (state, ownProps) => {
         const patientID = visit.patientID;
         visitSubject = state.patients[patientID];
         props.patientID = visit.patientID;
-        props.isLocalPatient = visitSubject.isLocallyOwned;
         props.visitSubject = visitSubjects.PATIENT;
     } else {
         const placeID = visit.placeID;
@@ -60,6 +59,7 @@ const mapStateToProps = (state, ownProps) => {
         props.placeID = placeID;
         props.visitSubject = visitSubjects.PLACE;
     }
+    props.isLocalSubject = visitSubject.isLocallyOwned;
 
     props.name = visitSubject.name;
     props.primaryContact = !visitSubject.archived && visitSubject.primaryContact;
@@ -404,11 +404,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
         // Miles Section
 
-        isMilesEnabled = () => {
-            const isPlaceVisit = this.props.visitSubject === visitSubjects.PLACE;
-            const isLocalPatient = this.props.isLocalPatient;
-            return !(isPlaceVisit || isLocalPatient);
-        }
+        isMilesEnabled = () => (!(this.props.isLocalSubject))
 
         dismissMilesModal = () => {
             this.setState({milesModalVisible: false});
