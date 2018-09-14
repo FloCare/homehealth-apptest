@@ -1,7 +1,7 @@
 import {EpisodeDataService} from "../data_services/EpisodeDataService";
 import {dateService, initialiseService as initialiseDate} from "../data_services/DateService";
 import {PatientDataService} from "../data_services/PatientDataService";
-import {initialiseService as initialiseStopService} from "../data_services/PlaceDataService";
+import {PlaceDataService} from "../data_services/PlaceDataService";
 import {createStore} from "redux";
 import {MessagingServiceCoordinator} from "../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator";
 import {VisitService} from "../data_services/VisitServices/VisitService";
@@ -51,7 +51,7 @@ export async function initialiseApp(key) {
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
     TaskService.initialiseService(FloDBProvider.db);
     NotificationService.initialiseService(FloDBProvider.db);
-    initialiseStopService(FloDBProvider.db, store);
+    PlaceDataService.initialiseService(FloDBProvider.db, store)
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 

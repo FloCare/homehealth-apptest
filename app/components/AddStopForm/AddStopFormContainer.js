@@ -8,7 +8,7 @@ import styles from './styles';
 import {Options} from './AddStopFormModel';
 import {ParseGooglePlacesAPIResponse} from '../../utils/parsingUtils';
 import {eventNames} from '../../utils/constants';
-import {placeDataService} from '../../data_services/PlaceDataService';
+import {PlaceDataService} from '../../data_services/PlaceDataService';
 
 const Form = t.form.Form;
 
@@ -138,7 +138,7 @@ class AddStopFormContainer extends Component {
                 placeId = this.state.value.placeID;
 
                 try {
-                    placeDataService.editExistingPlace(placeId, this.state.value);
+                    PlaceDataService.getInstance().editExistingPlace(placeId, this.state.value);
                 } catch (err) {
                     console.log('Error on Stop editing: ', err);
                     // Todo: Raise an error to the screen
@@ -146,7 +146,7 @@ class AddStopFormContainer extends Component {
                 }
             } else {
                 try {
-                    placeDataService.createNewPlace(this.state.value);
+                    PlaceDataService.getInstance().createNewLocalPlace(this.state.value);
                     firebase.analytics().logEvent(eventNames.ADD_STOP, {});
                     console.log('Save to DB successful');
                 } catch (err) {

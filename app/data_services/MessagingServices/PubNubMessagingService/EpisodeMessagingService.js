@@ -272,9 +272,10 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     _getFlatVisitPayload(visit) {
+        const isPatientVisit = !!visit.getPatient();
         const flatVisit = {
             visitID: visit.visitID,
-            episodeID: visit.getEpisode().episodeID,
+            episodeID: isPatientVisit ? visit.getEpisode().episodeID : null,
             midnightEpochOfVisit: visit.midnightEpochOfVisit,
             isDone: visit.isDone,
             plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined,
@@ -292,7 +293,11 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     isVisitOfCommonInterest(visit) {
-        return !(visit.getPlace() || visit.getPatient().isLocallyOwned);
+        const visitPlace = visit.getPlace();
+        if (visitPlace) {
+            return !visitPlace.isLocallyOwned;
+        }
+        return !visit.getPatient().isLocallyOwned;
     }
 
     _createPublishToServerJob(payload) {
@@ -308,11 +313,12 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
     publishVisitCreateBulk(visits) {
         const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit));
-
-        this._createPublishToServerJob({
-            action: 'CREATE',
-            visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
-        });
+        if (filteredVisits.length > 0) {
+            this._createPublishToServerJob({
+                action: 'CREATE',
+                visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
+            });
+        }
     }
 
     publishVisitUpdate(visit) {
@@ -325,10 +331,13 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitDeletes(visits) {
-        this._createPublishToServerJob({
-            action: 'DELETE',
-            visits: visits.filter(visit => this.isVisitOfCommonInterest(visit)).map(visit => this._getFlatVisitPayload(visit))
-        });
+        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit))
+        if (filteredVisits.length > 0) {
+            this._createPublishToServerJob({
+                action: 'DELETE',
+                visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
+            });
+        }
     }
 
     subscribeToEpisodes(episodes, suppressNotificationFromHistory = false) {
