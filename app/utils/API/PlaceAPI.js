@@ -6,7 +6,7 @@ export function getPlaceByID(placeID) {
         console.log('error in getting access token');
         throw error;
     })
-    .then(token => fetch(`${apiServerURL}/phi/v1.0/stops/${placeID}/`,
+    .then(token => fetch(`${apiServerURL}/phi/v1.0/places/${placeID}/`,
         {
             method: 'GET',
             headers: {

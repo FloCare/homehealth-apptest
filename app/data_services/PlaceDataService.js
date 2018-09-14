@@ -91,7 +91,7 @@ export class PlaceDataService {
     fetchAndCreatePlaceByID(placeID) {
         return PlaceAPI.getPlaceByID(placeID).then((placeData) => {
             const placeInformation = {
-                placeID: placeData.stopID,
+                placeID: placeData.placeID,
                 name: placeData.name,
                 primaryContact: placeData.contactNumber
             };
@@ -106,7 +106,7 @@ export class PlaceDataService {
         return PlaceAPI.getPlaceByID(placeID).then((placeData) => {
             const place = {
                 ...placeData.address,
-                placeID: placeData.stopID,
+                placeID: placeData.placeID,
                 stopName: placeData.name,
                 primaryContact: placeData.contactNumber,
                 lat: placeData.latitude,
