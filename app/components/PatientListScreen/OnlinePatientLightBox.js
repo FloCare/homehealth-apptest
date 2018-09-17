@@ -63,12 +63,12 @@ class OnlinePatientLightBox extends Component {
                         }}
                     >
                         <StyledText
-                            style={{fontWeight: '400', fontSize: 24, color: 'black', bottomMargin: 10}}
+                            style={{fontWeight: '400', fontSize: 20, color: 'black', bottomMargin: 10}}
                         >
                             {this.props.patient.name}
                         </StyledText>
                         <StyledText
-                            style={{fontWeight: '300', fontSize: 15, color: 'grey', width: '75%'}}
+                            style={{fontWeight: '300', fontSize: 13, color: 'grey', width: '75%'}}
                         >
                             {this.props.patient.address.formattedAddress}
                         </StyledText>
