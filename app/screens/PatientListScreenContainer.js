@@ -270,9 +270,9 @@ class PatientListScreenContainer extends Component {
     onConnectionStatusChange(connectionInfo) {
         console.log(`Connection change, type: ${connectionInfo.type}, effectiveType: ${connectionInfo.effectiveType}`);
         if (connectionInfo.type !== 'none' && connectionInfo.type !== 'unknown') {
-            this.setState({online: true});
+            this.setState({online: true}, () => { this.getSectionData(this.state.searchText); });
         } else {
-            this.setState({online: false});
+            this.setState({online: false}, () => { this.getSectionData(this.state.searchText); });
         }
     }
 

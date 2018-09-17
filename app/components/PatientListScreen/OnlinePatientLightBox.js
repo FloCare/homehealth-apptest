@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Dimensions, TouchableOpacity, ActivityIndicator, Alert} from 'react-native';
+import {View, Dimensions, TouchableOpacity, ActivityIndicator, Alert, Image} from 'react-native';
 import firebase from 'react-native-firebase';
 import {
     eventNames,
@@ -8,6 +8,7 @@ import {
 } from '../../utils/constants';
 import StyledText from '../common/StyledText';
 import {PatientDataService} from '../../data_services/PatientDataService';
+import {Images} from '../../Images';
 
 class OnlinePatientLightBox extends Component {
     constructor(props) {
@@ -48,22 +49,30 @@ class OnlinePatientLightBox extends Component {
                 }}
             >
                 <View
-                    style={{
-                        paddingHorizontal: 30,
-                        flex: 3,
-                        justifyContent: 'center',
-                    }}
+                    style={{flexDirection: 'row', flex: 3, alignItems: 'center'}}
                 >
-                    <StyledText
-                        style={{fontWeight: '500', fontSize: 18, color: 'black'}}
+                    <View
+                        style={{flex: 1, alignItems: 'center'}}
                     >
-                        {this.props.patient.name}
-                    </StyledText>
-                    <StyledText
-                        style={{fontWeight: '300', fontSize: 15, color: 'grey'}}
+                        <Image source={Images.person_ic} style={{resizeMode: 'contain'}} />
+                    </View>
+                    <View
+                        style={{
+                            flex: 3,
+                            justifyContent: 'center',
+                        }}
                     >
-                        {this.props.patient.address.formattedAddress}
-                    </StyledText>
+                        <StyledText
+                            style={{fontWeight: '400', fontSize: 24, color: 'black', bottomMargin: 10}}
+                        >
+                            {this.props.patient.name}
+                        </StyledText>
+                        <StyledText
+                            style={{fontWeight: '300', fontSize: 15, color: 'grey', width: '75%'}}
+                        >
+                            {this.props.patient.address.formattedAddress}
+                        </StyledText>
+                    </View>
                 </View>
                 <TouchableOpacity
                     style={{
