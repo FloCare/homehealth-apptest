@@ -7,6 +7,7 @@ import RNSecureKeyStore from 'react-native-secure-key-store';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
 import {screenNames, PrimaryColor, eventNames} from '../../utils/constants';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {PatientDataService} from '../../data_services/PatientDataService';
@@ -219,9 +220,10 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onDone() {
-        // Logging the firebase event upon visits being added
+        // Logging the firebase event for number of visits added & if the visits were added for today or not
         firebase.analytics().logEvent(eventNames.ADD_VISIT, {
-            VALUE: this.state.selectedItems.size
+            VALUE: this.state.selectedItems.size,
+            today: this.state.date.valueOf() === todayMomentInUTCMidnight().valueOf() ? 1 : 0
         });
         VisitService.getInstance().createNewVisits(this.state.selectedItems.values(), this.state.date.valueOf());
         //This is the part where we create the new visit items
