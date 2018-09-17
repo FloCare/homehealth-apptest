@@ -269,13 +269,10 @@ class PatientListScreenContainer extends Component {
 
     onConnectionStatusChange(connectionInfo) {
         console.log(`Connection change, type: ${connectionInfo.type}, effectiveType: ${connectionInfo.effectiveType}`);
-        Alert.alert('something', connectionInfo.type);
         if (connectionInfo.type !== 'none' && connectionInfo.type !== 'unknown') {
             this.setState({online: true});
-            Alert.alert('online', 'online');
         } else {
             this.setState({online: false});
-            Alert.alert('offline', 'offline');
         }
     }
 
