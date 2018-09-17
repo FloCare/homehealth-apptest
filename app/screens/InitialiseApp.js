@@ -57,11 +57,10 @@ export async function initialiseApp(key) {
 
     await RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            return PatientDataService.getInstance().updatePatientListFromServer()
+            return Promise.all([PatientDataService.getInstance().updatePatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
                 .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
         }
     });
-
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);
     configureNotification();

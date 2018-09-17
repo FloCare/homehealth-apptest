@@ -276,6 +276,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         const flatVisit = {
             visitID: visit.visitID,
             episodeID: isPatientVisit ? visit.getEpisode().episodeID : null,
+            placeID: !isPatientVisit ? visit.getPlace().placeID : null,
             midnightEpochOfVisit: visit.midnightEpochOfVisit,
             isDone: visit.isDone,
             plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined,

@@ -21,6 +21,7 @@ import {ReportService} from './ReportService';
 import {VisitMilesService} from './VisitMilesService';
 import {ReportMessagingService} from '../MessagingServices/PubNubMessagingService/ReportMessagingService';
 import {getReportDetailsByIds} from '../../utils/API/ReportAPI';
+import {PlaceDataService} from '../PlaceDataService';
 
 export class VisitService {
     static visitService;
@@ -248,8 +249,19 @@ export class VisitService {
     }
 
     saveVisitToRealm(visitJson, update = false) {
-        if (!EpisodeDataService.getInstance().getEpisodeByID(visitJson.episodeID)) {
-            console.log(`skipping saveVisitToRealm with the following episodeID because episode doesnt exist: ${visitJson.episodeID}`);
+        const episodeID = visitJson.episodeID;
+        const placeID = visitJson.placeID;
+        let place = null;
+        let episode = null;
+        if (placeID) {
+            place = PlaceDataService.getInstance().getPlaceByID(placeID);
+            console.log(place);
+        }
+        if (episodeID) {
+            episode = EpisodeDataService.getInstance().getEpisodeByID(episodeID);
+        }
+        if (!episode && !place) {
+            console.log(`skipping saveVisitToRealm - episodeID -: ${episodeID} -- placeID: ${placeID}`);
             return;
         }
         let visit;
@@ -271,11 +283,15 @@ export class VisitService {
                 };
                 this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
             }
+            if (!update) {
+                if (episode) {
+                    EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID);
+                } else if (place) {
+                    place.visits.push(visit);
+                }
+            }
         });
         // console.log('visitsaved');
-        if (!update) {
-            EpisodeDataService.getInstance().saveVisitToEpisodeID(visit, visitJson.episodeID);
-        }
         return visit;
     }
 
