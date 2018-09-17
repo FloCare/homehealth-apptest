@@ -413,6 +413,18 @@ export class PatientDataService {
         );
     }
 
+    requestPatientAssignmentByID(newPatientID) {
+        return PatientAPI.requestPatientAssignment(newPatientID).then(
+            (response) => {
+                console.log('response is');
+                console.log(response);
+
+                if (response.ok) {
+                    return response.json();
+                }
+            }
+        );
+    }
 
     fetchAndEditPatientsByID(patientIDs) {
         return this.fetchPatientsWithEpisodeData(patientIDs).then(

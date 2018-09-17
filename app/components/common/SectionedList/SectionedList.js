@@ -37,7 +37,7 @@ class SectionedList extends Component {
         return (
             <TouchableOpacity
                 style={{flex: 1, marginHorizontal: 5, flexDirection: 'row', alignItems: 'center', backgroundColor}}
-                onPress={({e}) => this.props.onItemPressed({item}, e)}
+                onPress={item.onPress ? () => item.onPress(item) : ({e}) => this.props.onItemPressed({item}, e)}
             >
                 <View
                     style={{marginLeft: 5, backgroundColor: item.recentlyUpdated ? PrimaryColor : 'transparent', width: 7, height: 7, borderRadius: 7}}

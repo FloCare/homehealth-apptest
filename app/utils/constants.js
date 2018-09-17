@@ -57,6 +57,7 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
+    onlinePatientLightBox: 'OnlinePatientLightBox',
     addTaskComponent: 'addTaskComponent',
     milesLogScreen: 'MilesLogScreen',
     visitListScreen: 'VisitListScreen',
@@ -119,6 +120,7 @@ const eventNames = {
 const parameterValues = {
     SUCCESS: 'success',
     FAILURE: 'failure',
+    IMPORT_PATIENT: 'import_patient',
     CALL_PATIENT: 'call_patient',
     CALL_EMERGENCY: 'call_emergency',
     CALL_PHYSICIAN: 'call_physician',

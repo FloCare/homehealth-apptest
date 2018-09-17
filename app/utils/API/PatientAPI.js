@@ -75,3 +75,42 @@ export function getPatientsByOldID(patientIDs) {
             throw new Error('HTTP request not OK');
         });
 }
+
+export function getAllPatientsBasicInfo() {
+    return RNSecureKeyStore.get('accessToken').catch(error => {
+        console.log('error in getting access token');
+        throw error;
+    })
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-patients-for-org/`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('HTTP request not OK');
+        });
+}
+
+export function requestPatientAssignment(patientID) {
+    return RNSecureKeyStore.get('accessToken').catch(error => {
+        console.log('error in getting access token');
+        throw error;
+    })
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/add-patient-to-user/`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    patientID
+                })
+            }));
+}
