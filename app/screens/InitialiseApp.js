@@ -1,7 +1,7 @@
 import {EpisodeDataService} from "../data_services/EpisodeDataService";
 import {dateService, initialiseService as initialiseDate} from "../data_services/DateService";
 import {PatientDataService} from "../data_services/PatientDataService";
-import {initialiseService as initialiseStopService} from "../data_services/PlaceDataService";
+import {PlaceDataService} from "../data_services/PlaceDataService";
 import {createStore} from "redux";
 import {MessagingServiceCoordinator} from "../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator";
 import {VisitService} from "../data_services/VisitServices/VisitService";
@@ -51,17 +51,16 @@ export async function initialiseApp(key) {
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
     TaskService.initialiseService(FloDBProvider.db);
     NotificationService.initialiseService(FloDBProvider.db);
-    initialiseStopService(FloDBProvider.db, store);
+    PlaceDataService.initialiseService(FloDBProvider.db, store)
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
     await RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            return PatientDataService.getInstance().updatePatientListFromServer()
+            return Promise.all([PatientDataService.getInstance().updatePatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
                 .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
         }
     });
-
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);
     configureNotification();

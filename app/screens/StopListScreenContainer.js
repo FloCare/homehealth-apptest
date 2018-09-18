@@ -2,12 +2,11 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {Platform, Alert} from 'react-native';
 import {StopListScreen} from '../components/StopListScreen';
-import {floDB, Place, VisitOrder} from '../utils/data/schema';
+import {floDB, Place} from '../utils/data/schema';
 import {createSectionedListByName} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
 import {Images} from '../Images';
-import {todayMomentInUTCMidnight, makeCallbacks} from '../utils/utils';
-import {placeDataService} from "../data_services/PlaceDataService";
+import {PlaceDataService} from '../data_services/PlaceDataService';
 
 class StopListScreenContainer extends Component {
     static navigatorButtons = {
@@ -115,7 +114,7 @@ class StopListScreenContainer extends Component {
                 const archiveStop = (id) => {
                     console.log('Archiving Stop');
                     try {
-                        placeDataService.archivePlace(id);
+                        PlaceDataService.getInstance().archivePlace(id);
                         Alert.alert('Success', 'Stop deleted successfully');
                     } catch (err) {
                         console.log('ERROR while archiving place:', err);

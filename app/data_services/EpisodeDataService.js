@@ -25,15 +25,14 @@ export class EpisodeDataService {
         return this.floDB.objectForPrimaryKey(Episode.getSchemaName(), episodeID);
     }
 
+    // Has to be inside write
     saveVisitToEpisodeID(visit, episodeID) {
         try {
             const episode = this.floDB.objectForPrimaryKey(Episode.getSchemaName(), episodeID);
             if (!episode) {
                 throw new Error('episode not found when trying to save visit');
             }
-            this.floDB.write(() => {
-                episode.visits.push(visit);
-            });
+            episode.visits.push(visit);
         } catch (e) {
             console.log('error saving visit to episode');
             console.log(e);

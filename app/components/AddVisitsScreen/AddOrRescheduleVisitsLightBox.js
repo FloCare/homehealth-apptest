@@ -13,7 +13,7 @@ import {Images} from '../../Images';
 import StyledText from '../common/StyledText';
 import {PatientDataService} from '../../data_services/PatientDataService';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
-import {placeDataService} from '../../data_services/PlaceDataService';
+import {PlaceDataService} from '../../data_services/PlaceDataService';
 
 class AddOrRescheduleVisitsLightBox extends Component {
     constructor(props) {
@@ -51,7 +51,7 @@ class AddOrRescheduleVisitsLightBox extends Component {
             } else if (this.props.visitSubject === visitSubjects.PLACE) {
                 const placeId = this.props.placeId;
                 console.log('Adding visit for place: ', placeId);
-                const place = placeDataService.getPlaceByID(placeId);
+                const place = PlaceDataService.getInstance().getPlaceByID(placeId);
                 VisitService.getInstance().createNewVisits([place], this.state.date.valueOf());
             }
 

@@ -4,8 +4,13 @@ import {arrayToObjectByKey} from '../utils/collectionUtils';
 import {addressDataService} from './AddressDataService';
 import {VisitService} from './VisitServices/VisitService';
 import {parsePhoneNumber} from '../utils/lib';
+import * as PlaceAPI from '../utils/API/PlaceAPI';
+import {generateUUID} from '../utils/utils';
 
-class PlaceDataService {
+export class PlaceDataService {
+
+    static placeDataService;
+
     static getFlatPlace(place) {
         return {
             placeID: place.placeID,
@@ -13,7 +18,19 @@ class PlaceDataService {
             addressID: place.address.addressID,
             primaryContact: place.primaryContact,
             visits: place.visits.map(visit => visit.visitID),
+            isLocallyOwned: place.isLocallyOwned
         };
+    }
+
+    static initialiseService(floDB, store) {
+        PlaceDataService.placeDataService = new PlaceDataService(floDB, store);
+    }
+
+    static getInstance() {
+        if (!PlaceDataService.placeDataService) {
+            throw new Error('Place data service requested before being initialised');
+        }
+        return PlaceDataService.placeDataService;
     }
 
     static getFlatPlaceMap(places) {
@@ -42,24 +59,71 @@ class PlaceDataService {
         addressDataService.updateAddressesInRedux(places.map(place => place.address));
     }
 
-    createNewPlace(place) {
-        // Todo: Add proper ID generators
-        const placeId = Math.random().toString();
-        const addressId = Math.random().toString();
-
+    createNewPlace(placeInformation, addressInformation, isLocallyOwned) {
         let newPlace = null;
+        const {placeID, name, primaryContact} = placeInformation;
         this.floDB.write(() => {
             newPlace = this.floDB.create(Place.schema.name, {
-                placeID: placeId,
-                name: place.stopName,
-                primaryContact: place.primaryContact
+                placeID,
+                name,
+                primaryContact,
+                isLocallyOwned
             });
 
-            addressDataService.addAddressToTransaction(newPlace, place, addressId);
+            addressDataService.addAddressToTransaction(newPlace, addressInformation, addressInformation.addressID);
         });
         if (newPlace) {
             this.addPlacesToRedux([newPlace]);
         }
+    }
+
+    createNewLocalPlace(place) {
+        const placeID = generateUUID();
+        const addressID = generateUUID();
+        const placeInformation = {
+            placeID,
+            name: place.stopName,
+            primaryContact: place.primaryContact,
+        };
+        this.createNewPlace(placeInformation, {...place, addressID}, true);
+    }
+
+    createNewSyncedPlace(placeData) {
+        const placeInformation = {
+            placeID: placeData.placeID,
+            name: placeData.name,
+            primaryContact: placeData.contactNumber
+        };
+        const addressInformation = placeData.address;
+        addressInformation.lat = placeData.address.latitude;
+        addressInformation.long = placeData.address.longitude;
+        this.createNewPlace(placeInformation, addressInformation, false);
+    }
+
+    fetchAndCreatePlaceByID(placeID) {
+        return PlaceAPI.getPlaceByID(placeID).then((placeData) => {
+            this.createNewSyncedPlace(placeData);
+        });
+    }
+
+    fetchAndEditPlaceByID(placeID) {
+        return PlaceAPI.getPlaceByID(placeID).then((placeData) => {
+            const place = {
+                ...placeData.address,
+                placeID: placeData.placeID,
+                stopName: placeData.name,
+                primaryContact: placeData.contactNumber,
+                lat: placeData.latitude,
+                long: placeData.longitude
+            };
+            this.editExistingPlace(placeData.placeID, place);
+        });
+    }
+
+    fetchAndSavePlacesFromServer() {
+        return PlaceAPI.getPlacesFromServer().then((placesData) => {
+            placesData.forEach(placeData => this.createNewSyncedPlace(placeData));
+        });
     }
 
     editExistingPlace(placeId, place) {
@@ -103,10 +167,4 @@ class PlaceDataService {
             placeList: places
         });
     }
-}
-
-export let placeDataService;
-
-export function initialiseService(floDB, store) {
-    placeDataService = new PlaceDataService(floDB, store);
 }

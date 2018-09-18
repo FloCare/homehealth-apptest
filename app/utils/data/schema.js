@@ -180,6 +180,17 @@ class FloDBProvider {
                 schemaVersion: 9,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV2, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1],
+                schemaVersion: 10,
+                migration: Migrations.v010,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 

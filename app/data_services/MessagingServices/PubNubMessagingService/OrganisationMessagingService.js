@@ -1,5 +1,6 @@
 import {BaseMessagingService} from './BaseMessagingService';
 import {UserDataService} from '../../UserDataService';
+import {PlaceDataService} from '../../PlaceDataService';
 
 export class OrganisationMessagingService extends BaseMessagingService {
     static identifier = 'OrganisationMessagingService';
@@ -24,6 +25,34 @@ export class OrganisationMessagingService extends BaseMessagingService {
                             console.log(error);
                             resolve();
                         });
+                    break;
+                case 'CREATE_PLACE':
+                    PlaceDataService.getInstance().fetchAndCreatePlaceByID(message.placeID)
+                        .then(() => resolve())
+                        .catch(error => {
+                            console.log('error in creating place');
+                            console.log(error);
+                            resolve();
+                    });
+                    break;
+                case 'UPDATE_PLACE':
+                    PlaceDataService.getInstance().fetchAndEditPlaceByID(message.placeID)
+                        .then(() => resolve())
+                        .catch(error => {
+                            console.log('error in updating place');
+                            console.log(error);
+                            resolve();
+                    });
+                    break;
+                case 'DELETE_PLACE':
+                    try {
+                        PlaceDataService.getInstance().archivePlace(message.placeID);
+                    } catch (e) {
+                        console.log('Error archiving place');
+                        console.log(e);
+                        resolve();
+                    }
+                    resolve();
                     break;
                 default:
                     console.log(`unrecognised message: ${message}`);
