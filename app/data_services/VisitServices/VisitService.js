@@ -255,7 +255,6 @@ export class VisitService {
         let episode = null;
         if (placeID) {
             place = PlaceDataService.getInstance().getPlaceByID(placeID);
-            console.log(place);
         }
         if (episodeID) {
             episode = EpisodeDataService.getInstance().getEpisodeByID(episodeID);
