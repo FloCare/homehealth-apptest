@@ -5,6 +5,7 @@ import SplashScreen from 'react-native-splash-screen';
 import {screenNames, PrimaryColor, instabugKey} from './utils/constants';
 import RegisterInitScreens from './init_screens';
 import {setAutoScreenShotForInstabug, setFeedbackOptionOnly} from './utils/instabugUtils';
+import { initialiseStoreAndSetUserForInstabug } from './utils/InMemoryStore'
 
 RegisterInitScreens();
 
@@ -34,6 +35,7 @@ const setupInstaBug = () => {
         // ios specific code for instabug
         Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.screenshot]);
         Instabug.setPrimaryColor(processColor(PrimaryColor));
+        Instabug.setIBGLogPrintsToConsole(false);
     }
     if (Platform.OS === 'android') {
         Instabug.enable();
@@ -47,6 +49,7 @@ const setupInstaBug = () => {
 export const StartApp = async () => {
     setupInstaBug();
 	if (!await isFirstRun()) {
+        await initialiseStoreAndSetUserForInstabug();
 		Navigation.startSingleScreenApp({
 			screen: {
 				screen: screenNames.passcodeVerificationScreen,

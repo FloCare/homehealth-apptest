@@ -8,6 +8,8 @@ const TransparentPrimaryColor = (opacity) =>
      `rgba(69, 206, 177, ${opacity})`;
 const PrimaryFontFamily = Platform.select({ios: 'SFProText-Regular', android: 'SF-Pro-Text-Regular'});
 
+const MaxFailedAttempts = 4;
+const LockTimeOnFailedAttempts = 1; // minutes
 
 const diagnosisList = [
     {
@@ -187,4 +189,4 @@ export const apiServerURL = 'https://app-11293.on-aptible.com';
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
     screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
     PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects,
-    notificationType};
+    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts};

@@ -18,7 +18,7 @@ import {TaskService} from '../data_services/TaskService';
 import RNSecureKeyStore from "react-native-secure-key-store";
 import {todayMomentInUTCMidnight} from "../utils/utils";
 import {Provider} from "react-redux";
-import {initialiseStoreAndSetInstabug} from "../utils/InMemoryStore";
+import {initialiseStoreAndSetUserForInstabug} from "../utils/InMemoryStore";
 import {RootReducer} from "../redux/RootReducer";
 
 
@@ -32,7 +32,7 @@ export async function initialiseApp(key) {
     isInitialising = true;
     // Initialize the DB
     try {
-        await initialiseStoreAndSetInstabug();
+        await initialiseStoreAndSetUserForInstabug();
         await FloDBProvider.initialize(key);
     } catch (err) {
         console.log('Error in initializing DB: ', err);
@@ -61,6 +61,7 @@ export async function initialiseApp(key) {
                 .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
         }
     });
+
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);
     configureNotification();
