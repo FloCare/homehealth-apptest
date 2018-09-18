@@ -22,7 +22,7 @@ import {
     userProperties,
     MaxFailedAttempts, LockTimeOnFailedAttempts,
 } from '../utils/constants';
-import {getItem} from '../utils/InMemoryStore';
+import {getItem, setItem} from '../utils/InMemoryStore';
 
 class PasscodeVerificationScreen extends Component {
     static navigatorStyle = {
@@ -102,9 +102,11 @@ class PasscodeVerificationScreen extends Component {
             }
             const failedAttempts = this.state.failedAttempts + 1;
             if (failedAttempts >= MaxFailedAttempts) {
+                this.userDetails = getItem('myUserDetails');
                 this.userDetails.unlockTime = moment().valueOf() + (LockTimeOnFailedAttempts * 60 * 1000);
-                this.setLockTimeRefreshCounter();
+                setItem('myUserDetails', this.userDetails);
                 AsyncStorage.setItem('myUserDetails', JSON.stringify(this.userDetails));
+                this.setLockTimeRefreshCounter();
             }
             this.setState({
                 showMessage: true,
