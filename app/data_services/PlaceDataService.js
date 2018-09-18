@@ -88,17 +88,21 @@ export class PlaceDataService {
         this.createNewPlace(placeInformation, {...place, addressID}, true);
     }
 
+    createNewSyncedPlace(placeData) {
+        const placeInformation = {
+            placeID: placeData.placeID,
+            name: placeData.name,
+            primaryContact: placeData.contactNumber
+        };
+        const addressInformation = placeData.address;
+        addressInformation.lat = placeData.address.latitude;
+        addressInformation.long = placeData.address.longitude;
+        this.createNewPlace(placeInformation, addressInformation, false);
+    }
+
     fetchAndCreatePlaceByID(placeID) {
         return PlaceAPI.getPlaceByID(placeID).then((placeData) => {
-            const placeInformation = {
-                placeID: placeData.stopID,
-                name: placeData.name,
-                primaryContact: placeData.contactNumber
-            };
-            const addressInformation = placeData.address;
-            addressInformation.lat = placeData.address.latitude;
-            addressInformation.long = placeData.address.longitude;
-            this.createNewPlace(placeInformation, addressInformation, false);
+            this.createNewSyncedPlace(placeData);
         });
     }
 
@@ -106,13 +110,19 @@ export class PlaceDataService {
         return PlaceAPI.getPlaceByID(placeID).then((placeData) => {
             const place = {
                 ...placeData.address,
-                placeID: placeData.stopID,
+                placeID: placeData.placeID,
                 stopName: placeData.name,
                 primaryContact: placeData.contactNumber,
                 lat: placeData.latitude,
                 long: placeData.longitude
             };
-            this.editExistingPlace(placeData.stopID, place);
+            this.editExistingPlace(placeData.placeID, place);
+        });
+    }
+
+    fetchAndSavePlacesFromServer() {
+        return PlaceAPI.getPlacesFromServer().then((placesData) => {
+            placesData.forEach(placeData => this.createNewSyncedPlace(placeData));
         });
     }
 

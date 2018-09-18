@@ -41,6 +41,7 @@ const screenNames = {
     //Top Level Screens
     homeScreen: 'HomeScreen',
     patientList: 'PatientList',
+    notificationScreen: 'NotificationScreen',
     moreScreen: 'MoreScreen',
     loginScreen: 'LoginScreen',
     welcomeScreen: 'WelcomeScreen',
@@ -58,6 +59,7 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
+    onlinePatientLightBox: 'OnlinePatientLightBox',
     addTaskComponent: 'addTaskComponent',
     milesLogScreen: 'MilesLogScreen',
     visitListScreen: 'VisitListScreen',
@@ -120,6 +122,7 @@ const eventNames = {
 const parameterValues = {
     SUCCESS: 'success',
     FAILURE: 'failure',
+    IMPORT_PATIENT: 'import_patient',
     CALL_PATIENT: 'call_patient',
     CALL_EMERGENCY: 'call_emergency',
     CALL_PHYSICIAN: 'call_physician',
@@ -141,6 +144,11 @@ const parameterValues = {
     EDIT_TIME: 'edit_time',
     VIEW_VISIT_CALENDAR: 'view_visit_calendar',
 
+};
+
+const notificationType = {
+    VISIT_COLLISION: 'VISIT_COLLISION',
+    NEW_PATIENT: 'NEW_PATIENT'
 };
 
 const visitSubjects = {
@@ -181,4 +189,4 @@ export const apiServerURL = 'https://app-11293.on-aptible.com';
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
     screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
     PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects,
-    MaxFailedAttempts, LockTimeOnFailedAttempts};
+    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts};

@@ -1,13 +1,63 @@
 import {NetInfo} from 'react-native';
 import firebase from 'react-native-firebase';
-import {eventNames} from '../../../utils/constants';
+import moment from 'moment/moment';
+import {eventNames, notificationType, screenNames} from '../../../utils/constants';
 import {BaseMessagingService} from './BaseMessagingService';
 import {VisitService} from '../../VisitServices/VisitService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {pushNewVisitsToServer, pushVisitDeleteByIDs, pushVisitUpdateToServer} from '../../../utils/API/VisitAPI';
-import {showVisitCollisionNotification} from '../NotificationService';
+import {NotificationService, showNotification} from '../NotificationService';
 import {todayMomentInUTCMidnight} from '../../../utils/utils';
+
+function getVisitCollisionNotificationObject(myVisit, collidingVisit, messageObject) {
+    const coworkerName = collidingVisit.user.firstName;
+    const today = todayMomentInUTCMidnight().valueOf() === collidingVisit.midnightEpochOfVisit;
+    const dateString = moment(collidingVisit.midnightEpochOfVisit).format('Do MMM');
+
+    const myVisitTime = myVisit.plannedStartTime ? moment(myVisit.plannedStartTime).format('LT') : undefined;
+
+    const body = `${coworkerName} added a visit for ${today ? 'today' : dateString}. You too are visiting the patient ${today ? 'today' : `on ${dateString}`}${myVisitTime ? ` at ${myVisitTime}` : '. Set a time for the visit.'}`;
+    const data = {
+        navigateTo: screenNames.visitDayViewScreen,
+        tabBarHidden: true,
+        payload: {
+            selectedScreen: 'list',
+            visitID: myVisit.visitID,
+            midnightEpoch: myVisit.midnightEpochOfVisit,
+        }
+    };
+    const notificationID = `${myVisit.visitID}_${collidingVisit.visitID}_${messageObject.timestamp}`;
+    return {body, data, notificationID};
+}
+
+function getVisitCollisionNotificationCenterObject(myVisit, collidingVisit, messageObject) {
+    const notificationObject = getVisitCollisionNotificationObject(myVisit, collidingVisit, messageObject);
+
+    const coworkerName = collidingVisit.user.firstName;
+    const today = todayMomentInUTCMidnight().valueOf() === collidingVisit.midnightEpochOfVisit;
+    const dateString = moment(collidingVisit.midnightEpochOfVisit).format('Do MMM');
+
+    const myVisitTime = myVisit.plannedStartTime ? moment(myVisit.plannedStartTime).format('LT') : undefined;
+    const body = `${coworkerName} added a visit to ${myVisit.getPatient().name} for ${today ? 'today' : dateString}. You ${myVisitTime ? '' : 'too '}are visiting this patient${myVisitTime ? ` at ${myVisitTime}` : `${today ? ' today.' : ' on that day.'} Set a time for the visit.`}`;
+    return {
+        notificationID: notificationObject.notificationID,
+        type: notificationType.VISIT_COLLISION,
+        createdTime: parseInt(messageObject.timestamp),
+        body,
+        screenName: notificationObject.data.navigateTo,
+        passProps: JSON.stringify({
+            ...notificationObject.data.payload
+        }),
+        navigatorStyle: JSON.stringify({
+            tabBarHidden: true
+        }),
+        metadata: JSON.stringify({
+            visitID: myVisit.visitID,
+            patientID: myVisit.getPatient().patientID
+        })
+    };
+}
 
 export class EpisodeMessagingService extends BaseMessagingService {
     static identifier = 'EpisodeMessagingService';
@@ -20,7 +70,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         const {message, channel} = messageObject;
         return new Promise((resolve, reject) => {
             console.log('onMessage called');
-            console.log(message);
+            console.log(messageObject);
             const episodeID = channel.split('_')[1];
             const {actionType, visitID, userID} = message;
             if (userID === UserDataService.getCurrentUserProps().userID) {
@@ -33,26 +83,28 @@ export class EpisodeMessagingService extends BaseMessagingService {
                     UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID)
                         .then(() => VisitService.getInstance().fetchAndSaveVisitsByID([visitID]))
                         .then((visits) => {
-                            if (!messageObject.suppressNotification) {
-                                visits.forEach(visit => {
-                                    if (!visit) {
-                                        return;
-                                    }
-                                    // console.log(visit);
-                                    const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
-                                    myVisitsForTheDay.forEach(myVisit => {
-                                        if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
+                            visits.forEach(visit => {
+                                if (!visit) {
+                                    return;
+                                }
+                                // console.log(visit);
+                                const myVisitsForTheDay = VisitService.getInstance().visitRealmService.getVisitsOfCurrentUserForDate(visit.midnightEpochOfVisit);
+                                myVisitsForTheDay.forEach(myVisit => {
+                                    if (myVisit.getEpisode().episodeID === visit.getEpisode().episodeID && visit.midnightEpochOfVisit >= todayMomentInUTCMidnight().valueOf()) {
+                                        if (!messageObject.suppressNotification) {
                                             firebase.analytics().logEvent(eventNames.COLLABORATION, {
                                                 type: 1
                                             });
-                                            showVisitCollisionNotification(myVisit, visit);
+                                            const notificationObject = getVisitCollisionNotificationObject(myVisit, visit, messageObject);
+                                            showNotification(notificationObject.body, notificationObject.data, notificationObject.notificationID);
                                         }
-                                    });
+                                        NotificationService.getInstance().addNotificationToCenter(getVisitCollisionNotificationCenterObject(myVisit, visit, messageObject));
+                                    }
                                 });
-                            }
+                            });
                             resolve();
                         }).catch(error => {
-                        console.log('error in create');
+                        console.log('EpisodeMessagingService: error in create');
                         console.log(error);
                         resolve();
                         // reject(error);
@@ -71,7 +123,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
                     VisitService.getInstance().fetchAndSaveVisitsByID([visitID], true)
                         .then(() => resolve())
                         .catch(error => {
-                            console.log('error in update');
+                            console.log('EpisodeMessagingService: error in update');
                             console.log(error);
                             resolve();
                             // reject(error)
@@ -81,7 +133,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
                     try {
                         VisitService.getInstance().deleteVisitsOfEpisodeByUserID(episodeID, userID);
                     } catch (e) {
-                        console.log('failed to process user_unassignment');
+                        console.log('EpisodeMessagingService: failed to process user_unassignment');
                         console.log(e);
                         resolve();
                         return;
@@ -89,7 +141,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
                     resolve();
                     break;
                 default:
-                    console.log(`unrecognised message: ${message}`);
+                    console.log(`EpisodeMessagingService: unrecognised message: ${message}`);
                     reject();
             }
         });
@@ -224,6 +276,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         const flatVisit = {
             visitID: visit.visitID,
             episodeID: isPatientVisit ? visit.getEpisode().episodeID : null,
+            placeID: !isPatientVisit ? visit.getPlace().placeID : null,
             midnightEpochOfVisit: visit.midnightEpochOfVisit,
             isDone: visit.isDone,
             plannedStartTime: visit.plannedStartTime ? visit.plannedStartTime.toISOString() : undefined,

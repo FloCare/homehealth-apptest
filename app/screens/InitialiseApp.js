@@ -6,7 +6,10 @@ import {createStore} from "redux";
 import {MessagingServiceCoordinator} from "../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator";
 import {VisitService} from "../data_services/VisitServices/VisitService";
 import {RegisterScreens} from "./index";
-import {configure as configureNotification} from "../data_services/MessagingServices/NotificationService";
+import {
+    configure as configureNotification,
+    NotificationService
+} from "../data_services/MessagingServices/NotificationService";
 import {FloDBProvider} from "../utils/data/schema";
 import {UserDataService} from "../data_services/UserDataService";
 import {initialiseService as initialiseAddressService} from "../data_services/AddressDataService";
@@ -46,14 +49,15 @@ export async function initialiseApp(key) {
     EpisodeDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
-    TaskService.initialiseService(FloDBProvider.db)
+    TaskService.initialiseService(FloDBProvider.db);
+    NotificationService.initialiseService(FloDBProvider.db);
     PlaceDataService.initialiseService(FloDBProvider.db, store)
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
     await RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            return PatientDataService.getInstance().updatePatientListFromServer()
+            return Promise.all([PatientDataService.getInstance().updatePatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
                 .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
         }
     });

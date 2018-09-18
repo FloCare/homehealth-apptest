@@ -50,6 +50,13 @@ const StartApp = async (key) => {
                 navigatorStyle: getLargeNavBarOrSubstitute()
             },
             {
+                title: 'Notifications',
+                label: 'Notifications',
+                icon: Images.notificationBell,
+                screen: screenNames.notificationScreen,
+                navigatorStyle: getLargeNavBarOrSubstitute()
+            },
+            {
                 label: 'More',
                 icon: Images.more,
                 screen: screenNames.moreScreen,

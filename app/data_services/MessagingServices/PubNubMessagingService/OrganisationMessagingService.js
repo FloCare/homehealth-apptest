@@ -26,8 +26,8 @@ export class OrganisationMessagingService extends BaseMessagingService {
                             resolve();
                         });
                     break;
-                case 'CREATE_STOP':
-                    PlaceDataService.getInstance().fetchAndCreatePlaceByID(message.stopID)
+                case 'CREATE_PLACE':
+                    PlaceDataService.getInstance().fetchAndCreatePlaceByID(message.placeID)
                         .then(() => resolve())
                         .catch(error => {
                             console.log('error in creating place');
@@ -35,8 +35,8 @@ export class OrganisationMessagingService extends BaseMessagingService {
                             resolve();
                     });
                     break;
-                case 'UPDATE_STOP':
-                    PlaceDataService.getInstance().fetchAndEditPlaceByID(message.stopID)
+                case 'UPDATE_PLACE':
+                    PlaceDataService.getInstance().fetchAndEditPlaceByID(message.placeID)
                         .then(() => resolve())
                         .catch(error => {
                             console.log('error in updating place');
@@ -44,9 +44,9 @@ export class OrganisationMessagingService extends BaseMessagingService {
                             resolve();
                     });
                     break;
-                case 'DELETE_STOP':
+                case 'DELETE_PLACE':
                     try {
-                        PlaceDataService.getInstance().archivePlace(message.stopID);
+                        PlaceDataService.getInstance().archivePlace(message.placeID);
                     } catch (e) {
                         console.log('Error archiving place');
                         console.log(e);

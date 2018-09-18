@@ -7,7 +7,7 @@ import {
     arrayToObjectByKey,
     filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
 } from '../utils/collectionUtils';
-import {eventNames} from '../utils/constants';
+import {eventNames, notificationType, screenNames} from '../utils/constants';
 import {addressDataService} from './AddressDataService';
 import {parsePhoneNumber} from '../utils/lib';
 import {VisitService} from './VisitServices/VisitService';
@@ -89,6 +89,27 @@ export class PatientDataService {
             QueryHelper.andQuery(queryAccumulator, QueryHelper.nameContainsQuery(searchTerm)), queryStr);
         return this.getAllPatients().filtered(queryStr);
     }
+
+    getAssignmentNotification(patientID, messageObject) {
+        const body = `A new patient ${this.getPatientByID(patientID).name} is assigned to you.`;
+        return {
+            notificationID: `${patientID}_assignmentNotification`,
+            type: notificationType.NEW_PATIENT,
+            createdTime: parseInt(messageObject.timestamp),
+            body,
+            screenName: screenNames.patientDetails,
+            passProps: JSON.stringify({
+                patientId: patientID,
+            }),
+            navigatorStyle: JSON.stringify({
+                tabBarHidden: true
+            }),
+            metadata: JSON.stringify({
+                patientID
+            })
+        };
+    }
+
 
     getPatientsSortedByName(patientList) {
         if (patientList.length === 0) return patientList;
@@ -392,6 +413,18 @@ export class PatientDataService {
         );
     }
 
+    requestPatientAssignmentByID(newPatientID) {
+        return PatientAPI.requestPatientAssignment(newPatientID).then(
+            (response) => {
+                console.log('response is');
+                console.log(response);
+
+                if (response.ok) {
+                    return response.json();
+                }
+            }
+        );
+    }
 
     fetchAndEditPatientsByID(patientIDs) {
         return this.fetchPatientsWithEpisodeData(patientIDs).then(
