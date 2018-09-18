@@ -116,7 +116,7 @@ export class PlaceDataService {
                 lat: placeData.latitude,
                 long: placeData.longitude
             };
-            this.editExistingPlace(placeData.stopID, place);
+            this.editExistingPlace(placeData.placeID, place);
         });
     }
 
