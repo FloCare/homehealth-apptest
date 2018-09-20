@@ -55,6 +55,7 @@ export async function initialiseApp(key) {
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
+    //TODO Make this run on first install only
     await RNSecureKeyStore.get('accessToken').then(() => {
         if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
             return Promise.all([PatientDataService.getInstance().updatePatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])

@@ -122,7 +122,16 @@ export class PlaceDataService {
 
     fetchAndSavePlacesFromServer() {
         return PlaceAPI.getPlacesFromServer().then((placesData) => {
-            placesData.forEach(placeData => this.createNewSyncedPlace(placeData));
+            placesData.forEach(placeData => {
+                try {
+                    if (!this.getPlaceByID(placeData.placeID)) {
+                        this.createNewSyncedPlace(placeData);
+                    }
+                } catch (e) {
+                    console.log('error in creating new synced place');
+                    console.log(placeData);
+                }
+            });
         });
     }
 
