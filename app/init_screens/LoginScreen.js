@@ -202,7 +202,7 @@ const InputField = React.forwardRef((props, ref) => (
             style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
         >
             <StyledText
-                style={{color: 'white', textAlign: 'left'}}
+                style={{color: 'white', textAlign: 'left', fontWeight: '500'}}
             >
                 {props.title}
             </StyledText>
@@ -220,7 +220,7 @@ const InputField = React.forwardRef((props, ref) => (
                 selectionColor={'rgba(255,255,255,0.5)'}
                 underlineColorAndroid={'white'}
                 autoCorrect={false}
-                style={{color: 'white'}}
+                style={{color: 'rgba(255,255,255,0.85)', fontSize: 18}}
                 placeholderTextColor={'rgba(255,255,255,0.35)'}
             />
         </View>
