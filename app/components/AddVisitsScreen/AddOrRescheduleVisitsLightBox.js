@@ -98,7 +98,9 @@ class AddOrRescheduleVisitsLightBox extends Component {
                 />
                 <View>
                     <CalendarStrip
-                        style={{height: 75}}
+                        swipeEnabled
+                        calendarDatesStyle={{paddingHorizontal: 10}}
+                        style={{height: 95}}
                         styleWeekend={false}
                         calendarHeaderFormat='MMMM'
                         calendarHeaderStyle={{fontWeight: '100', fontSize: 12, alignSelf: 'flex-start', padding: 10}}

@@ -270,9 +270,11 @@ const PatientDetailCard = (props) => {
                     </View>
                     <View style={{width: '100%', alignSelf: 'center'}}>
                         <CalendarStrip
+                            swipeEnabled
                             style={{height: 80}}
                             styleWeekend={false}
                             calendarHeaderFormat='MMMM'
+                            calendarDatesStyle={{paddingHorizontal: 20}}
                             calendarHeaderStyle={{fontWeight: '100', fontSize: 14, alignSelf: 'flex-start'}}
                             calendarHeaderViewStyle={{marginLeft: 27, marginTop: 10}}
                             onDateSelected={(date) => { 

@@ -15,6 +15,7 @@ function CalendarStripStyled(props) {
 
     return (
         <CalendarStrip
+            swipeEnabled
             style={[{paddingTop: props.paddingTop, backgroundColor: 'white'}, props.dateRowAtBottom ? {justifyContent: 'flex-end'} : {justifyContent: 'center'}, props.style]}
             innerStyle={{flex: undefined}}
             calendarHeaderViewStyle={{marginLeft: 40, marginVertical: 5}}
@@ -22,7 +23,7 @@ function CalendarStripStyled(props) {
             datesStripStyle={[{flex: undefined}, props.dateRowAtBottom ? {alignItems: 'flex-end'} : null]}
             dateNumberStyle={{fontSize: 18, fontWeight: undefined}}
             iconContainer={{flex: 1, opacity: 0.2}}
-            calendarDatesStyle={{flex: 8}}
+            calendarDatesStyle={{flex: 8, paddingHorizontal: 30}}
             dateNameStyle={{fontSize: 12, color: '#cccccc'}}
             onDateSelected={props.onDateSelected}
             selectedDate={props.date}
