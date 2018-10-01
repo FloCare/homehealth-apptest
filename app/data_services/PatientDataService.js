@@ -442,6 +442,41 @@ export class PatientDataService {
         );
     }
 
+    getCreatePatientPayload(patient) {
+        const address = patient.address;
+        const patientInformation = {
+            patientID: patient.patientID,
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            primaryContact: patient.primaryContact,
+            episodeID: patient.getFirstEpisode().episodeID,
+            dateOfBirth: patient.dateOfBirth,
+            emergencyContactNumber: patient.emergencyContactNumber,
+            emergencyContactName: patient.emergencyContactName,
+            emergencyContactRelation: patient.emergencyContactRelation,
+        };
+        if (address) {
+            patientInformation.address = {
+                addressID: address.addressID,
+                apartmentNo: address.apartmentNo,
+                streetAddress: address.streetAddress,
+                zipCode: address.zipCode,
+                city: address.city,
+                state: address.state,
+                country: address.country,
+                latitude: address.latitude,
+                longitude: address.longitude,
+            };
+        }
+        return patientInformation;
+    }
+
+    syncPatientsToServer(patients) {
+        if (patients.length === 0) return;
+        const patientInformation = patients.map(patient => this.getCreatePatientPayload(patient));
+        return PatientAPI.syncPatientInformation(patientInformation);
+    }
+
     updatePatientsInRedux(patients, isServerUpdate = false) {
         if (!isServerUpdate) {
             this._checkPermissionForEditing(patients);

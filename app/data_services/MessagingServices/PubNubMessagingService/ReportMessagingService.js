@@ -8,6 +8,7 @@ import {getMessagingServiceInstance} from './MessagingServiceCoordinator';
 import {showNotification} from '../NotificationService';
 import {generateUUID} from '../../../utils/utils';
 import {eventNames, parameterValues} from '../../../utils/constants';
+import {PatientDataService} from "../../PatientDataService";
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -85,12 +86,15 @@ export class ReportMessagingService extends BaseMessagingService {
                         });
                     } else if (serverResponse.status === 400) {
                         try {
-                            serverResponse.json().then(response => {
+                            serverResponse.json().then(async response => {
                                 console.log('server response');
                                 console.log(response);
                                 const missingVisitIDs = response.missingVisitIDs;
                                 if (missingVisitIDs) {
                                     const visits = VisitService.getInstance().getVisitsByIDs(missingVisitIDs);
+                                    const patients = visits.map(visit => visit.getPatient()).filter(patient => patient);
+                                    //TODO This should not be required - Remove this after https://flocare.atlassian.net/browse/FC-114
+                                    await PatientDataService.getInstance().syncPatientsToServer(patients);
                                     getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitCreateBulk(visits);
                                  }
                             });
