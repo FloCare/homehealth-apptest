@@ -16,13 +16,16 @@ function CalendarStripStyled(props) {
     return (
         <CalendarStrip
             swipeEnabled
+            onModeChange={props.onModeChange}
+            onWeekChanged={props.onWeekChanged}
             style={[{paddingTop: props.paddingTop, backgroundColor: 'white'}, props.dateRowAtBottom ? {justifyContent: 'flex-end'} : {justifyContent: 'center'}, props.style]}
             innerStyle={{flex: undefined}}
             calendarHeaderViewStyle={{marginLeft: 40, marginVertical: 5}}
             calendarHeaderStyle={{fontSize: 15, alignSelf: 'flex-start', fontFamily: PrimaryFontFamily}}
             datesStripStyle={[{flex: undefined}, props.dateRowAtBottom ? {alignItems: 'flex-end'} : null]}
             dateNumberStyle={{fontSize: 18, fontWeight: undefined}}
-            iconContainer={{flex: 1, opacity: 0.2}}
+            iconContainer={{opacity: 0.2}}
+            primaryColor={PrimaryColor}
             calendarDatesStyle={{flex: 8, paddingHorizontal: 30}}
             dateNameStyle={{fontSize: 12, color: '#cccccc'}}
             onDateSelected={props.onDateSelected}
