@@ -69,7 +69,7 @@ class HomeScreenContainer extends Component {
 
     setOnboardingStatus = (onBoardingStatus) => {
         AsyncStorage.setItem('onBoardingMessagesStatus', JSON.stringify(onBoardingStatus));
-    }
+    };
 
     getOnboardingStatus = async () => {
         try {
@@ -77,11 +77,11 @@ class HomeScreenContainer extends Component {
         } catch (error) {
             return { };
         }
-    }
+    };
 
     isInstaBugOnboardingMessageShown = (onBoardingStatusObject) => (
         onBoardingStatusObject && onBoardingStatusObject.instaBugStatus
-    )
+    );
 
     showInstabugOnboardingMessage = async () => {
         const onboardingStatus = await this.getOnboardingStatus();
@@ -93,7 +93,7 @@ class HomeScreenContainer extends Component {
             };
             this.setOnboardingStatus(updatedOnBoardingStatus);
         }
-    }
+    };
 
     onNavigatorEvent(event) {
         // if (event.type === 'DeepLink') {
@@ -115,6 +115,10 @@ class HomeScreenContainer extends Component {
         // STOP GAP solution. To brainstorm on the right way of doing it
         if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.home, screenNames.home);
+        }
+        if (event.id === 'bottomTabReselected') {
+            this.onDateSelected(todayMomentInUTCMidnight());
+            this.calendarRef.resetCalendar();
         }
     }
 
@@ -241,6 +245,59 @@ class HomeScreenContainer extends Component {
         return dates;
     }
 
+    getMainBody(calendarMode) {
+        if (calendarMode === 'Day') {
+            return (
+                <HomeDayView
+                    visitID={this.props.nextVisitID}
+                    navigator={this.props.navigator}
+                    dateMinusToday={this.props.dateMinusToday}
+                    navigateToVisitMapScreen={this.navigateToVisitMapScreen}
+                    navigateToVisitListScreen={this.navigateToVisitListScreen}
+                    date={moment(this.props.date).utc()}
+                    totalVisitsCount={this.props.totalVisits}
+                    remainingVisitsCount={this.props.remainingVisits}
+                    onDateSelected={this.onDateSelected}
+                    // onOrderChange={this.onOrderChange}
+                    onPressAddVisit={this.navigateToAddVisit}
+                    onPressAddVisitZeroState={this.navigateToAddVisitFAB}
+                />
+            );
+        }
+
+        const weekViewColumnGenerator = dayFilter => (
+                <View
+                    style={{flex: 1}}
+                >
+                    {
+                        this.getDatesForWeek(this.state.currentViewWeekStart).map(date => {
+                            const day = moment(date).day();
+                            const visitOrder = VisitService.getInstance().visitRealmService.getVisitOrderForDate(date);
+                            if (dayFilter(day, visitOrder.visitList.length)) {
+                                return (
+                                    <DayCard
+                                        visitOrder={visitOrder}
+                                    />
+                                );
+                            }
+                        })
+                    }
+                </View>
+            );
+
+        return (
+            <View
+                style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    marginHorizontal: 5
+                }}
+            >
+                {weekViewColumnGenerator((day, visitsOnDay) => day % 2 === 1 || (day === 0 && visitsOnDay > 0))}
+                {weekViewColumnGenerator((day) => day % 2 === 0 && day !== 0)}
+            </View>
+        );
+    }
 
     render() {
         return (
@@ -253,6 +310,7 @@ class HomeScreenContainer extends Component {
                     })]}
             >
                 <CalendarStripStyled
+                    ref={ref => { this.calendarRef = ref; }}
                     onModeChange={this.onModeChange}
                     onWeekChanged={date => this.setState({currentViewWeekStart: moment(date).day(1)})}
                     dateRowAtBottom
@@ -266,40 +324,7 @@ class HomeScreenContainer extends Component {
                     style={{flex: 1}}
                     keyboardShouldPersistTaps
                 >
-                    {
-                        this.state.calendarMode === 'Day' ?
-                        <HomeDayView
-                            visitID={this.props.nextVisitID}
-                            navigator={this.props.navigator}
-                            dateMinusToday={this.props.dateMinusToday}
-                            navigateToVisitMapScreen={this.navigateToVisitMapScreen}
-                            navigateToVisitListScreen={this.navigateToVisitListScreen}
-                            date={moment(this.props.date).utc()}
-                            totalVisitsCount={this.props.totalVisits}
-                            remainingVisitsCount={this.props.remainingVisits}
-                            onDateSelected={this.onDateSelected}
-                            // onOrderChange={this.onOrderChange}
-                            onPressAddVisit={this.navigateToAddVisit}
-                            onPressAddVisitZeroState={this.navigateToAddVisitFAB}
-                        />
-                        :
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                flexWrap: 'wrap',
-                                justifyContent: 'center',
-                                marginTop: 15,
-                            }}
-                        >
-                            {
-                                this.getDatesForWeek(this.state.currentViewWeekStart).map(date =>
-                                    <DayCard
-                                        visitOrder={VisitService.getInstance().visitRealmService.getVisitOrderForDate(date)}
-                                    />
-                                )
-                            }
-                        </View>
-                    }
+                    {this.getMainBody(this.state.calendarMode)}
                 </ScrollView>
                 <Fab
                     onPressAddNote={this.navigateToAddNote}

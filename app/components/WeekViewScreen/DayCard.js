@@ -11,19 +11,18 @@ export class DayCard extends Component {
             <View
                 style={{
                     alignItems: 'center',
-                    width: '47%',
-                    margin: 2.5,
-                    padding: 10,
+                    margin: 3,
+                    padding: 15,
                     elevation: 1,
-                    borderRadius: 2.5,
+                    borderRadius: 6,
                     backgroundColor: '#ffffff',
-                    shadowColor: 'rgba(0, 0, 0, 0.13)',
+                    shadowColor: 'rgba(0, 0, 0)',
                     shadowOffset: {
-                        width: 0,
-                        height: 0
+                        width: 2,
+                        height: 2
                     },
-                    shadowRadius: 3,
-                    shadowOpacity: 1,
+                    shadowRadius: 8,
+                    shadowOpacity: 0.2,
                     borderStyle: 'solid',
                     borderWidth: 0.5,
                     borderColor: '#d9d9d9'
@@ -31,15 +30,35 @@ export class DayCard extends Component {
             >
                 <StyledText
                     style={{
-                        fontSize: 11,
-                        fontWeight: '500',
-                        paddingBottom: 20,
+                        fontSize: 15,
+                        fontWeight: '900',
+                        paddingBottom: 10
                     }}
                 >
-                    {`${moment(this.props.visitOrder.midnightEpoch).format('ddd MMM D')} (${this.props.visitOrder.visitList.length} ${this.props.visitOrder.visitList.length === 1 ? 'patient)' : 'patients)'}`}
+                    {moment(this.props.visitOrder.midnightEpoch).format('ddd MMM D').toUpperCase()}
                 </StyledText>
+                {/*<StyledText*/}
+                    {/*style={{*/}
+                        {/*fontSize: 15,*/}
+                        {/*fontWeight: '900',*/}
+                        {/*paddingBottom: 10,*/}
+                    {/*}}*/}
+                {/*>*/}
+                    {/*{`(${this.props.visitOrder.visitList.length} ${this.props.visitOrder.visitList.length === 1 ? 'patient)' : 'patients)'}`}*/}
+                {/*</StyledText>*/}
                 {
-                    this.props.visitOrder.visitList.map(visit => (
+                    !this.props.visitOrder.visitList || this.props.visitOrder.visitList.length === 0 ?
+                        <StyledText
+                            style={{
+                                fontWeight: '300',
+                                fontSize: 13,
+                                color: 'grey',
+                            }}
+                        >
+                            No Visits
+                        </StyledText>
+                        :
+                        this.props.visitOrder.visitList.map(visit => (
                         <View
                             style={{
                                 width: '100%',
@@ -49,16 +68,16 @@ export class DayCard extends Component {
                         >
                             <StyledText
                                 style={{
-                                    fontWeight: '500',
-                                    fontSize: 10,
+                                    fontWeight: '300',
+                                    fontSize: 13,
                                 }}
                             >
-                                {visit.getAssociatedName()}
+                                {visit.getAssociatedAbbName()}
                             </StyledText>
                             <StyledText
                                 style={{
                                     fontWeight: '500',
-                                    fontSize: 10,
+                                    fontSize: 13,
                                 }}
                             >
                                 {visit.plannedStartTime ? moment(visit.plannedStartTime).format('hh:mm A') : '--:--'}
