@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.0</string>
+	<string>0.5.6</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>CodePushDeploymentKey</key>
 	<string>codepushiOSKey</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -45,6 +45,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string> FloCare needs access to the microphone to be able to attach voice notes </string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string> FloCare needs access to your photo library for you to be able to attach images</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
@@ -81,9 +85,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-    <string> FloCare needs access to the microphone to be able to attach voice notes </string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string> FloCare needs access to your photo library for you to be able to attach images</string>
 </dict>
 </plist>
