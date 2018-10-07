@@ -442,6 +442,8 @@ export class PatientDataService {
         );
     }
 
+    formatForPayload = (value) => (value ? value : undefined)
+
     getCreatePatientPayload(patient) {
         const address = patient.address;
         const patientInformation = {
@@ -451,19 +453,20 @@ export class PatientDataService {
             primaryContact: patient.primaryContact,
             episodeID: patient.getFirstEpisode().episodeID,
             dateOfBirth: patient.dateOfBirth,
-            emergencyContactNumber: patient.emergencyContactNumber,
-            emergencyContactName: patient.emergencyContactName,
-            emergencyContactRelation: patient.emergencyContactRelation,
+            emergencyContactNumber: this.formatForPayload(patient.emergencyContactNumber),
+            emergencyContactName: this.formatForPayload(patient.emergencyContactName),
+            emergencyContactRelation: this.formatForPayload(patient.emergencyContactRelation),
+            archived: patient.archived,
         };
         if (address) {
             patientInformation.address = {
                 addressID: address.addressID,
-                apartmentNo: address.apartmentNo,
-                streetAddress: address.streetAddress,
-                zipCode: address.zipCode,
-                city: address.city,
-                state: address.state,
-                country: address.country,
+                apartmentNo: this.formatForPayload(address.apartmentNo),
+                streetAddress: this.formatForPayload(address.streetAddress),
+                zipCode: this.formatForPayload(address.zipCode),
+                city: this.formatForPayload(address.city),
+                state: this.formatForPayload(address.state),
+                country: this.formatForPayload(address.country),
                 latitude: address.latitude,
                 longitude: address.longitude,
             };
@@ -471,9 +474,15 @@ export class PatientDataService {
         return patientInformation;
     }
 
+    getUniquePatients(patients) {
+        const patientMap = patients.reduce((accum, patient) => { accum[patient.patientID] = patient; return accum; }, {});
+        return Object.values(patientMap);
+    }
+
     syncPatientsToServer(patients) {
         if (patients.length === 0) return;
-        const patientInformation = patients.map(patient => this.getCreatePatientPayload(patient));
+        const uniqPatients = this.getUniquePatients(patients);
+        const patientInformation = uniqPatients.map(patient => ({patient: this.getCreatePatientPayload(patient)}));
         return PatientAPI.syncPatientInformation(patientInformation);
     }
 

@@ -120,16 +120,14 @@ export function syncPatientInformation(patientInformation) {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/create-patients/`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/bulk-create-patients/`,
             {
                 method: 'POST',
                 headers: {
                     Authorization: `Token ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    patientInformation
-                })
+                body: JSON.stringify(patientInformation)
             }))
         .then(response => {
             if (response.ok) {
