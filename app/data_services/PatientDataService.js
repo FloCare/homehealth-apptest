@@ -452,7 +452,7 @@ export class PatientDataService {
             lastName: patient.lastName,
             primaryContact: patient.primaryContact,
             episodeID: patient.getFirstEpisode().episodeID,
-            dateOfBirth: patient.dateOfBirth,
+            dob: patient.dateOfBirth ? moment(patient.dateOfBirth).format('YYYY-MM-DD') : undefined,
             emergencyContactNumber: this.formatForPayload(patient.emergencyContactNumber),
             emergencyContactName: this.formatForPayload(patient.emergencyContactName),
             emergencyContactRelation: this.formatForPayload(patient.emergencyContactRelation),
