@@ -3,6 +3,9 @@ import Polyline from "@mapbox/polyline/src/polyline";
 import {Platform, Linking} from 'react-native';
 
 const directionsResposeCache = {};
+
+const googleMapsAPIKey = 'googleMapsKey';
+
 function getViewPortFromBounds(boundsCoordinates) {
     console.log(boundsCoordinates);
     const multipoint = {
@@ -29,7 +32,7 @@ function coordinatesToCSVString(coordinates) {
 async function callDirectionsApiForPoints(coordinates) {
     try {
         if (coordinates.length < 2) { console.error('directins request between less than two points'); }
-        let requestString = `https://maps.googleapis.com/maps/api/directions/json?origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
+        let requestString = `https://maps.googleapis.com/maps/api/directions/json?key=${googleMapsAPIKey}&origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
         // let requestString = `https://maps.googleapis.com/maps/api/directions/json?units='imperial'&origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
         if (coordinates.length > 2) {
             requestString += '&waypoints=';
