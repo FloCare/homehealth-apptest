@@ -56,6 +56,11 @@ export class PatientDataService {
         return `${lastName} ${firstName}`;
     }
 
+    static constructAbbName(firstName, lastName) {
+        if (lastName === null) return firstName;
+        return `${firstName.charAt(0)}. ${lastName}`;
+    }
+
     static getFlatPatientList(patientList) {
         return patientList.map(patient => PatientDataService.getFlatPatient(patient));
     }

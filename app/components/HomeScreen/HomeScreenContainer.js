@@ -10,11 +10,12 @@ import {
     Platform,
     AsyncStorage,
     ScrollView,
+    View,
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
 import Instabug from 'instabug-reactnative';
-import {HomeScreen} from './HomeScreen';
+import {HomeDayView} from './HomeDayView';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import Fab from '../common/Fab';
 // import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
@@ -23,12 +24,16 @@ import {dateService} from '../../data_services/DateService';
 import {setItem} from '../../utils/InMemoryStore';
 import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {CalendarStripStyled} from '../common/CalendarStripStyled';
+import {DayCard} from '../WeekViewScreen/DayCard';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 
 const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1};
 
 class HomeScreenContainer extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {calendarMode: 'Day', currentViewWeekStart: moment(this.props.date).day(1)};
 
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
@@ -42,6 +47,7 @@ class HomeScreenContainer extends Component {
         this.navigateToAddVisitFAB = this.navigateToAddVisitFAB.bind(this);
 
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
+        this.onModeChange = this.onModeChange.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
         // addListener(this.onOrderChange);
         setItem('navigator', this.props.navigator);
@@ -63,7 +69,7 @@ class HomeScreenContainer extends Component {
 
     setOnboardingStatus = (onBoardingStatus) => {
         AsyncStorage.setItem('onBoardingMessagesStatus', JSON.stringify(onBoardingStatus));
-    }
+    };
 
     getOnboardingStatus = async () => {
         try {
@@ -71,11 +77,11 @@ class HomeScreenContainer extends Component {
         } catch (error) {
             return { };
         }
-    }
+    };
 
     isInstaBugOnboardingMessageShown = (onBoardingStatusObject) => (
         onBoardingStatusObject && onBoardingStatusObject.instaBugStatus
-    )
+    );
 
     showInstabugOnboardingMessage = async () => {
         const onboardingStatus = await this.getOnboardingStatus();
@@ -87,7 +93,7 @@ class HomeScreenContainer extends Component {
             };
             this.setOnboardingStatus(updatedOnBoardingStatus);
         }
-    }
+    };
 
     onNavigatorEvent(event) {
         // if (event.type === 'DeepLink') {
@@ -110,6 +116,10 @@ class HomeScreenContainer extends Component {
         if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.home, screenNames.home);
         }
+        if (event.id === 'bottomTabReselected') {
+            this.onDateSelected(todayMomentInUTCMidnight());
+            this.calendarRef.resetCalendar();
+        }
     }
 
     onDateSelected(date) {
@@ -123,6 +133,10 @@ class HomeScreenContainer extends Component {
     //     this.forceUpdate();
     //     console.log('Home screen force update');
     // }
+
+    onModeChange(mode) {
+        this.setState({calendarMode: mode});
+    }
 
     onPatientAdded() {
         Alert.alert(
@@ -223,6 +237,68 @@ class HomeScreenContainer extends Component {
         });
     }
 
+    getDatesForWeek(date) {
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+            dates.push(moment(date).day(1).add(i, 'd').valueOf());
+        }
+        return dates;
+    }
+
+    getMainBody(calendarMode) {
+        if (calendarMode === 'Day') {
+            return (
+                <HomeDayView
+                    visitID={this.props.nextVisitID}
+                    navigator={this.props.navigator}
+                    dateMinusToday={this.props.dateMinusToday}
+                    navigateToVisitMapScreen={this.navigateToVisitMapScreen}
+                    navigateToVisitListScreen={this.navigateToVisitListScreen}
+                    date={moment(this.props.date).utc()}
+                    totalVisitsCount={this.props.totalVisits}
+                    remainingVisitsCount={this.props.remainingVisits}
+                    onDateSelected={this.onDateSelected}
+                    // onOrderChange={this.onOrderChange}
+                    onPressAddVisit={this.navigateToAddVisit}
+                    onPressAddVisitZeroState={this.navigateToAddVisitFAB}
+                />
+            );
+        }
+
+        const weekViewColumnGenerator = dayFilter => (
+                <View
+                    style={{flex: 1}}
+                >
+                    {
+                        this.getDatesForWeek(this.state.currentViewWeekStart).map(date => {
+                            const day = moment(date).day();
+                            const visitOrder = VisitService.getInstance().visitRealmService.getVisitOrderForDate(date);
+                            if (dayFilter(day, visitOrder.visitList.length)) {
+                                return (
+                                    <DayCard
+                                        visitOrder={visitOrder}
+                                    />
+                                );
+                            }
+                        })
+                    }
+                </View>
+            );
+
+        return (
+            <View
+                style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    marginHorizontal: 5
+                }}
+            >
+                {weekViewColumnGenerator((day, visitsOnDay) => day % 2 === 1 || (day === 0 && visitsOnDay > 0))}
+                {weekViewColumnGenerator((day) => day % 2 === 0 && day !== 0)}
+            </View>
+        );
+    }
+
     render() {
         return (
             <SafeAreaView
@@ -234,6 +310,9 @@ class HomeScreenContainer extends Component {
                     })]}
             >
                 <CalendarStripStyled
+                    ref={ref => { this.calendarRef = ref; }}
+                    onModeChange={this.onModeChange}
+                    onWeekChanged={date => this.setState({currentViewWeekStart: moment(date).day(1)})}
                     dateRowAtBottom
                     showMonth
                     paddingTop={Platform.select({ios: 20, android: 20})}
@@ -245,28 +324,15 @@ class HomeScreenContainer extends Component {
                     style={{flex: 1}}
                     keyboardShouldPersistTaps
                 >
-                    <HomeScreen
-                        visitID={this.props.nextVisitID}
-                        navigator={this.props.navigator}
-                        dateMinusToday={this.props.dateMinusToday}
-                        navigateToVisitMapScreen={this.navigateToVisitMapScreen}
-                        navigateToVisitListScreen={this.navigateToVisitListScreen}
-                        date={moment(this.props.date).utc()}
-                        totalVisitsCount={this.props.totalVisits}
-                        remainingVisitsCount={this.props.remainingVisits}
-                        onDateSelected={this.onDateSelected}
-                        // onOrderChange={this.onOrderChange}
-                        onPressAddVisit={this.navigateToAddVisit}
-                        onPressAddVisitZeroState={this.navigateToAddVisitFAB}
-                    />
+                    {this.getMainBody(this.state.calendarMode)}
                 </ScrollView>
                 <Fab
                     onPressAddNote={this.navigateToAddNote}
-                    onPressAddVisit={() => {         
+                    onPressAddVisit={() => {
                         firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
                             type: parameterValues.ADD_VISIT
-                        }); 
-                        this.navigateToAddVisitFAB(); 
+                        });
+                        this.navigateToAddVisitFAB();
                     }}
                     onPressAddPatient={this.navigateToAddPatient}
                 />

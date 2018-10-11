@@ -47,6 +47,10 @@ export class Visit extends Realm.Object {
         return this.getFromSubject(patient => patient.name, place => place.name);
     }
 
+    getAssociatedAbbName() {
+        return this.getFromSubject(patient => patient.abbName, place => place.name);
+    }
+
     getAssociatedNumber() {
         return this.getFromSubject(patient => patient.primaryContact, place => place.primaryContact);
     }

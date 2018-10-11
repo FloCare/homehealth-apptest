@@ -44,7 +44,7 @@ class PasscodeVerificationScreen extends Component {
 
     componentDidMount() {
         firebase.analytics().setCurrentScreen(screenNames.passcodeVerification, screenNames.passcodeVerification);
-        firebase.analytics().setUserProperty(userProperties.OTA_VERSION, '0.5.5');
+        firebase.analytics().setUserProperty(userProperties.OTA_VERSION, '0.5.6');
         if (this.userDetails && this.userDetails.unlockTime > moment().valueOf()) {
             this.setLockTimeRefreshCounter();
         }

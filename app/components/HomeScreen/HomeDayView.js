@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {VisitSection} from './VisitSection';
 import {TaskSection} from './TaskSection';
 
-function HomeScreen(props) {
+function HomeDayView(props) {
     return (
         //TODO insert other stuff thats got to be on the home screen too
         <View style={{flex: 1}}>
@@ -30,4 +30,4 @@ function HomeScreen(props) {
     );
 }
 
-export {HomeScreen};
+export {HomeDayView};
