@@ -11,5 +11,10 @@ export const styles = StyleSheet.create({
     },
     borderStyle: {
         color: grayColor
+    },
+    dividerStyle: {
+        margin: 0,
+        height: 1,
+        backgroundColor: '#dddddd'
     }
 });

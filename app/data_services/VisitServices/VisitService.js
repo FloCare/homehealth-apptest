@@ -57,7 +57,8 @@ export class VisitService {
             flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
-                totalMiles: visitMiles.totalMiles,
+                computedMiles: visitMiles.computedMiles,
+                extraMiles: visitMiles.extraMiles,
                 milesComments: visitMiles.milesComments
             };
         }
@@ -277,7 +278,8 @@ export class VisitService {
                 const visitMilesData = {
                     odometerStart: visitMiles ? visitMiles.odometerStart : null,
                     odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
-                    totalMiles: visitMiles ? visitMiles.totalMiles : null,
+                    computedMiles: visitMiles ? visitMiles.computedMiles : null,
+                    extraMiles: visitMiles ? visitMiles.extraMiles : null,
                     milesComments: visitMiles ? visitMiles.milesComments : null,
                 };
                 this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
@@ -307,7 +309,8 @@ export class VisitService {
                     const visitMilesData = {
                         odometerStart: null,
                         odometerEnd: null,
-                        totalMiles: null,
+                        computedMiles: null,
+                        extraMiles: null,
                         milesComments: null
                     };
                     this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
@@ -460,13 +463,14 @@ export class VisitService {
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
     }
 
-    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, totalMiles, milesComments) {
+    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, computedMiles, extraMiles, milesComments) {
         const visit = this.visitRealmService.getVisitByID(visitID);
         this.visitRealmService.updateMilesDataByVisitObject(
             visit,
             stringToFloat(odometerStart),
             stringToFloat(odometerEnd),
-            stringToFloat(totalMiles),
+            stringToFloat(computedMiles),
+            stringToFloat(extraMiles),
             milesComments
         );
 
@@ -484,11 +488,11 @@ export class VisitService {
             NO_OF_VISITS: visits.length
         });
         getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
-    }
+    };
 
     markReportAccepted = (reportID) => {
         this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
-    }
+    };
 
     deleteReportAndItems = (reportID) => {
         this.reportService.deleteReportAndItemsByReportID(reportID);

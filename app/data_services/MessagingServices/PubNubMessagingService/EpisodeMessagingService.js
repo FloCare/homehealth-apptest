@@ -286,7 +286,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
             flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
-                totalMiles: visitMiles.totalMiles,
+                computedMiles: visitMiles.computedMiles,
+                extraMiles: visitMiles.extraMiles,
                 milesComments: visitMiles.milesComments
             };
         }

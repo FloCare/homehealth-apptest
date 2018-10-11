@@ -75,7 +75,8 @@ export default class MilesLogScreen extends Component {
                             visitID={visit.visitID}
                             odometerStart={visit.visitMiles.odometerStart}
                             odometerEnd={visit.visitMiles.odometerEnd}
-                            totalMiles={visit.visitMiles.totalMiles}
+                            computedMiles={visit.visitMiles.computedMiles}
+                            extraMiles={visit.visitMiles.extraMiles}
                             comments={visit.visitMiles.milesComments}
                             dismissMilesModal={this.dismissEditMilesModal}
                         />
