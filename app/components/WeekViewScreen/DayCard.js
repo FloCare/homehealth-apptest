@@ -35,7 +35,7 @@ export class DayCard extends Component {
                         paddingBottom: 10
                     }}
                 >
-                    {moment(this.props.visitOrder.midnightEpoch).format('ddd MMM D').toUpperCase()}
+                    {moment(this.props.visitOrder.midnightEpoch).utc().format('ddd MMM D').toUpperCase()}
                 </StyledText>
                 {/*<StyledText*/}
                     {/*style={{*/}

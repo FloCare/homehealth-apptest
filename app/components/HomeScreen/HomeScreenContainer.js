@@ -240,7 +240,7 @@ class HomeScreenContainer extends Component {
     getDatesForWeek(date) {
         const dates = [];
         for (let i = 0; i < 7; i++) {
-            dates.push(moment(date).day(1).add(i, 'd').valueOf());
+            dates.push(moment(date).utc().day(1).add(i, 'd').valueOf());
         }
         return dates;
     }
@@ -271,7 +271,7 @@ class HomeScreenContainer extends Component {
                 >
                     {
                         this.getDatesForWeek(this.state.currentViewWeekStart).map(date => {
-                            const day = moment(date).day();
+                            const day = moment(date).utc().day();
                             const visitOrder = VisitService.getInstance().visitRealmService.getVisitOrderForDate(date);
                             if (dayFilter(day, visitOrder.visitList.length)) {
                                 return (
@@ -312,7 +312,7 @@ class HomeScreenContainer extends Component {
                 <CalendarStripStyled
                     ref={ref => { this.calendarRef = ref; }}
                     onModeChange={this.onModeChange}
-                    onWeekChanged={date => this.setState({currentViewWeekStart: moment(date).day(1)})}
+                    onWeekChanged={date => this.setState({currentViewWeekStart: moment(date).utc().day(1)})}
                     dateRowAtBottom
                     showMonth
                     paddingTop={Platform.select({ios: 20, android: 20})}
