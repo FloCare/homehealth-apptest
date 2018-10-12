@@ -447,6 +447,50 @@ export class PatientDataService {
         );
     }
 
+    formatForPayload = (value) => (value ? value : undefined)
+
+    getCreatePatientPayload(patient) {
+        const address = patient.address;
+        const patientInformation = {
+            patientID: patient.patientID,
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            primaryContact: patient.primaryContact,
+            episodeID: patient.getFirstEpisode().episodeID,
+            dob: patient.dateOfBirth ? moment(patient.dateOfBirth).format('YYYY-MM-DD') : undefined,
+            emergencyContactNumber: this.formatForPayload(patient.emergencyContactNumber),
+            emergencyContactName: this.formatForPayload(patient.emergencyContactName),
+            emergencyContactRelation: this.formatForPayload(patient.emergencyContactRelation),
+            archived: patient.archived,
+        };
+        if (address) {
+            patientInformation.address = {
+                addressID: address.addressID,
+                apartmentNo: this.formatForPayload(address.apartmentNo),
+                streetAddress: this.formatForPayload(address.streetAddress),
+                zipCode: this.formatForPayload(address.zipCode),
+                city: this.formatForPayload(address.city),
+                state: this.formatForPayload(address.state),
+                country: this.formatForPayload(address.country),
+                latitude: address.latitude,
+                longitude: address.longitude,
+            };
+        }
+        return patientInformation;
+    }
+
+    getUniquePatients(patients) {
+        const patientMap = patients.reduce((accum, patient) => { accum[patient.patientID] = patient; return accum; }, {});
+        return Object.values(patientMap);
+    }
+
+    syncPatientsToServer(patients) {
+        if (patients.length === 0) return;
+        const uniqPatients = this.getUniquePatients(patients);
+        const patientInformation = uniqPatients.map(patient => ({patient: this.getCreatePatientPayload(patient)}));
+        return PatientAPI.syncPatientInformation(patientInformation);
+    }
+
     updatePatientsInRedux(patients, isServerUpdate = false) {
         if (!isServerUpdate) {
             this._checkPermissionForEditing(patients);
