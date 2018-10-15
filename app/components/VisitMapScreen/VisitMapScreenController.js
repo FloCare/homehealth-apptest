@@ -68,8 +68,9 @@ class VisitMapScreenContainer extends Component {
             boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
             boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.lng]);
 
-            totalDistance = geoDataObject.distance;
+            totalDistance = geoDataObject.totalDistance;
         } catch (error) {
+            console.log('caught an error in VisitMapScreenController get polyLines');
             console.log(error);
             noErrorFlag = false;
             throw (error);
@@ -88,6 +89,7 @@ class VisitMapScreenContainer extends Component {
         this.props.orderedVisitID.forEach(visitID => {
             if (!nextOrder.includes(visitID)) mutableNextOrder.push(visitID);
         });
+        //TODO clear out the currently displayed stale value then
         VisitService.getInstance().setVisitOrderForDate(mutableNextOrder, this.props.date);
     }
 

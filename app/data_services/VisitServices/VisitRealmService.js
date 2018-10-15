@@ -126,18 +126,18 @@ export class VisitRealmService {
         for (indexOfFirstDoneVisit = 0; indexOfFirstDoneVisit < visitOrderObject.visitList.length && !visitOrderObject.visitList[indexOfFirstDoneVisit].isDone; indexOfFirstDoneVisit++) {
         }
 
-        const newVisitOrder = [];
-        newVisitOrder.push(...visitOrderObject.visitList.slice(0, indexOfFirstDoneVisit));
+        const newVisitList = [];
+        newVisitList.push(...visitOrderObject.visitList.slice(0, indexOfFirstDoneVisit));
         for (let j = 0; j < visits.length; j++) {
-            newVisitOrder.push(visits[j]);
+            newVisitList.push(visits[j]);
         }
-        newVisitOrder.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
+        newVisitList.push(...visitOrderObject.visitList.slice(indexOfFirstDoneVisit, visitOrderObject.visitList.length));
 
         this.floDB.write(() => {
-            visitOrderObject.visitList = newVisitOrder;
+            visitOrderObject.visitList = newVisitList;
         });
 
-        return newVisitOrder;
+        return newVisitList;
     }
 
 }

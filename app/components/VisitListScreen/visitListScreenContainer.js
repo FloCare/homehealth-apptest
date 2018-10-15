@@ -103,7 +103,7 @@ class VisitListScreenContainer extends Component {
         if (coordinatesList.length > 1) {
             this.setState({totalDistance});
             const geoDataObject = await MapUtils.getProcessedDataForOrderedList(coordinatesList);
-            totalDistance = geoDataObject.distance;
+            totalDistance = geoDataObject.totalDistance;
         }
         this.setState({totalDistance});
     }

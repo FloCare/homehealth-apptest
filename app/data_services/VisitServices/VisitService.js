@@ -1,4 +1,5 @@
 import firebase from 'react-native-firebase';
+import {Alert} from 'react-native';
 import {
     Patient,
     Visit,
@@ -22,6 +23,7 @@ import {VisitMilesService} from './VisitMilesService';
 import {ReportMessagingService} from '../MessagingServices/PubNubMessagingService/ReportMessagingService';
 import {getReportDetailsByIds} from '../../utils/API/ReportAPI';
 import {PlaceDataService} from '../PlaceDataService';
+import {getProcessedDataForOrderedList} from '../../utils/MapUtils';
 
 export class VisitService {
     static visitService;
@@ -81,6 +83,41 @@ export class VisitService {
         return UserDataService.getCurrentUserProps().userID === visit.user.userID;
     }
 
+    async updateMilesDataForVisitList(visitList) {
+        const timer = setTimeout(() => this.clearAllMilesForVisitList(visitList), 1500);
+
+        const reorderedVisitList = [...visitList.filter(visit => visit.isDone), ...visitList.filter(visit => !visit.isDone)];
+        const coordinatesList = reorderedVisitList.map(visit => ({latitude: visit.getAddress().latitude, longitude: visit.getAddress().longitude}));
+
+        if (reorderedVisitList.length >= 2) {
+            const mapData = await getProcessedDataForOrderedList(coordinatesList);
+            console.log('new map data');
+            console.log(mapData.distances);
+
+            clearTimeout(timer);
+            this.floDB.write(() => {
+                reorderedVisitList.forEach((visit, index) => {
+                    if (index === 0) { return; }
+                    visit.visitMiles.totalMiles = parseFloat(mapData.distances[index - 1]);
+                });
+            });
+        } else {
+            clearTimeout(timer);
+        }
+    }
+
+    clearAllMilesForVisitList(visitList) {
+        // Alert.alert('clear visits');
+        this.floDB.write(() => {
+            visitList.forEach(visit => {
+                visit.visitMiles.totalMiles = null;
+                visit.visitMiles.odometerStart = null;
+                visit.visitMiles.odometerEnd = null;
+            });
+        });
+        this.visitReduxService.updateVisitsToRedux(visitList);
+    }
+
     getVisitsByIDs(visitIDs) {
         return this.visitRealmService.getVisitsByIDs(visitIDs);
     }
@@ -95,6 +132,7 @@ export class VisitService {
 
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
+        this.updateMilesDataForVisitList(visitList);
         this.visitReduxService.updateVisitOrderToReduxIfLive(visitList, midnightEpoch);
     }
 
@@ -158,6 +196,8 @@ export class VisitService {
             visit.isDone = true;
             currentVisitOrder.visitList = newOrderedVisitList;
         });
+        this.updateMilesDataForVisitList(newOrderedVisitList);
+
 
         this.visitReduxService.updateVisitToRedux(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
@@ -192,6 +232,7 @@ export class VisitService {
             currentVisitOrder.visitList = newOrderedVisitList;
         });
 
+        this.updateMilesDataForVisitList(newOrderedVisitList);
         this.visitReduxService.updateVisitToRedux(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
@@ -210,6 +251,7 @@ export class VisitService {
                         this.floDB.write(() => {
                             visitOrder.visitList = daysVisitsSortedByDone;
                         });
+                        //TODO put this shit here too
                     }
                 });
                 this.floDB.write(() => {
@@ -324,10 +366,12 @@ export class VisitService {
             getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitCreate(visit);
         });
 
-        const newVisitOrder = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
+        const newVisitList = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
+        this.updateMilesDataForVisitList(newVisitList);
+
         if (midnightEpoch === this.visitReduxService.getActiveDate()) {
             this.visitReduxService.addVisitsToRedux(newVisits);
-            this.visitReduxService.setVisitOrderInRedux(newVisitOrder);
+            this.visitReduxService.setVisitOrderInRedux(newVisitList);
         }
     }
 
@@ -352,7 +396,10 @@ export class VisitService {
             this.visitRealmService.deleteVisitByObject(visit);
         });
 
-        this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
+        const newVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch);
+        this.updateMilesDataForVisitList(newVisitOrder.visitList);
+
+        this.visitReduxService.updateVisitOrderToReduxIfLive(newVisitOrder.visitList, visitTimeEpoch);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
 
@@ -426,6 +473,7 @@ export class VisitService {
             }
             this.floDB.write(() => {
                 visitOrders[i].visitList = visitList;
+                //TODO do something here
             });
         }
         const visitIDs = visits.map((visit) => visit.visitID);
