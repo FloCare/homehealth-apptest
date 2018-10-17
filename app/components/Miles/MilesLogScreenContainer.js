@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import {Alert} from 'react-native';
+import moment from 'moment';
 import MilesLogScreen from './MilesLogScreen';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
+import {createSectionedListByField} from '../../utils/collectionUtils';
+import {EpisodeMessagingService} from '../../data_services/MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 
 export default class MilesLogScreenContainer extends Component {
 
@@ -10,7 +13,6 @@ export default class MilesLogScreenContainer extends Component {
 
     constructor(props) {
         super(props);
-        this.setNavigatorButtonsForActiveLogs();
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.activeVisitSubscriber = VisitService.getInstance().subscribeToActiveVisits(this.setActiveVisits);
         this.submittedVisitsSubscriber = VisitService.getInstance().subscribeToSubmittedVisits(this.setSubmittedVisits);
@@ -18,7 +20,8 @@ export default class MilesLogScreenContainer extends Component {
             screenIndex: MilesLogScreenContainer.ACTIVE_TAB_INDEX,
             sectionedActiveVisits: this.getSectionedDataFromVisits(this.activeVisitSubscriber.currentData, MilesLogScreenContainer.ACTIVE_TAB_INDEX),
             sectionedSubmittedVisits: null,
-            selectedVisitsSet: new Set([])
+            selectedDatesSet: new Set([]),
+            data: this.getFormattedDataForActiveLogs(this.activeVisitSubscriber.currentData)
         };
     }
 
@@ -29,29 +32,17 @@ export default class MilesLogScreenContainer extends Component {
 
     onNavigatorEvent(event) {
         if (event.id === 'send-report') {
-            if (this.state.selectedVisitsSet.size > 0) {
+            if (this.state.selectedDatesSet.size > 0) {
                 Alert.alert(
                     'Send Report',
                     'Send report for the selected visits?',
                     [
                         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                        {text: 'OK', onPress: () => { this.handleSendReportClick(Array.from(this.state.selectedVisitsSet)); }}
+                        {text: 'OK', onPress: () => { this.handleSendReportClick(Array.from(this.state.selectedDatesSet)); }}
                     ]
                 );
             }
         }
-    }
-
-    setNavigatorButtonsForActiveLogs() {
-        this.props.navigator.setButtons({
-            rightButtons: [
-                {
-                    id: 'send-report',
-                    title: 'Send Report',
-                    buttonFontSize: 12
-                }
-            ]
-        });
     }
 
     getSectionedDataFromVisits = (visits, screenIndex) => {
@@ -64,13 +55,29 @@ export default class MilesLogScreenContainer extends Component {
         }];
     }
 
+    sortSectionByDate = (section1, section2) => (
+        (parseInt(section1.title, 10) - parseInt(section2.title, 10))
+    );
+
+    getFormattedDataForActiveLogs = (visits) => {
+        // TODO Sort inside section by visit order
+        const visitsByMidnightEpoch = createSectionedListByField(visits, (visit) => visit.midnightEpochOfVisit, 'date', 'visits');
+        visitsByMidnightEpoch.forEach(section => {
+            const allVisits = section.visits;
+            section.visits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+        //    TODO Delete section if visits length becomes zero now
+        });
+        visitsByMidnightEpoch.sort(this.sortSectionByDate);
+        return visitsByMidnightEpoch;
+    };
+
     setActiveVisits = (visits) => {
-        this.setState({sectionedActiveVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.ACTIVE_TAB_INDEX)});
-    }
+        this.setState({data: this.getFormattedDataForActiveLogs(visits)});
+    };
 
     setSubmittedVisits = (visits) => {
         this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
-    }
+    };
 
     getSectionToRenderBasedOnTab = () => {
         if (this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
@@ -82,43 +89,41 @@ export default class MilesLogScreenContainer extends Component {
 
     handleSendReportClick = (visitIDs) => {
         VisitService.getInstance().generateReportAndSubmitVisits(visitIDs);
-        this.setState({selectedVisitsSet: new Set([])});
+        this.setState({selectedDatesSet: new Set([])});
     }
 
-    toggleVisitSelected = (visitID) => {
-        const newSelectedVisitsSet = new Set(this.state.selectedVisitsSet);
-        if (this.state.selectedVisitsSet.has(visitID)) {
-            newSelectedVisitsSet.delete(visitID);
+    toggleDateSelected = (date) => {
+        const newSelectedDateSet = new Set(this.state.selectedDatesSet);
+        if (this.state.selectedDatesSet.has(date)) {
+            newSelectedDateSet.delete(date);
         } else {
-            newSelectedVisitsSet.add(visitID);
+            newSelectedDateSet.add(date);
         }
-        this.setState({selectedVisitsSet: newSelectedVisitsSet});
-    }
+        this.setState({selectedDatesSet: newSelectedDateSet});
+    };
 
-    toggleSectionSelected = (sectionTitle, isCurrentlySelected) => {
-        const sectionData = this.state.sectionedActiveVisits.find(section => section.title === sectionTitle).data;
-        const visitIDs = sectionData.map(visit => visit.visitID);
-        const newSelectedVisitsSet = new Set(this.state.selectedVisitsSet);
+    toggleSelectAll = (isCurrentlySelected) => {
         if (isCurrentlySelected) {
-            visitIDs.forEach(visitID => newSelectedVisitsSet.delete(visitID));
+            this.setState({selectedDatesSet: new Set()});
         } else {
-            visitIDs.forEach(visitID => newSelectedVisitsSet.add(visitID));
+            const allDates = this.state.data.map(item => item.date)
+            this.setState({selectedDatesSet: new Set(allDates)});
         }
+    }
 
-        this.setState({selectedVisitsSet: newSelectedVisitsSet});
+    selectDatesInRange = (startDate, endDate) => {
+        const allDates = this.state.data.map(item => item.date);
+        const timeZoneMoment = (date) => moment(parseInt(date, 10)).subtract(moment().utcOffset(), 'minutes').valueOf();
+        const selectedDates = allDates.filter(date => (timeZoneMoment(date) >= (startDate) && timeZoneMoment(date) <= endDate));
+        this.setState({selectedDatesSet: new Set(selectedDates)});
     }
 
     updateScreenIndex = (screenIndex) => {
         if (screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
-            this.props.navigator.setButtons({
-                rightButtons: []
-            });
             if (!this.state.sectionedSubmittedVisits) {
                 const submittedVisits = this.submittedVisitsSubscriber.currentData;
                 this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(submittedVisits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
             }
-        } else if (screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
-            this.setNavigatorButtonsForActiveLogs();
         }
         this.setState({screenIndex});
     }
@@ -128,11 +133,12 @@ export default class MilesLogScreenContainer extends Component {
             <MilesLogScreen
                 screenIndex={this.state.screenIndex}
                 updateScreenIndex={this.updateScreenIndex}
-                sectionData={this.getSectionToRenderBasedOnTab()}
-                showCheckBox={this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
-                toggleVisitSelected={this.toggleVisitSelected}
-                toggleSectionSelected={this.toggleSectionSelected}
-                selectedVisitsSet={this.state.selectedVisitsSet}
+                data={this.state.data}
+                navigator={this.props.navigator}
+                selectedDatesSet={this.state.selectedDatesSet}
+                toggleDateSelected={this.toggleDateSelected}
+                selectDatesInRange={this.selectDatesInRange}
+                toggleSelectAll={this.toggleSelectAll}
             />
         );
     }

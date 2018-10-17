@@ -383,15 +383,13 @@ export class VisitService {
     }
 
     subscribeToActiveVisits(callbackFunction) {
-        const doneUserVisits = this.visitRealmService.getDoneUserVisits();
-        const milesActiveVisits = this.visitMilesService.filterMilesInformationCompleteVisits(doneUserVisits);
-        const nonReportedVisits = this.reportService.filterNonReportedVisits(milesActiveVisits);
-        const visitsResult = this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
+        const userVisits = this.visitRealmService.getCurrentUserVisits();
+        const nonReportedVisits = this.reportService.filterNonReportedVisits(userVisits);
         const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        visitsResult.addListener(realmListener);
+        nonReportedVisits.addListener(realmListener);
         return {
-            currentData: visitsResult,
-            unsubscribe: () => visitsResult.removeListener(realmListener),
+            currentData: nonReportedVisits,
+            unsubscribe: () => nonReportedVisits.removeListener(realmListener),
         };
     }
 

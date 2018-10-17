@@ -20,9 +20,9 @@ export class ReportService {
         this.floDB = floDB;
     }
 
-    filterNonReportedVisits = (visits) => visits.filtered('reportItems.@size == 0')
+    filterNonReportedVisits = (visits) => visits.filtered('reportItems.@size == 0');
 
-    filterReportedVisits = (visits) => visits.filtered('reportItems.@size == 1')
+    filterReportedVisits = (visits) => visits.filtered('reportItems.@size == 1');
 
     createReport(reportID, status) {
         return this.floDB.create(Report, {

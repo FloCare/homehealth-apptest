@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 function arrayToMap(array, keyProperty) {
     if (!keyProperty) {
         console.error('keyProperty missing');
@@ -53,19 +55,23 @@ function isNonEmptyArray(object) {
     return object && object.length && object.length > 0;
 }
 
-const createSectionedListByName = (realmObj) => {
+const createSectionedListByField = (realmObj, sectionGenerator = (item) => item.name[0].toUpperCase(), sectionHeader = 'title', contentHeader = 'data') => {
     const arr = Object.keys(realmObj).map((key) => realmObj[key]);
     const sections = arr.reduce((m, obj) => {
-        const title = obj.name[0].toUpperCase();
-        if ((Object.keys(m)).indexOf(title) > -1) {
+        const title = sectionGenerator(obj);
+        if ((Object.keys(m)).indexOf(title.toString()) > -1) {
             m[title].push(obj);
         } else {
             m[title] = [obj];
         }
         return m;
     }, {});
-    const sectionsArray = Object.keys(sections).map((key) => ({title: key, data: sections[key]}));
-    return sectionsArray;
+    return Object.keys(sections).map((key) => {
+        const returnObject = {};
+        returnObject[contentHeader] = sections[key];
+        returnObject[sectionHeader] = key;
+        return returnObject;
+    });
 };
 
 function hasNonEmptyValueForKey(object, key) {
@@ -75,4 +81,10 @@ function hasNonEmptyValueForKey(object, key) {
 function hasNonEmptyValueForAllKeys(object, keysList) {
     return keysList.every(key => hasNonEmptyValueForKey(object, key));
 }
-export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByName, arrayToObjectByKey, arrayToObjectListByKey, hasNonEmptyValueForKey, hasNonEmptyValueForAllKeys};
+
+function isSameMonth(date1, date2) {
+    return moment(date1).format('MM') === moment(date2).format('MM');
+}
+
+export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByField,
+    arrayToObjectByKey, arrayToObjectListByKey, hasNonEmptyValueForKey, hasNonEmptyValueForAllKeys, isSameMonth};

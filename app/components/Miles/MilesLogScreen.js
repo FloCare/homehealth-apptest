@@ -1,16 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text, SectionList, Image, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import moment from 'moment/moment';
-import Modal from 'react-native-modal';
 import {PrimaryColor} from '../../utils/constants';
 import {CustomCheckBox} from '../common/CustomCheckBox';
-import {Address} from '../../utils/data/schemas/Models/address/Address';
 import {styles} from '../common/styles';
-import {Images} from '../../Images';
-import {milesRenderString} from '../../utils/renderFormatUtils';
-import {Report} from '../../utils/data/schema';
 import MilesLogScreenContainer from './MilesLogScreenContainer';
-import AddOrEditMilesModal from './AddOrEditMilesModal';
+import ActiveLogsScreen from './ActiveLogsScreen';
+import ReportsScreen from './ReportsScreen';
 
 export default class MilesLogScreen extends Component {
 
@@ -19,14 +15,6 @@ export default class MilesLogScreen extends Component {
         this.state = {
             visitIDForMilesModal: null
         };
-    }
-
-    dismissEditMilesModal = () => {
-        this.setState({visitIDForMilesModal: null});
-    }
-
-    showEditMilesModalForVisitID = (visitID) => {
-        this.setState({visitIDForMilesModal: visitID});
     }
 
     handleItemClick = (visitID) => {
@@ -39,114 +27,10 @@ export default class MilesLogScreen extends Component {
         moment(date).subtract(moment().utcOffset(), 'minutes').format('MMMM DD')
     )
 
-    isVisitSelected = (visitID) => (this.props.selectedVisitsSet.has(visitID))
+    isVisitSelected = (visitID) => (this.props.selectedDatesSet.has(visitID))
 
-    toggleVisitSelected = (visitID) => (this.props.toggleVisitSelected(visitID))
+    toggleVisitSelected = (visitID) => (this.props.toggleDateSelected(visitID))
 
-    renderItem = (visit) => {
-        const milesTravelled = visit.visitMiles.MilesTravelled;
-        const isVisitReportPending = visit.getReportStatus() === Report.reportStateEnum.CREATED;
-        return (
-            <View style={{flexDirection: 'row', flex: 1, marginTop: 5, marginBottom: 5, borderBottomColor: '#E1E1E1', borderBottomWidth: 1}}>
-                <View style={{width: 40}}>
-                    {
-                        this.props.showCheckBox &&
-                        <CustomCheckBox
-                            checked={this.isVisitSelected(visit.visitID)}
-                            checkBoxStyle={{width: 15, height: 15, alignSelf: 'flex-start', marginTop: 10}}
-                            checkBoxContainerStyle={{width: 40, height: '100%', justifyContent: 'center'}}
-                            onPress={() => this.toggleVisitSelected(visit.visitID)}
-                        />
-                    }
-                </View>
-
-                <TouchableOpacity
-                    style={{flex: 1}}
-                    onPress={() => { this.handleItemClick(visit.visitID); }}
-                >
-                    <Modal
-                        isVisible={this.state.visitIDForMilesModal === visit.visitID}
-                        onBackButtonPress={() => this.dismissEditMilesModal()}
-                        avoidKeyboard
-                        backdropOpacity={0.8}
-                    >
-                        <AddOrEditMilesModal
-                            name={visit.getAssociatedName()}
-                            visitID={visit.visitID}
-                            odometerStart={visit.visitMiles.odometerStart}
-                            odometerEnd={visit.visitMiles.odometerEnd}
-                            computedMiles={visit.visitMiles.computedMiles}
-                            extraMiles={visit.visitMiles.extraMiles}
-                            comments={visit.visitMiles.milesComments}
-                            dismissMilesModal={this.dismissEditMilesModal}
-                        />
-                    </Modal>
-                    <View style={{flex: 1}}>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, alignItems: 'center'}}>
-                            <View>
-                                <Text style={{...styles.nameStyle, fontSize: 15}}>{visit.getAssociatedName()}</Text>
-                                <View style={{flexDirection: 'row', marginTop: 2}}>
-                                    <Image source={Images.location} style={{marginRight: 8}} />
-                                    <Text style={styles.addressStyle}>
-                                        {Address.minifiedAddress(visit.getAddress().formattedAddress)}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View>
-                                <Text style={{...styles.milesDataStyle, fontSize: 10, marginRight: 10}}>
-                                    {this.formatDate(parseInt(visit.midnightEpochOfVisit, 10))}
-                                </Text>
-                                {
-                                    isVisitReportPending &&
-                                    <Text style={{...styles.addressStyle, fontSize: 10, marginRight: 10}}>
-                                        Queued
-                                    </Text>
-                                }
-                            </View>
-                        </View>
-                        <View style={{flex: 1, marginTop: 5}}>
-                            <Text style={styles.milesHeadingStyle}>
-                                Odometer Reading
-                            </Text>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1, marginTop: 5}}>
-                                <View style={{flexDirection: 'row', flex: 1}}>
-                                    <View style={{flexDirection: 'row'}}>
-                                        <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
-                                            Start:
-                                        </Text>
-                                        <Text style={{...styles.milesDataStyle, fontSize: 10, marginLeft: 3}}>
-                                            {milesRenderString(visit.visitMiles.odometerStart)}
-                                        </Text>
-                                    </View>
-                                    <View style={{flexDirection: 'row', marginLeft: 20}}>
-                                        <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
-                                            End:
-                                        </Text>
-                                        <Text style={{...styles.milesDataStyle, fontSize: 10, marginLeft: 3}}>
-                                            {milesRenderString(visit.visitMiles.odometerEnd)}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={{marginRight: 15}}>
-                                    <Text style={{...styles.milesDataStyle, fontSize: 12}}>
-                                        {`${milesRenderString(milesTravelled)} Mi`}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={{flexDirection: 'row', marginTop: 5, marginBottom: 5}}>
-                                <Text style={styles.milesHeadingStyle}>
-                                    Comments:
-                                </Text>
-                                <Text style={{...styles.milesDataStyle, fontSize: 11, marginLeft: 3, flex: 1, flexWrap: 'wrap'}}>
-                                    {visit.visitMiles.milesComments}
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        );
-    }
 
     renderSectionHeader = (title) => {
         if (!title) return;
@@ -172,6 +56,25 @@ export default class MilesLogScreen extends Component {
                 <Text style={{...styles.milesDataStyle, fontSize: 15, fontWeight: '500'}}>{title}</Text>
             </View>
         );
+    }
+
+    getScreenBasedOnSelectedIndex = () => {
+        switch (this.props.screenIndex) {
+            case MilesLogScreenContainer.ACTIVE_TAB_INDEX:
+                return (
+                    <ActiveLogsScreen
+                        data={this.props.data}
+                        navigator={this.props.navigator}
+                        selectedDatesSet={this.props.selectedDatesSet}
+                        toggleDateSelected={this.props.toggleDateSelected}
+                        toggleSelectAll={this.props.toggleSelectAll}
+                        selectDatesInRange={this.props.selectDatesInRange}
+                    />);
+            case MilesLogScreenContainer.SUBMITTED_TAB_INDEX:
+                return <ReportsScreen />;
+            default:
+                return <View />;
+        }
     }
 
     render() {
@@ -201,18 +104,13 @@ export default class MilesLogScreen extends Component {
                         onPress={() => this.props.updateScreenIndex(MilesLogScreenContainer.SUBMITTED_TAB_INDEX)}
                     >
                         <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
-                            Submitted Logs
+                            Reports
                         </Text>
                     </TouchableOpacity>
                 </View>
-                <SectionList
-                    renderItem={({item}) => this.renderItem(item)}
-                    renderSectionHeader={({section: {title}}) => this.renderSectionHeader(title)}
-                    sections={this.props.sectionData}
-                    keyboardShouldPersistTaps
-                    keyExtractor={(item) => item.visitID}
-                    stickySectionHeadersEnabled={false}
-                />
+                {
+                    this.getScreenBasedOnSelectedIndex()
+                }
             </View>
         );
     }

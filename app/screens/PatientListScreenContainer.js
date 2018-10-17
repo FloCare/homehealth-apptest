@@ -11,7 +11,7 @@ import {
     parameterValues,
     visitSubjects,
 } from '../utils/constants';
-import {createSectionedListByName} from '../utils/collectionUtils';
+import {createSectionedListByField} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
 import {PatientDataService} from '../data_services/PatientDataService';
@@ -235,7 +235,7 @@ class PatientListScreenContainer extends Component {
             const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
             const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
             const patientCount = formattedPatientList.length;
-            const sectionedPatientList = createSectionedListByName(formattedPatientList);
+            const sectionedPatientList = createSectionedListByField(formattedPatientList);
             const recentPatientsSection = this.createRecentPatientsSection(formattedPatientList);
             this.setState({
                 patientList: recentPatientsSection ? [recentPatientsSection, ...sectionedPatientList] : sectionedPatientList,
@@ -247,7 +247,7 @@ class PatientListScreenContainer extends Component {
             // Todo: Search on other fields ???
             const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
             const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
-            const sectionedPatientList = createSectionedListByName(formattedPatientList);
+            const sectionedPatientList = createSectionedListByField(formattedPatientList);
 
             const onlinePatientsSection = this.createOnlinePatientsSection(query);
             this.setState({patientList: onlinePatientsSection ? [...sectionedPatientList, onlinePatientsSection] : sectionedPatientList});
