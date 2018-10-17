@@ -440,7 +440,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         {computedMilesString}
                     </Text>
                     {
-                        extraMilesString &&
+                        !!extraMilesString &&
                         <Text style={{color: ErrorMessageColor, fontSize: 10}}>
                             {extraMilesString}
                         </Text>
@@ -516,11 +516,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                     </TouchableOpacity>
                                     {
                                         this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
-                                        <View>
-                                            {
-                                                this.renderMileage()
-                                            }
-                                        </View>
+                                        this.renderMileage()
                                     }
 
                                 </View>
