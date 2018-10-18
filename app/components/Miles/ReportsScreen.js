@@ -77,10 +77,12 @@ export default class ReportsScreen extends Component {
         </TouchableOpacity>
     );
 
-    getSubmittedButton = () => (
+    getSubmittedButton = (status) => (
         <TouchableOpacity style={{alignSelf: 'flex-end', borderColor: grayColor, borderWidth: 1, borderRadius: 15, padding: 5, paddingLeft: 10, paddingRight: 10}}>
             <Text style={{...styles.textStyle, color: grayColor}}>
-                Submitted
+                {
+                    status === Report.reportStateEnum.ACCEPTED ? 'Submitted' : 'Submit Queued'
+                }
             </Text>
         </TouchableOpacity>
     );
@@ -200,8 +202,9 @@ export default class ReportsScreen extends Component {
     };
 
 
-    renderButtons = (reportID, submitted) => {
-        const submitButton = submitted ? this.getSubmittedButton() : this.getSubmitButton(reportID);
+    renderButtons = (reportID, status) => {
+        const submitButton = status === Report.reportStateEnum.CREATED ? this.getSubmitButton(reportID) : this.getSubmittedButton(status);
+        const deleteAllowed = status === Report.reportStateEnum.CREATED;
         return (
             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', marginTop: 15, marginBottom: 10}}>
                 <View style={{flex: 2, flexDirection: 'row', marginLeft: 30}}>
@@ -209,7 +212,7 @@ export default class ReportsScreen extends Component {
                         this.getViewButton(reportID)
                     }
                     {
-                        !submitted &&
+                        deleteAllowed &&
                         this.getDeleteButton(reportID)
                     }
                 </View>
@@ -224,13 +227,12 @@ export default class ReportsScreen extends Component {
 
     renderItem = (item) => {
         const report = item.item;
-        const reportSubmitted = report.status === Report.reportStateEnum.ACCEPTED;
         return (
             <View style={{marginTop: 10}}>
                 {
                     this.renderSummary(report)}
                 {
-                    this.renderButtons(report.reportID, reportSubmitted)
+                    this.renderButtons(report.reportID, report.status)
                 }
                 <Divider style={styles.dividerStyle} />
             </View>
@@ -238,10 +240,14 @@ export default class ReportsScreen extends Component {
     };
 
     render() {
+        // render data is a realm collection. Fetch from db doesn't happen till we access it.
+        // Need this to ensure data is fetched so that flatlist knows to update if there is a change in data.
+        const renderData = this.props.data.map(item => item);
         return (
             <FlatList
-                data={this.props.data}
+                data={renderData}
                 renderItem={this.renderItem}
+                keyExtractor={(item) => item.reportID}
             />
         );
     }

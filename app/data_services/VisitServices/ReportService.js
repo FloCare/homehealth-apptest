@@ -26,7 +26,7 @@ export class ReportService {
 
     getReports = () => (
         // TODO sort by created at date
-        this.floDB.objects(Report)
+        this.floDB.objects(Report)//.filtered(`status == "${Report.reportStateEnum.ACCEPTED}" OR status == "${Report.reportStateEnum.CREATED}"`)
     );
 
 

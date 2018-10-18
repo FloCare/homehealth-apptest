@@ -491,11 +491,12 @@ export class VisitService {
 
     submitReport = (reportID) => {
         const report = ReportService.getInstance().getReportByID(reportID);
+        this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.SUBMIT_QUEUED);
         getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
     };
 
-    markReportAccepted = (reportID) => {
-        this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
+    updateReportStatus = (reportID, status) => {
+        this.reportService.updateStatusByReportID(reportID, status);
     };
 
     deleteReportAndItems = (reportID) => {

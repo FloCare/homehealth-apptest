@@ -39,11 +39,6 @@ function DateRowGenerator(toggleDate, navigator) {
         getExtraMilesForVisit = (visit) => visit.visitMiles.extraMiles;
         isSelected = () => (this.props.data.isSelected);
 
-        incrementCounter = () => {
-            this.setState({counter: this.state.counter + 1});
-            this.props.onItemLayoutUpdate(this.props.key);
-        };
-
         dateAndCheckBoxComponent = () => {
             const date = this.getDate();
             return (
@@ -267,13 +262,13 @@ function DateRowGenerator(toggleDate, navigator) {
         };
 
         toggleDetailView = () => {
-            this.setState({detailed: !this.state.detailed});
             this.props.onItemLayoutUpdate(this.state.data.date);
+            this.setState({detailed: !this.state.detailed});
         };
 
         render() {
             return (
-                <View style={{flex: 1, marginBottom: 5, marginTop: 5}}>
+                <View style={{flex: 1, marginBottom: 5, marginTop: 5}} onLayout={this.onLayoutCallback}>
                     <TouchableOpacity onPress={this.toggleDetailView}>
                         <View style={{flexDirection: 'row', flex: 1}}>
                             {
@@ -309,30 +304,15 @@ export default class ActiveLogsScreen extends Component {
 
     constructor(props) {
         super(props);
-        const {order, formattedData} = this.getOrderAndFormattedData(this.props.data, this.props.selectedDatesSet);
         this.state = {
-            order,
-            formattedData,
             showSelectDatesModal: false
         };
         this.renderRow = DateRowGenerator(this.props.toggleDateSelected, this.props.navigator);
     }
 
-
-    componentWillReceiveProps(nextProps) {
-        if (this.props.selectedDatesSet !== nextProps.selectedDatesSet) {
-            const {order, formattedData} = this.getOrderAndFormattedData(this.props.data, nextProps.selectedDatesSet);
-            this.setState({order, formattedData});
-        }
-    }
-
-    getOrderAndFormattedData = (dataArray, selectedDatesSet) => {
-        const formattedData = {};
-        const order = [];
-        dataArray.forEach((item) => { item.isSelected = selectedDatesSet.has(item.date); formattedData[item.date] = item; order.push(item.date); });
-        order.sort();
-        return {formattedData, order};
-    };
+    getAllDates = () => (
+        Object.keys(this.props.data)
+    );
 
 
     onPressSelectDates = () => {
@@ -368,7 +348,7 @@ export default class ActiveLogsScreen extends Component {
     };
 
     filterSection = () => {
-        const allDates = Object.keys(this.state.formattedData);
+        const allDates = this.getAllDates();
         const areAllSelected = allDates.every(date => this.props.selectedDatesSet.has(date));
         const rangeDateString = this.getRangeDateString();
         return (
@@ -423,12 +403,12 @@ export default class ActiveLogsScreen extends Component {
     milesPresentForAllSelectedDates = () => {
         const selectedDates = Array.from(this.props.selectedDatesSet);
         // Check if miles is present for all visits except the first visit
-        return !selectedDates.some(date => this.visitMilesNotPresentForVisits(this.state.formattedData[date].visits.slice(1)));
+        return !selectedDates.some(date => this.visitMilesNotPresentForVisits(this.props.data[date].visits.slice(1)));
     };
 
     anyPendingVisits = () => {
         const selectedDates = Array.from(this.props.selectedDatesSet);
-        return selectedDates.some(date => this.pendingVisitsPresentForVisits(this.state.formattedData[date].visits));
+        return selectedDates.some(date => this.pendingVisitsPresentForVisits(this.props.data[date].visits));
     };
 
     handleCreateReportClick = () => {
@@ -442,7 +422,7 @@ export default class ActiveLogsScreen extends Component {
             } else {
                 const selectedDates = Array.from(this.props.selectedDatesSet);
                 const allVisitIDs = selectedDates.reduce((accum, date) => {
-                    const visits = this.state.formattedData[date].visits;
+                    const visits = this.props.data[date].visits;
                     const visitIDs = visits.map(visit => visit.visitID);
                     accum = [...accum, ...visitIDs];
                     return accum;
@@ -453,6 +433,12 @@ export default class ActiveLogsScreen extends Component {
     };
 
     render() {
+        const dateAndVisitsData = this.props.data;
+        const dates = Object.keys(this.props.data);
+        dates.forEach(date => {
+            const section = dateAndVisitsData[date];
+            section.isSelected = this.props.selectedDatesSet.has(date);
+        });
         return (
             <View style={{flex: 1}}>
                 {
@@ -460,8 +446,8 @@ export default class ActiveLogsScreen extends Component {
                 }
                 <View style={{marginTop: 5, flex: 1}}>
                     <SortableList
-                        data={this.state.formattedData}
-                        order={this.state.order}
+                        data={dateAndVisitsData}
+                        order={this.props.order}
                         renderRow={this.renderRow}
                     />
                 </View>
