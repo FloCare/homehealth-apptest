@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import moment from 'moment';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
-import {createSectionedListByField} from '../../utils/collectionUtils';
+import {createSectionedListByField, sortByArray} from '../../utils/collectionUtils';
 import {EpisodeMessagingService} from '../../data_services/MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import ActiveLogsScreen from './ActiveLogsScreen';
 import ReportsScreen from './ReportsScreen';
-import {PrimaryColor} from '../../utils/constants';
+import {defaultBackGroundColor, PrimaryColor} from '../../utils/constants';
 
 export default class MilesLogScreenContainer extends Component {
 
@@ -30,69 +30,24 @@ export default class MilesLogScreenContainer extends Component {
         this.reportsSubscriber.unsubscribe();
     }
 
-    sortSectionByDate = (section1, section2) => (
-        (parseInt(section1.title, 10) - parseInt(section2.title, 10))
-    );
-
     getFormattedDataForActiveLogs = (visits) => {
-        // TODO Sort inside section by visit order
-        const visitsByMidnightEpoch = createSectionedListByField(visits, (visit) => visit.midnightEpochOfVisit, 'date', 'visits');
+        let visitsByMidnightEpoch = createSectionedListByField(visits, (visit) => visit.midnightEpochOfVisit, 'date', 'visits');
         visitsByMidnightEpoch.forEach(section => {
             const allVisits = section.visits;
-            section.visits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
-        //    TODO Delete section if visits length becomes zero now
+            const serverEntityVisits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+            if (serverEntityVisits.length > 0) {
+                const midnightEpoch = parseInt(section.date, 10);
+                const visitOrder = VisitService.getInstance().getVisitOrderForDate(midnightEpoch).visitList.map(visit => visit.visitID);
+                sortByArray(serverEntityVisits, visitOrder, (visit => visit.visitID));
+            }
+            section.visits = serverEntityVisits;
         });
+        //Remove days with no visits. Might have been removed because only local visits
+        visitsByMidnightEpoch = visitsByMidnightEpoch.filter(section => section.visits.length);
         visitsByMidnightEpoch.sort(this.sortSectionByDate);
         return visitsByMidnightEpoch;
     };
 
-    setActiveLogs = (visits) => {
-        this.setState({activeLogsData: this.getFormattedDataForActiveLogs(visits)});
-    };
-
-    setReports = (reports) => {
-        console.log('callback from reports');
-        this.setState({reportsData: reports});
-    };
-
-    createReport = (visitIDs) => {
-        VisitService.getInstance().generateReportForVisits(visitIDs);
-        this.setState({selectedDatesSet: new Set([])});
-    };
-
-    toggleDateSelected = (date) => {
-        const newSelectedDateSet = new Set(this.state.selectedDatesSet);
-        if (this.state.selectedDatesSet.has(date)) {
-            newSelectedDateSet.delete(date);
-        } else {
-            newSelectedDateSet.add(date);
-        }
-        this.setState({selectedDatesSet: newSelectedDateSet});
-    };
-
-    toggleSelectAll = (isCurrentlySelected) => {
-        if (isCurrentlySelected) {
-            this.setState({selectedDatesSet: new Set()});
-        } else {
-            const allDates = this.state.activeLogsData.map(item => item.date)
-            this.setState({selectedDatesSet: new Set(allDates)});
-        }
-    }
-
-    selectDatesInRange = (startDate, endDate) => {
-        const allDates = this.state.activeLogsData.map(item => item.date);
-        const timeZoneMoment = (date) => moment(parseInt(date, 10)).subtract(moment().utcOffset(), 'minutes').valueOf();
-        const selectedDates = allDates.filter(date => (timeZoneMoment(date) >= (startDate) && timeZoneMoment(date) <= endDate));
-        this.setState({selectedDatesSet: new Set(selectedDates)});
-    }
-
-    updateScreenIndex = (screenIndex) => {
-        this.setState({screenIndex});
-    }
-
-    submitReport = (reportID) => {
-        VisitService.getInstance().submitReport(reportID);
-    }
 
     getScreenBasedOnSelectedIndex = () => {
         switch (this.state.screenIndex) {
@@ -116,12 +71,64 @@ export default class MilesLogScreenContainer extends Component {
             default:
                 return <View />;
         }
-    }
+    };
+
+    setActiveLogs = (visits) => {
+        this.setState({activeLogsData: this.getFormattedDataForActiveLogs(visits)});
+    };
+
+    setReports = (reports) => {
+        this.setState({reportsData: reports});
+    };
+
+    createReport = (visitIDs) => {
+        VisitService.getInstance().generateReportForVisits(visitIDs);
+        this.setState({selectedDatesSet: new Set([])});
+    };
+
+    sortSectionByDate = (section1, section2) => (
+        (parseInt(section1.title, 10) - parseInt(section2.title, 10))
+    );
+
+    toggleDateSelected = (date) => {
+        const newSelectedDateSet = new Set(this.state.selectedDatesSet);
+        if (this.state.selectedDatesSet.has(date)) {
+            newSelectedDateSet.delete(date);
+        } else {
+            newSelectedDateSet.add(date);
+        }
+        this.setState({selectedDatesSet: newSelectedDateSet});
+    };
+
+    toggleSelectAll = (isCurrentlySelected) => {
+        if (isCurrentlySelected) {
+            this.setState({selectedDatesSet: new Set()});
+        } else {
+            const allDates = this.state.activeLogsData.map(item => item.date);
+            this.setState({selectedDatesSet: new Set(allDates)});
+        }
+    };
+
+    selectDatesInRange = (startDate, endDate) => {
+        const allDates = this.state.activeLogsData.map(item => item.date);
+        const timeZoneMoment = (date) => moment(parseInt(date, 10)).subtract(moment().utcOffset(), 'minutes').valueOf();
+        const selectedDates = allDates.filter(date => (timeZoneMoment(date) >= (startDate) && timeZoneMoment(date) <= endDate));
+        this.setState({selectedDatesSet: new Set(selectedDates)});
+    };
+
+    updateScreenIndex = (screenIndex) => {
+        this.setState({screenIndex});
+    };
+
+    submitReport = (reportID) => {
+        VisitService.getInstance().submitReport(reportID);
+    };
+
 
     render() {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
         return (
-            <View style={{flex: 1, backgroundColor: '#F8F8F8'}}>
+            <View style={{flex: 1, backgroundColor: defaultBackGroundColor}}>
                 <View
                     style={{flexDirection: 'row',
                         elevation: 3,
@@ -129,7 +136,7 @@ export default class MilesLogScreenContainer extends Component {
                         shadowOpacity: 0.3,
                         shadowOffset: {width: 2, height: 2},
                         shadowRadius: 2,
-                        backgroundColor: 'white'
+                        backgroundColor: defaultBackGroundColor
                     }}
                 >
                     <TouchableOpacity

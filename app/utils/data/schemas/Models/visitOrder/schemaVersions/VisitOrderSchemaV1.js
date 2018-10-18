@@ -1,4 +1,4 @@
-import {VisitOrder} from "../VisitOrder";
+import {VisitOrder} from '../VisitOrder';
 
 export const VisitOrderSchemaV1 = {
     name: VisitOrder.getSchemaName(),
