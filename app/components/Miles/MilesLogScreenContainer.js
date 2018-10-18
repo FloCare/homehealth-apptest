@@ -66,6 +66,7 @@ export default class MilesLogScreenContainer extends Component {
                 return (
                     <ReportsScreen
                         data={this.state.reportsData}
+                        deleteReport={this.deleteReport}
                         submitReport={this.submitReport}
                     />);
             default:
@@ -124,6 +125,9 @@ export default class MilesLogScreenContainer extends Component {
         VisitService.getInstance().submitReport(reportID);
     };
 
+    deleteReport = (reportID) => {
+        VisitService.getInstance().deleteReportAndItems(reportID);
+    };
 
     render() {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};

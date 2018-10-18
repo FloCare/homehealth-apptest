@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
+import {Divider} from 'react-native-elements';
 import moment from 'moment';
 import {grayColor, styles} from './styles';
 import {isSameMonth} from '../../utils/collectionUtils';
 import {PrimaryColor} from '../../utils/constants';
 import {Report} from '../../utils/data/schema';
-import {Divider} from 'react-native-elements';
+import {milesRenderString} from '../../utils/renderFormatUtils';
 
 // The day I will be a 1000 years old
 const TIME_INF = 32384687400000;
@@ -40,8 +41,6 @@ export default class ReportsScreen extends Component {
         };
     };
 
-    timeZoneConvertedEpoch = (date) => (moment(date).subtract(moment().utcOffset(), 'minutes'))
-
     getMonthString = (minDate, maxDate) => {
         if (isSameMonth(minDate, maxDate)) {
             return this.timeZoneConvertedEpoch(minDate).format('MMM');
@@ -49,7 +48,66 @@ export default class ReportsScreen extends Component {
         const startMonth = this.timeZoneConvertedEpoch(minDate).format('MMM');
         const endMonth = this.timeZoneConvertedEpoch(maxDate).format('MMM');
         return `${startMonth} - ${endMonth}`;
-    }
+    };
+
+    getDeleteButton = (reportID) => (
+        <TouchableOpacity style={{marginLeft: 30}} onPress={() => this.confirmAndDeleteReport(reportID)}>
+            <Text style={{...styles.textStyle, color: PrimaryColor}}>
+                Delete
+            </Text>
+        </TouchableOpacity>
+    );
+
+    getViewButton = (reportID) => (
+        <TouchableOpacity>
+            <Text style={{...styles.textStyle, color: PrimaryColor}}>
+                View
+            </Text>
+        </TouchableOpacity>
+    );
+
+    getSubmitButton = (reportID) => (
+        <TouchableOpacity
+            style={{alignSelf: 'flex-end', borderColor: PrimaryColor, borderWidth: 1, borderRadius: 15, padding: 5, paddingLeft: 10, paddingRight: 10}}
+            onPress={() => this.confirmAndSubmitReport(reportID)}
+        >
+            <Text style={{...styles.textStyle, color: PrimaryColor}}>
+                Submit
+            </Text>
+        </TouchableOpacity>
+    );
+
+    getSubmittedButton = () => (
+        <TouchableOpacity style={{alignSelf: 'flex-end', borderColor: grayColor, borderWidth: 1, borderRadius: 15, padding: 5, paddingLeft: 10, paddingRight: 10}}>
+            <Text style={{...styles.textStyle, color: grayColor}}>
+                Submitted
+            </Text>
+        </TouchableOpacity>
+    );
+
+    confirmAndDeleteReport = (reportID) => {
+        Alert.alert(
+            'Delete Report',
+            'Are you sure you want to delete report? This visits will go back to active logs',
+            [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'OK', onPress: () => { this.props.deleteReport(reportID); }}
+            ]
+        );
+    };
+
+    confirmAndSubmitReport = (reportID) => {
+        Alert.alert(
+            'Submit Report',
+            'Submit report to office? Be warned - This action cannot be undone',
+            [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'OK', onPress: () => { this.props.submitReport(reportID); }}
+            ]
+        );
+    };
+
+    timeZoneConvertedEpoch = (date) => (moment(date).subtract(moment().utcOffset(), 'minutes'))
 
     renderDates = (minDate, maxDate) => {
         const monthString = this.getMonthString(minDate, maxDate);
@@ -64,15 +122,15 @@ export default class ReportsScreen extends Component {
                     {`${startDate} - ${endDate}`}
                 </Text>
             </View>
-        )
-    }
+        );
+    };
 
     renderMiles = (computedMiles, extraMiles) => {
         const extraMilesSection = (
             <View style={{flexDirection: 'row'}}>
                 <View>
                     <Text>
-                        {` +${extraMiles}`}
+                        {` +${milesRenderString(extraMiles)}`}
                     </Text>
                 </View>
                 <View>
@@ -88,7 +146,7 @@ export default class ReportsScreen extends Component {
         const milesSection = (
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={styles.miniContentStyle}>
-                    {computedMiles}
+                    {milesRenderString(computedMiles)}
                 </Text>
                 {
                     !!extraMiles && extraMilesSection
@@ -116,7 +174,7 @@ export default class ReportsScreen extends Component {
                 {nVisits}
             </Text>
         </View>
-    )
+    );
 
     renderSummary = (report) => {
         const {computedMiles, extraMiles, nVisits, minDate, maxDate} = this.getReportSummary(report);
@@ -141,53 +199,18 @@ export default class ReportsScreen extends Component {
         );
     };
 
-    confirmAndSubmit = (reportID) => {
-        Alert.alert(
-            'Submit Report',
-            'Submit report to office? Be warned - This action cannot be undone',
-            [
-                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                {text: 'OK', onPress: () => { this.props.submitReport(reportID); }}
-            ]
-        );
-    };
-
-    getSubmitButton = (reportID) => (
-        <TouchableOpacity
-            style={{alignSelf: 'flex-end', borderColor: PrimaryColor, borderWidth: 1, borderRadius: 15, padding: 5, paddingLeft: 10, paddingRight: 10}}
-            onPress={() => this.confirmAndSubmit(reportID)}
-        >
-            <Text style={{...styles.textStyle, color: PrimaryColor}}>
-                Submit
-            </Text>
-        </TouchableOpacity>
-    );
-
-    getSubmittedButton = () => (
-        <TouchableOpacity style={{alignSelf: 'flex-end', borderColor: grayColor, borderWidth: 1, borderRadius: 15, padding: 5, paddingLeft: 10, paddingRight: 10}}>
-            <Text style={{...styles.textStyle, color: grayColor}}>
-                Submitted
-            </Text>
-        </TouchableOpacity>
-    );
 
     renderButtons = (reportID, submitted) => {
         const submitButton = submitted ? this.getSubmittedButton() : this.getSubmitButton(reportID);
         return (
             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', marginTop: 15, marginBottom: 10}}>
                 <View style={{flex: 2, flexDirection: 'row', marginLeft: 30}}>
-                    <TouchableOpacity>
-                        <Text style={{...styles.textStyle, color: PrimaryColor}}>
-                            View
-                        </Text>
-                    </TouchableOpacity>
+                    {
+                        this.getViewButton(reportID)
+                    }
                     {
                         !submitted &&
-                        <TouchableOpacity style={{marginLeft: 30}}>
-                            <Text style={{...styles.textStyle, color: PrimaryColor}}>
-                                Delete
-                            </Text>
-                        </TouchableOpacity>
+                        this.getDeleteButton(reportID)
                     }
                 </View>
                 <View style={{flex: 1, marginRight: 40}}>
