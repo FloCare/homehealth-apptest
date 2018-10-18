@@ -99,7 +99,7 @@ export class VisitService {
             this.floDB.write(() => {
                 reorderedVisitList.forEach((visit, index) => {
                     if (index === 0) { return; }
-                    visit.visitMiles.totalMiles = parseFloat(mapData.distances[index - 1]);
+                    visit.visitMiles.computedMiles = parseFloat(mapData.distances[index - 1]);
                 });
             });
         } else {
@@ -111,7 +111,7 @@ export class VisitService {
         // Alert.alert('clear visits');
         this.floDB.write(() => {
             visitList.forEach(visit => {
-                visit.visitMiles.totalMiles = null;
+                visit.visitMiles.computedMiles = null;
                 visit.visitMiles.odometerStart = null;
                 visit.visitMiles.odometerEnd = null;
             });
