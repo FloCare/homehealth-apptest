@@ -286,14 +286,15 @@ export class EpisodeMessagingService extends BaseMessagingService {
             flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
-                totalMiles: visitMiles.totalMiles,
+                computedMiles: visitMiles.computedMiles,
+                extraMiles: visitMiles.extraMiles,
                 milesComments: visitMiles.milesComments
             };
         }
         return flatVisit;
     }
 
-    isVisitOfCommonInterest(visit) {
+    static isVisitOfCommonInterest(visit) {
         const visitPlace = visit.getPlace();
         if (visitPlace) {
             return !visitPlace.isLocallyOwned;
@@ -313,7 +314,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitCreateBulk(visits) {
-        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit));
+        const filteredVisits = visits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
         if (filteredVisits.length > 0) {
             this._createPublishToServerJob({
                 action: 'CREATE',
@@ -323,7 +324,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitUpdate(visit) {
-        if (!this.isVisitOfCommonInterest(visit)) { return; }
+        if (!EpisodeMessagingService.isVisitOfCommonInterest(visit)) { return; }
 
         this._createPublishToServerJob({
             action: 'UPDATE',
@@ -332,7 +333,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitDeletes(visits) {
-        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit))
+        const filteredVisits = visits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit))
         if (filteredVisits.length > 0) {
             this._createPublishToServerJob({
                 action: 'DELETE',

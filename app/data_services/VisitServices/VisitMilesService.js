@@ -1,4 +1,4 @@
-import { VisitMiles } from '../../utils/data/schema'
+import {VisitMiles} from '../../utils/data/schema';
 
 export class VisitMilesService {
     static visitMilesService;
@@ -17,10 +17,6 @@ export class VisitMilesService {
 
     constructor(floDB) {
         this.floDB = floDB;
-    }
-
-    filterMilesInformationCompleteVisits(visits) {
-        return visits.filtered('visitMiles.odometerStart != null && visitMiles.odometerEnd != null');
     }
 
     createVisitMilesForVisit(visit, visitMilesData) {

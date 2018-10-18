@@ -35,6 +35,7 @@
     "react-native-checkbox": "^2.0.0",
     "react-native-code-push": "5.4.1",
     "react-native-confirmation-code-input": "github:FloCare/react-native-confirmation-code-input",
+    "react-native-easy-toast": "^1.1.0",
     "react-native-elements": "^0.19.1",
     "react-native-firebase": "^4.3.8",
     "react-native-google-places-autocomplete": "github:FloCare/react-native-google-places-autocomplete",

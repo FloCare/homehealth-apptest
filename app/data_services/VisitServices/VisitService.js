@@ -59,7 +59,8 @@ export class VisitService {
             flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
-                totalMiles: visitMiles.totalMiles,
+                computedMiles: visitMiles.computedMiles,
+                extraMiles: visitMiles.extraMiles,
                 milesComments: visitMiles.milesComments
             };
         }
@@ -319,7 +320,8 @@ export class VisitService {
                 const visitMilesData = {
                     odometerStart: visitMiles ? visitMiles.odometerStart : null,
                     odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
-                    totalMiles: visitMiles ? visitMiles.totalMiles : null,
+                    computedMiles: visitMiles ? visitMiles.computedMiles : null,
+                    extraMiles: visitMiles ? visitMiles.extraMiles : null,
                     milesComments: visitMiles ? visitMiles.milesComments : null,
                 };
                 this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
@@ -349,7 +351,8 @@ export class VisitService {
                     const visitMilesData = {
                         odometerStart: null,
                         odometerEnd: null,
-                        totalMiles: null,
+                        computedMiles: null,
+                        extraMiles: null,
                         milesComments: null
                     };
                     this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
@@ -414,28 +417,27 @@ export class VisitService {
         throw new Error('requested visits for unrecognised entity');
     }
 
-    subscribeToSubmittedVisits(callbackFunction) {
-        const userVisits = this.visitRealmService.getCurrentUserVisits();
-        const reportedVisits = this.reportService.filterReportedVisits(userVisits);
-        const visitsResult = this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
-        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        visitsResult.addListener(realmListener);
+    subscribeToReports(callbackFunction) {
+        const reports = this.reportService.getReports();
+        const realmListener = (reportObjects) => { callbackFunction(reportObjects); };
+        reports.addListener(realmListener);
         return {
-            currentData: visitsResult,
-            unsubscribe: () => visitsResult.removeListener(realmListener),
+            currentData: reports,
+            unsubscribe: () => reports.removeListener(realmListener),
         };
     }
 
     subscribeToActiveVisits(callbackFunction) {
-        const doneUserVisits = this.visitRealmService.getDoneUserVisits();
-        const milesActiveVisits = this.visitMilesService.filterMilesInformationCompleteVisits(doneUserVisits);
-        const nonReportedVisits = this.reportService.filterNonReportedVisits(milesActiveVisits);
-        const visitsResult = this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
+        const userVisits = this.visitRealmService.getCurrentUserVisits();
+        const nonReportedVisits = this.reportService.filterNonReportedVisits(userVisits);
         const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        visitsResult.addListener(realmListener);
+        this.floDB.write(() => {
+                nonReportedVisits.forEach(visit => visit.visitMiles.computedMiles = 10);
+        })
+        nonReportedVisits.addListener(realmListener);
         return {
-            currentData: visitsResult,
-            unsubscribe: () => visitsResult.removeListener(realmListener),
+            currentData: nonReportedVisits,
+            unsubscribe: () => nonReportedVisits.removeListener(realmListener),
         };
     }
 
@@ -508,13 +510,14 @@ export class VisitService {
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
     }
 
-    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, totalMiles, milesComments) {
+    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, computedMiles, extraMiles, milesComments) {
         const visit = this.visitRealmService.getVisitByID(visitID);
         this.visitRealmService.updateMilesDataByVisitObject(
             visit,
             stringToFloat(odometerStart),
             stringToFloat(odometerEnd),
-            stringToFloat(totalMiles),
+            stringToFloat(computedMiles),
+            stringToFloat(extraMiles),
             milesComments
         );
 
@@ -523,20 +526,24 @@ export class VisitService {
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
-    generateReportAndSubmitVisits = (visitIDs) => {
+    generateReportForVisits = (visitIDs) => {
         const visits = this.getVisitsByIDs(visitIDs);
-        const report = this.reportService.generateReportForVisits(visits);
+        this.reportService.generateReportForVisits(visits);
         const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
         firebase.analytics().logEvent(eventNames.SEND_REPORT, {
             VALUE: totalMiles,
             NO_OF_VISITS: visits.length
         });
+    };
+
+    submitReport = (reportID) => {
+        const report = ReportService.getInstance().getReportByID(reportID);
         getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
-    }
+    };
 
     markReportAccepted = (reportID) => {
         this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
-    }
+    };
 
     deleteReportAndItems = (reportID) => {
         this.reportService.deleteReportAndItemsByReportID(reportID);

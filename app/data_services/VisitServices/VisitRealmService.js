@@ -109,12 +109,13 @@ export class VisitRealmService {
         );
     }
 
-    updateMilesDataByVisitObject(visit, odometerStart, odometerEnd, totalMiles, milesComments) {
+    updateMilesDataByVisitObject(visit, odometerStart, odometerEnd, computedMiles, extraMiles, milesComments) {
         const visitMilesObject = visit.visitMiles;
         this.floDB.write(() => {
             visitMilesObject.odometerStart = odometerStart;
             visitMilesObject.odometerEnd = odometerEnd;
-            visitMilesObject.totalMiles = totalMiles;
+            visitMilesObject.computedMiles = computedMiles;
+            visitMilesObject.extraMiles = extraMiles;
             visitMilesObject.milesComments = milesComments;
         });
     }

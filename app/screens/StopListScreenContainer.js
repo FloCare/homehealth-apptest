@@ -3,7 +3,7 @@ import firebase from 'react-native-firebase';
 import {Platform, Alert} from 'react-native';
 import {StopListScreen} from '../components/StopListScreen';
 import {floDB, Place} from '../utils/data/schema';
-import {createSectionedListByName} from '../utils/collectionUtils';
+import {createSectionedListByField} from '../utils/collectionUtils';
 import {screenNames} from '../utils/constants';
 import {Images} from '../Images';
 import {PlaceDataService} from '../data_services/PlaceDataService';
@@ -141,7 +141,7 @@ class StopListScreenContainer extends Component {
             const stopList = floDB.objects(Place.schema.name).filtered('archived = false');
             const sortedStopList = stopList.sorted('name');
             const stopCount = sortedStopList.length;
-            const sectionedStopList = createSectionedListByName(sortedStopList);
+            const sectionedStopList = createSectionedListByField(sortedStopList);
             this.setState({
                 stopList: sectionedStopList,
                 stopCount
@@ -153,7 +153,7 @@ class StopListScreenContainer extends Component {
             const queryStr = `name CONTAINS[c] "${query.toString()}"`;
             const stopList = floDB.objects(Place.schema.name).filtered('archived = false').filtered(queryStr);
             const sortedStopList = stopList.sorted('name');
-            const sectionedStopList = createSectionedListByName(sortedStopList);
+            const sectionedStopList = createSectionedListByField(sortedStopList);
             this.setState({stopList: sectionedStopList});
         }
     }

@@ -1,17 +1,14 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity, Image} from 'react-native';
 import firebase from 'react-native-firebase';
-import {Button} from 'react-native-elements';
+import {Button, Divider} from 'react-native-elements';
 import {InputField} from '../common/InputField';
-import {
-    ErrorMessageColor, eventNames,
-    PrimaryColor,
-    PrimaryFontFamily,
-} from '../../utils/constants';
+import {eventNames, PrimaryColor, PrimaryFontFamily} from '../../utils/constants';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {grayColor, blackColor, styles} from './styles';
 import {milesRenderString} from '../../utils/renderFormatUtils';
+import {VisitMiles} from '../../utils/data/schema';
 
 export default class AddOrEditMilesModal extends Component {
 
@@ -20,21 +17,22 @@ export default class AddOrEditMilesModal extends Component {
         this.state = {
             odometerStart: typeof (props.odometerStart) === 'number' ? milesRenderString(props.odometerStart) : null,
             odometerEnd: typeof (props.odometerEnd) === 'number' ? milesRenderString(props.odometerEnd) : null,
-            totalMiles: typeof (props.totalMiles) === 'number' ? milesRenderString(props.totalMiles) : null,
+            computedMiles: typeof (props.computedMiles) === 'number' ? milesRenderString(props.computedMiles) : null,
+            extraMiles: typeof (props.extraMiles) === 'number' ? milesRenderString(props.extraMiles) : null,
             comments: props.comments,
             showOdometerEndErrorMessage: false
         };
     }
 
-    getOdometerInputField(title, value, onChange) {
+    getMilesInputField(value) {
         return (
             <InputField
-                title={title}
+                title={'Extra Miles'}
                 titleStyle={styles.inputTitleStyle}
                 keyboardType={'numeric'}
                 autoFocus={false}
                 fontSize={15}
-                onChangeText={(text) => onChange(text)}
+                onChangeText={(extraMiles) => this.setState({extraMiles})}
                 value={value}
                 style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: blackColor}}
                 placeholderTextColor={grayColor}
@@ -44,34 +42,20 @@ export default class AddOrEditMilesModal extends Component {
     }
 
     saveMilesDataAndDismissModal = () => {
-        const {odometerStart, odometerEnd, totalMiles, comments} = this.state;
-        VisitService.getInstance().updateMilesDataByVisitID(this.props.visitID,
-            odometerStart, odometerEnd, totalMiles, comments);
+        const {odometerStart, odometerEnd, computedMiles, extraMiles, comments} = this.state;
+        VisitService.getInstance().updateMilesDataByVisitID(this.props.visitID, odometerStart, odometerEnd, computedMiles, extraMiles, comments);
         this.props.dismissMilesModal();
-    }
+    };
 
     handleSaveClick = () => {
-        const {odometerStart, odometerEnd} = this.state;
-        if (odometerStart && odometerEnd) {
-            if (parseFloat(odometerStart) <= parseFloat(odometerEnd)) {
-                firebase.analytics().logEvent(eventNames.ADD_EDIT_MILES, {
-                    VALUE: parseFloat(odometerEnd) - parseFloat(odometerStart)
-                });
-                this.saveMilesDataAndDismissModal();
-            } else {
-                this.setState({showOdometerEndErrorMessage: true});
-            }
-        } else {
-            this.saveMilesDataAndDismissModal();
-        }
-    }
-
-    totalMilesFromOdometerInput = () => {
-        if (this.state.odometerStart && this.state.odometerEnd) {
-            return parseFloat(this.state.odometerEnd) - parseFloat(this.state.odometerStart);
-        }
-        return 0;
-    }
+        let totalMiles = 0;
+        totalMiles += this.state.computedMiles ? this.state.computedMiles : 0;
+        totalMiles += this.state.extraMiles ? this.state.extraMiles : 0;
+        firebase.analytics().logEvent(eventNames.ADD_EDIT_MILES, {
+            VALUE: totalMiles
+        });
+        this.saveMilesDataAndDismissModal();
+    };
 
     renderCommentsSection = () => (
         <InputField
@@ -86,65 +70,34 @@ export default class AddOrEditMilesModal extends Component {
         />
     );
 
-    // TODO - Restrict to one decimal after controlled text input is fixed
-    // https://github.com/facebook/react-native/issues/5370
-    handleOdometerStartInputChange = (text) => {
-        this.setState({
-            odometerStart: text,
-            showOdometerEndErrorMessage: false
-        });
-    }
+    renderExtraMilesSection = () => (
+        this.getMilesInputField(this.state.extraMiles)
+    );
 
-    handleOdometerEndInputChange = (text) => {
-        this.setState({
-            odometerEnd: text,
-            showOdometerEndErrorMessage: false
-        });
-    }
-
-    renderOdometerInputSection = () => (
-        <View>
-            {
-                this.getOdometerInputField('Odometer Start', this.state.odometerStart, this.handleOdometerStartInputChange)
-            }
-            {
-                this.getOdometerInputField('Odometer End', this.state.odometerEnd, this.handleOdometerEndInputChange)
-            }
-            {
-                this.state.showOdometerEndErrorMessage &&
-                    <Text style={{color: ErrorMessageColor, fontSize: 10, textAlign: 'center'}}>
-                        End should be greater than start
-                    </Text>
-            }
-            <Text style={{fontSize: 12, color: PrimaryColor, textAlign: 'center'}}>
-                    {`Total Miles : ${milesRenderString(this.totalMilesFromOdometerInput())} Mi`}
+    renderComputedMilesSection = () => (
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text>
+                Total Miles
+            </Text>
+            <Text>
+                {
+                    VisitMiles.getComputedMilesString(this.state.computedMiles)
+                }
             </Text>
         </View>
-    )
+    );
 
-    // Component removed now. Need to figure out how to add this cleanly
-    renderTotalMilesInputSection = () => (
+    renderMilesSection = () => (
         <View>
-            <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                <InputField
-                    title={'Total Miles'}
-                    editable={!(this.state.odometerStart && this.state.odometerEnd)}
-                    containerWidth={60}
-                    keyboardType={'decimal-pad'}
-                    titleStyle={{...styles.inputTitleStyle, fontSize: 10}}
-                    onChangeText={(text) => this.setState({totalMiles: text})}
-                    value={this.state.totalMiles}
-                    style={{borderBottomColor: grayColor, borderBottomWidth: 1, color: blackColor}}
-                    placeHolder={'00'}
-                    placeholderTextColor={grayColor}
-                    selectionColor={blackColor}
-                />
-                <Text style={{fontSize: 12, color: blackColor, marginBottom: 10}}>
-                    {' Mi'}
-                </Text>
-            </View>
+            {
+                this.renderComputedMilesSection()
+            }
+            {
+                this.renderExtraMilesSection()
+            }
         </View>
-    )
+    );
+
 
     render() {
         const title = `Log Miles: ${this.props.name}`;
@@ -159,8 +112,10 @@ export default class AddOrEditMilesModal extends Component {
                             <Image style={{}} source={Images.close} />
                         </TouchableOpacity>
                     </View>
+                    {/*TODO Add from and to address*/}
+                    <Divider style={{...styles.dividerStyle, marginBottom: 10}} />
                     {
-                        this.renderOdometerInputSection()
+                        this.renderMilesSection()
                     }
                     {
                         this.renderCommentsSection()
