@@ -131,6 +131,10 @@ export class VisitService {
         return this.floDB.objects(Visit).filtered('episode.episodeID = $0', episodeID);
     }
 
+    getVisitOrderForDate(midnightEpoch) {
+        return this.visitRealmService.getVisitOrderForDate(midnightEpoch);
+    }
+
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
         this.updateMilesDataForVisitList(visitList);

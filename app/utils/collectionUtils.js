@@ -86,5 +86,11 @@ function isSameMonth(date1, date2) {
     return moment(date1).format('MM') === moment(date2).format('MM');
 }
 
+// modifies data - n*2 complexity. Use only if data is not big
+function sortByArray(data, order, idGenerator) {
+    const sortFunction = (item1, item2) => order.indexOf(idGenerator(item1)) - order.indexOf(idGenerator(item2));
+    data.sort(sortFunction);
+}
+
 export {arrayToMap, filterResultObjectByListMembership, isNonEmptyArray, getFirstElement, createSectionedListByField,
-    arrayToObjectByKey, arrayToObjectListByKey, hasNonEmptyValueForKey, hasNonEmptyValueForAllKeys, isSameMonth};
+    arrayToObjectByKey, arrayToObjectListByKey, hasNonEmptyValueForKey, hasNonEmptyValueForAllKeys, isSameMonth, sortByArray};

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import {Divider} from 'react-native-elements';
 import SortableList from 'react-native-sortable-list';
 import moment from 'moment';
@@ -7,7 +7,6 @@ import Modal from 'react-native-modal';
 import Toast from 'react-native-easy-toast';
 import {borderColor, styles, dotColor} from './styles';
 import {
-    defaultBackGroundColor,
     detailBackGroundColor,
     ErrorMessageColor,
     PrimaryColor,
@@ -18,6 +17,8 @@ import SelectDatesPopup from './SelectDatesPopup';
 import {isSameMonth} from '../../utils/collectionUtils';
 import {renderDot} from '../common/common';
 import {SimpleButton} from '../common/SimpleButton';
+import {milesRenderString} from '../../utils/renderFormatUtils';
+import {Images} from '../../Images';
 
 function DateRowGenerator(toggleDate, navigator) {
     class RenderDateRow extends Component {
@@ -68,12 +69,12 @@ function DateRowGenerator(toggleDate, navigator) {
         totalMilesComponent = () => {
             const visits = this.getVisits();
             const milesVisits = visits.slice(1);
-            let totalMiles = 0;
+            let totalComputedMiles = 0;
             let extraMiles = 0;
             let infoPending = false;
             for (let i = 0; i < milesVisits.length; i++) {
                 if (this.getComputedMilesForVisit(milesVisits[i])) {
-                    totalMiles += this.getComputedMilesForVisit(milesVisits[i]);
+                    totalComputedMiles += this.getComputedMilesForVisit(milesVisits[i]);
                 } else {
                     infoPending = true;
                     break;
@@ -86,7 +87,7 @@ function DateRowGenerator(toggleDate, navigator) {
                 <View style={{flexDirection: 'row'}}>
                     <View>
                         <Text>
-                            {` +${extraMiles}`}
+                            {` +${milesRenderString(extraMiles)}`}
                         </Text>
                     </View>
                     <View>
@@ -102,10 +103,10 @@ function DateRowGenerator(toggleDate, navigator) {
             const milesSection = (
                 <View>
                     {
-                        infoPending ? <Text style={styles.miniContentStyle}>...</Text> :
+                        infoPending ? <Text style={styles.miniContentStyle}>___</Text> :
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 <Text style={styles.miniContentStyle}>
-                                    {totalMiles}
+                                    {milesRenderString(totalComputedMiles)}
                                 </Text>
                                 {
                                     !!extraMiles && extraMilesSection
@@ -160,13 +161,13 @@ function DateRowGenerator(toggleDate, navigator) {
                         <View style={{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}}>
                             <Text style={styles.textStyle}>
                                 {
-                                    this.getComputedMilesForVisit(visit) ? this.getComputedMilesForVisit(visit) : '...'
+                                    milesRenderString(this.getComputedMilesForVisit(visit))
                                 }
                             </Text>
                             {
                                 !!this.getExtraMilesForVisit(visit) &&
                                 <Text style={{...styles.textStyle, fontSize: 10}}>
-                                    {`+${this.getExtraMilesForVisit(visit)} mi`}
+                                    {`+${milesRenderString(this.getExtraMilesForVisit(visit))} mi`}
                                 </Text>
                             }
                         </View>
@@ -369,9 +370,12 @@ export default class ActiveLogsScreen extends Component {
                     </Text>
                 </View>
                 <View style={{flex: 1, paddingLeft: 20, flexDirection: 'row', alignItems: 'center'}}>
-                    <Text style={{...styles.textStyle, color: PrimaryColor}}>
-                        Dates
-                    </Text>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <Image source={Images.dates} style={{height: 28, resizeMode: 'contain'}} />
+                        <Text style={{...styles.textStyle, color: PrimaryColor, marginLeft: 3}}>
+                            Dates
+                        </Text>
+                    </View>
                     <TouchableOpacity onPress={() => { this.onPressSelectDates(); }}>
                         <Modal
                             isVisible={this.state.showSelectDatesModal}
@@ -435,7 +439,7 @@ export default class ActiveLogsScreen extends Component {
 
     render() {
         return (
-            <View style={{flex: 1, backgroundColor: defaultBackGroundColor}}>
+            <View style={{flex: 1}}>
                 {
                     this.filterSection()
                 }
