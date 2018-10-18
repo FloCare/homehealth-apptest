@@ -45,8 +45,6 @@ function DateRowGenerator(toggleDate, navigator) {
 
         dateAndCheckBoxComponent = () => {
             const date = this.getDate();
-            console.log('date comp');
-            console.log(this.isSelected())
             return (
                 <View style={{flex: 1, flexDirection: 'row'}}>
                     <CustomCheckBox
@@ -283,7 +281,7 @@ function DateRowGenerator(toggleDate, navigator) {
                                 </View>
                         }
                     </TouchableOpacity>
-                    <Divider style={{...styles.dividerStyle}} />
+                    <Divider style={styles.dividerStyle} />
                 </View>
             );
         }
@@ -295,7 +293,6 @@ export default class ActiveLogsScreen extends Component {
 
     constructor(props) {
         super(props);
-        console.log('in constructor');
         const {order, formattedData} = this.getOrderAndFormattedData(this.props.data, this.props.selectedDatesSet);
         this.state = {
             order,
@@ -401,10 +398,39 @@ export default class ActiveLogsScreen extends Component {
         );
     };
 
+    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.computedMiles));
+    pendingVisitsPresentForVisits = (visits) => (visits.some(visit => !visit.isDone));
+
+    milesPresentForAllSelectedDates = () => {
+        const selectedDates = Array.from(this.props.selectedDatesSet);
+        // Check if miles is present for all visits except the first visit
+        return !selectedDates.some(date => this.visitMilesNotPresentForVisits(this.state.formattedData[date].visits.slice(1)));
+    };
+
+    anyPendingVisits = () => {
+        const selectedDates = Array.from(this.props.selectedDatesSet);
+        return selectedDates.some(date => this.pendingVisitsPresentForVisits(this.state.formattedData[date].visits));
+    };
+
     handleCreateReportClick = () => {
-        const actionRequiredMessage = 'Some miles are not counted in the report. Review  and mark visits as \'Done\' or \'Delete\' them.'
-        console.log(Object.keys(this.refs));
-        this.refs.toast.show(actionRequiredMessage, 5000);
+        if (this.props.selectedDatesSet.size > 0) {
+            if (this.anyPendingVisits()) {
+                const actionRequiredMessage = 'Some miles are not counted in the report. Review  and mark visits as \'Done\' or \'Delete\' them.';
+                this.refs.toast.show(actionRequiredMessage, 3000);
+            } else if (!this.milesPresentForAllSelectedDates()) {
+                const actionRequiredMessage = 'Miles are not present for some visits. Please go online to fetch information';
+                this.refs.toast.show(actionRequiredMessage, 3000);
+            } else {
+                const selectedDates = Array.from(this.props.selectedDatesSet);
+                const allVisitIDs = selectedDates.reduce((accum, date) => {
+                    const visits = this.state.formattedData[date].visits;
+                    const visitIDs = visits.map(visit => visit.visitID);
+                    accum = [...accum, ...visitIDs];
+                    return accum;
+                }, []);
+                this.props.createReport(allVisitIDs);
+            }
+        }
     };
 
     render() {

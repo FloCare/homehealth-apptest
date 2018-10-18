@@ -370,15 +370,13 @@ export class VisitService {
         throw new Error('requested visits for unrecognised entity');
     }
 
-    subscribeToSubmittedVisits(callbackFunction) {
-        const userVisits = this.visitRealmService.getCurrentUserVisits();
-        const reportedVisits = this.reportService.filterReportedVisits(userVisits);
-        const visitsResult = this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
-        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        visitsResult.addListener(realmListener);
+    subscribeToReports(callbackFunction) {
+        const reports = this.reportService.getReports();
+        const realmListener = (reportObjects) => { callbackFunction(reportObjects); };
+        reports.addListener(realmListener);
         return {
-            currentData: visitsResult,
-            unsubscribe: () => visitsResult.removeListener(realmListener),
+            currentData: reports,
+            unsubscribe: () => reports.removeListener(realmListener),
         };
     }
 
@@ -386,6 +384,9 @@ export class VisitService {
         const userVisits = this.visitRealmService.getCurrentUserVisits();
         const nonReportedVisits = this.reportService.filterNonReportedVisits(userVisits);
         const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
+        this.floDB.write(() => {
+                nonReportedVisits.forEach(visit => visit.visitMiles.computedMiles = 10);
+        })
         nonReportedVisits.addListener(realmListener);
         return {
             currentData: nonReportedVisits,
@@ -477,14 +478,18 @@ export class VisitService {
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
-    generateReportAndSubmitVisits = (visitIDs) => {
+    generateReportForVisits = (visitIDs) => {
         const visits = this.getVisitsByIDs(visitIDs);
-        const report = this.reportService.generateReportForVisits(visits);
+        this.reportService.generateReportForVisits(visits);
         const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
         firebase.analytics().logEvent(eventNames.SEND_REPORT, {
             VALUE: totalMiles,
             NO_OF_VISITS: visits.length
         });
+    };
+
+    submitReport = (reportID) => {
+        const report = ReportService.getInstance().getReportByID(reportID);
         getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
     };
 

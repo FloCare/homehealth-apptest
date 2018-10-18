@@ -24,6 +24,12 @@ export class ReportService {
 
     filterReportedVisits = (visits) => visits.filtered('reportItems.@size == 1');
 
+    getReports = () => (
+        // TODO sort by created at date
+        this.floDB.objects(Report)
+    );
+
+
     createReport(reportID, status) {
         return this.floDB.create(Report, {
             reportID,
