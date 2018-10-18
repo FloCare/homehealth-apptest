@@ -34,11 +34,12 @@ export default class MilesLogScreenContainer extends Component {
         let visitsByMidnightEpoch = createSectionedListByField(visits, (visit) => visit.midnightEpochOfVisit, 'date', 'visits');
         visitsByMidnightEpoch.forEach(section => {
             const allVisits = section.visits;
-            const serverEntityVisits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+            let serverEntityVisits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
             if (serverEntityVisits.length > 0) {
                 const midnightEpoch = parseInt(section.date, 10);
                 const visitOrder = VisitService.getInstance().getVisitOrderForDate(midnightEpoch).visitList.map(visit => visit.visitID);
                 sortByArray(serverEntityVisits, visitOrder, (visit => visit.visitID));
+                serverEntityVisits = [...serverEntityVisits.filter(visit => visit.isDone), ...serverEntityVisits.filter(visit => !visit.isDone)];
             }
             section.visits = serverEntityVisits;
         });

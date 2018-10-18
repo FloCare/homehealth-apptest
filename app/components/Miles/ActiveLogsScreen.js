@@ -149,30 +149,45 @@ function DateRowGenerator(toggleDate, navigator) {
             </View>
         );
 
+        renderDoneUndoneImage = (visit) => {
+            const imageSource = visit.isDone ? Images.tickMark : Images.notDone;
+            return <Image source={imageSource} />;
+        };
+
         renderSingleVisit = (visit, isFirstVisit) => {
+            const milesFontColor = visit.isDone ? styles.textStyle.color : ErrorMessageColor;
             return (
                 <View style={{flex: 1, alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', margin: 5}}>
-
-                    <Text style={{...styles.textStyle, marginLeft: 10}}>
-                        {visit.getAssociatedName()}
-                    </Text>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        {
+                            this.renderDoneUndoneImage(visit)
+                        }
+                        <Text style={{...styles.textStyle, marginLeft: 10}}>
+                            {visit.getAssociatedName()}
+                        </Text>
+                    </View>
                     {
                         !isFirstVisit &&
                         <View style={{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}}>
-                            <Text style={styles.textStyle}>
+                            <Text style={{...styles.textStyle, color: milesFontColor}}>
                                 {
                                     milesRenderString(this.getComputedMilesForVisit(visit))
                                 }
                             </Text>
                             {
                                 !!this.getExtraMilesForVisit(visit) &&
-                                <Text style={{...styles.textStyle, fontSize: 10}}>
+                                <Text style={{...styles.textStyle, fontSize: 10, color: milesFontColor}}>
                                     {`+${milesRenderString(this.getExtraMilesForVisit(visit))} mi`}
                                 </Text>
                             }
+                            {
+                                !visit.isDone &&
+                                    <Text style={{...styles.textStyle, fontSize: 10, color: milesFontColor}}>
+                                        *
+                                    </Text>
+                            }
                         </View>
                     }
-
                 </View>
             );
         };
@@ -240,7 +255,7 @@ function DateRowGenerator(toggleDate, navigator) {
                 <View>
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flex: 1}} />
-                        <View style={{flex: 4}}>
+                        <View style={{flex: 6}}>
                             {visits.map(visit => this.renderSingleVisit(visit, isFirstVisit(visit)))}
                         </View>
                         <View style={{flex: 1}} />
