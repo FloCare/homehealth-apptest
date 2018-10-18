@@ -431,9 +431,6 @@ export class VisitService {
         const userVisits = this.visitRealmService.getCurrentUserVisits();
         const nonReportedVisits = this.reportService.filterNonReportedVisits(userVisits);
         const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        this.floDB.write(() => {
-                nonReportedVisits.forEach(visit => visit.visitMiles.computedMiles = 10);
-        })
         nonReportedVisits.addListener(realmListener);
         return {
             currentData: nonReportedVisits,
