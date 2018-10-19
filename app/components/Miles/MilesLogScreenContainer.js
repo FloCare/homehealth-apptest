@@ -6,6 +6,7 @@ import {createSectionedListByField, sortByArray} from '../../utils/collectionUti
 import {EpisodeMessagingService} from '../../data_services/MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import ActiveLogsScreen from './ActiveLogsScreen';
 import ReportsScreen from './ReportsScreen';
+import {styles} from './styles';
 import {defaultBackGroundColor, PrimaryColor} from '../../utils/constants';
 
 export default class MilesLogScreenContainer extends Component {
@@ -147,16 +148,7 @@ export default class MilesLogScreenContainer extends Component {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
         return (
             <View style={{flex: 1, backgroundColor: defaultBackGroundColor}}>
-                <View
-                    style={{flexDirection: 'row',
-                        elevation: 3,
-                        shadowColor: 'black',
-                        shadowOpacity: 0.3,
-                        shadowOffset: {width: 2, height: 2},
-                        shadowRadius: 2,
-                        backgroundColor: defaultBackGroundColor
-                    }}
-                >
+                <View style={{flexDirection: 'row', ...styles.shadowStyle}}>
                     <TouchableOpacity
                         style={[{flex: 1, alignItems: 'center'}, this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? selectedTabStyle : {}]}
                         onPress={() => this.updateScreenIndex(MilesLogScreenContainer.ACTIVE_TAB_INDEX)}

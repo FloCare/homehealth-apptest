@@ -198,8 +198,8 @@ class FloDBProvider {
                     UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV2,
                     ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
                     NotificationSchemas.NotificationSchemaV1],
-                schemaVersion: Migrations.v11,
-                migration: () => { console.log('Migrating to v11. Adding extra miles to visit miles'); },
+                schemaVersion: 11,
+                migration: Migrations.v11,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             }

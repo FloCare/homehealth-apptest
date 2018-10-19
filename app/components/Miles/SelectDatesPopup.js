@@ -54,7 +54,7 @@ export default class SelectDatesPopup extends Component {
                         {'Select Dates'}
                     </Text>
                     <TouchableOpacity onPress={this.props.dismissModal} style={{width: 40, height: 40, alignItems: 'center', justifyContent: 'center'}}>
-                        <Image style={{}} source={Images.close} />
+                        <Image source={Images.close} />
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection: 'row', marginTop: 10, alignItems: 'center'}}>

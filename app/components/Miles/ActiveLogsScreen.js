@@ -19,6 +19,7 @@ import {renderDot} from '../common/common';
 import {SimpleButton} from '../common/SimpleButton';
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Images} from '../../Images';
+import {toastDuration, toastMessages} from './ToastMessages';
 
 function DateRowGenerator(toggleDate, navigator) {
     class RenderDateRow extends Component {
@@ -414,11 +415,9 @@ export default class ActiveLogsScreen extends Component {
     handleCreateReportClick = () => {
         if (this.props.selectedDatesSet.size > 0) {
             if (this.anyPendingVisits()) {
-                const actionRequiredMessage = 'Some miles are not counted in the report. Review  and mark visits as \'Done\' or \'Delete\' them.';
-                this.refs.toast.show(actionRequiredMessage, 3000);
+                this.refs.toast.show(toastMessages.visitsPending, toastDuration.LONG);
             } else if (!this.milesPresentForAllSelectedDates()) {
-                const actionRequiredMessage = 'Miles are not present for some visits. Please go online to fetch information';
-                this.refs.toast.show(actionRequiredMessage, 3000);
+                this.refs.toast.show(toastMessages.milesPending, toastDuration.LONG);
             } else {
                 const selectedDates = Array.from(this.props.selectedDatesSet);
                 const allVisitIDs = selectedDates.reduce((accum, date) => {
@@ -428,6 +427,7 @@ export default class ActiveLogsScreen extends Component {
                     return accum;
                 }, []);
                 this.props.createReport(allVisitIDs);
+                this.refs.toast.show(toastMessages.createReportSuccess, toastDuration.MEDIUM);
             }
         }
     };

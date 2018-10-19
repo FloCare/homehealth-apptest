@@ -44,5 +44,13 @@ export const styles = StyleSheet.create({
     toastTextStyle: {
         color: blackColor,
         fontSize: 12
+    },
+    shadowStyle: {
+        elevation: 3,
+        backgroundColor: defaultBackGroundColor,
+        shadowColor: 'black',
+        shadowOpacity: 0.3,
+        shadowOffset: {width: 2, height: 2},
+        shadowRadius: 2,
     }
 });

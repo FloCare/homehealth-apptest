@@ -1,41 +1,33 @@
 import React, {Component} from 'react';
 import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
 import {Divider} from 'react-native-elements';
-import moment from 'moment';
+import Modal from 'react-native-modal';
 import {grayColor, styles} from './styles';
 import {isSameMonth} from '../../utils/collectionUtils';
 import {PrimaryColor} from '../../utils/constants';
 import {Report} from '../../utils/data/schema';
 import {milesRenderString} from '../../utils/renderFormatUtils';
-
-// The day I will be a 1000 years old
-const TIME_INF = 32384687400000;
+import ViewReportModal from './ViewReportModal';
+import {ReportService} from '../../data_services/VisitServices/ReportService';
+import {timeZoneConvertedEpoch} from '../../utils/utils';
+import {getMilesFromDateSummary} from './common';
 
 export default class ReportsScreen extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalReportID: null
+        };
+    }
+
     getReportSummary = (report) => {
-        const reportItems = report.reportItems;
-        const visits = reportItems.map(reportItem => reportItem.visit);
-        let computedMiles = 0;
-        let extraMiles = 0;
-        let nVisits = 0;
-        let minDate = TIME_INF;
-        let maxDate = 0;
-        visits.forEach(visit => {
-            computedMiles += visit.visitMiles.computedMiles ? visit.visitMiles.computedMiles : 0;
-            extraMiles += visit.visitMiles.extraMiles ? visit.visitMiles.extraMiles : 0;
-            nVisits += 1;
-            if (visit.midnightEpochOfVisit > maxDate) {
-                maxDate = visit.midnightEpochOfVisit;
-            }
-            if (visit.midnightEpochOfVisit < minDate) {
-                minDate = visit.midnightEpochOfVisit;
-            }
-        });
+        const {minDate, maxDate, dateWiseSummary} = ReportService.getInstance().getReportDateWiseSummary(report);
+        const {totalComputedMiles, totalExtraMiles, totalVisits} = getMilesFromDateSummary(dateWiseSummary);
         return {
-            computedMiles,
-            extraMiles,
-            nVisits,
+            totalComputedMiles,
+            totalExtraMiles,
+            totalVisits,
             minDate,
             maxDate
         };
@@ -43,10 +35,10 @@ export default class ReportsScreen extends Component {
 
     getMonthString = (minDate, maxDate) => {
         if (isSameMonth(minDate, maxDate)) {
-            return this.timeZoneConvertedEpoch(minDate).format('MMM');
+            return timeZoneConvertedEpoch(minDate).format('MMM');
         }
-        const startMonth = this.timeZoneConvertedEpoch(minDate).format('MMM');
-        const endMonth = this.timeZoneConvertedEpoch(maxDate).format('MMM');
+        const startMonth = timeZoneConvertedEpoch(minDate).format('MMM');
+        const endMonth = timeZoneConvertedEpoch(maxDate).format('MMM');
         return `${startMonth} - ${endMonth}`;
     };
 
@@ -58,8 +50,19 @@ export default class ReportsScreen extends Component {
         </TouchableOpacity>
     );
 
-    getViewButton = (reportID) => (
-        <TouchableOpacity>
+    getViewButton = (report) => (
+        <TouchableOpacity onPress={() => this.handleViewReportClick(report.reportID)}>
+            <Modal
+                isVisible={!!this.state.modalReportID && this.state.modalReportID === report.reportID}
+                onBackButtonPress={() => this.dismissReportModal()}
+                avoidKeyboard
+                backdropOpacity={0.8}
+            >
+                <ViewReportModal
+                    report={report}
+                    dismissMilesModal={this.dismissReportModal}
+                />
+            </Modal>
             <Text style={{...styles.textStyle, color: PrimaryColor}}>
                 View
             </Text>
@@ -109,12 +112,18 @@ export default class ReportsScreen extends Component {
         );
     };
 
-    timeZoneConvertedEpoch = (date) => (moment(date).subtract(moment().utcOffset(), 'minutes'))
+    dismissReportModal = () => {
+        this.setState({modalReportID: null});
+    };
+
+    handleViewReportClick = (reportID) => {
+        this.setState({modalReportID: reportID});
+    };
 
     renderDates = (minDate, maxDate) => {
         const monthString = this.getMonthString(minDate, maxDate);
-        const startDate = this.timeZoneConvertedEpoch(minDate).format('DD');
-        const endDate = this.timeZoneConvertedEpoch(maxDate).format('DD');
+        const startDate = timeZoneConvertedEpoch(minDate).format('DD');
+        const endDate = timeZoneConvertedEpoch(maxDate).format('DD');
         return (
             <View>
                 <Text style={styles.miniHeadingStyle}>
@@ -179,7 +188,7 @@ export default class ReportsScreen extends Component {
     );
 
     renderSummary = (report) => {
-        const {computedMiles, extraMiles, nVisits, minDate, maxDate} = this.getReportSummary(report);
+        const {totalComputedMiles, totalExtraMiles, totalVisits, minDate, maxDate} = this.getReportSummary(report);
         return (
             <View style={{flex: 1, flexDirection: 'row'}}>
                 <View style={{flex: 1, alignItems: 'center'}}>
@@ -189,12 +198,12 @@ export default class ReportsScreen extends Component {
                 </View>
                 <View style={{flex: 1, alignItems: 'center'}}>
                     {
-                        this.renderMiles(computedMiles, extraMiles)
+                        this.renderMiles(totalComputedMiles, totalExtraMiles)
                     }
                 </View>
                 <View style={{flex: 1, alignItems: 'center'}}>
                     {
-                        this.renderNumberOfVisits(nVisits)
+                        this.renderNumberOfVisits(totalVisits)
                     }
                 </View>
             </View>
@@ -202,14 +211,15 @@ export default class ReportsScreen extends Component {
     };
 
 
-    renderButtons = (reportID, status) => {
+    renderButtons = (report) => {
+        const {reportID, status} = report;
         const submitButton = status === Report.reportStateEnum.CREATED ? this.getSubmitButton(reportID) : this.getSubmittedButton(status);
         const deleteAllowed = status === Report.reportStateEnum.CREATED;
         return (
             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', marginTop: 15, marginBottom: 10}}>
                 <View style={{flex: 2, flexDirection: 'row', marginLeft: 30}}>
                     {
-                        this.getViewButton(reportID)
+                        this.getViewButton(report)
                     }
                     {
                         deleteAllowed &&
@@ -232,7 +242,7 @@ export default class ReportsScreen extends Component {
                 {
                     this.renderSummary(report)}
                 {
-                    this.renderButtons(report.reportID, report.status)
+                    this.renderButtons(report)
                 }
                 <Divider style={styles.dividerStyle} />
             </View>

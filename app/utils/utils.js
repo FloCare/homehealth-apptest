@@ -10,6 +10,10 @@ function todayMomentInUTCMidnight() {
     return moment().startOf('day').add(moment().utcOffset(), 'minutes').utc();
 }
 
+function timeZoneConvertedEpoch(date) {
+    return moment(date).subtract(moment().utcOffset(), 'minutes');
+}
+
 //TODO this is a workaround till we bake in redux
 let onVisitListUpdateCallbacks = [];
 
@@ -27,4 +31,4 @@ function makeCallbacks() {
     }
 }
 
-export {generateUUID, addListener, removeListener, makeCallbacks, todayMomentInUTCMidnight};
+export {generateUUID, addListener, removeListener, makeCallbacks, todayMomentInUTCMidnight, timeZoneConvertedEpoch};
