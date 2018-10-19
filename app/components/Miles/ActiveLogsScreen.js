@@ -5,7 +5,7 @@ import SortableList from 'react-native-sortable-list';
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-easy-toast';
-import {borderColor, styles, dotColor} from './styles';
+import {borderColor, styles, dotColor, blackColor} from './styles';
 import {
     detailBackGroundColor,
     ErrorMessageColor,
@@ -20,6 +20,7 @@ import {SimpleButton} from '../common/SimpleButton';
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Images} from '../../Images';
 import {toastDuration, toastMessages} from './ToastMessages';
+import {dateService} from '../../data_services/DateService';
 
 function DateRowGenerator(toggleDate, navigator) {
     class RenderDateRow extends Component {
@@ -68,6 +69,7 @@ function DateRowGenerator(toggleDate, navigator) {
             let totalComputedMiles = 0;
             let extraMiles = 0;
             let infoPending = false;
+            let pendingVisitsExist = false;
             for (let i = 0; i < milesVisits.length; i++) {
                 if (this.getComputedMilesForVisit(milesVisits[i])) {
                     totalComputedMiles += this.getComputedMilesForVisit(milesVisits[i]);
@@ -75,10 +77,14 @@ function DateRowGenerator(toggleDate, navigator) {
                     infoPending = true;
                     break;
                 }
+                if (!milesVisits[i].isDone) {
+                    pendingVisitsExist = true;
+                }
                 if (this.getExtraMilesForVisit(milesVisits[i])) {
                     extraMiles += this.getExtraMilesForVisit(milesVisits[i]);
                 }
             }
+            const milesColor = pendingVisitsExist ? ErrorMessageColor : blackColor;
             const extraMilesSection = (
                 <View style={{flexDirection: 'row'}}>
                     <View>
@@ -101,9 +107,15 @@ function DateRowGenerator(toggleDate, navigator) {
                     {
                         infoPending ? <Text style={styles.miniContentStyle}>___</Text> :
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Text style={styles.miniContentStyle}>
+                                <Text style={{...styles.miniContentStyle, color: milesColor}}>
                                     {milesRenderString(totalComputedMiles)}
                                 </Text>
+                                {
+                                    pendingVisitsExist &&
+                                    <Text style={{color: ErrorMessageColor}}>
+                                        *
+                                    </Text>
+                                }
                                 {
                                     !!extraMiles && extraMilesSection
                                 }
@@ -189,6 +201,7 @@ function DateRowGenerator(toggleDate, navigator) {
         };
 
         handleReviewClick = () => {
+            dateService.setDate(this.getDate());
             navigator.push({
                     screen: screenNames.visitDayViewScreen,
                     passProps: {
