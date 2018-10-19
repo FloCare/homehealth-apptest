@@ -5,7 +5,7 @@ import SortableList from 'react-native-sortable-list';
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-easy-toast';
-import {borderColor, styles, dotColor} from './styles';
+import {borderColor, styles, dotColor, blackColor} from './styles';
 import {
     detailBackGroundColor,
     ErrorMessageColor,
@@ -19,6 +19,8 @@ import {renderDot} from '../common/common';
 import {SimpleButton} from '../common/SimpleButton';
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Images} from '../../Images';
+import {toastDuration, toastMessages} from './ToastMessages';
+import {dateService} from '../../data_services/DateService';
 
 function DateRowGenerator(toggleDate, navigator) {
     class RenderDateRow extends Component {
@@ -38,11 +40,6 @@ function DateRowGenerator(toggleDate, navigator) {
         getComputedMilesForVisit = (visit) => (visit.visitMiles.computedMiles);
         getExtraMilesForVisit = (visit) => visit.visitMiles.extraMiles;
         isSelected = () => (this.props.data.isSelected);
-
-        incrementCounter = () => {
-            this.setState({counter: this.state.counter + 1});
-            this.props.onItemLayoutUpdate(this.props.key);
-        };
 
         dateAndCheckBoxComponent = () => {
             const date = this.getDate();
@@ -72,6 +69,7 @@ function DateRowGenerator(toggleDate, navigator) {
             let totalComputedMiles = 0;
             let extraMiles = 0;
             let infoPending = false;
+            let pendingVisitsExist = false;
             for (let i = 0; i < milesVisits.length; i++) {
                 if (this.getComputedMilesForVisit(milesVisits[i])) {
                     totalComputedMiles += this.getComputedMilesForVisit(milesVisits[i]);
@@ -79,10 +77,14 @@ function DateRowGenerator(toggleDate, navigator) {
                     infoPending = true;
                     break;
                 }
+                if (!milesVisits[i].isDone) {
+                    pendingVisitsExist = true;
+                }
                 if (this.getExtraMilesForVisit(milesVisits[i])) {
                     extraMiles += this.getExtraMilesForVisit(milesVisits[i]);
                 }
             }
+            const milesColor = pendingVisitsExist ? ErrorMessageColor : blackColor;
             const extraMilesSection = (
                 <View style={{flexDirection: 'row'}}>
                     <View>
@@ -105,9 +107,15 @@ function DateRowGenerator(toggleDate, navigator) {
                     {
                         infoPending ? <Text style={styles.miniContentStyle}>___</Text> :
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Text style={styles.miniContentStyle}>
+                                <Text style={{...styles.miniContentStyle, color: milesColor}}>
                                     {milesRenderString(totalComputedMiles)}
                                 </Text>
+                                {
+                                    pendingVisitsExist &&
+                                    <Text style={{color: ErrorMessageColor}}>
+                                        *
+                                    </Text>
+                                }
                                 {
                                     !!extraMiles && extraMilesSection
                                 }
@@ -149,35 +157,51 @@ function DateRowGenerator(toggleDate, navigator) {
             </View>
         );
 
+        renderDoneUndoneImage = (visit) => {
+            const imageSource = visit.isDone ? Images.tickMark : Images.notDone;
+            return <Image source={imageSource} />;
+        };
+
         renderSingleVisit = (visit, isFirstVisit) => {
+            const milesFontColor = visit.isDone ? styles.textStyle.color : ErrorMessageColor;
             return (
                 <View style={{flex: 1, alignItems: 'flex-start', flexDirection: 'row', justifyContent: 'space-between', margin: 5}}>
-
-                    <Text style={{...styles.textStyle, marginLeft: 10}}>
-                        {visit.getAssociatedName()}
-                    </Text>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        {
+                            this.renderDoneUndoneImage(visit)
+                        }
+                        <Text style={{...styles.textStyle, marginLeft: 10}}>
+                            {visit.getAssociatedName()}
+                        </Text>
+                    </View>
                     {
                         !isFirstVisit &&
                         <View style={{flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center'}}>
-                            <Text style={styles.textStyle}>
+                            <Text style={{...styles.textStyle, color: milesFontColor}}>
                                 {
                                     milesRenderString(this.getComputedMilesForVisit(visit))
                                 }
                             </Text>
                             {
                                 !!this.getExtraMilesForVisit(visit) &&
-                                <Text style={{...styles.textStyle, fontSize: 10}}>
+                                <Text style={{...styles.textStyle, fontSize: 10, color: milesFontColor}}>
                                     {`+${milesRenderString(this.getExtraMilesForVisit(visit))} mi`}
                                 </Text>
                             }
+                            {
+                                !visit.isDone &&
+                                    <Text style={{...styles.textStyle, fontSize: 10, color: milesFontColor}}>
+                                        *
+                                    </Text>
+                            }
                         </View>
                     }
-
                 </View>
             );
         };
 
         handleReviewClick = () => {
+            dateService.setDate(this.getDate());
             navigator.push({
                     screen: screenNames.visitDayViewScreen,
                     passProps: {
@@ -240,7 +264,7 @@ function DateRowGenerator(toggleDate, navigator) {
                 <View>
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flex: 1}} />
-                        <View style={{flex: 4}}>
+                        <View style={{flex: 6}}>
                             {visits.map(visit => this.renderSingleVisit(visit, isFirstVisit(visit)))}
                         </View>
                         <View style={{flex: 1}} />
@@ -252,13 +276,13 @@ function DateRowGenerator(toggleDate, navigator) {
         };
 
         toggleDetailView = () => {
-            this.setState({detailed: !this.state.detailed});
             this.props.onItemLayoutUpdate(this.state.data.date);
+            this.setState({detailed: !this.state.detailed});
         };
 
         render() {
             return (
-                <View style={{flex: 1, marginBottom: 5, marginTop: 5}}>
+                <View style={{flex: 1, marginBottom: 5, marginTop: 5}} onLayout={this.onLayoutCallback}>
                     <TouchableOpacity onPress={this.toggleDetailView}>
                         <View style={{flexDirection: 'row', flex: 1}}>
                             {
@@ -294,30 +318,15 @@ export default class ActiveLogsScreen extends Component {
 
     constructor(props) {
         super(props);
-        const {order, formattedData} = this.getOrderAndFormattedData(this.props.data, this.props.selectedDatesSet);
         this.state = {
-            order,
-            formattedData,
             showSelectDatesModal: false
         };
         this.renderRow = DateRowGenerator(this.props.toggleDateSelected, this.props.navigator);
     }
 
-
-    componentWillReceiveProps(nextProps) {
-        if (this.props.selectedDatesSet !== nextProps.selectedDatesSet) {
-            const {order, formattedData} = this.getOrderAndFormattedData(this.props.data, nextProps.selectedDatesSet);
-            this.setState({order, formattedData});
-        }
-    }
-
-    getOrderAndFormattedData = (dataArray, selectedDatesSet) => {
-        const formattedData = {};
-        const order = [];
-        dataArray.forEach((item) => { item.isSelected = selectedDatesSet.has(item.date); formattedData[item.date] = item; order.push(item.date); });
-        order.sort();
-        return {formattedData, order};
-    };
+    getAllDates = () => (
+        Object.keys(this.props.data)
+    );
 
 
     onPressSelectDates = () => {
@@ -353,7 +362,7 @@ export default class ActiveLogsScreen extends Component {
     };
 
     filterSection = () => {
-        const allDates = Object.keys(this.state.formattedData);
+        const allDates = this.getAllDates();
         const areAllSelected = allDates.every(date => this.props.selectedDatesSet.has(date));
         const rangeDateString = this.getRangeDateString();
         return (
@@ -408,36 +417,41 @@ export default class ActiveLogsScreen extends Component {
     milesPresentForAllSelectedDates = () => {
         const selectedDates = Array.from(this.props.selectedDatesSet);
         // Check if miles is present for all visits except the first visit
-        return !selectedDates.some(date => this.visitMilesNotPresentForVisits(this.state.formattedData[date].visits.slice(1)));
+        return !selectedDates.some(date => this.visitMilesNotPresentForVisits(this.props.data[date].visits.slice(1)));
     };
 
     anyPendingVisits = () => {
         const selectedDates = Array.from(this.props.selectedDatesSet);
-        return selectedDates.some(date => this.pendingVisitsPresentForVisits(this.state.formattedData[date].visits));
+        return selectedDates.some(date => this.pendingVisitsPresentForVisits(this.props.data[date].visits));
     };
 
     handleCreateReportClick = () => {
         if (this.props.selectedDatesSet.size > 0) {
             if (this.anyPendingVisits()) {
-                const actionRequiredMessage = 'Some miles are not counted in the report. Review  and mark visits as \'Done\' or \'Delete\' them.';
-                this.refs.toast.show(actionRequiredMessage, 3000);
+                this.refs.toast.show(toastMessages.visitsPending, toastDuration.LONG);
             } else if (!this.milesPresentForAllSelectedDates()) {
-                const actionRequiredMessage = 'Miles are not present for some visits. Please go online to fetch information';
-                this.refs.toast.show(actionRequiredMessage, 3000);
+                this.refs.toast.show(toastMessages.milesPending, toastDuration.LONG);
             } else {
                 const selectedDates = Array.from(this.props.selectedDatesSet);
                 const allVisitIDs = selectedDates.reduce((accum, date) => {
-                    const visits = this.state.formattedData[date].visits;
+                    const visits = this.props.data[date].visits;
                     const visitIDs = visits.map(visit => visit.visitID);
                     accum = [...accum, ...visitIDs];
                     return accum;
                 }, []);
                 this.props.createReport(allVisitIDs);
+                this.refs.toast.show(toastMessages.createReportSuccess, toastDuration.MEDIUM);
             }
         }
     };
 
     render() {
+        const dateAndVisitsData = this.props.data;
+        const dates = Object.keys(this.props.data);
+        dates.forEach(date => {
+            const section = dateAndVisitsData[date];
+            section.isSelected = this.props.selectedDatesSet.has(date);
+        });
         return (
             <View style={{flex: 1}}>
                 {
@@ -445,8 +459,8 @@ export default class ActiveLogsScreen extends Component {
                 }
                 <View style={{marginTop: 5, flex: 1}}>
                     <SortableList
-                        data={this.state.formattedData}
-                        order={this.state.order}
+                        data={dateAndVisitsData}
+                        order={this.props.order}
                         renderRow={this.renderRow}
                     />
                 </View>

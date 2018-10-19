@@ -8,6 +8,7 @@ import {getMessagingServiceInstance} from './MessagingServiceCoordinator';
 import {showNotification} from '../NotificationService';
 import {generateUUID} from '../../../utils/utils';
 import {eventNames, parameterValues} from '../../../utils/constants';
+import {Report} from '../../../utils/data/schema';
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -26,11 +27,15 @@ export class ReportMessagingService extends BaseMessagingService {
             onFailed: (id, payload) => {
                 console.log(`Publish report to server Job with id ${id} had an attempt end in failure. Payload:`);
                 console.log(payload);
-                VisitService.getInstance().deleteReportAndItems(payload.reportPayload.reportID);
+                this.handleReportFailure(payload.reportPayload.reportID)
                 ReportMessagingService.showReportFailedNotification();
             }
         });
     }
+
+    handleReportFailure = (reportID) => {
+        VisitService.getInstance().updateReportStatus(reportID, Report.reportStateEnum.CREATED);
+    };
 
     _getReportDetailsPayload(report) {
         const reportItems = report.reportItems;
@@ -79,7 +84,7 @@ export class ReportMessagingService extends BaseMessagingService {
                     serverResponse = await pushReportInformation(reportPayload);
                     if (serverResponse.ok) {
                         console.log('marking reportPayload accepeted');
-                        VisitService.getInstance().markReportAccepted(reportPayload.reportID);
+                        VisitService.getInstance().updateReportStatus(reportPayload.reportID, Report.reportStateEnum.ACCEPTED);
                         firebase.analytics().logEvent(eventNames.SEND_REPORT_RESPONSE, {
                             type: parameterValues.SUCCESS
                         });
@@ -97,7 +102,7 @@ export class ReportMessagingService extends BaseMessagingService {
                         } catch (e) {
                             console.log('Failed to parse server failure response');
                         }
-                        VisitService.getInstance().deleteReportAndItems(reportPayload.reportID);
+                        this.handleReportFailure(reportPayload.reportID);
                         ReportMessagingService.showReportFailedNotification();
                         firebase.analytics().logEvent(eventNames.SEND_REPORT_RESPONSE, {
                             type: parameterValues.FAILURE

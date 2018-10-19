@@ -17,7 +17,6 @@ import moment from 'moment/moment';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {
-    ErrorMessageColor,
     eventNames,
     parameterValues,
     PrimaryFontFamily, screenNames, visitSubjects,
@@ -27,8 +26,8 @@ import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {EpisodeDataService} from '../../data_services/EpisodeDataService';
 import {navigateTo} from '../../utils/MapUtils';
 import AddOrEditMilesModal from '../Miles/AddOrEditMilesModal';
-import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles';
 import {Address} from '../../utils/data/schemas/Models/address/Address';
+import {milesRenderString} from '../../utils/renderFormatUtils';
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
@@ -425,27 +424,23 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
 
         // Shows up below three dots button
         renderMileage = () => {
-            const {odometerStart, odometerEnd} = this.props;
-            //TODO Remove migration - https://flocare.atlassian.net/browse/FC-116
-            let {computedMiles, extraMiles} = this.props;
-            if (odometerStart || odometerEnd) {
-                computedMiles = VisitMiles.getMiles(odometerStart, odometerEnd);
-                extraMiles = null;
+            const {computedMiles, extraMiles} = this.props;
+            let totalMiles = 0;
+            if (computedMiles === null || computedMiles === undefined) {
+                totalMiles = '__';
+            } else {
+                totalMiles = computedMiles;
+                totalMiles += extraMiles ? extraMiles : 0;
+                totalMiles = milesRenderString(totalMiles);
             }
-            const computedMilesString = VisitMiles.getComputedMilesString(computedMiles);
-            const extraMilesString = VisitMiles.getExtraMilesString(extraMiles);
             return (
-                <View style={{flexDirection: 'row'}}>
-                    <Text>
-                        {computedMilesString}
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{...styles.milesDataStyle}}>
+                        {totalMiles}
                     </Text>
-                    {
-                        !!extraMilesString &&
-                        <Text style={{color: ErrorMessageColor, fontSize: 10}}>
-                            {extraMilesString}
-                        </Text>
-                    }
-
+                    <Text style={{...styles.milesDataStyle, fontSize: 8, marginLeft: 1}}>
+                        Mi
+                    </Text>
                 </View>
             );
         };

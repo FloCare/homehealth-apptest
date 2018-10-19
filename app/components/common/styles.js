@@ -82,7 +82,7 @@ export const styles = StyleSheet.create({
         fontFamily: PrimaryFontFamily
     },
     milesDataStyle: {
-        fontSize: 9,
+        fontSize: 10,
         color: '#222222',
         fontFamily: PrimaryFontFamily
     }

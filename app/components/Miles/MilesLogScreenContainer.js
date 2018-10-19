@@ -6,6 +6,7 @@ import {createSectionedListByField, sortByArray} from '../../utils/collectionUti
 import {EpisodeMessagingService} from '../../data_services/MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import ActiveLogsScreen from './ActiveLogsScreen';
 import ReportsScreen from './ReportsScreen';
+import {styles} from './styles';
 import {defaultBackGroundColor, PrimaryColor} from '../../utils/constants';
 
 export default class MilesLogScreenContainer extends Component {
@@ -17,10 +18,13 @@ export default class MilesLogScreenContainer extends Component {
         super(props);
         this.activeVisitSubscriber = VisitService.getInstance().subscribeToActiveVisits(this.setActiveLogs);
         this.reportsSubscriber = VisitService.getInstance().subscribeToReports(this.setReports);
+        const selectedDatesSet = new Set([]);
+        const {order, formattedData} = this.getOrderAndFormattedDataForActiveLogs(this.activeVisitSubscriber.currentData);
         this.state = {
             screenIndex: MilesLogScreenContainer.ACTIVE_TAB_INDEX,
-            selectedDatesSet: new Set([]),
-            activeLogsData: this.getFormattedDataForActiveLogs(this.activeVisitSubscriber.currentData),
+            selectedDatesSet,
+            activeLogsData: formattedData,
+            activeLogsOrder: order,
             reportsData: this.reportsSubscriber.currentData
         };
     }
@@ -30,22 +34,28 @@ export default class MilesLogScreenContainer extends Component {
         this.reportsSubscriber.unsubscribe();
     }
 
-    getFormattedDataForActiveLogs = (visits) => {
+    getOrderAndFormattedDataForActiveLogs = (visits) => {
         let visitsByMidnightEpoch = createSectionedListByField(visits, (visit) => visit.midnightEpochOfVisit, 'date', 'visits');
         visitsByMidnightEpoch.forEach(section => {
             const allVisits = section.visits;
-            const serverEntityVisits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+            let serverEntityVisits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
             if (serverEntityVisits.length > 0) {
                 const midnightEpoch = parseInt(section.date, 10);
                 const visitOrder = VisitService.getInstance().getVisitOrderForDate(midnightEpoch).visitList.map(visit => visit.visitID);
                 sortByArray(serverEntityVisits, visitOrder, (visit => visit.visitID));
+                serverEntityVisits = [...serverEntityVisits.filter(visit => visit.isDone), ...serverEntityVisits.filter(visit => !visit.isDone)];
             }
             section.visits = serverEntityVisits;
         });
-        //Remove days with no visits. Might have been removed because only local visits
+        //Remove days with no visits. Might be empty if a day has only local visits
         visitsByMidnightEpoch = visitsByMidnightEpoch.filter(section => section.visits.length);
-        visitsByMidnightEpoch.sort(this.sortSectionByDate);
-        return visitsByMidnightEpoch;
+        const formattedData = {};
+        visitsByMidnightEpoch.forEach(section => { formattedData[section.date] = section; });
+        const order = visitsByMidnightEpoch.map(section => section.date).sort(this.sortDateComparator);
+        return {
+            order,
+            formattedData
+        };
     };
 
 
@@ -55,6 +65,7 @@ export default class MilesLogScreenContainer extends Component {
                 return (
                     <ActiveLogsScreen
                         data={this.state.activeLogsData}
+                        order={this.state.activeLogsOrder}
                         navigator={this.props.navigator}
                         selectedDatesSet={this.state.selectedDatesSet}
                         toggleDateSelected={this.toggleDateSelected}
@@ -66,6 +77,7 @@ export default class MilesLogScreenContainer extends Component {
                 return (
                     <ReportsScreen
                         data={this.state.reportsData}
+                        deleteReport={this.deleteReport}
                         submitReport={this.submitReport}
                     />);
             default:
@@ -74,7 +86,11 @@ export default class MilesLogScreenContainer extends Component {
     };
 
     setActiveLogs = (visits) => {
-        this.setState({activeLogsData: this.getFormattedDataForActiveLogs(visits)});
+        const {order, formattedData} = this.getOrderAndFormattedDataForActiveLogs(visits);
+        this.setState({
+            activeLogsData: formattedData,
+            activeLogsOrder: order
+        });
     };
 
     setReports = (reports) => {
@@ -86,8 +102,8 @@ export default class MilesLogScreenContainer extends Component {
         this.setState({selectedDatesSet: new Set([])});
     };
 
-    sortSectionByDate = (section1, section2) => (
-        (parseInt(section1.title, 10) - parseInt(section2.title, 10))
+    sortDateComparator = (date1, date2) => (
+        (parseInt(date1, 10) - parseInt(date2, 10))
     );
 
     toggleDateSelected = (date) => {
@@ -104,13 +120,13 @@ export default class MilesLogScreenContainer extends Component {
         if (isCurrentlySelected) {
             this.setState({selectedDatesSet: new Set()});
         } else {
-            const allDates = this.state.activeLogsData.map(item => item.date);
+            const allDates = Object.keys(this.state.activeLogsData);
             this.setState({selectedDatesSet: new Set(allDates)});
         }
     };
 
     selectDatesInRange = (startDate, endDate) => {
-        const allDates = this.state.activeLogsData.map(item => item.date);
+        const allDates = Object.keys(this.state.activeLogsData);
         const timeZoneMoment = (date) => moment(parseInt(date, 10)).subtract(moment().utcOffset(), 'minutes').valueOf();
         const selectedDates = allDates.filter(date => (timeZoneMoment(date) >= (startDate) && timeZoneMoment(date) <= endDate));
         this.setState({selectedDatesSet: new Set(selectedDates)});
@@ -124,21 +140,15 @@ export default class MilesLogScreenContainer extends Component {
         VisitService.getInstance().submitReport(reportID);
     };
 
+    deleteReport = (reportID) => {
+        VisitService.getInstance().deleteReportAndItems(reportID);
+    };
 
     render() {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
         return (
             <View style={{flex: 1, backgroundColor: defaultBackGroundColor}}>
-                <View
-                    style={{flexDirection: 'row',
-                        elevation: 3,
-                        shadowColor: 'black',
-                        shadowOpacity: 0.3,
-                        shadowOffset: {width: 2, height: 2},
-                        shadowRadius: 2,
-                        backgroundColor: defaultBackGroundColor
-                    }}
-                >
+                <View style={{flexDirection: 'row', ...styles.shadowStyle}}>
                     <TouchableOpacity
                         style={[{flex: 1, alignItems: 'center'}, this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? selectedTabStyle : {}]}
                         onPress={() => this.updateScreenIndex(MilesLogScreenContainer.ACTIVE_TAB_INDEX)}

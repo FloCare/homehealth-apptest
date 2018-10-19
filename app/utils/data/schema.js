@@ -199,7 +199,7 @@ class FloDBProvider {
                     ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
                     NotificationSchemas.NotificationSchemaV1],
                 schemaVersion: 11,
-                migration: () => { console.log('Migrating to v11. Adding extra miles to visit miles'); },
+                migration: Migrations.v11,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
             }
