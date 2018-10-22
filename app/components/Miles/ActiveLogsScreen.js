@@ -212,7 +212,7 @@ function DateRowGenerator(toggleDate, navigator) {
                         </Text>
                         <View style={{flex: 1}}>
                             <TouchableOpacity onPress={this.handleReviewClick}>
-                                <View style={{borderColor: PrimaryColor, borderWidth: 1, borderRadius: 3, padding: 3}}>
+                                <View style={{borderColor: PrimaryColor, borderWidth: 1, borderRadius: 3, padding: 3, alignItems: 'center'}}>
                                     <Text style={{...styles.textStyle, color: PrimaryColor}}>
                                         Review
                                     </Text>
@@ -374,7 +374,7 @@ export default class ActiveLogsScreen extends Component {
                             Dates
                         </Text>
                     </View>
-                    <TouchableOpacity onPress={() => { this.onPressSelectDates(); }}>
+                    <TouchableOpacity onPress={() => { this.onPressSelectDates(); }} style={{minHeight: 30, justifyContent: 'center'}}>
                         <Modal
                             isVisible={this.state.showSelectDatesModal}
                             onBackButtonPress={this.dismissDatesModal}
