@@ -425,14 +425,13 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
         // Shows up below three dots button
         renderMileage = () => {
             const {computedMiles, extraMiles} = this.props;
-            let totalMiles = 0;
             if (computedMiles === null || computedMiles === undefined) {
-                totalMiles = '__';
-            } else {
-                totalMiles = computedMiles;
-                totalMiles += extraMiles ? extraMiles : 0;
-                totalMiles = milesRenderString(totalMiles);
+                return;
             }
+            let totalMiles = computedMiles;
+            totalMiles += extraMiles ? extraMiles : 0;
+            totalMiles = milesRenderString(totalMiles);
+
             return (
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Text style={{...styles.milesDataStyle}}>

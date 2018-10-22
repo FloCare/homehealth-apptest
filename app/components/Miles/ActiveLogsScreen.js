@@ -5,7 +5,7 @@ import SortableList from 'react-native-sortable-list';
 import moment from 'moment';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-easy-toast';
-import {borderColor, styles, dotColor, blackColor} from './styles';
+import {borderColor, styles, blackColor} from './styles';
 import {
     detailBackGroundColor,
     ErrorMessageColor,
@@ -15,7 +15,6 @@ import {
 import {CustomCheckBox} from '../common/CustomCheckBox';
 import SelectDatesPopup from './SelectDatesPopup';
 import {isSameMonth} from '../../utils/collectionUtils';
-import {renderDot} from '../common/common';
 import {SimpleButton} from '../common/SimpleButton';
 import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Images} from '../../Images';
@@ -147,16 +146,6 @@ function DateRowGenerator(toggleDate, navigator) {
             );
         };
 
-        // TODO Include this
-        renderDottedLine = () => (
-            // TODO Make this cleaner
-            <View>
-                {
-                    [1, 2, 3, 4].map(i => renderDot(dotColor, {margin: 1}))
-                }
-            </View>
-        );
-
         renderDoneUndoneImage = (visit) => {
             const imageSource = visit.isDone ? Images.tickMark : Images.notDone;
             return <Image source={imageSource} />;
@@ -225,7 +214,7 @@ function DateRowGenerator(toggleDate, navigator) {
                             <TouchableOpacity onPress={this.handleReviewClick}>
                                 <View style={{borderColor: PrimaryColor, borderWidth: 1, borderRadius: 3, padding: 3}}>
                                     <Text style={{...styles.textStyle, color: PrimaryColor}}>
-                                        Re
+                                        Review
                                     </Text>
                                 </View>
                             </TouchableOpacity>

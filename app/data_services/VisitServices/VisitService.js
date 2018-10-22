@@ -98,7 +98,7 @@ export class VisitService {
             clearTimeout(timer);
             this.floDB.write(() => {
                 reorderedVisitList.forEach((visit, index) => {
-                    if (index === 0) { return; }
+                    if (index === 0) { visit.visitMiles.computedMiles = null; visit.visitMiles.extraMiles = null; return; }
                     visit.visitMiles.computedMiles = parseFloat(mapData.distances[index - 1]);
                 });
             });
