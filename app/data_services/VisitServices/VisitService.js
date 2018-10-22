@@ -102,6 +102,7 @@ export class VisitService {
                     visit.visitMiles.computedMiles = parseFloat(mapData.distances[index - 1]);
                 });
             });
+            this.visitReduxService.updateVisitsToRedux(reorderedVisitList);
         } else {
             clearTimeout(timer);
         }
@@ -256,7 +257,7 @@ export class VisitService {
                         this.floDB.write(() => {
                             visitOrder.visitList = daysVisitsSortedByDone;
                         });
-                        //TODO put this shit here too
+                        this.updateMilesDataForVisitList(visitList);
                     }
                 });
                 this.floDB.write(() => {
@@ -476,8 +477,9 @@ export class VisitService {
             }
             this.floDB.write(() => {
                 visitOrders[i].visitList = visitList;
-                //TODO do something here
             });
+            //TODO very inefficient
+            this.updateMilesDataForVisitList(visitOrders[i].visitList);
         }
         const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.write(() => {
