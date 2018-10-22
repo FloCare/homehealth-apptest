@@ -57,6 +57,33 @@ export function pushVisitUpdateToServer(visit) {
         });
 }
 
+export function updateVisits(visitsData) {
+    return RNSecureKeyStore.get('accessToken').catch(error => {
+        console.log('error in getting access token');
+        throw error;
+    })
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/bulk-update-visits/`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({visits: visitsData}),
+            }))
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('HTTP request not OK');
+        })
+        .catch(error => {
+            console.log('api call error');
+            console.log(error);
+            throw error;
+        });
+}
+
 export function getVisitsByID(visitIDs) {
     return RNSecureKeyStore.get('accessToken').catch(error => {
         console.log('error in getting access token');

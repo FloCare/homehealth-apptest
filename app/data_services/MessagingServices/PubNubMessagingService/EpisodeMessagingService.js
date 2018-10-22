@@ -103,7 +103,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
                                 });
                             });
                             resolve();
-                        }).catch(error => {
+                        })
+                        .catch(error => {
                         console.log('EpisodeMessagingService: error in create');
                         console.log(error);
                         resolve();
@@ -271,7 +272,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         });
     }
 
-    _getFlatVisitPayload(visit) {
+    static getFlatVisitPayload(visit) {
         const isPatientVisit = !!visit.getPatient();
         const flatVisit = {
             visitID: visit.visitID,
@@ -318,7 +319,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         if (filteredVisits.length > 0) {
             this._createPublishToServerJob({
                 action: 'CREATE',
-                visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
+                visits: filteredVisits.map(visit => EpisodeMessagingService.getFlatVisitPayload(visit))
             });
         }
     }
@@ -328,16 +329,16 @@ export class EpisodeMessagingService extends BaseMessagingService {
 
         this._createPublishToServerJob({
             action: 'UPDATE',
-            visits: [this._getFlatVisitPayload(visit)]
+            visits: [EpisodeMessagingService.getFlatVisitPayload(visit)]
         });
     }
 
     publishVisitDeletes(visits) {
-        const filteredVisits = visits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit))
+        const filteredVisits = visits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
         if (filteredVisits.length > 0) {
             this._createPublishToServerJob({
                 action: 'DELETE',
-                visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
+                visits: filteredVisits.map(visit => EpisodeMessagingService.getFlatVisitPayload(visit))
             });
         }
     }

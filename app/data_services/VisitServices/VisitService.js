@@ -525,8 +525,6 @@ export class VisitService {
         );
 
         this.visitReduxService.updateVisitToRedux(visit);
-        //TODO Remove this. As others don't care about this.
-        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
     generateReportForVisits = (visitIDs) => {

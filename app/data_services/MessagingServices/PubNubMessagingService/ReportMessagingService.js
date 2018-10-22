@@ -9,6 +9,8 @@ import {showNotification} from '../NotificationService';
 import {generateUUID} from '../../../utils/utils';
 import {eventNames, parameterValues} from '../../../utils/constants';
 import {Report} from '../../../utils/data/schema';
+import {ReportService} from '../../VisitServices/ReportService';
+import {updateVisits} from '../../../utils/API/VisitAPI';
 
 export class ReportMessagingService extends BaseMessagingService {
     static identifier = 'ReportMessagingService';
@@ -27,7 +29,7 @@ export class ReportMessagingService extends BaseMessagingService {
             onFailed: (id, payload) => {
                 console.log(`Publish report to server Job with id ${id} had an attempt end in failure. Payload:`);
                 console.log(payload);
-                this.handleReportFailure(payload.reportPayload.reportID)
+                this.handleReportFailure(payload.reportPayload.reportID);
                 ReportMessagingService.showReportFailedNotification();
             }
         });
@@ -72,6 +74,13 @@ export class ReportMessagingService extends BaseMessagingService {
         showNotification(body, {}, notificationID);
     }
 
+    async syncVisitsForReport(reportID) {
+        const report = ReportService.getInstance().getReportByID(reportID);
+        const visits = report.reportItems.map(reportItem => reportItem.visit);
+        const visitsPayload = visits.map(visit => EpisodeMessagingService.getFlatVisitPayload(visit));
+        await updateVisits(visitsPayload);
+    }
+
     async _publishReportToServer(jobID, payload) {
         console.log('publish report to server job here');
         console.log(payload);
@@ -81,9 +90,10 @@ export class ReportMessagingService extends BaseMessagingService {
             switch (action) {
                 case 'CREATE_REPORT':
                     console.log(JSON.stringify({reportPayload}));
+                    await this.syncVisitsForReport(reportPayload.reportID);
                     serverResponse = await pushReportInformation(reportPayload);
                     if (serverResponse.ok) {
-                        console.log('marking reportPayload accepeted');
+                        console.log('marking reportPayload accepted');
                         VisitService.getInstance().updateReportStatus(reportPayload.reportID, Report.reportStateEnum.ACCEPTED);
                         firebase.analytics().logEvent(eventNames.SEND_REPORT_RESPONSE, {
                             type: parameterValues.SUCCESS
