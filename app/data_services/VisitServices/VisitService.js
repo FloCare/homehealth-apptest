@@ -259,7 +259,6 @@ export class VisitService {
                         this.floDB.write(() => {
                             visitOrder.visitList = daysVisitsSortedByDone;
                         });
-                        this.updateMilesDataForVisitList(visitList);
                     }
                 });
                 this.floDB.write(() => {

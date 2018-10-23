@@ -93,7 +93,7 @@ export default class ReportsScreen extends Component {
     confirmAndDeleteReport = (reportID) => {
         Alert.alert(
             'Delete Report',
-            'Are you sure you want to delete report? This visits will go back to active logs',
+            'Are you sure you want to delete report? These visits will go back to active logs',
             [
                 {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                 {text: 'OK', onPress: () => { this.props.deleteReport(reportID); }}

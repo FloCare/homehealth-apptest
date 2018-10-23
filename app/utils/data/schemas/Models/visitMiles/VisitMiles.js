@@ -12,6 +12,10 @@ export class VisitMiles extends Realm.Object {
         return computedMiles ? `${milesRenderString(computedMiles)}` : '__';
     }
 
+    get MilesAvailable() {
+        return (this.computedMiles !== null && this.computedMiles !== undefined);
+    }
+
     get MilesTravelled() {
         let totalMiles = this.computedMiles;
         totalMiles += this.extraMiles ? this.extraMiles : 0;

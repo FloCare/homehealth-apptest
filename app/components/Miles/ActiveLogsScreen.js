@@ -70,7 +70,7 @@ function DateRowGenerator(toggleDate, navigator) {
             let infoPending = false;
             let pendingVisitsExist = false;
             for (let i = 0; i < milesVisits.length; i++) {
-                if (this.getComputedMilesForVisit(milesVisits[i])) {
+                if (milesVisits[i].visitMiles.MilesAvailable) {
                     totalComputedMiles += this.getComputedMilesForVisit(milesVisits[i]);
                 } else {
                     infoPending = true;
@@ -403,7 +403,7 @@ export default class ActiveLogsScreen extends Component {
         );
     };
 
-    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.computedMiles));
+    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.MilesAvailable));
     pendingVisitsPresentForVisits = (visits) => (visits.some(visit => !visit.isDone));
 
     milesPresentForAllSelectedDates = () => {

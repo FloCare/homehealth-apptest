@@ -156,7 +156,7 @@ export default class MilesLogScreenContainer extends Component {
         this.setState({screenIndex});
     };
 
-    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.computedMiles));
+    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.MilesAvailable));
 
     render() {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
