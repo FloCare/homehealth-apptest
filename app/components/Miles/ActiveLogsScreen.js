@@ -196,6 +196,9 @@ function DateRowGenerator(toggleDate, navigator) {
                     passProps: {
                         selectedScreen: 'list',
                         date: this.getDate()
+                    },
+                    navigatorStyle: {
+                        tabBarHidden: true
                     }
                 }
             );
