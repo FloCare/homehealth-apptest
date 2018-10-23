@@ -422,7 +422,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             );
         };
 
-        // Shows up below three dots button
         renderMileage = () => {
             const {computedMiles, extraMiles} = this.props;
             if (computedMiles === null || computedMiles === undefined) {

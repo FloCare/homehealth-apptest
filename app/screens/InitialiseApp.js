@@ -51,17 +51,9 @@ export async function initialiseApp(key) {
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
     TaskService.initialiseService(FloDBProvider.db);
     NotificationService.initialiseService(FloDBProvider.db);
-    PlaceDataService.initialiseService(FloDBProvider.db, store)
+    PlaceDataService.initialiseService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
-
-    //TODO Make this run on first install only
-    await RNSecureKeyStore.get('accessToken').then(() => {
-        if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            return Promise.all([PatientDataService.getInstance().updatePatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
-                .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
-        }
-    });
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);

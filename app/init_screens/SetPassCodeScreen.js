@@ -50,7 +50,7 @@ class SetPassCodeScreen extends Component {
             .then(async (res) => {
                 console.log(res);
                 try {
-                    await StartApp(randomString);
+                    await StartApp(randomString, true);
                 } catch (err) {
                     console.log('Error in starting app:', err);
                     if (err.name === 'MissingNecessaryInternetConnection') {
