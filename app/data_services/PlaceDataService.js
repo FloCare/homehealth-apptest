@@ -61,12 +61,13 @@ export class PlaceDataService {
 
     createNewPlace(placeInformation, addressInformation, isLocallyOwned) {
         let newPlace = null;
-        const {placeID, name, primaryContact} = placeInformation;
+        const {placeID, name, primaryContact, archived} = placeInformation;
         this.floDB.write(() => {
             newPlace = this.floDB.create(Place.schema.name, {
                 placeID,
                 name,
                 primaryContact,
+                archived: !!archived,
                 isLocallyOwned
             });
 
@@ -92,7 +93,8 @@ export class PlaceDataService {
         const placeInformation = {
             placeID: placeData.placeID,
             name: placeData.name,
-            primaryContact: placeData.contactNumber
+            primaryContact: placeData.contactNumber,
+            archived: !!placeData.inactive
         };
         const addressInformation = placeData.address;
         addressInformation.lat = placeData.address.latitude;
