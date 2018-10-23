@@ -85,9 +85,11 @@ export class VisitService {
     }
 
     async updateMilesDataForVisitList(visitList) {
-        const timer = setTimeout(() => this.clearAllMilesForVisitList(visitList), 1500);
+        // Compute miles only for visits related to server entities
+        const filteredVisitList = visitList.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+        const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList), 1500);
 
-        const reorderedVisitList = [...visitList.filter(visit => visit.isDone), ...visitList.filter(visit => !visit.isDone)];
+        const reorderedVisitList = [...filteredVisitList.filter(visit => visit.isDone), ...filteredVisitList.filter(visit => !visit.isDone)];
         const coordinatesList = reorderedVisitList.map(visit => ({latitude: visit.getAddress().latitude, longitude: visit.getAddress().longitude}));
 
         if (reorderedVisitList.length >= 2) {
