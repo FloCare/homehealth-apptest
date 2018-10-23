@@ -29,6 +29,17 @@ export default class MilesLogScreenContainer extends Component {
         };
     }
 
+
+    componentDidMount() {
+        const data = this.state.activeLogsData;
+        const dates = Object.keys(data);
+        dates.forEach((date) => {
+            if (this.visitMilesNotPresentForVisits(data[date].visits)) {
+                VisitService.getInstance().updateMilesDataForVisitList(data[date].visits);
+            }
+        });
+    }
+
     componentWillUnmount() {
         this.activeVisitSubscriber.unsubscribe();
         this.reportsSubscriber.unsubscribe();
@@ -102,6 +113,10 @@ export default class MilesLogScreenContainer extends Component {
         this.setState({selectedDatesSet: new Set([])});
     };
 
+    deleteReport = (reportID) => {
+        VisitService.getInstance().deleteReportAndItems(reportID);
+    };
+
     sortDateComparator = (date1, date2) => (
         (parseInt(date1, 10) - parseInt(date2, 10))
     );
@@ -132,17 +147,16 @@ export default class MilesLogScreenContainer extends Component {
         this.setState({selectedDatesSet: new Set(selectedDates)});
     };
 
-    updateScreenIndex = (screenIndex) => {
-        this.setState({screenIndex});
-    };
 
     submitReport = (reportID) => {
         VisitService.getInstance().submitReport(reportID);
     };
 
-    deleteReport = (reportID) => {
-        VisitService.getInstance().deleteReportAndItems(reportID);
+    updateScreenIndex = (screenIndex) => {
+        this.setState({screenIndex});
     };
+
+    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.computedMiles));
 
     render() {
         const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};

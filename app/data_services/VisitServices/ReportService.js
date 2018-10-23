@@ -49,7 +49,7 @@ export class ReportService {
                 dateWiseSummary[date] = {
                     computedMiles: visit.visitMiles.computedMiles ? visit.visitMiles.computedMiles : 0,
                     extraMiles: visit.visitMiles.extraMiles ? visit.visitMiles.extraMiles : 0,
-                    nVisits: 0
+                    nVisits: 1
                 };
             }
             if (visit.midnightEpochOfVisit > maxDate) {
