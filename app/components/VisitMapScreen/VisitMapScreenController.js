@@ -76,6 +76,7 @@ class VisitMapScreenContainer extends Component {
             throw (error);
         }
         if (noErrorFlag) {
+            //note that this total distance is not currently being used since it doesnt incorporate the value of distance to next visit
             this.setState({polylines: newPolylines, viewport: MapUtils.getViewPortFromBounds(boundsCoordinates), totalDistance});
         }
     }
@@ -108,7 +109,7 @@ class VisitMapScreenContainer extends Component {
                         })
                     )}
                     polylines={this.state.polylines}
-                    totalDistance={this.state.totalDistance}
+                    totalDistance={this.props.remainingDistance}
                 />
                 <ControlPanel
                     onOrderChange={this.onOrderChange}
@@ -123,10 +124,18 @@ function mapStateToProps(state) {
     const todaysVisits = getVisitsWithAddressFromReduxState(state);
     const defaultViewport = VisitMapScreenContainer.getViewportFromVisitCoordinates(todaysVisits);
 
+    let remainingDistance = 0;
+
+    todaysVisits.forEach(miniVisit => {
+        const visit = state.visits[miniVisit.visitID];
+        remainingDistance += visit.visitMiles.computedMiles && !visit.isDone ? visit.visitMiles.computedMiles : 0;
+    });
+
     return {
         date: state.date,
         orderedVisitID: state.visitOrder,
         filteredVisits: todaysVisits.filter(visit => !visit.isDone),
+        remainingDistance: remainingDistance ? remainingDistance.toFixed(2) + ' mi' : undefined,
         defaultViewport
     };
 }
