@@ -1,5 +1,4 @@
 import firebase from 'react-native-firebase';
-import {Alert} from 'react-native';
 import {
     Patient,
     Visit,
@@ -111,7 +110,6 @@ export class VisitService {
     }
 
     clearAllMilesForVisitList(visitList) {
-        // Alert.alert('clear visits');
         this.floDB.write(() => {
             visitList.forEach(visit => {
                 visit.visitMiles.computedMiles = null;
@@ -136,6 +134,10 @@ export class VisitService {
 
     getVisitOrderForDate(midnightEpoch) {
         return this.visitRealmService.getVisitOrderForDate(midnightEpoch);
+    }
+
+    getVisitOrderForDates(midnightEpochs) {
+        return this.visitRealmService.getVisitOrderForDates(midnightEpochs);
     }
 
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
@@ -412,13 +414,13 @@ export class VisitService {
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
 
-    getAllFutureVisitsForSubject(subject) {
+    getAllPendingFutureVisitsForSubject(subject) {
         const today = todayMomentInUTCMidnight();
 
         if (subject instanceof Patient) {
-            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
+            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today} and isDone = false`);
         } else if (subject instanceof Place) {
-            return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
+            return subject.visits.filtered(`midnightEpochOfVisit >= ${today} and isDone = false`);
         }
         throw new Error('requested visits for unrecognised entity');
     }
@@ -457,22 +459,20 @@ export class VisitService {
     }
 
     // Should be a part of a write transaction
-    deleteVisitsForSubject(subject) {
+    deletePendingFutureVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
-        const today = todayMomentInUTCMidnight();
 
         // Todo: Check if this works
-        const visits = this.getAllFutureVisitsForSubject(subject);
-        const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
-
+        const visits = this.getAllPendingFutureVisitsForSubject(subject);
+        const visitDates = [...new Set(visits.map(visit => visit.midnightEpochOfVisit))];
+        const visitOrders = this.getVisitOrderForDates(visitDates);
         // getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes(visits);
 
-        // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!(visit.isSubjectArchived())) {
+                if (!visit.isSubjectArchived() || visit.isDone) {
                     visitList.push(visit);
                 }
             }

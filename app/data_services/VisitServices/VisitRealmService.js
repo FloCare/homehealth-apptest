@@ -101,6 +101,10 @@ export class VisitRealmService {
         return visitOrder;
     }
 
+    getVisitOrderForDates(dates) {
+        return dates.map(date => this.getVisitOrderForDate(date));
+    }
+
     updateVisitStartTimeByID(visitID, startTime) {
         const visit = this.floDB.objectForPrimaryKey(Visit, visitID);
         this.floDB.write(() => {
