@@ -141,9 +141,6 @@ export class VisitService {
     }
 
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
-        console.log('visit service: setting visit order for date :' );
-        console.log(orderedVisitID);
-        console.log(midnightEpoch);
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
         this.updateMilesDataForVisitList(visitList);
         this.visitReduxService.updateVisitOrderToReduxIfLive(visitList, midnightEpoch);
@@ -429,13 +426,13 @@ export class VisitService {
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
 
-    getAllPendingFutureVisitsForSubject(subject) {
+    getAllFutureVisitsForSubject(subject) {
         const today = todayMomentInUTCMidnight();
 
         if (subject instanceof Patient) {
-            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today} and isDone = false`);
+            return subject.getFirstEpisode().visits.filtered(`midnightEpochOfVisit >= ${today}`);
         } else if (subject instanceof Place) {
-            return subject.visits.filtered(`midnightEpochOfVisit >= ${today} and isDone = false`);
+            return subject.visits.filtered(`midnightEpochOfVisit >= ${today}`);
         }
         throw new Error('requested visits for unrecognised entity');
     }
@@ -474,11 +471,11 @@ export class VisitService {
     }
 
     // Should be a part of a write transaction
-    deletePendingFutureVisitsForSubject(subject) {
+    deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
 
         // Todo: Check if this works
-        const visits = this.getAllPendingFutureVisitsForSubject(subject);
+        const visits = this.getAllFutureVisitsForSubject(subject);
         if (visits.length === 0) return;
         const visitDates = [...new Set(visits.map(visit => visit.midnightEpochOfVisit))];
         const visitOrders = this.getVisitOrderForDates(visitDates);
@@ -488,7 +485,7 @@ export class VisitService {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!visit.isSubjectArchived() || visit.isDone) {
+                if (!visit.isSubjectArchived()) {
                     visitList.push(visit);
                 }
             }

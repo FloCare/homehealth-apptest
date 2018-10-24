@@ -166,7 +166,7 @@ export class PlaceDataService {
             this.floDB.write(() => {
                 place.archived = true;
             });
-            VisitService.getInstance().deletePendingFutureVisitsForSubject(place);
+            VisitService.getInstance().getAllFutureVisitsForSubject(place);
             this.archivePlacesInRedux([placeId]);
         }
         console.log('Place archived. His visits Deleted');

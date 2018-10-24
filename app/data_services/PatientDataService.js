@@ -279,7 +279,7 @@ export class PatientDataService {
             this.floDB.write(() => {
                 patient.archived = true;
             });
-            VisitService.getInstance().deletePendingFutureVisitsForSubject(patient);
+            VisitService.getInstance().getAllFutureVisitsForSubject(patient);
             this._archivePatientsInRedux([patientId]);
             console.log('Patient archived. His visits Deleted');
         }
