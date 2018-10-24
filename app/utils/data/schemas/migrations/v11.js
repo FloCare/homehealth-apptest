@@ -18,7 +18,9 @@ export const v11 = (oldRealm, newRealm) => {
             if (milesPresent(oldVisitMiles.odometerEnd)) {
                 commentsString += `; Odometer End: ${oldVisitMiles.odometerEnd.toFixed(1)}`;
             }
-            newVisitMiles.milesComments = commentsString;
+            if (commentsString) {
+                newVisitMiles.milesComments = commentsString;
+            }
         }
     }
 };

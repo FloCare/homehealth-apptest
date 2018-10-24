@@ -69,15 +69,17 @@ function DateRowGenerator(toggleDate, navigator) {
             let extraMiles = 0;
             let infoPending = false;
             let pendingVisitsExist = false;
+            for (let i = 0; i < visits.length; i++) {
+                if (!visits[i].isDone) {
+                    pendingVisitsExist = true;
+                }
+            }
             for (let i = 0; i < milesVisits.length; i++) {
                 if (milesVisits[i].visitMiles.IsMilesInformationPresent) {
                     totalComputedMiles += this.getComputedMilesForVisit(milesVisits[i]);
                 } else {
                     infoPending = true;
                     break;
-                }
-                if (!milesVisits[i].isDone) {
-                    pendingVisitsExist = true;
                 }
                 if (this.getExtraMilesForVisit(milesVisits[i])) {
                     extraMiles += this.getExtraMilesForVisit(milesVisits[i]);
