@@ -97,7 +97,7 @@ export class VisitService {
         const coordinatesList = reorderedVisitList.map(visit => ({latitude: visit.getAddress().latitude, longitude: visit.getAddress().longitude}));
 
         if (reorderedVisitList.length >= 2) {
-            const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList), 1500);
+            const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList, midnightEpoch, momentNow), 1500);
             const mapData = await getProcessedDataForOrderedList(coordinatesList);
             console.log('new map data');
             console.log(mapData.distances);
