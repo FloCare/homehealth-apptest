@@ -67,7 +67,7 @@ export class PlaceDataService {
                 placeID,
                 name,
                 primaryContact,
-                archived: !!archived,
+                archived,
                 isLocallyOwned
             });
 
@@ -85,6 +85,7 @@ export class PlaceDataService {
             placeID,
             name: place.stopName,
             primaryContact: place.primaryContact,
+            archived: false
         };
         this.createNewPlace(placeInformation, {...place, addressID}, true);
     }
