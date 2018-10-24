@@ -314,6 +314,7 @@ class HomeScreenContainer extends Component {
         await RNSecureKeyStore.get('accessToken').then(() =>
             Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
                     .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer()));
+        VisitService.getInstance().loadVisitsForTheDayToRedux(todayMomentInUTCMidnight().valueOf());
         const endTime = moment().valueOf();
         const minimumLoadingTime = 1000;
         if (endTime - startingTime < minimumLoadingTime) {
