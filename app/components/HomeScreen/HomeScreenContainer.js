@@ -68,7 +68,9 @@ class HomeScreenContainer extends Component {
         );
 
         SplashScreen.hide();
-        this.syncDataFromServer();
+        if (this.props.syncDataFromServer) {
+            this.syncDataFromServer();
+        }
     }
 
     setOnboardingStatus = (onBoardingStatus) => {
@@ -310,6 +312,7 @@ class HomeScreenContainer extends Component {
     };
 
     async syncDataFromServer() {
+        console.log('syncing data from server');
         const startingTime = moment().valueOf();
         await RNSecureKeyStore.get('accessToken').then(() =>
             Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
