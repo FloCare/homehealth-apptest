@@ -20,12 +20,13 @@ import {todayMomentInUTCMidnight} from "../utils/utils";
 import {Provider} from "react-redux";
 import {initialiseStoreAndSetUserForInstabug} from "../utils/InMemoryStore";
 import {RootReducer} from "../redux/RootReducer";
+import {AsyncStorage} from "react-native";
 
 
 var isInitialising = false;
 var isAlreadyInitialised = false;
 
-export async function initialiseApp(key) {
+export async function initialiseApp(key, syncDataFromServer = false) {
     if(isInitialising || isAlreadyInitialised)
         return;
 
@@ -54,6 +55,13 @@ export async function initialiseApp(key) {
     PlaceDataService.initialiseService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
+
+    if (syncDataFromServer) {
+        await RNSecureKeyStore.get('accessToken').then(() =>
+            Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
+                .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer()));
+        AsyncStorage.setItem('syncDone', 'true');
+    }
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);

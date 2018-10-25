@@ -49,16 +49,13 @@ class SetPassCodeScreen extends Component {
         RNSecureKeyStore.set('flokey', randomString)
             .then(async (res) => {
                 console.log(res);
-                try {
-                    await StartApp(randomString, true);
-                } catch (err) {
-                    console.log('Error in starting app:', err);
-                    if (err.name === 'MissingNecessaryInternetConnection') {
-                        Alert.alert('Offline', 'Unable to start the app');
-                    } else {
-                        Alert.alert('Error', 'Unable to start the app');
+                this.props.navigator.resetTo({
+                    screen: screenNames.settingUpScreen,
+                    backButtonHidden: true,
+                    passProps: {
+                        startKey: randomString
                     }
-                }
+                });
             }, (err) => {
                 console.log(err);
                 Alert.alert('Error', 'Unable to start the app');

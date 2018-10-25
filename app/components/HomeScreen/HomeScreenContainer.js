@@ -12,8 +12,6 @@ import {
     ScrollView,
     View
 } from 'react-native';
-import RNSecureKeyStore from 'react-native-secure-key-store';
-import Modal from 'react-native-modal';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
 import Instabug from 'instabug-reactnative';
@@ -28,16 +26,13 @@ import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {CalendarStripStyled} from '../common/CalendarStripStyled';
 import {DayCard} from '../WeekViewScreen/DayCard';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
-import {PatientDataService} from '../../data_services/PatientDataService';
-import {PlaceDataService} from '../../data_services/PlaceDataService';
-import SyncingDataModal from './SyncingDataModal';
 
 const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1};
 
 class HomeScreenContainer extends Component {
     constructor(props) {
         super(props);
-        this.state = {calendarMode: 'Day', currentViewWeekStart: moment(this.props.date).day(1), syncingDataModalVisible: this.props.syncDataFromServer};
+        this.state = {calendarMode: 'Day', currentViewWeekStart: moment(this.props.date).day(1)};
 
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
@@ -68,9 +63,7 @@ class HomeScreenContainer extends Component {
         );
 
         SplashScreen.hide();
-        if (this.props.syncDataFromServer) {
-            this.syncDataFromServer();
-        }
+        setTimeout(() => { this.showInstabugOnboardingMessage(); }, 1000);
     }
 
     setOnboardingStatus = (onBoardingStatus) => {
@@ -305,28 +298,6 @@ class HomeScreenContainer extends Component {
         );
     }
 
-    onSyncFromServer = () => {
-        this.setState({syncingDataModalVisible: false});
-        AsyncStorage.setItem('syncDone', 'true');
-        setTimeout(() => { this.showInstabugOnboardingMessage(); }, 1000);
-    };
-
-    async syncDataFromServer() {
-        console.log('syncing data from server');
-        const startingTime = moment().valueOf();
-        await RNSecureKeyStore.get('accessToken').then(() =>
-            Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
-                    .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer()));
-        VisitService.getInstance().loadVisitsForTheDayToRedux(todayMomentInUTCMidnight().valueOf());
-        const endTime = moment().valueOf();
-        const minimumLoadingTime = 1000;
-        if (endTime - startingTime < minimumLoadingTime) {
-            setTimeout(this.onSyncFromServer, minimumLoadingTime - (endTime - startingTime));
-        } else {
-            this.onSyncFromServer();
-        }
-    }
-
     render() {
         return (
             <SafeAreaView
@@ -352,13 +323,6 @@ class HomeScreenContainer extends Component {
                     style={{flex: 1}}
                     keyboardShouldPersistTaps
                 >
-                    <Modal
-                        isVisible={this.state.syncingDataModalVisible}
-                        animationInTiming={10}
-                        backdropOpacity={0.8}
-                    >
-                        <SyncingDataModal />
-                    </Modal>
                     {this.getMainBody(this.state.calendarMode)}
                 </ScrollView>
                 <Fab

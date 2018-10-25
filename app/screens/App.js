@@ -31,8 +31,8 @@ function getLargeNavBarOrSubstitute() {
     return null;
 }
 
-const StartApp = async (key, syncDataFromServer = false) => {
-    await initialiseApp(key);
+const StartApp = async (key, syncDataFromServer) => {
+    await initialiseApp(key, syncDataFromServer);
     Navigation.startTabBasedApp({
         tabs: [
             {

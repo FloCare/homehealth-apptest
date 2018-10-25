@@ -124,7 +124,15 @@ class PasscodeVerificationScreen extends Component {
                 // Navigate to the Tab Based App
                 try {
                     const syncDataPending = !(await AsyncStorage.getItem('syncDone'));
-                    await StartApp(k, syncDataPending);
+                    if (syncDataPending) {
+                        this.props.navigator.resetTo({
+                            screen: screenNames.settingUpScreen,
+                            backButtonHidden: true,
+                            passProps: {startKey: k},
+                        });
+                    } else {
+                        await StartApp(k, syncDataPending);
+                    }
                 } catch (e) {
                     console.log('Error in starting app:', e);
                     //TODO reset passcode
