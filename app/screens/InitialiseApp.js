@@ -57,10 +57,18 @@ export async function initialiseApp(key, syncDataFromServer = false) {
     initialiseDate(FloDBProvider.db, store);
 
     if (syncDataFromServer) {
-        await RNSecureKeyStore.get('accessToken').then(() =>
-            Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
-                .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer()));
-        AsyncStorage.setItem('syncDone', 'true');
+        console.log('syncing data from server')
+        try {
+            await RNSecureKeyStore.get('accessToken').then(() =>
+                Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
+                    .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer()));
+            console.log('syncing done');
+            AsyncStorage.setItem('syncDone', 'true');
+        } catch (error){
+            console.log('error while trying to sync. Will try on next app start');
+            console.log(error);
+        }
+
     }
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
