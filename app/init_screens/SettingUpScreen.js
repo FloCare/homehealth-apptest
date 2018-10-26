@@ -29,7 +29,7 @@ export class SettingUpScreen extends Component {
                 <Text style={styles.textStyle}>
                     Flocare is setting up!
                 </Text>
-                <Image source={Images.loadingPlus} style={{marginTop: 20, marginBottom: 20, width: 150, height: 150}} />
+                <Image source={Images.loadingPlus} style={{marginTop: 20, marginBottom: 20, width: 150, height: 150, resizeMode: 'contain'}} />
                 <Text style={{...styles.textStyle, fontSize: 16}}>
                     Loading Data...
                 </Text>

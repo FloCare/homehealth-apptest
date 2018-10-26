@@ -508,8 +508,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                         />
                                     </TouchableOpacity>
                                     {
-                                        this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
-                                        this.renderMileage()
+                                        this.isMilesEnabled() && !showDetailedMilesView && this.renderMileage()
                                     }
 
                                 </View>
