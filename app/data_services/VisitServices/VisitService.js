@@ -144,6 +144,10 @@ export class VisitService {
         return this.visitRealmService.getVisitOrderForDate(midnightEpoch);
     }
 
+    getVisitOrderForDates(midnightEpochs) {
+        return this.visitRealmService.getVisitOrderForDates(midnightEpochs);
+    }
+
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
         this.updateMilesDataForVisitList(visitList, midnightEpoch);
@@ -251,6 +255,17 @@ export class VisitService {
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
 
+    // Brings the visit which doesn't have miles information to start of the list
+    // Small hack to prevent miles being recomputed on active logs screen
+    orderMilesIncompleteVisitToStart(visitList) {
+        const milesIncompleteVisitIndex = visitList.find(visit => !visit.visitMiles.IsMilesInformationPresent);
+        if (milesIncompleteVisitIndex > 0) {
+            const temp = visitList[0];
+            milesIncompleteVisitIndex[0] = visitList[milesIncompleteVisitIndex];
+            milesIncompleteVisitIndex[milesIncompleteVisitIndex] = temp;
+        }
+    }
+
     fetchAndSaveMyVisitsFromServer() {
         return getAllMyVisits().then(visits => {
             const reportIDs = visits.map(visit => visit.reportID).filter(reportID => reportID);
@@ -260,6 +275,7 @@ export class VisitService {
                 Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
                     const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
                     const daysVisitsSortedByDone = daysVisits.sort((visit1, visit2) => visit1.isDone - visit2.isDone);
+                    this.orderMilesIncompleteVisitToStart(daysVisitsSortedByDone);
                     if (daysVisitsSortedByDone && daysVisitsSortedByDone.length > 0) {
                         const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
                         this.floDB.write(() => {
@@ -465,20 +481,19 @@ export class VisitService {
     // Should be a part of a write transaction
     deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
-        const today = todayMomentInUTCMidnight();
 
         // Todo: Check if this works
         const visits = this.getAllFutureVisitsForSubject(subject);
-        const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
-
+        if (visits.length === 0) return;
+        const visitDates = [...new Set(visits.map(visit => visit.midnightEpochOfVisit))];
+        const visitOrders = this.getVisitOrderForDates(visitDates);
         // getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes(visits);
 
-        // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!(visit.isSubjectArchived())) {
+                if (!visit.isSubjectArchived()) {
                     visitList.push(visit);
                 }
             }

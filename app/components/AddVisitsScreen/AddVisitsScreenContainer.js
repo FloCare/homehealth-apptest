@@ -62,11 +62,8 @@ class AddVisitsScreenContainer extends Component {
         this.state = {
             date: props.date,
             selectedItems: Map(),
-            refreshing: false,
-            isTeamVersion: undefined,
             searchText: undefined
         };
-        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
         const patientList = this.patientDataService().getAllPatients();
         this.patientsResultObject = this.patientDataService().getPatientsSortedByName(patientList);
@@ -287,38 +284,9 @@ class AddVisitsScreenContainer extends Component {
         console.log('add visits container all done');
     }
 
-    onRefresh() {
-        this.patientDataService().updatePatientListFromServer()
-            .then((result) => {
-                this.setState({refreshing: false});
-
-                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
-                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
-
-                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
-                if (!newPatientsCount && !deletedPatientsCount) {
-                    subtitle = 'No new changes';
-                }
-                Alert.alert(
-                    'Refresh Completed',
-                    subtitle
-                );
-            })
-            .catch(error => {
-                this.setState({refreshing: false});
-                console.log(error);
-                Alert.alert(
-                    'Refresh Failed',
-                );
-            });
-        this.setState({refreshing: true});
-    }
-
     render() {
         return (
             <AddVisitsScreen
-                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
-                refreshing={this.state.refreshing}
                 isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
                 searchText={this.state.searchText}

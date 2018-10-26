@@ -123,7 +123,19 @@ class PasscodeVerificationScreen extends Component {
                 // Connect to realm, Register new screens
                 // Navigate to the Tab Based App
                 try {
-                    await StartApp(k);
+                    const syncDataPending = !(await AsyncStorage.getItem('syncDone'));
+                    if (syncDataPending) {
+                        this.props.navigator.resetTo({
+                            screen: screenNames.settingUpScreen,
+                            backButtonHidden: true,
+                            navigatorStyle: {
+                                navBarHidden: true,
+                            },
+                            passProps: {startKey: k},
+                        });
+                    } else {
+                        await StartApp(k, syncDataPending);
+                    }
                 } catch (e) {
                     console.log('Error in starting app:', e);
                     //TODO reset passcode

@@ -422,7 +422,6 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             );
         };
 
-        // Shows up below three dots button
         renderMileage = () => {
             const {computedMiles, extraMiles} = this.props;
             if (computedMiles === null || computedMiles === undefined) {
@@ -509,8 +508,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                         />
                                     </TouchableOpacity>
                                     {
-                                        this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
-                                        this.renderMileage()
+                                        this.isMilesEnabled() && !showDetailedMilesView && this.renderMileage()
                                     }
 
                                 </View>

@@ -18,6 +18,7 @@ export const Images = {
     legal: require('../resources/legal.png'),
     list: require('../resources/listViewIcon.png'),
     listView: require('../resources/listView.png'),
+    loadingPlus: require('../resources/animated/plus.gif'),
     location: require('../resources/location.png'),
     map: require('../resources/mapIcon.png'),
     mapView: require('../resources/mapView.png'),

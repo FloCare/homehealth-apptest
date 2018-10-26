@@ -3,9 +3,7 @@ import firebase from 'react-native-firebase';
 import {Episode, Patient} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {
-    arrayToMap,
-    arrayToObjectByKey,
-    filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
+    arrayToObjectByKey, hasNonEmptyValueForAllKeys,
 } from '../utils/collectionUtils';
 import {eventNames, notificationType, screenNames} from '../utils/constants';
 import {addressDataService} from './AddressDataService';
@@ -153,7 +151,7 @@ export class PatientDataService {
                 assignmentTimestamp: moment().utc().valueOf(),
                 lastUpdateTimestamp: creationTimestamp,
                 isLocallyOwned,
-                archived: false,
+                archived: !!patient.inactive,
                 dateOfBirth: patient.dateOfBirth,
                 emergencyContactNumber: emergencyContactNumber ? emergencyContactNumber.toString().trim() : undefined,
                 emergencyContactName: emergencyContactName ? emergencyContactName.toString().trim() : undefined,
@@ -281,62 +279,45 @@ export class PatientDataService {
             this.floDB.write(() => {
                 patient.archived = true;
             });
-            VisitService.getInstance().deleteVisitsForSubject(patient);
+            VisitService.getInstance().getAllFutureVisitsForSubject(patient);
             this._archivePatientsInRedux([patientId]);
             console.log('Patient archived. His visits Deleted');
         }
     }
 
-    updatePatientListFromServer() {
-        return PatientAPI.getPatientIDList()
-            .then(json => {
-                const serverPatientIDs = json.patients;
-
-                console.log('server patient ids');
-                console.log(serverPatientIDs);
-
-                const existingPatients = this.floDB.objects(Patient).filtered('isLocallyOwned = false && archived = false');
-                const intersectingPatients = filterResultObjectByListMembership(existingPatients, 'patientID', serverPatientIDs);
-
-                const intersectingPatientsByID = arrayToMap(filterResultObjectByListMembership(intersectingPatients, 'patientID', serverPatientIDs), 'patientID');
-
-                const deletedPatients = [];
-                existingPatients.forEach(patient => {
-                    if (!intersectingPatientsByID.has(patient.patientID.toString())) {
-                        deletedPatients.push(patient);
-                    }
-                });
-
-                const newPatientIDs = [];
-                serverPatientIDs.forEach(patientID => {
-                    if (!intersectingPatientsByID.has(patientID.toString())) {
-                        newPatientIDs.push(patientID);
-                        //TODO batch it
-                    }
-                });
-
-                return {
-                    deletedPatients,
-                    newPatientIDs
-                };
-            })
-            .then(async ({deletedPatients, newPatientIDs}) => {
-                let additions = 0;
-                const deletions = deletedPatients.length;
-
-                if (newPatientIDs.length > 0) {
-                    const newPatients = await this.fetchAndSavePatientsByID(newPatientIDs);
-                    additions = newPatients.success.length;
+    // Syncs all assigned and past patients from server
+    syncPatientListFromServer() {
+        return PatientAPI.getAllPatients().then(patientsList => {
+            patientsList.forEach(patient => {
+                this.formatPatientResponse(patient);
+                if (patient.episode) {
+                    this.createNewPatient(patient, false, true, patient.episode);
                 }
-                deletedPatients.forEach(patient => this.archivePatient(patient.patientID.toString(), true));
-                console.log('after sync with server patient list is:');
-                console.log(this.floDB.objects(Patient.getSchemaName()).length);
-                return {
-                    additions,
-                    deletions
-                };
             });
+        });
     }
+
+    formatPatientResponse = (patientData) => {
+        const patientInfo = patientData;
+        patientInfo.address.id = patientInfo.address.addressID.toString();
+        patientInfo.address.lat = patientInfo.address.latitude;
+        patientInfo.address.long = patientInfo.address.longitude;
+
+        patientInfo.dateOfBirth = patientInfo.dob || null;
+        if (patientInfo.dateOfBirth) {
+            try {
+                patientInfo.dateOfBirth = moment(patientInfo.dateOfBirth, 'YYYY-MM-DD').toDate();
+            } catch (e) {
+                patientInfo.dateOfBirth = null;
+                console.log('Unable to parse DOB. Skipping field');
+            }
+        }
+        patientInfo.emergencyContactInfo = {
+            contactName: patientInfo.emergencyContactName || null,
+            contactNumber: patientInfo.emergencyContactNumber || null,
+            contactRelation: patientInfo.emergencyContactRelation || null
+        };
+    };
 
     _fetchPatientsByIDAndAdapt(patientIDs) {
         return PatientAPI.getPatientsByID(patientIDs)
@@ -344,24 +325,7 @@ export class PatientDataService {
                 const successfulObjects = json.success;
                 for (const patientID in successfulObjects) {
                     const patientObject = successfulObjects[patientID];
-                    patientObject.address.id = patientObject.address.addressID.toString();
-                    patientObject.address.lat = patientObject.address.latitude;
-                    patientObject.address.long = patientObject.address.longitude;
-
-                    patientObject.dateOfBirth = patientObject.dob || null;
-                    if (patientObject.dateOfBirth) {
-                        try {
-                            patientObject.dateOfBirth = moment(patientObject.dateOfBirth, 'YYYY-MM-DD').toDate();
-                        } catch (e) {
-                            patientObject.dateOfBirth = null;
-                            console.log('Unable to parse DOB. Skipping field');
-                        }
-                    }
-                    patientObject.emergencyContactInfo = {
-                        contactName: patientObject.emergencyContactName || null,
-                        contactNumber: patientObject.emergencyContactNumber || null,
-                        contactRelation: patientObject.emergencyContactRelation || null
-                    };
+                    this.formatPatientResponse(patientObject);
                 }
                 return json;
             });

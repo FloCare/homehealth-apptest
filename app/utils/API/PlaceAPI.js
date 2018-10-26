@@ -27,7 +27,7 @@ export function getPlacesFromServer() {
         console.log('error in getting access token');
         throw error;
     })
-    .then(token => fetch(`${apiServerURL}/phi/v1.0/places/`,
+    .then(token => fetch(`${apiServerURL}/phi/v1.0/get-places-for-sync/`,
         {
             method: 'GET',
             headers: {
