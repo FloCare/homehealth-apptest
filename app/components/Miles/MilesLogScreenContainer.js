@@ -35,7 +35,7 @@ export default class MilesLogScreenContainer extends Component {
         const dates = Object.keys(data);
         dates.forEach((date) => {
             if (this.visitMilesNotPresentForVisits(data[date].visits)) {
-                VisitService.getInstance().updateMilesDataForVisitList(data[date].visits);
+                VisitService.getInstance().updateMilesDataForVisitList(data[date].visits, date);
             }
         });
     }

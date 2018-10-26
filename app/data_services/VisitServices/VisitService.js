@@ -1,5 +1,5 @@
 import firebase from 'react-native-firebase';
-import {Alert} from 'react-native';
+import moment from 'moment/moment';
 import {
     Patient,
     Visit,
@@ -78,40 +78,46 @@ export class VisitService {
         this.visitReduxService = VisitReduxService.initialiseService(store);
         this.reportService = ReportService.initialiseService(floDB);
         this.visitMilesService = VisitMilesService.initialiseService(floDB);
+
+        this.milesCalculationInvocationTimeline = {};
     }
 
     static isVisitOwn(visit) {
         return UserDataService.getCurrentUserProps().userID === visit.user.userID;
     }
 
-    async updateMilesDataForVisitList(visitList) {
+    async updateMilesDataForVisitList(visitList, midnightEpoch) {
+        const momentNow = moment();
+        this.milesCalculationInvocationTimeline[midnightEpoch] = momentNow;
+
         // Compute miles only for visits related to server entities
         const filteredVisitList = visitList.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
-        const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList), 1500);
 
         const reorderedVisitList = [...filteredVisitList.filter(visit => visit.isDone), ...filteredVisitList.filter(visit => !visit.isDone)];
         const coordinatesList = reorderedVisitList.map(visit => ({latitude: visit.getAddress().latitude, longitude: visit.getAddress().longitude}));
 
         if (reorderedVisitList.length >= 2) {
+            const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList, midnightEpoch, momentNow), 1500);
             const mapData = await getProcessedDataForOrderedList(coordinatesList);
             console.log('new map data');
             console.log(mapData.distances);
 
             clearTimeout(timer);
+
             this.floDB.write(() => {
+                if (this.milesCalculationInvocationTimeline[midnightEpoch] !== momentNow) { return; }
                 reorderedVisitList.forEach((visit, index) => {
                     if (index === 0) { visit.visitMiles.computedMiles = null; visit.visitMiles.extraMiles = null; return; }
                     visit.visitMiles.computedMiles = parseFloat(mapData.distances[index - 1]);
                 });
             });
             this.visitReduxService.updateVisitsToRedux(reorderedVisitList);
-        } else {
-            clearTimeout(timer);
         }
     }
 
-    clearAllMilesForVisitList(visitList) {
-        // Alert.alert('clear visits');
+    clearAllMilesForVisitList(visitList, midnightEpoch, momentNow) {
+        if (this.milesCalculationInvocationTimeline[midnightEpoch] !== momentNow) { return; }
+
         this.floDB.write(() => {
             visitList.forEach(visit => {
                 visit.visitMiles.computedMiles = null;
@@ -140,7 +146,7 @@ export class VisitService {
 
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
-        this.updateMilesDataForVisitList(visitList);
+        this.updateMilesDataForVisitList(visitList, midnightEpoch);
         this.visitReduxService.updateVisitOrderToReduxIfLive(visitList, midnightEpoch);
     }
 
@@ -204,7 +210,7 @@ export class VisitService {
             visit.isDone = true;
             currentVisitOrder.visitList = newOrderedVisitList;
         });
-        this.updateMilesDataForVisitList(newOrderedVisitList);
+        this.updateMilesDataForVisitList(newOrderedVisitList, visit.midnightEpochOfVisit);
 
 
         this.visitReduxService.updateVisitToRedux(visit);
@@ -240,7 +246,7 @@ export class VisitService {
             currentVisitOrder.visitList = newOrderedVisitList;
         });
 
-        this.updateMilesDataForVisitList(newOrderedVisitList);
+        this.updateMilesDataForVisitList(newOrderedVisitList, visit.midnightEpochOfVisit);
         this.visitReduxService.updateVisitToRedux(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
     }
@@ -376,7 +382,7 @@ export class VisitService {
         });
 
         const newVisitList = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
-        this.updateMilesDataForVisitList(newVisitList);
+        this.updateMilesDataForVisitList(newVisitList, midnightEpoch);
 
         if (midnightEpoch === this.visitReduxService.getActiveDate()) {
             this.visitReduxService.addVisitsToRedux(newVisits);
@@ -406,7 +412,7 @@ export class VisitService {
         });
 
         const newVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch);
-        this.updateMilesDataForVisitList(newVisitOrder.visitList);
+        this.updateMilesDataForVisitList(newVisitOrder.visitList, visitTimeEpoch);
 
         this.visitReduxService.updateVisitOrderToReduxIfLive(newVisitOrder.visitList, visitTimeEpoch);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
@@ -480,7 +486,7 @@ export class VisitService {
                 visitOrders[i].visitList = visitList;
             });
             //TODO very inefficient
-            this.updateMilesDataForVisitList(visitOrders[i].visitList);
+            this.updateMilesDataForVisitList(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
         }
         const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.write(() => {
