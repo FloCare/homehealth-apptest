@@ -25,11 +25,11 @@ export class SettingUpScreen extends Component {
 
     render() {
         return (
-            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF'}}>
                 <Text style={styles.textStyle}>
                     Flocare is setting up!
                 </Text>
-                <Image source={Images.loadingPlus} style={{marginTop: 20, marginBottom: 20}} />
+                <Image source={Images.loadingPlus} style={{marginTop: 20, marginBottom: 20, width: 150, height: 150}} />
                 <Text style={{...styles.textStyle, fontSize: 16}}>
                     Loading Data...
                 </Text>

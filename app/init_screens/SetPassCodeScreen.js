@@ -54,7 +54,10 @@ class SetPassCodeScreen extends Component {
                     backButtonHidden: true,
                     passProps: {
                         startKey: randomString
-                    }
+                    },
+                    navigatorStyle: {
+                        navBarHidden: true,
+                    },
                 });
             }, (err) => {
                 console.log(err);
