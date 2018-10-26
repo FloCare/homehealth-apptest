@@ -20,12 +20,13 @@ import {todayMomentInUTCMidnight} from "../utils/utils";
 import {Provider} from "react-redux";
 import {initialiseStoreAndSetUserForInstabug} from "../utils/InMemoryStore";
 import {RootReducer} from "../redux/RootReducer";
+import {AsyncStorage} from "react-native";
 
 
 var isInitialising = false;
 var isAlreadyInitialised = false;
 
-export async function initialiseApp(key) {
+export async function initialiseApp(key, syncDataFromServer = false) {
     if(isInitialising || isAlreadyInitialised)
         return;
 
@@ -51,17 +52,24 @@ export async function initialiseApp(key) {
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
     TaskService.initialiseService(FloDBProvider.db);
     NotificationService.initialiseService(FloDBProvider.db);
-    PlaceDataService.initialiseService(FloDBProvider.db, store)
+    PlaceDataService.initialiseService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
-    //TODO Make this run on first install only
-    await RNSecureKeyStore.get('accessToken').then(() => {
-        if (PatientDataService.getInstance().getTotalPatientCount() === 0) {
-            return Promise.all([PatientDataService.getInstance().updatePatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
-                .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer());
+    if (syncDataFromServer) {
+        console.log('syncing data from server')
+        try {
+            await RNSecureKeyStore.get('accessToken').then(() =>
+                Promise.all([PatientDataService.getInstance().syncPatientListFromServer(), PlaceDataService.getInstance().fetchAndSavePlacesFromServer()])
+                    .then(() => VisitService.getInstance().fetchAndSaveMyVisitsFromServer()));
+            console.log('syncing done');
+            AsyncStorage.setItem('syncDone', 'true');
+        } catch (error){
+            console.log('error while trying to sync. Will try on next app start');
+            console.log(error);
         }
-    });
+
+    }
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);

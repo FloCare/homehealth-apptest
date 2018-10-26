@@ -166,6 +166,7 @@ dependencies {
         exclude group: 'com.google.android.gms', module: 'play-services-base'
         exclude group: 'com.google.android.gms', module: 'play-services-maps'
     }
+    compile 'com.facebook.fresco:animated-gif:1.9.0'
     // Firebase dependencies
     compile "com.google.android.gms:play-services-base:15.0.1"
     compile 'com.google.android.gms:play-services-maps:15.0.1'

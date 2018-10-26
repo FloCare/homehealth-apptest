@@ -10,7 +10,7 @@ import {
     Platform,
     AsyncStorage,
     ScrollView,
-    View,
+    View
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
@@ -32,7 +32,6 @@ const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, 
 class HomeScreenContainer extends Component {
     constructor(props) {
         super(props);
-
         this.state = {calendarMode: 'Day', currentViewWeekStart: moment(this.props.date).day(1)};
 
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);

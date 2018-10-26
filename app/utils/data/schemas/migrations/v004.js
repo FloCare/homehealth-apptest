@@ -1,4 +1,4 @@
-import {Patient} from "../../schema";
+import {Patient} from '../../schema';
 
 export const SplitNameToFirstNameLastNameMigration = (oldRealm, newRealm) => {
     if (oldRealm.schemaVersion < 4) {
@@ -6,7 +6,7 @@ export const SplitNameToFirstNameLastNameMigration = (oldRealm, newRealm) => {
         const newPatientObjects = newRealm.objects(Patient.getSchemaName());
 
         for (let i = 0; i < oldPatientObjects.length; i++) {
-            const separatorIndex = oldPatientObjects[i].name.indexOf(" ");
+            const separatorIndex = oldPatientObjects[i].name.indexOf(' ');
             if (separatorIndex < 0) {
                 newPatientObjects[i].firstName = oldPatientObjects[i].name;
                 newPatientObjects[i].lastName = null;

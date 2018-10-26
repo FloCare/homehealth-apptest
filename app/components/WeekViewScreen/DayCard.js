@@ -70,7 +70,9 @@ export class DayCard extends Component {
                                 style={{
                                     fontWeight: '300',
                                     fontSize: 13,
+                                    flex: 1,
                                 }}
+                                numberOfLines={1}
                             >
                                 {visit.getAssociatedAbbName()}
                             </StyledText>

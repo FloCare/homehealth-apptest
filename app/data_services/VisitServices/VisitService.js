@@ -1,4 +1,5 @@
 import firebase from 'react-native-firebase';
+import moment from 'moment/moment';
 import {
     Patient,
     Visit,
@@ -22,6 +23,7 @@ import {VisitMilesService} from './VisitMilesService';
 import {ReportMessagingService} from '../MessagingServices/PubNubMessagingService/ReportMessagingService';
 import {getReportDetailsByIds} from '../../utils/API/ReportAPI';
 import {PlaceDataService} from '../PlaceDataService';
+import {getProcessedDataForOrderedList} from '../../utils/MapUtils';
 
 export class VisitService {
     static visitService;
@@ -57,7 +59,8 @@ export class VisitService {
             flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
-                totalMiles: visitMiles.totalMiles,
+                computedMiles: visitMiles.computedMiles,
+                extraMiles: visitMiles.extraMiles,
                 milesComments: visitMiles.milesComments
             };
         }
@@ -75,10 +78,54 @@ export class VisitService {
         this.visitReduxService = VisitReduxService.initialiseService(store);
         this.reportService = ReportService.initialiseService(floDB);
         this.visitMilesService = VisitMilesService.initialiseService(floDB);
+
+        this.milesCalculationInvocationTimeline = {};
     }
 
     static isVisitOwn(visit) {
         return UserDataService.getCurrentUserProps().userID === visit.user.userID;
+    }
+
+    async updateMilesDataForVisitList(visitList, midnightEpoch) {
+        const momentNow = moment();
+        this.milesCalculationInvocationTimeline[midnightEpoch] = momentNow;
+
+        // Compute miles only for visits related to server entities
+        const filteredVisitList = visitList.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+
+        const reorderedVisitList = [...filteredVisitList.filter(visit => visit.isDone), ...filteredVisitList.filter(visit => !visit.isDone)];
+        const coordinatesList = reorderedVisitList.map(visit => ({latitude: visit.getAddress().latitude, longitude: visit.getAddress().longitude}));
+
+        if (reorderedVisitList.length >= 2) {
+            const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList, midnightEpoch, momentNow), 1500);
+            const mapData = await getProcessedDataForOrderedList(coordinatesList);
+            console.log('new map data');
+            console.log(mapData.distances);
+
+            clearTimeout(timer);
+
+            this.floDB.write(() => {
+                if (this.milesCalculationInvocationTimeline[midnightEpoch] !== momentNow) { return; }
+                reorderedVisitList.forEach((visit, index) => {
+                    if (index === 0) { visit.visitMiles.computedMiles = null; visit.visitMiles.extraMiles = null; return; }
+                    visit.visitMiles.computedMiles = parseFloat(mapData.distances[index - 1]);
+                });
+            });
+            this.visitReduxService.updateVisitsToRedux(reorderedVisitList);
+        }
+    }
+
+    clearAllMilesForVisitList(visitList, midnightEpoch, momentNow) {
+        if (this.milesCalculationInvocationTimeline[midnightEpoch] !== momentNow) { return; }
+
+        this.floDB.write(() => {
+            visitList.forEach(visit => {
+                visit.visitMiles.computedMiles = null;
+                visit.visitMiles.odometerStart = null;
+                visit.visitMiles.odometerEnd = null;
+            });
+        });
+        this.visitReduxService.updateVisitsToRedux(visitList);
     }
 
     getVisitsByIDs(visitIDs) {
@@ -93,8 +140,17 @@ export class VisitService {
         return this.floDB.objects(Visit).filtered('episode.episodeID = $0', episodeID);
     }
 
+    getVisitOrderForDate(midnightEpoch) {
+        return this.visitRealmService.getVisitOrderForDate(midnightEpoch);
+    }
+
+    getVisitOrderForDates(midnightEpochs) {
+        return this.visitRealmService.getVisitOrderForDates(midnightEpochs);
+    }
+
     setVisitOrderForDate(orderedVisitID, midnightEpoch) {
         const visitList = this.visitRealmService.saveVisitOrderForDate(orderedVisitID, midnightEpoch);
+        this.updateMilesDataForVisitList(visitList, midnightEpoch);
         this.visitReduxService.updateVisitOrderToReduxIfLive(visitList, midnightEpoch);
     }
 
@@ -158,6 +214,8 @@ export class VisitService {
             visit.isDone = true;
             currentVisitOrder.visitList = newOrderedVisitList;
         });
+        this.updateMilesDataForVisitList(newOrderedVisitList, visit.midnightEpochOfVisit);
+
 
         this.visitReduxService.updateVisitToRedux(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
@@ -192,8 +250,20 @@ export class VisitService {
             currentVisitOrder.visitList = newOrderedVisitList;
         });
 
+        this.updateMilesDataForVisitList(newOrderedVisitList, visit.midnightEpochOfVisit);
         this.visitReduxService.updateVisitToRedux(visit);
         this.visitReduxService.updateVisitOrderToReduxIfLive(currentVisitOrder.visitList, visit.midnightEpochOfVisit);
+    }
+
+    // Brings the visit which doesn't have miles information to start of the list
+    // Small hack to prevent miles being recomputed on active logs screen
+    orderMilesIncompleteVisitToStart(visitList) {
+        const milesIncompleteVisitIndex = visitList.find(visit => !visit.visitMiles.IsMilesInformationPresent);
+        if (milesIncompleteVisitIndex > 0) {
+            const temp = visitList[0];
+            milesIncompleteVisitIndex[0] = visitList[milesIncompleteVisitIndex];
+            milesIncompleteVisitIndex[milesIncompleteVisitIndex] = temp;
+        }
     }
 
     fetchAndSaveMyVisitsFromServer() {
@@ -205,6 +275,7 @@ export class VisitService {
                 Object.keys(visitByMidnight).forEach(midnightEpochOfVisit => {
                     const daysVisits = visitByMidnight[midnightEpochOfVisit].map(visit => this.saveVisitToRealm(visit, false)).filter(visit => visit);
                     const daysVisitsSortedByDone = daysVisits.sort((visit1, visit2) => visit1.isDone - visit2.isDone);
+                    this.orderMilesIncompleteVisitToStart(daysVisitsSortedByDone);
                     if (daysVisitsSortedByDone && daysVisitsSortedByDone.length > 0) {
                         const visitOrder = this.visitRealmService.getVisitOrderForDate(Number(midnightEpochOfVisit));
                         this.floDB.write(() => {
@@ -277,7 +348,8 @@ export class VisitService {
                 const visitMilesData = {
                     odometerStart: visitMiles ? visitMiles.odometerStart : null,
                     odometerEnd: visitMiles ? visitMiles.odometerEnd : null,
-                    totalMiles: visitMiles ? visitMiles.totalMiles : null,
+                    computedMiles: visitMiles ? visitMiles.computedMiles : null,
+                    extraMiles: visitMiles ? visitMiles.extraMiles : null,
                     milesComments: visitMiles ? visitMiles.milesComments : null,
                 };
                 this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
@@ -307,7 +379,8 @@ export class VisitService {
                     const visitMilesData = {
                         odometerStart: null,
                         odometerEnd: null,
-                        totalMiles: null,
+                        computedMiles: null,
+                        extraMiles: null,
                         milesComments: null
                     };
                     this.visitMilesService.createVisitMilesForVisit(visit, visitMilesData);
@@ -324,10 +397,12 @@ export class VisitService {
             getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitCreate(visit);
         });
 
-        const newVisitOrder = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
+        const newVisitList = this.visitRealmService.insertNewVisits(newVisits, midnightEpoch);
+        this.updateMilesDataForVisitList(newVisitList, midnightEpoch);
+
         if (midnightEpoch === this.visitReduxService.getActiveDate()) {
             this.visitReduxService.addVisitsToRedux(newVisits);
-            this.visitReduxService.setVisitOrderInRedux(newVisitOrder);
+            this.visitReduxService.setVisitOrderInRedux(newVisitList);
         }
     }
 
@@ -352,7 +427,10 @@ export class VisitService {
             this.visitRealmService.deleteVisitByObject(visit);
         });
 
-        this.visitReduxService.updateVisitOrderToReduxIfLive(this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch).visitList, visitTimeEpoch);
+        const newVisitOrder = this.floDB.objectForPrimaryKey(VisitOrder, visitTimeEpoch);
+        this.updateMilesDataForVisitList(newVisitOrder.visitList, visitTimeEpoch);
+
+        this.visitReduxService.updateVisitOrderToReduxIfLive(newVisitOrder.visitList, visitTimeEpoch);
         this.visitReduxService.deleteVisitsFromRedux([visitID]);
     }
 
@@ -367,28 +445,24 @@ export class VisitService {
         throw new Error('requested visits for unrecognised entity');
     }
 
-    subscribeToSubmittedVisits(callbackFunction) {
-        const userVisits = this.visitRealmService.getCurrentUserVisits();
-        const reportedVisits = this.reportService.filterReportedVisits(userVisits);
-        const visitsResult = this.sortVisitsByField(reportedVisits, 'midnightEpochOfVisit', true);
-        const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        visitsResult.addListener(realmListener);
+    subscribeToReports(callbackFunction) {
+        const reports = this.reportService.getReports();
+        const realmListener = (reportObjects) => { callbackFunction(reportObjects); };
+        reports.addListener(realmListener);
         return {
-            currentData: visitsResult,
-            unsubscribe: () => visitsResult.removeListener(realmListener),
+            currentData: reports,
+            unsubscribe: () => reports.removeListener(realmListener),
         };
     }
 
     subscribeToActiveVisits(callbackFunction) {
-        const doneUserVisits = this.visitRealmService.getDoneUserVisits();
-        const milesActiveVisits = this.visitMilesService.filterMilesInformationCompleteVisits(doneUserVisits);
-        const nonReportedVisits = this.reportService.filterNonReportedVisits(milesActiveVisits);
-        const visitsResult = this.sortVisitsByField(nonReportedVisits, 'midnightEpochOfVisit', true);
+        const userVisits = this.visitRealmService.getCurrentUserVisits();
+        const nonReportedVisits = this.reportService.filterNonReportedVisits(userVisits);
         const realmListener = (visitObjects) => { callbackFunction(visitObjects); };
-        visitsResult.addListener(realmListener);
+        nonReportedVisits.addListener(realmListener);
         return {
-            currentData: visitsResult,
-            unsubscribe: () => visitsResult.removeListener(realmListener),
+            currentData: nonReportedVisits,
+            unsubscribe: () => nonReportedVisits.removeListener(realmListener),
         };
     }
 
@@ -407,26 +481,27 @@ export class VisitService {
     // Should be a part of a write transaction
     deleteVisitsForSubject(subject) {
         console.log('Deleting visits from realm');
-        const today = todayMomentInUTCMidnight();
 
         // Todo: Check if this works
         const visits = this.getAllFutureVisitsForSubject(subject);
-        const visitOrders = this.floDB.objects(VisitOrder.schema.name).filtered(`midnightEpoch >= ${today}`);
-
+        if (visits.length === 0) return;
+        const visitDates = [...new Set(visits.map(visit => visit.midnightEpochOfVisit))];
+        const visitOrders = this.getVisitOrderForDates(visitDates);
         // getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitDeletes(visits);
 
-        // TODO: Only iterate over dates where visit for that patient/stop is actually present
         for (let i = 0; i < visitOrders.length; i++) {
             const visitList = [];
             for (let j = 0; j < visitOrders[i].visitList.length; j++) {
                 const visit = visitOrders[i].visitList[j];
-                if (!(visit.isSubjectArchived())) {
+                if (!visit.isSubjectArchived()) {
                     visitList.push(visit);
                 }
             }
             this.floDB.write(() => {
                 visitOrders[i].visitList = visitList;
             });
+            //TODO very inefficient
+            this.updateMilesDataForVisitList(visitOrders[i].visitList, visitOrders[i].midnightEpoch);
         }
         const visitIDs = visits.map((visit) => visit.visitID);
         this.floDB.write(() => {
@@ -460,35 +535,39 @@ export class VisitService {
         getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(this.visitRealmService.getVisitByID(visitID));
     }
 
-    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, totalMiles, milesComments) {
+    updateMilesDataByVisitID(visitID, odometerStart, odometerEnd, computedMiles, extraMiles, milesComments) {
         const visit = this.visitRealmService.getVisitByID(visitID);
         this.visitRealmService.updateMilesDataByVisitObject(
             visit,
             stringToFloat(odometerStart),
             stringToFloat(odometerEnd),
-            stringToFloat(totalMiles),
+            stringToFloat(computedMiles),
+            stringToFloat(extraMiles),
             milesComments
         );
 
         this.visitReduxService.updateVisitToRedux(visit);
-        //TODO Remove this. As others don't care about this.
-        getMessagingServiceInstance(EpisodeMessagingService.identifier).publishVisitUpdate(visit);
     }
 
-    generateReportAndSubmitVisits = (visitIDs) => {
+    generateReportForVisits = (visitIDs) => {
         const visits = this.getVisitsByIDs(visitIDs);
-        const report = this.reportService.generateReportForVisits(visits);
+        this.reportService.generateReportForVisits(visits);
         const totalMiles = visits.reduce((totalMilesInReport, visit) => (totalMilesInReport + visit.visitMiles.MilesTravelled), 0);
         firebase.analytics().logEvent(eventNames.SEND_REPORT, {
             VALUE: totalMiles,
             NO_OF_VISITS: visits.length
         });
-        getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
-    }
+    };
 
-    markReportAccepted = (reportID) => {
-        this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.ACCEPTED);
-    }
+    submitReport = (reportID) => {
+        const report = ReportService.getInstance().getReportByID(reportID);
+        this.reportService.updateStatusByReportID(reportID, Report.reportStateEnum.SUBMIT_QUEUED);
+        getMessagingServiceInstance(ReportMessagingService.identifier).publishReportToBackend(report);
+    };
+
+    updateReportStatus = (reportID, status) => {
+        this.reportService.updateStatusByReportID(reportID, status);
+    };
 
     deleteReportAndItems = (reportID) => {
         this.reportService.deleteReportAndItemsByReportID(reportID);

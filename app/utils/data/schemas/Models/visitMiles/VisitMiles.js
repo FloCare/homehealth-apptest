@@ -1,3 +1,5 @@
+import {milesRenderString} from '../../../../renderFormatUtils';
+
 const Realm = require('realm');
 
 export class VisitMiles extends Realm.Object {
@@ -6,16 +8,18 @@ export class VisitMiles extends Realm.Object {
         return 'VisitMiles';
     }
 
-    static getMiles(odometerStart, odometerEnd) {
-        if (typeof (odometerStart) === 'number' && typeof (odometerEnd) === 'number') {
-            return odometerEnd - odometerStart;
-        }
-        return null;
+    static getComputedMilesString(computedMiles) {
+        return computedMiles ? `${milesRenderString(computedMiles)}` : '__';
+    }
+
+    get IsMilesInformationPresent() {
+        return (this.computedMiles !== null && this.computedMiles !== undefined);
     }
 
     get MilesTravelled() {
-        return VisitMiles.getMiles(this.odometerStart, this.odometerEnd);
+        let totalMiles = this.computedMiles;
+        totalMiles += this.extraMiles ? this.extraMiles : 0;
+        return totalMiles;
     }
-
 
 }

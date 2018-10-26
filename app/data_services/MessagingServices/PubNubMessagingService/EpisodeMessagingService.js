@@ -103,7 +103,8 @@ export class EpisodeMessagingService extends BaseMessagingService {
                                 });
                             });
                             resolve();
-                        }).catch(error => {
+                        })
+                        .catch(error => {
                         console.log('EpisodeMessagingService: error in create');
                         console.log(error);
                         resolve();
@@ -271,7 +272,7 @@ export class EpisodeMessagingService extends BaseMessagingService {
         });
     }
 
-    _getFlatVisitPayload(visit) {
+    static getFlatVisitPayload(visit) {
         const isPatientVisit = !!visit.getPatient();
         const flatVisit = {
             visitID: visit.visitID,
@@ -286,14 +287,15 @@ export class EpisodeMessagingService extends BaseMessagingService {
             flatVisit.visitMiles = {
                 odometerStart: visitMiles.odometerStart,
                 odometerEnd: visitMiles.odometerEnd,
-                totalMiles: visitMiles.totalMiles,
+                computedMiles: visitMiles.computedMiles,
+                extraMiles: visitMiles.extraMiles,
                 milesComments: visitMiles.milesComments
             };
         }
         return flatVisit;
     }
 
-    isVisitOfCommonInterest(visit) {
+    static isVisitOfCommonInterest(visit) {
         const visitPlace = visit.getPlace();
         if (visitPlace) {
             return !visitPlace.isLocallyOwned;
@@ -313,30 +315,30 @@ export class EpisodeMessagingService extends BaseMessagingService {
     }
 
     publishVisitCreateBulk(visits) {
-        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit));
+        const filteredVisits = visits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
         if (filteredVisits.length > 0) {
             this._createPublishToServerJob({
                 action: 'CREATE',
-                visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
+                visits: filteredVisits.map(visit => EpisodeMessagingService.getFlatVisitPayload(visit))
             });
         }
     }
 
     publishVisitUpdate(visit) {
-        if (!this.isVisitOfCommonInterest(visit)) { return; }
+        if (!EpisodeMessagingService.isVisitOfCommonInterest(visit)) { return; }
 
         this._createPublishToServerJob({
             action: 'UPDATE',
-            visits: [this._getFlatVisitPayload(visit)]
+            visits: [EpisodeMessagingService.getFlatVisitPayload(visit)]
         });
     }
 
     publishVisitDeletes(visits) {
-        const filteredVisits = visits.filter(visit => this.isVisitOfCommonInterest(visit))
+        const filteredVisits = visits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
         if (filteredVisits.length > 0) {
             this._createPublishToServerJob({
                 action: 'DELETE',
-                visits: filteredVisits.map(visit => this._getFlatVisitPayload(visit))
+                visits: filteredVisits.map(visit => EpisodeMessagingService.getFlatVisitPayload(visit))
             });
         }
     }
