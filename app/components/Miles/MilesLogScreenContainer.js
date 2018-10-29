@@ -118,7 +118,7 @@ export default class MilesLogScreenContainer extends Component {
     };
 
     sortDateComparator = (date1, date2) => (
-        (parseInt(date1, 10) - parseInt(date2, 10))
+        (parseInt(date2, 10) - parseInt(date1, 10))
     );
 
     toggleDateSelected = (date) => {
