@@ -96,6 +96,10 @@ export class VisitService {
         const reorderedVisitList = [...filteredVisitList.filter(visit => visit.isDone), ...filteredVisitList.filter(visit => !visit.isDone)];
         const coordinatesList = reorderedVisitList.map(visit => ({latitude: visit.getAddress().latitude, longitude: visit.getAddress().longitude}));
 
+        if (reorderedVisitList.length === 1) {
+            setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList, midnightEpoch, momentNow), 1500);
+        }
+
         if (reorderedVisitList.length >= 2) {
             const timer = setTimeout(() => this.clearAllMilesForVisitList(filteredVisitList, midnightEpoch, momentNow), 1500);
             const mapData = await getProcessedDataForOrderedList(coordinatesList);

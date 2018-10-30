@@ -28,7 +28,9 @@ class VisitListScreenContainer extends Component {
         const orderedVisits = floDB.objectForPrimaryKey(VisitOrder, nextProps.date.valueOf());
         if (!orderedVisits || orderedVisits.visitList.length === 0) {
             console.log('component did 0');
-            this.props.navigator.pop();
+            if (nextProps.orderedVisitID && this.props.orderedVisitID && nextProps.orderedVisitID.length !== this.props.orderedVisitID.length) {
+                this.props.navigator.pop();
+            }
         } else this.setState({date: nextProps.date});
     }
 

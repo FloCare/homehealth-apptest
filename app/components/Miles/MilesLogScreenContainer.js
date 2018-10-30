@@ -34,7 +34,8 @@ export default class MilesLogScreenContainer extends Component {
         const data = this.state.activeLogsData;
         const dates = Object.keys(data);
         dates.forEach((date) => {
-            if (this.visitMilesNotPresentForVisits(data[date].visits)) {
+            const milesVisits = data[date].visits.slice(1);
+            if (this.visitMilesNotPresentForVisits(milesVisits)) {
                 VisitService.getInstance().updateMilesDataForVisitList(data[date].visits, date);
             }
         });
@@ -118,7 +119,7 @@ export default class MilesLogScreenContainer extends Component {
     };
 
     sortDateComparator = (date1, date2) => (
-        (parseInt(date1, 10) - parseInt(date2, 10))
+        (parseInt(date2, 10) - parseInt(date1, 10))
     );
 
     toggleDateSelected = (date) => {
