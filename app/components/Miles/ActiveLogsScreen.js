@@ -456,6 +456,7 @@ export default class ActiveLogsScreen extends Component {
                         data={dateAndVisitsData}
                         order={this.props.order}
                         renderRow={this.renderRow}
+                        sortingEnabled={false}
                     />
                 </View>
                 <SimpleButton

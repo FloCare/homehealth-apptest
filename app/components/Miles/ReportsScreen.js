@@ -217,7 +217,7 @@ export default class ReportsScreen extends Component {
         const deleteAllowed = status === Report.reportStateEnum.CREATED;
         return (
             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', marginTop: 15, marginBottom: 10}}>
-                <View style={{flex: 2, flexDirection: 'row', marginLeft: 30}}>
+                <View style={{flex: 1, flexDirection: 'row', marginLeft: 30}}>
                     {
                         this.getViewButton(report)
                     }
