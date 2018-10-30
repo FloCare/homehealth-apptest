@@ -34,6 +34,8 @@ export class ReportService {
 
     getReportDateWiseSummary = (report) => {
         const status = report.status;
+        // Older visits might not be synced. If the patient was deleted/unassigned before soft delete went live.
+        // These patients and hence visits will not be synced
         const visits = report.reportItems.map(reportItem => reportItem.visit).filter(visit => visit);
         const dateWiseSummary = {};
         let minDate = TIME_INF;
