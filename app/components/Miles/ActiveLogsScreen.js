@@ -360,7 +360,7 @@ export default class ActiveLogsScreen extends Component {
         const areAllSelected = allDates.every(date => this.props.selectedDatesSet.has(date));
         const rangeDateString = this.getRangeDateString();
         return (
-            <View style={{flexDirection: 'row', borderBottomColor: borderColor, borderBottomWidth: 1, alignItems: 'center'}}>
+            <View style={{flexDirection: 'row', borderBottomColor: borderColor, borderBottomWidth: 1, alignItems: 'center', paddingTop: 5, paddingBottom: 5}}>
                 <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
                     <CustomCheckBox
                         checked={areAllSelected}
@@ -372,14 +372,14 @@ export default class ActiveLogsScreen extends Component {
                         Select All
                     </Text>
                 </View>
-                <View style={{flex: 1, paddingLeft: 20, flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableOpacity onPress={() => { this.onPressSelectDates(); }} style={{flex: 1, paddingLeft: 20, flexDirection: 'row', alignItems: 'center'}}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Image source={Images.dates} style={{height: 28, resizeMode: 'contain'}} />
                         <Text style={{...styles.textStyle, color: PrimaryColor, marginLeft: 3}}>
                             Dates
                         </Text>
                     </View>
-                    <TouchableOpacity onPress={() => { this.onPressSelectDates(); }} style={{minHeight: 30, justifyContent: 'center'}}>
+                    <View style={{minHeight: 30, justifyContent: 'center'}}>
                         <Modal
                             isVisible={this.state.showSelectDatesModal}
                             onBackButtonPress={this.dismissDatesModal}
@@ -399,8 +399,8 @@ export default class ActiveLogsScreen extends Component {
                                 {rangeDateString}
                             </Text>
                         </View>
-                    </TouchableOpacity>
-                </View>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     };
