@@ -34,7 +34,7 @@ export class ReportService {
 
     getReportDateWiseSummary = (report) => {
         const status = report.status;
-        const visits = report.reportItems.map(reportItem => reportItem.visit);
+        const visits = report.reportItems.map(reportItem => reportItem.visit).filter(visit => visit);
         const dateWiseSummary = {};
         let minDate = TIME_INF;
         let maxDate = 0;
