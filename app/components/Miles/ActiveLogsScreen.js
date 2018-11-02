@@ -20,6 +20,7 @@ import {milesRenderString} from '../../utils/renderFormatUtils';
 import {Images} from '../../Images';
 import {toastDuration, toastMessages} from './ToastMessages';
 import {dateService} from '../../data_services/DateService';
+import {timeZoneConvertedEpoch} from '../../utils/utils';
 
 function DateRowGenerator(toggleDate, navigator) {
     class RenderDateRow extends Component {
@@ -52,10 +53,10 @@ function DateRowGenerator(toggleDate, navigator) {
                     />
                     <View style={{alignItems: 'center'}}>
                         <Text style={styles.miniHeadingStyle}>
-                            {moment(date).format('MMM')}
+                            {timeZoneConvertedEpoch(date).format('MMM')}
                         </Text>
                         <Text style={styles.miniContentStyle}>
-                            {moment(date).format('D')}
+                            {timeZoneConvertedEpoch(date).format('D')}
                         </Text>
                     </View>
                 </View>
