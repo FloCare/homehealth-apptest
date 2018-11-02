@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import moment from 'moment';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {createSectionedListByField, sortByArray} from '../../utils/collectionUtils';
 import {EpisodeMessagingService} from '../../data_services/MessagingServices/PubNubMessagingService/EpisodeMessagingService';
@@ -8,6 +7,7 @@ import ActiveLogsScreen from './ActiveLogsScreen';
 import ReportsScreen from './ReportsScreen';
 import {styles} from './styles';
 import {defaultBackGroundColor, PrimaryColor} from '../../utils/constants';
+import {timeZoneConvertedEpoch} from '../../utils/utils';
 
 export default class MilesLogScreenContainer extends Component {
 
@@ -143,7 +143,7 @@ export default class MilesLogScreenContainer extends Component {
 
     selectDatesInRange = (startDate, endDate) => {
         const allDates = Object.keys(this.state.activeLogsData);
-        const timeZoneMoment = (date) => moment(parseInt(date, 10)).subtract(moment().utcOffset(), 'minutes').valueOf();
+        const timeZoneMoment = (date) => timeZoneConvertedEpoch(parseInt(date, 10)).valueOf();
         const selectedDates = allDates.filter(date => (timeZoneMoment(date) >= (startDate) && timeZoneMoment(date) <= endDate));
         this.setState({selectedDatesSet: new Set(selectedDates)});
     };
