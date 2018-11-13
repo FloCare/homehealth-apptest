@@ -36,8 +36,8 @@ export function PatientDetailMapComponent(props) {
                 // Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${props.patientCoordinates.latitude},${props.patientCoordinates.longitude}`).catch(err => console.error('An error occurred', err));
             >
                 <MapMarker />
-                <Callout onPress={() => onPress(props.patientCoordinates, props.patientAddress)} style={{marginTop: 10}}>
-                    <CustomCallout address={props.patientAddress} />
+                <Callout onPress={() => onPress(props.patientCoordinates, props.navigationAddress)} style={{marginTop: 10}}>
+                    <CustomCallout address={props.displayAddress} />
                 </Callout>
             </Marker>
         </MapView>);

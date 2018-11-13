@@ -5,13 +5,13 @@ const Realm = require('realm');
 // Address can belong to a 'patient' or a 'Place'
 export class Address extends Realm.Object {
 
-    static getSchemaName(){
+    static getSchemaName() {
         return 'Address';
     }
 
-    get formattedAddressForGeocoding() {
+    getFormattedAddressForGeoCoding(includeApartmentNo = true) {
         let addr = '';
-        if (this.apartmentNo) {
+        if (includeApartmentNo && this.apartmentNo) {
             addr += `${this.apartmentNo}, `;
         }
         if (this.streetAddress) {
@@ -23,8 +23,12 @@ export class Address extends Realm.Object {
         return addr;
     }
 
-    get formattedAddress() {
-        let addr = this.formattedAddressForGeocoding;
+    get formattedAddressForGeocoding() {
+        return this.getFormattedAddressForGeoCoding();
+    }
+
+    getFormattedAddress(includeApartmentNo = true) {
+        let addr = this.getFormattedAddressForGeoCoding(includeApartmentNo);
         if (this.zipCode) {
             addr += ` ${this.zipCode}`;
         }
@@ -32,6 +36,14 @@ export class Address extends Realm.Object {
             addr += `, ${this.state}`;
         }
         return addr;
+    }
+
+    get formattedAddress() {
+        return this.getFormattedAddress();
+    }
+
+    get navigationAddress() {
+        return this.getFormattedAddress(false);
     }
 
     get formattedCompleteAddress() {
