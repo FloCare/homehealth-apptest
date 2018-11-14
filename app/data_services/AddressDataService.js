@@ -7,7 +7,7 @@ class AddressDataService {
         return {
             addressID: address.addressID,
             formattedAddress: address.formattedAddress,
-
+            navigationAddress: address.navigationAddress,
             latitude: address.latitude,
             longitude: address.longitude,
         };

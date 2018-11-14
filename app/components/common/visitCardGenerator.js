@@ -71,6 +71,7 @@ const mapStateToProps = (state, ownProps) => {
         longitude: address.longitude
     };
     props.formattedAddress = address.formattedAddress;
+    props.navigationAddress = address.navigationAddress;
     return props;
 };
 
@@ -288,7 +289,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         type: parameterValues.NAVIGATION
                     });
                     if (this.props.coordinates) {
-                        navigateTo(this.props.coordinates.latitude, this.props.coordinates.longitude, this.props.formattedAddress);
+                        navigateTo(this.props.coordinates.latitude, this.props.coordinates.longitude, this.props.navigationAddress);
                     }
                     break;
                 case cardActions.addOrEditMiles:
