@@ -18,6 +18,7 @@ import {getMessagingServiceInstance} from './MessagingServices/PubNubMessagingSe
 import {EpisodeMessagingService} from './MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import {getEpisodeDetailsByIds} from '../utils/API/EpisodeAPI';
 import {PhysicianDataService} from './PhysicianDataService';
+import {NotesMessagingService} from './MessagingServices/PubNubMessagingService/NotesMessagingService';
 
 export class PatientDataService {
     static patientDataService;
@@ -201,6 +202,7 @@ export class PatientDataService {
             this.addPatientsToRedux([newPatient], true);
             try {
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).subscribeToEpisodes(newPatient.episodes);
+                getMessagingServiceInstance(NotesMessagingService.identifier).subscribeToEpisodes(newPatient.episodes);
             } catch (e) {
                 console.log('error trying to subscribe to new patient');
                 console.log(e);

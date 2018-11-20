@@ -39,7 +39,7 @@ const diagnosisList = [
 
 const screenNames = {
     //Top Level Screens
-    homeScreen: 'HomeDayView',
+    homeScreen: 'HomeScreen',
     patientList: 'PatientList',
     notificationScreen: 'NotificationScreen',
     moreScreen: 'MoreScreen',

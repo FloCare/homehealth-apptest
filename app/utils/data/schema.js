@@ -8,6 +8,7 @@ import {Patient} from './schemas/Models/patient/Patient';
 import {Place} from './schemas/Models/place/Place';
 import {User} from './schemas/Models/user/User';
 import {Visit} from './schemas/Models/visit/Visit';
+import {Note} from './schemas/Models/note/Note';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
 import {Physician} from './schemas/Models/physician/Physician';
 import {Task} from './schemas/Models/task/Task';
@@ -28,6 +29,7 @@ import * as NotificationSchemas from './schemas/Models/notification/schemaVersio
 import * as VisitMilesSchemas from './schemas/Models/visitMiles/schemaVersions/SchemaIndex';
 import * as ReportItemSchemas from './schemas/Models/reportItem/schemaVersions/SchemaIndex';
 import * as ReportSchemas from './schemas/Models/report/schemaVersions/SchemaIndex';
+import * as NoteSchemas from './schemas/Models/note/schemaVersions/SchemaIndex';
 import {PhysicianDataService} from '../../data_services/PhysicianDataService';
 import {UserDataService} from '../../data_services/UserDataService';
 import {getPatientsByOldID} from '../API/PatientAPI';
@@ -191,12 +193,22 @@ class FloDBProvider {
                 migration: Migrations.v010,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV3, PlaceSchemas.PlaceSchemaV2, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1, NoteSchemas.NoteSchemaV1],
+                schemaVersion: 11,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
         const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User,
-            Physician, VisitMiles, ReportItem, Report, Task, Notification];
+            Physician, VisitMiles, ReportItem, Report, Task, Notification, Note];
 
         let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
         if (existingSchemaVersion >= 0) {
