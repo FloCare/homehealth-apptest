@@ -9,10 +9,10 @@ export const NoteSchemaV1 = {
         messageID: 'string',
         episode: {type: Episode.getSchemaName()},
         data: 'string',
-        timetoken: {type: 'int', indexed: true},
+        timetoken: {type: 'date', indexed: true},
         messageType: 'string',
         user: {type: User.getSchemaName()},
-        superID: {type: 'string', indexed: true},
+        superID: {type: 'string?', indexed: true},
         synced: 'string'
     }
 };

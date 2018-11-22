@@ -15,6 +15,7 @@ import {Images} from '../Images';
 import {todayMomentInUTCMidnight} from '../utils/utils';
 import {PatientDataService} from '../data_services/PatientDataService';
 import {EpisodeDataService} from '../data_services/EpisodeDataService';
+import {NotesViewContainer} from '../components/NotesView/NotesViewContainer';
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
@@ -143,7 +144,7 @@ class PatientDetailScreenContainer extends Component {
     // this is the onPress handler for the navigation header 'Edit' button
     onNavigatorEvent(event) {
         if (event.id === 'willAppear') {
-            let {firstName, lastName} = this.state.patientDetail;
+            const {firstName, lastName} = this.state.patientDetail;
             const title = PatientDataService.constructName(firstName, lastName);
             this.props.navigator.setTitle({
                 title
@@ -341,19 +342,24 @@ class PatientDetailScreenContainer extends Component {
 
     render() {
         return (
-            <PatientDetailScreen
-                patientDetail={this.state.patientDetail}
-                onPressAddVisit={this.onPressAddVisit}
-                selectedVisitsDate={this.state.selectedVisitsDate}
-                onSelectVisitsDate={this.handleDateSelection}
-                visitSectionData={this.state.visitSectionData}
-                currentWeekVisitData={this.state.currentWeekVisitData}
-                onWeekChanged={this.handleWeekChange}
-                onPressAddNotes={this.onPressAddNotes}
-                showCallout={this.onRegionChangeComplete}
-                setMarkerRef={this.setMarkerRef}
+            <NotesViewContainer
+                patientID={this.props.patientId}
             />
         );
+        // return (
+        //     <PatientDetailScreen
+        //         patientDetail={this.state.patientDetail}
+        //         onPressAddVisit={this.onPressAddVisit}
+        //         selectedVisitsDate={this.state.selectedVisitsDate}
+        //         onSelectVisitsDate={this.handleDateSelection}
+        //         visitSectionData={this.state.visitSectionData}
+        //         currentWeekVisitData={this.state.currentWeekVisitData}
+        //         onWeekChanged={this.handleWeekChange}
+        //         onPressAddNotes={this.onPressAddNotes}
+        //         showCallout={this.onRegionChangeComplete}
+        //         setMarkerRef={this.setMarkerRef}
+        //     />
+        // );
     }
 }
 

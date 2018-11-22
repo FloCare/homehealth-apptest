@@ -1,10 +1,12 @@
 import {NetInfo} from 'react-native';
 import firebase from 'react-native-firebase';
+import moment from 'moment';
 import {BaseMessagingService} from './BaseMessagingService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {NoteDataService} from '../../NotesDataService';
 
+//TODO
 export class NotesMessagingService extends BaseMessagingService {
     static identifier = 'NotesMessagingService';
 
@@ -17,14 +19,14 @@ export class NotesMessagingService extends BaseMessagingService {
         return new Promise((resolve, reject) => {
             console.log('onMessage called');
             const episodeID = channel.split('_')[1];
-            const {actionType, userID, messageID, dataJson} = message;
+            const {messageType, userID, messageID, dataJson} = message;
             // if (userID === UserDataService.getCurrentUserProps().userID) {
             //     console.log('on message called for a message published by myself, ignoring');
             //     resolve();
             //     return;
             // }
 
-            switch (actionType) {
+            switch (messageType) {
                 case 'NEW_NOTE' :
                     this.processNewNoteMessage(messageObject);
                     resolve();
@@ -38,7 +40,9 @@ export class NotesMessagingService extends BaseMessagingService {
     }
 
     processNewNoteMessage(messageObject) {
-        const noteObject = this.getNoteObjectFromMessage(messageObject.message, messageObject.timetoken, true);
+        const noteObject = this.getNoteObjectFromMessage(messageObject.message, messageObject.timestamp, true);
+        console.log('trying to save note object');
+        console.log(messageObject);
         NoteDataService.getInstance().saveNoteObject(noteObject);
     }
 
@@ -57,8 +61,8 @@ export class NotesMessagingService extends BaseMessagingService {
             superID: message.superID,
             data: message.data,
 
-            timetoken,
-            synced,
+            timetoken: moment(timetoken / 10000).toDate(),
+            synced: synced.toString(),
         };
     }
 
@@ -67,12 +71,6 @@ export class NotesMessagingService extends BaseMessagingService {
             concurrency: 3,
             onFailed: (id, payload) => {
                 console.log(`Publish Notes message Job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
-            }
-        });
-        this.taskQueue.addWorker('publishToServer', this._publishToServer.bind(this), {
-            concurrency: 3,
-            onFailed: (id, payload) => {
-                console.log(`Publish to server job "job-name-here" with id ${id} had an attempt end in failure. Payload: ${payload}`);
             }
         });
     }

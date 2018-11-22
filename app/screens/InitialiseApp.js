@@ -20,6 +20,7 @@ import {todayMomentInUTCMidnight} from "../utils/utils";
 import {Provider} from "react-redux";
 import {initialiseStoreAndSetUserForInstabug} from "../utils/InMemoryStore";
 import {RootReducer} from "../redux/RootReducer";
+import {NoteDataService} from "../data_services/NotesDataService";
 
 
 var isInitialising = false;
@@ -47,6 +48,7 @@ export async function initialiseApp(key) {
     PatientDataService.initialiseService(FloDBProvider.db, store);
     VisitService.initialiseService(FloDBProvider.db, store);
     EpisodeDataService.initialiseService(FloDBProvider.db, store);
+    NoteDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
     TaskService.initialiseService(FloDBProvider.db);

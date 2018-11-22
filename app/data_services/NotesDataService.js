@@ -1,8 +1,10 @@
+import moment from 'moment';
 import {Note} from '../utils/data/schema';
 import {getMessagingServiceInstance} from './MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
 import {NotesMessagingService} from './MessagingServices/PubNubMessagingService/NotesMessagingService';
 import {generateUUID} from '../utils/utils';
 import {UserDataService} from './UserDataService';
+import {EpisodeDataService} from './EpisodeDataService';
 
 export class NoteDataService {
     static noteDataService;
@@ -27,9 +29,14 @@ export class NoteDataService {
         return this.floDB.objectForPrimaryKey(Note.getSchemaName(), noteID);
     }
 
+    getNotesForEpisodeID(episodeID) {
+        const episode = EpisodeDataService.getInstance().getEpisodeByID(episodeID);
+        return episode.notes.sorted('timetoken');
+    }
+
     saveNoteObject(noteObject) {
         this.floDB.write(() => {
-            this.floDB.create(Note, noteObject, true);
+            this.floDB.create('Note', noteObject, true);
         });
     }
 
@@ -38,9 +45,11 @@ export class NoteDataService {
             messageID: generateUUID(),
             episode,
             messageType: 'NEW_NOTE',
+            //TODO
+            timetoken: moment().toDate(),
             user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
             data: message,
-            synced: false,
+            synced: 'false',
         };
         return note;
     }
