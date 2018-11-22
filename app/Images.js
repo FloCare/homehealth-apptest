@@ -23,6 +23,7 @@ export const Images = {
     mapView: require('../resources/mapView.png'),
     milesLog: require('../resources/milesLog.png'),
     more: require('../resources/more.png'),
+    notesIcon: require('../resources/notesIcons.png'),
     notificationBell: require('../resources/notification.png'),
     navigate: require('../resources/navigate.png'),
     notes: require('../resources/notes.png'),
