@@ -5,6 +5,7 @@ import {BaseMessagingService} from './BaseMessagingService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {NoteDataService} from '../../NotesDataService';
+import {screenNames} from '../../../utils/constants';
 
 //TODO
 export class NotesMessagingService extends BaseMessagingService {
@@ -31,6 +32,9 @@ export class NotesMessagingService extends BaseMessagingService {
                     this.processNewNoteMessage(messageObject);
                     resolve();
                     // reject(error);
+                    break;
+                case 'NOTIFICATION':
+                    resolve();
                     break;
                 default:
                     console.log(`NotesMessagingService: unrecognised message: ${message}`);
@@ -80,11 +84,11 @@ export class NotesMessagingService extends BaseMessagingService {
             channel: `episode_${payload.episodeID}_notes`,
             message: payload,
         }).then(result => {
-            console.log('publish visit result');
+            // console.log('publish note result');
             //console.log(payload);
             //console.log(result);
         }).catch(error => {
-            console.log('error publishing visit message on pubnub');
+            console.log('error publishing note message on pubnub');
             console.log(error);
             throw new Error(`could not publish message ${error}`);
         });
@@ -108,9 +112,31 @@ export class NotesMessagingService extends BaseMessagingService {
             pn_gcm: payload.makePeersRefresh ?
                 {
                     data: {
-                        content_available: true
+                        content_available: true,
+                        notificationBody: payload.notificationBody,
+                        sound: 'default',
+                        navigateTo: screenNames.patientDetailsScreen,
+                        episodeID: payload.episodeID
                     },
                 } : undefined,
+        }, {
+            attempts: 5
+        });
+
+        this.taskQueue.createJob('publishNotesMessage', {
+            messageType: 'NOTIFICATION',
+            pn_apns: {
+                aps: {
+                    alert: {
+                        body: payload.notificationBody,
+                    },
+                    sound: 'default',
+                },
+                payload: {
+                    episodeID: payload.episodeID,
+                    navigateTo: screenNames.patientDetailsScreen
+                }
+            }
         }, {
             attempts: 5
         });
@@ -124,11 +150,13 @@ export class NotesMessagingService extends BaseMessagingService {
             userID: note.user.userID,
             superID: note.superID,
             data: note.data,
-            makePeersRefresh: true
+            makePeersRefresh: true,
+
+            notificationBody: `New note added for ${note.episode.patient.abbName}`
         });
     }
 
-    subscribeToEpisodes(episodes, suppressNotificationFromHistory = false) {
+    subscribeToEpisodeNotes(episodes, suppressNotificationFromHistory = false) {
         const channelObjects = episodes.map(episode => ({
             name: `episode_${episode.episodeID}_notes`,
             //TODO this should be more sophisticated
@@ -138,7 +166,7 @@ export class NotesMessagingService extends BaseMessagingService {
         this._subscribeToChannelsByObject(channelObjects, suppressNotificationFromHistory);
     }
 
-    unsubscribeToEpisodes(episodes) {
+    unsubscribeToEpisodeNotes(episodes) {
         const channelObjects = episodes.map(episode => ({
             name: `episode_${episode.episodeID}_notes`,
             //TODO this should be more sophisticated
@@ -151,6 +179,6 @@ export class NotesMessagingService extends BaseMessagingService {
     async _bootstrapChannels() {
         const episodes = EpisodeDataService.getInstance().getAllSyncedEpisodes();
         console.log('bootstrapping note channels');
-        this.subscribeToEpisodes(episodes, true);
+        this.subscribeToEpisodeNotes(episodes, true);
     }
 }

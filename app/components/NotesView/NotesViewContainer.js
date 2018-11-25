@@ -50,12 +50,14 @@ export class NotesViewContainer extends Component {
     }
 
     scrollToBottom(animated) {
-        this.sectionList.scrollToLocation({
-            animated,
-            sectionIndex: this.state.sectionedData.length - 1,
-            itemIndex: this.state.sectionedData[this.state.sectionedData.length - 1].data.length - 1,
-            viewPosition: 1
-        });
+        if (this.state.sectionedData.length > 0) {
+            this.sectionList.scrollToLocation({
+                animated,
+                sectionIndex: this.state.sectionedData.length - 1,
+                itemIndex: this.state.sectionedData[this.state.sectionedData.length - 1].data.length - 1,
+                viewPosition: 1
+            });
+        }
     }
 
     getSectionedDataForNotes(notesResult) {

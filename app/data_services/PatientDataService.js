@@ -278,6 +278,7 @@ export class PatientDataService {
                 console.log(patient.episodes.length);
                 console.log(patient.episodes);
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).unsubscribeToEpisodes(patient.episodes);
+                getMessagingServiceInstance(NotesMessagingService.identifier).unsubscribeToEpisodeNotes(patient.episodes);
             }
 
             this.floDB.write(() => {
