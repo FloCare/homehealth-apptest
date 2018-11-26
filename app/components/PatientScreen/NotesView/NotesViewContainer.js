@@ -1,10 +1,10 @@
 import moment from 'moment';
 import React, {Component} from 'react';
 import {View, SectionList, KeyboardAvoidingView, Platform} from 'react-native';
-import {NoteDataService} from '../../data_services/NotesDataService';
-import {PatientDataService} from '../../data_services/PatientDataService';
+import {NoteDataService} from '../../../data_services/NotesDataService';
+import {PatientDataService} from '../../../data_services/PatientDataService';
 import {NoteBubble} from './NoteBubble';
-import StyledText from '../common/StyledText';
+import StyledText from '../../common/StyledText';
 import {NoteTextBox} from './NoteTextBox';
 
 export class NotesViewContainer extends Component {

@@ -5,6 +5,7 @@ import {screenNames, setInActivityTimer} from '../../utils/constants';
 const LockOnInactivity = (ScreenComponent) => (
 		class CompositeClass extends Component {
 			static navigatorButtons = ScreenComponent.navigatorButtons;
+			static navigatorStyle = ScreenComponent.navigatorStyle;
 			constructor(props) {
 				super(props);
 				this.resetTimer = this.resetTimer.bind(this);

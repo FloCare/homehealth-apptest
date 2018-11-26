@@ -18,7 +18,7 @@ function onPressCard(visitID, navigator) {
     const visit = floDB.objectForPrimaryKey(Visit, visitID);
     if (visit.getPatient() && !visit.getPatient().archived) {
         navigator.push({
-            screen: screenNames.patientDetails,
+            screen: screenNames.patient,
             passProps: {
                 patientId: visit.getPatient().patientID
             },

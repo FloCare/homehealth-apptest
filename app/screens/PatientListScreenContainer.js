@@ -98,7 +98,7 @@ class PatientListScreenContainer extends Component {
 
     onItemPressed(item) {
         this.navigateTo(
-            screenNames.patientDetails,
+            screenNames.patient,
             item.item.name, {
                 patientId: item.item.patientID
             });

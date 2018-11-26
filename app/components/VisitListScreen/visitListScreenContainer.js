@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import {VisitListScreen} from './visitListScreen';
-import {floDB, Visit, Patient, Episode, VisitOrder} from '../../utils/data/schema';
+import {floDB, VisitOrder} from '../../utils/data/schema';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import {ScreenWithCalendarComponent} from '../common/screenWithCalendarComponent';
 import * as MapUtils from '../../utils/MapUtils';
@@ -10,6 +10,10 @@ import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {getVisitsWithAddressFromReduxState} from '../VisitMapScreen/VisitMapScreenController';
 
 class VisitListScreenContainer extends Component {
+    static navigatorStyle = {
+        navBarTextColor: 'white',
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -61,7 +65,7 @@ class VisitListScreenContainer extends Component {
                 // onDone: this.onOrderChange
             },
             navigatorStyle: {
-                tabBarHidden: true
+                tabBarHidden: true,
             }
         });
     }

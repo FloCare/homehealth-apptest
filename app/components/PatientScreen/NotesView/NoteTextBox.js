@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, TextInput} from 'react-native';
-import {SimpleButton} from '../common/SimpleButton';
-import {PrimaryColor} from '../../utils/constants';
+import {SimpleButton} from '../../common/SimpleButton';
+import {PrimaryColor} from '../../../utils/constants';
 
 export class NoteTextBox extends Component {
     constructor(props) {

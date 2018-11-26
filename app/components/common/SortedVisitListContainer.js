@@ -137,7 +137,7 @@ class SortedVisitListContainer extends Component {
             const visit = floDB.objectForPrimaryKey(Visit, visitID);
             if (visit.getPatient() && !visit.getPatient().archived) {
                 this.props.navigator.push({
-                    screen: screenNames.patientDetails,
+                    screen: screenNames.patient,
                     passProps: {
                         patientId: visit.getPatient().patientID,
                         selectedVisitsDate: moment(visit.midnightEpochOfVisit).utc()

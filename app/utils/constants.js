@@ -52,6 +52,7 @@ const screenNames = {
     legal: 'Legal',
 
     addPatient: 'AddPatient',
+    patient: 'Patient',
     patientDetails: 'PatientDetails',
     addNote: 'AddNote',
     addStop: 'AddStop',

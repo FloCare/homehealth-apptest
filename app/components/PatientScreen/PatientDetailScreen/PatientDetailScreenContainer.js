@@ -1,21 +1,18 @@
 import React, {Component} from 'react';
-import {Platform} from 'react-native';
 import firebase from 'react-native-firebase';
 import update from 'immutability-helper';
 import moment from 'moment';
-import {PatientDetailScreen} from '../components/PatientDetailScreen';
-import {floDB, Patient} from '../utils/data/schema';
+import {PatientDetailScreen} from './index';
+import {floDB, Patient} from '../../../utils/data/schema';
 import {
     screenNames,
     eventNames,
     parameterValues,
     visitSubjects,
-} from '../utils/constants';
-import {Images} from '../Images';
-import {todayMomentInUTCMidnight} from '../utils/utils';
-import {PatientDataService} from '../data_services/PatientDataService';
-import {EpisodeDataService} from '../data_services/EpisodeDataService';
-import {NotesViewContainer} from '../components/NotesView/NotesViewContainer';
+} from '../../../utils/constants';
+import {todayMomentInUTCMidnight} from '../../../utils/utils';
+import {PatientDataService} from '../../../data_services/PatientDataService';
+import {EpisodeDataService} from '../../../data_services/EpisodeDataService';
 
 class PatientDetailScreenContainer extends Component {
     constructor(props) {
@@ -29,11 +26,8 @@ class PatientDetailScreenContainer extends Component {
         };
         this.onPressAddNotes = this.onPressAddNotes.bind(this);
         this.onPressAddVisit = this.onPressAddVisit.bind(this);
-        this.onPressEditInfo = this.onPressEditInfo.bind(this);
         this.getPatientDetails = this.getPatientDetails.bind(this);
         this.parseResponse = this.parseResponse.bind(this);
-        // settings this up to listen on navigator events
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.setMarkerRef = this.setMarkerRef.bind(this);
         this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
@@ -98,69 +92,6 @@ class PatientDetailScreenContainer extends Component {
         });
     }
 
-    onPressEditInfo() {
-        this.props.navigator.push({
-            screen: screenNames.addPatient,
-            title: 'Edit Patient Information',
-            navigatorStyle: {
-                tabBarHidden: true
-            },
-            navigatorButtons: {
-                rightButtons: [
-                    {
-                        id: 'deletePatient',
-                        icon: Images.delete
-                    }
-                ]
-            },
-            passProps: {
-                values: {
-                    patientID: this.state.patientDetail.patientID,
-                    firstName: this.state.patientDetail.firstName,
-                    lastName: this.state.patientDetail.lastName,
-                    addressID: this.state.patientDetail.address.addressID,
-                    streetAddress: this.state.patientDetail.address.streetAddress,
-                    apartmentNo: this.state.patientDetail.address.apartmentNo,
-                    zipCode: this.state.patientDetail.address.zipCode,
-                    city: this.state.patientDetail.address.city,
-                    state: this.state.patientDetail.address.state,
-                    primaryContact: this.state.patientDetail.primaryContact,
-                    //diagnosis: this.state.patientDetail.episodes[0].diagnosis,
-                    notes: this.state.patientDetail.notes,
-                    lat: this.state.patientDetail.address.lat,
-                    long: this.state.patientDetail.address.long,
-                    dateOfBirth: this.state.patientDetail.dateOfBirth,
-                    emergencyContactInfo: {
-                        contactName: this.state.patientDetail.emergencyContactName,
-                        contactNumber: this.state.patientDetail.emergencyContactNumber,
-                        contactRelation: this.state.patientDetail.emergencyContactRelation,
-                    }
-                },
-                edit: true
-            }
-        });
-    }
-
-    // this is the onPress handler for the navigation header 'Edit' button
-    onNavigatorEvent(event) {
-        if (event.id === 'willAppear') {
-            const {firstName, lastName} = this.state.patientDetail;
-            const title = PatientDataService.constructName(firstName, lastName);
-            this.props.navigator.setTitle({
-                title
-            });
-        }
-        if (event.type === 'NavBarButtonPress') {
-            if (event.id === 'edit') {    // this is the same id field from the static navigatorButtons definition
-                this.onPressEditInfo();
-            }
-        }
-        // STOP GAP solution. Will be removed when redux is used
-        if (event.id === 'didAppear') {
-            firebase.analytics().setCurrentScreen(screenNames.patientDetailsScreen, screenNames.patientDetailsScreen);
-        }
-    }
-
     onRegionChangeComplete() {
         //console.log('Calling callout on map');
         this.marker.showCallout();
@@ -198,37 +129,11 @@ class PatientDetailScreenContainer extends Component {
         }
     }
 
-    showEditNavButton() {
-        this.props.navigator.setButtons(
-            Platform.select({
-                ios: {
-                    rightButtons: [
-                        {
-                            id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                            buttonColor: '#fffff',
-                            systemItem: 'edit' //iOS only
-                        }
-                    ]
-                },
-                android: {
-                    rightButtons: [
-                        {
-                            icon: Images.editButton,
-                            id: 'edit', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                            buttonColor: '#fffff',
-                        }
-                    ]
-                }
-            })
-        );
-    }
-
     setMarkerRef(element) {
         this.marker = element;
     }
 
     componentWillUnmount() {
-        floDB.removeListener('change', this.handleDBUpdate);
         if (this.visitDataSubscriber) {
             this.visitDataSubscriber.unsubscribe();
         }
@@ -342,24 +247,19 @@ class PatientDetailScreenContainer extends Component {
 
     render() {
         return (
-            <NotesViewContainer
-                patientID={this.props.patientId}
+            <PatientDetailScreen
+                patientDetail={this.state.patientDetail}
+                onPressAddVisit={this.onPressAddVisit}
+                selectedVisitsDate={this.state.selectedVisitsDate}
+                onSelectVisitsDate={this.handleDateSelection}
+                visitSectionData={this.state.visitSectionData}
+                currentWeekVisitData={this.state.currentWeekVisitData}
+                onWeekChanged={this.handleWeekChange}
+                onPressAddNotes={this.onPressAddNotes}
+                showCallout={this.onRegionChangeComplete}
+                setMarkerRef={this.setMarkerRef}
             />
         );
-        // return (
-        //     <PatientDetailScreen
-        //         patientDetail={this.state.patientDetail}
-        //         onPressAddVisit={this.onPressAddVisit}
-        //         selectedVisitsDate={this.state.selectedVisitsDate}
-        //         onSelectVisitsDate={this.handleDateSelection}
-        //         visitSectionData={this.state.visitSectionData}
-        //         currentWeekVisitData={this.state.currentWeekVisitData}
-        //         onWeekChanged={this.handleWeekChange}
-        //         onPressAddNotes={this.onPressAddNotes}
-        //         showCallout={this.onRegionChangeComplete}
-        //         setMarkerRef={this.setMarkerRef}
-        //     />
-        // );
     }
 }
 
