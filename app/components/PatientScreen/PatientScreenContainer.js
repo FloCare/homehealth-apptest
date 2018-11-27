@@ -18,6 +18,8 @@ export class PatientScreenContainer extends Component {
         navBarTextColor: '#212121',
         navBarButtonColor: PrimaryColor,
         topBarElevationShadowEnabled: false,
+        statusBarTextColorScheme: 'dark',
+        navBarNoBorder: true,
     };
 
     constructor(props) {
