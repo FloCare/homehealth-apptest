@@ -29,7 +29,6 @@ export class NotesViewContainer extends Component {
                 }
             });
         };
-        this.notes.addListener(this.notesChangeListener);
 
         this.platformBasedView = Platform.select({
             android: View,
@@ -40,6 +39,7 @@ export class NotesViewContainer extends Component {
     }
 
     componentDidMount() {
+        this.notes.addListener(this.notesChangeListener);
         this.scrollToBottom(false);
     }
 

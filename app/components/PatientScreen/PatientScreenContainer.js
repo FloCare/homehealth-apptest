@@ -183,6 +183,20 @@ export class PatientScreenContainer extends Component {
             </TouchableOpacity>
         </View>);
     }
+
+    detailsScreen() {
+        return <PatientDetailScreenContainer {...this.props} />;
+    }
+
+    notesScreen() {
+        return <NotesViewContainer {...this.props} patientID={this.props.patientId} />;
+    }
+
+    sceneMap = SceneMap({
+        details: this.detailsScreen.bind(this),
+        notes: this.notesScreen.bind(this),
+    });
+
     render() {
         return (
             <SafeAreaView
@@ -219,10 +233,7 @@ export class PatientScreenContainer extends Component {
                 </View>
                 <TabView
                     navigationState={this.state}
-                    renderScene={SceneMap({
-                        details: () => <PatientDetailScreenContainer {...this.props} />,
-                        notes: () => <NotesViewContainer {...this.props} patientID={this.props.patientId} />,
-                    })}
+                    renderScene={this.sceneMap}
                     renderTabBar={props =>
                         <TabBar
                             {...props}

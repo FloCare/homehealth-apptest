@@ -28,8 +28,6 @@ class PatientDetailScreenContainer extends Component {
         this.onPressAddVisit = this.onPressAddVisit.bind(this);
         this.getPatientDetails = this.getPatientDetails.bind(this);
         this.parseResponse = this.parseResponse.bind(this);
-        this.setMarkerRef = this.setMarkerRef.bind(this);
-        this.onRegionChangeComplete = this.onRegionChangeComplete.bind(this);
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
 
         const patientDetails = floDB.objectForPrimaryKey(Patient, props.patientId);
@@ -92,11 +90,6 @@ class PatientDetailScreenContainer extends Component {
         });
     }
 
-    onRegionChangeComplete() {
-        //console.log('Calling callout on map');
-        this.marker.showCallout();
-    }
-
     getPatientDetails(patientId) {
         if (!patientId) {
             this.setState({patientDetail: {}, lastVisit: null, nextVisit: null});
@@ -127,10 +120,6 @@ class PatientDetailScreenContainer extends Component {
                 }
             }
         }
-    }
-
-    setMarkerRef(element) {
-        this.marker = element;
     }
 
     componentWillUnmount() {
@@ -256,8 +245,6 @@ class PatientDetailScreenContainer extends Component {
                 currentWeekVisitData={this.state.currentWeekVisitData}
                 onWeekChanged={this.handleWeekChange}
                 onPressAddNotes={this.onPressAddNotes}
-                showCallout={this.onRegionChangeComplete}
-                setMarkerRef={this.setMarkerRef}
             />
         );
     }
