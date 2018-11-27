@@ -6,6 +6,7 @@ import {Images} from '../Images';
 import {initialiseApp} from './InitialiseApp';
 
 const navigatorStyle = {
+    keepStyleAcrossPush: false,
     navBarBackgroundColor: PrimaryColor,
     navBarTextColor: '#ffffff',
     navBarButtonColor: 'white',
@@ -14,7 +15,7 @@ const navigatorStyle = {
     tabBarSelectedButtonColor: PrimaryColor,
     tabBarButtonColor: 'black',
     hideBackButtonTitle: true,
-    statusBarTextColorScheme: 'light'
+    statusBarTextColorScheme: 'light',
 };
 
 function getLargeNavBarOrSubstitute() {

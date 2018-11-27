@@ -1,5 +1,5 @@
 import React from 'react';
-import {PatientDetailCard} from '../PatientDetailCard';
+import {PatientDetailCard} from './PatientDetailCard/index';
 
 const PatientDetailScreen = (props) => {
     const {patientDetail, onPressAddVisit, onPressAddNotes, onWeekChanged,

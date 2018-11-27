@@ -1,7 +1,7 @@
 import {Navigation} from 'react-native-navigation';
 import {screenNames} from '../utils/constants';
 import AddPatientScreenContainer from './AddPatientScreenContainer';
-import PatientDetailScreenContainer from './PatientDetailScreenContainer';
+import PatientDetailScreenContainer from '../components/PatientScreen/PatientDetailScreen/PatientDetailScreenContainer';
 import PatientListScreenContainer from './PatientListScreenContainer';
 import AddNoteScreenContainer from './AddNoteScreenContainer';
 import HomeScreenContainer from '../components/HomeScreen/HomeScreenContainer';
@@ -22,6 +22,7 @@ import MilesLogScreenContainer from '../components/Miles/MilesLogScreenContainer
 import {AddTaskComponent} from '../components/HomeScreen/AddTaskComponent';
 import {NotificationScreen} from '../components/NotificationScreen/NotificationScreen';
 import OnlinePatientLightBox from '../components/PatientListScreen/OnlinePatientLightBox';
+import {PatientScreenContainer} from '../components/PatientScreen/PatientScreenContainer';
 
 const RegisterScreens = (store, Provider) => {
     // if (floDB.objects(Visit.schema.name).length === 0) {
@@ -46,11 +47,12 @@ const RegisterScreens = (store, Provider) => {
     //         visitOrder.visitList = floDB.objects(Visit);
     //     });
     // }
-    // console.disableYellowBox = true;
+    console.disableYellowBox = true;
 
     Navigation.registerComponent(screenNames.addPatient, () => LockOnInactivity(AddPatientScreenContainer));
     Navigation.registerComponent(screenNames.addNote, () => LockOnInactivity(AddNoteScreenContainer));
     Navigation.registerComponent(screenNames.patientDetails, () => LockOnInactivity(PatientDetailScreenContainer));
+    Navigation.registerComponent(screenNames.patient, () => LockOnInactivity(PatientScreenContainer));
     Navigation.registerComponent(screenNames.patientList, () => LockOnInactivity(PatientListScreenContainer));
     Navigation.registerComponent(screenNames.homeScreen, () => LockOnInactivity(HomeScreenContainer), store, Provider);
     Navigation.registerComponent(screenNames.notificationScreen, () => LockOnInactivity(NotificationScreen));

@@ -159,6 +159,7 @@ class HomeScreenContainer extends Component {
                 selectedScreen: 'list',
             },
             navigatorStyle: {
+                navBarTextColor: 'white',
                 tabBarHidden: true
             }
         });
@@ -171,6 +172,7 @@ class HomeScreenContainer extends Component {
                 selectedScreen: 'map',
             },
             navigatorStyle: {
+                navBarTextColor: 'white',
                 tabBarHidden: true
             }
         });

@@ -1,8 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import {View, Image, KeyboardAvoidingView} from 'react-native';
-import StyledText from '../common/StyledText';
-import {Images} from '../../Images';
+import {View, Image} from 'react-native';
+import StyledText from '../../common/StyledText';
+import {Images} from '../../../Images';
 
 export function NoteBubble(note) {
     return (

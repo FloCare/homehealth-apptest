@@ -1,10 +1,10 @@
 import React from 'react';
 import MapView, {Marker, Callout} from 'react-native-maps';
 import firebase from 'react-native-firebase';
-import {MapMarker} from '../common/PatientMap/MapMarker';
-import {CustomCallout} from '../common/PatientMap/CustomCallout';
-import {eventNames, parameterValues} from '../../utils/constants';
-import {navigateTo} from '../../utils/MapUtils';
+import {MapMarker} from '../../../common/PatientMap/MapMarker';
+import {CustomCallout} from '../../../common/PatientMap/CustomCallout';
+import {eventNames, parameterValues} from '../../../../utils/constants';
+import {navigateTo} from '../../../../utils/MapUtils';
 
 const onPress = (coordinates, address) => {
     firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {

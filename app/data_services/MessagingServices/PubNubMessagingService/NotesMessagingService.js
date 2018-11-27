@@ -48,6 +48,7 @@ export class NotesMessagingService extends BaseMessagingService {
         console.log('trying to save note object');
         console.log(messageObject);
         NoteDataService.getInstance().saveNoteObject(noteObject);
+        console.log('saving finished');
     }
 
     getNoteObjectFromMessage(message, timetoken, synced) {

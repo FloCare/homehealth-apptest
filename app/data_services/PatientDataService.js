@@ -103,7 +103,7 @@ export class PatientDataService {
             type: notificationType.NEW_PATIENT,
             createdTime: parseInt(messageObject.timestamp),
             body,
-            screenName: screenNames.patientDetails,
+            screenName: screenNames.patient,
             passProps: JSON.stringify({
                 patientId: patientID,
             }),
