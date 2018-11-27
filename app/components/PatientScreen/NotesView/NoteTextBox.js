@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, TextInput} from 'react-native';
+import {View, TextInput, Dimensions, KeyboardAvoidingView, Platform} from 'react-native';
 import {SimpleButton} from '../../common/SimpleButton';
 import {PrimaryColor} from '../../../utils/constants';
 
@@ -7,11 +7,19 @@ export class NoteTextBox extends Component {
     constructor(props) {
         super(props);
         this.state = {text: undefined};
+        this.height = Dimensions.get('window').height;
+
+        this.platformBasedView = Platform.select({
+            android: View,
+            ios: KeyboardAvoidingView
+        });
     }
 
     render() {
+        const PlatformBasedView = this.platformBasedView;
+
         return (
-            <View
+            <PlatformBasedView
                 style={{
                     // flex: 1,
                     flexDirection: 'column',
@@ -19,6 +27,8 @@ export class NoteTextBox extends Component {
                     borderTopWidth: 2.5,
                     borderColor: '#f1f1f1'
                 }}
+                behavior={'padding'}
+                keyboardVerticalOffset={70}
             >
                 <TextInput
                     style={{
@@ -57,7 +67,7 @@ export class NoteTextBox extends Component {
                         }}
                     />
                 </View>
-            </View>
+            </PlatformBasedView>
         );
     }
 }

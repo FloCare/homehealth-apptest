@@ -129,9 +129,19 @@ export class EpisodeMessagingService extends BaseMessagingService {
                             // reject(error)
                         });
                     break;
+                case 'USER_ASSIGNED':
+                    EpisodeDataService.getInstance().ensureUserInCareTeam(episodeID, userID)
+                        .then(() => resolve())
+                        .catch(error => {
+                            console.log('EpisodeMessagingService: error in user assigned');
+                            console.log(error);
+                            resolve();
+                            // reject(error)
+                        });
+                    break;
                 case 'USER_UNASSIGNED' :
                     try {
-                        VisitService.getInstance().deleteVisitsOfEpisodeByUserID(episodeID, userID);
+                        EpisodeDataService.getInstance().removeUserFromCareTeam(episodeID, userID);
                     } catch (e) {
                         console.log('EpisodeMessagingService: failed to process user_unassignment');
                         console.log(e);

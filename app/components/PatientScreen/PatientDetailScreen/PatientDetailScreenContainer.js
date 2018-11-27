@@ -31,9 +31,6 @@ class PatientDetailScreenContainer extends Component {
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
 
         const patientDetails = floDB.objectForPrimaryKey(Patient, props.patientId);
-        if (patientDetails && patientDetails.isLocallyOwned) {
-            this.showEditNavButton();
-        }
         this.visitDataSubscriber = null;
         this.episodeId = null;
     }

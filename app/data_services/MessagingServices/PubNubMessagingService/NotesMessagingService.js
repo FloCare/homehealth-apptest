@@ -153,7 +153,7 @@ export class NotesMessagingService extends BaseMessagingService {
             data: note.data,
             makePeersRefresh: true,
 
-            notificationBody: `New note added for ${note.episode.patient.abbName}`
+            notificationBody: `New note added for ${note.episode.patient[0].abbName}`
         });
     }
 

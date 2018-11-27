@@ -1,6 +1,7 @@
 import {Episode} from '../utils/data/schema';
 import {VisitService} from './VisitServices/VisitService';
 import {PatientDataService} from './PatientDataService';
+import {UserDataService} from './UserDataService';
 
 export class EpisodeDataService {
     static episodeDataService;
@@ -63,6 +64,34 @@ export class EpisodeDataService {
             visitForDayList.push(flatVisitForVisit(visit));
         });
         return flatVisitsByDate;
+    }
+
+    removeUserFromCareTeam(episodeID, userID) {
+        VisitService.getInstance().deleteVisitsOfEpisodeByUserID(episodeID, userID);
+        const episode = this.getEpisodeByID(episodeID);
+        if (!episode) { throw new Error('Episode not found while trying to augment care team'); }
+        const existingMatchingUserObjects = episode.careTeam.filtered('userID == $0', userID);
+        if (!existingMatchingUserObjects || existingMatchingUserObjects.length === 0) {
+            console.log('User already is not part of care team');
+            return;
+        }
+        this.floDB.write(() => {
+            this.floDB.delete(existingMatchingUserObjects);
+        });
+    }
+
+    async ensureUserInCareTeam(episodeID, userID) {
+        const episode = this.getEpisodeByID(episodeID);
+        if (!episode) { throw new Error('Episode not found while trying to augment care team'); }
+        const existingMatchingUserObjects = episode.careTeam.filtered('userID == $0', userID);
+        if (!existingMatchingUserObjects || existingMatchingUserObjects.length === 0) {
+            const user = await UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID);
+            this.floDB.write(() => {
+                episode.careTeam.push(user);
+            });
+        } else {
+            console.log('User is already part of care team');
+        }
     }
 
     getAllSyncedEpisodes() {

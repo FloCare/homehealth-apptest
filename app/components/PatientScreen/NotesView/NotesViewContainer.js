@@ -18,16 +18,7 @@ export class NotesViewContainer extends Component {
         this.state = {sectionedData: this.getSectionedDataForNotes(this.notes)};
 
         this.notesChangeListener = notesResult => {
-            this.setState({sectionedData: this.getSectionedDataForNotes(notesResult)}, () => {
-                console.log('result changed');
-                console.log(this.sectionList.scrollToLocation);
-                // console.log(this.sectionList);
-                if (this.sectionList && this.sectionList.scrollToLocation) {
-                    console.log('attempt scroll');
-                    this.scrollToBottom(true);
-                    this.sectionList.flashScrollIndicators();
-                }
-            });
+            this.setState({sectionedData: this.getSectionedDataForNotes(notesResult)});
         };
 
         this.platformBasedView = Platform.select({
@@ -46,6 +37,15 @@ export class NotesViewContainer extends Component {
     componentWillUnmount() {
         if (this.notesChangeListener) {
             this.notes.removeListener(this.notesChangeListener);
+        }
+    }
+
+    componentDidUpdate() {
+        console.log('result changed');
+        if (this.sectionList && this.sectionList.scrollToLocation) {
+            console.log('attempt scroll');
+            this.scrollToBottom(true);
+            this.sectionList.flashScrollIndicators();
         }
     }
 

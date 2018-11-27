@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import CalendarStrip from 'react-native-calendar-strip';
-import {Button, Divider} from 'react-native-elements';
+import {Button, Divider, Badge} from 'react-native-elements';
 import moment from 'moment';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import styles from './styles';
@@ -282,6 +282,46 @@ const physicianSection = props => {
     );
 };
 
+const careTeam = props => {
+    if (props.patientDetail && props.patientDetail.episodes && props.patientDetail.episodes[0].careTeam.length > 0) {
+        return (
+            <View
+                style={cardViewStyle}
+            >
+                <View
+                    style={{
+                        flexDirection: 'row',
+                    }}
+                >
+                    <Image source={Images.teamCare} />
+                    <StyledText
+                        style={{marginLeft: 10}}
+                    >
+                        Care Team
+                    </StyledText>
+                </View>
+                <View
+                    style={{
+                        flex: 1,
+                        flexWrap: 'wrap',
+                        paddingLeft: 20,
+                        flexDirection: 'row'
+                    }}
+                >
+                    {props.patientDetail.episodes[0].careTeam.map(user => (
+                            <Badge
+                                value={user.firstName}
+                                containerStyle={{margin: 4, padding: 5, backgroundColor: '#cdd5e0'}}
+                                textStyle={{paddingHorizontal: 5, color: '#202020'}}
+                            />
+                        )
+                    )}
+                </View>
+            </View>
+        );
+    }
+};
+
 const PatientDetailCard = (props) => {
     const {onPressAddVisit} = props;
     // let coordinates = null;
@@ -303,6 +343,7 @@ const PatientDetailCard = (props) => {
             >
                 {basicInfoCard(props)}
                 {visitCalendar(props)}
+                {careTeam(props)}
                 {physicianSection(props)}
 
             </ScrollView>
