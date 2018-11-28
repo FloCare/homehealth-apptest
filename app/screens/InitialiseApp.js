@@ -70,7 +70,7 @@ export async function initialiseApp(key, syncDataFromServer = false) {
             console.log('error while trying to sync. Will try on next app start');
             console.log(error);
         }
-    });
+    }
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
     await MessagingServiceCoordinator.initialiseService(key);
