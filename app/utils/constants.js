@@ -2,6 +2,9 @@ import {Platform} from 'react-native';
 
 const PrimaryColor = '#45ceb1';
 const ErrorMessageColor = '#F51414';
+const defaultBackGroundColor = '#FFFFFF';
+const detailBackGroundColor = '#F7F7F7';
+
 const TransparentPrimaryColor = (opacity) =>
     // Todo: Can use a method to convert PrimaryColor in hexcode 
     // Todo: to rgba
@@ -47,6 +50,7 @@ const screenNames = {
     welcomeScreen: 'WelcomeScreen',
     inviteScreen: 'InviteScreen',
     setPassCodeScreen: 'SetPassCodeScreen',
+    settingUpScreen: 'settingUpScreen',
     thankyouScreen: 'ThankYouScreen',
     passcodeVerificationScreen: 'passcodeVerificationScreen',
     legal: 'Legal',
@@ -192,4 +196,4 @@ export const apiServerURL = 'https://app-11293.on-aptible.com';
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
     screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
     PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects,
-    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts};
+    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts, defaultBackGroundColor, detailBackGroundColor};

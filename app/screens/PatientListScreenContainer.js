@@ -11,7 +11,7 @@ import {
     parameterValues,
     visitSubjects,
 } from '../utils/constants';
-import {createSectionedListByName} from '../utils/collectionUtils';
+import {createSectionedListByField} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
 import {PatientDataService} from '../data_services/PatientDataService';
@@ -44,8 +44,6 @@ class PatientListScreenContainer extends Component {
             patientList: [],
             patientCount: 0,      // not always a count of patientList
             selectedPatient: props.selectedPatient || null,
-            refreshing: false,
-            isTeamVersion: undefined,
             allPatientsJson: undefined,
             searchingOnline: false,
         };
@@ -55,7 +53,6 @@ class PatientListScreenContainer extends Component {
             else this.setState({online: false});
         });
 
-        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.patientMoreMenu = [
             {id: 'Notes', title: 'Add Notes'},
             {id: 'Call', title: 'Call'},
@@ -235,7 +232,7 @@ class PatientListScreenContainer extends Component {
             const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
             const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
             const patientCount = formattedPatientList.length;
-            const sectionedPatientList = createSectionedListByName(formattedPatientList);
+            const sectionedPatientList = createSectionedListByField(formattedPatientList);
             const recentPatientsSection = this.createRecentPatientsSection(formattedPatientList);
             this.setState({
                 patientList: recentPatientsSection ? [recentPatientsSection, ...sectionedPatientList] : sectionedPatientList,
@@ -247,7 +244,7 @@ class PatientListScreenContainer extends Component {
             // Todo: Search on other fields ???
             const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
             const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
-            const sectionedPatientList = createSectionedListByName(formattedPatientList);
+            const sectionedPatientList = createSectionedListByField(formattedPatientList);
 
             const onlinePatientsSection = this.createOnlinePatientsSection(query);
             this.setState({patientList: onlinePatientsSection ? [...sectionedPatientList, onlinePatientsSection] : sectionedPatientList});
@@ -379,41 +376,9 @@ class PatientListScreenContainer extends Component {
         this.navigateTo(screenNames.addPatient, title, prop);
     }
 
-    onRefresh() {
-        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-            type: parameterValues.REFRESH
-        });
-        this.patientDataService().updatePatientListFromServer()
-            .then((result) => {
-                this.setState({refreshing: false});
-
-                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
-                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
-
-                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
-                if (!newPatientsCount && !deletedPatientsCount) {
-                    subtitle = 'No new changes';
-                }
-                Alert.alert(
-                    'Refresh Completed',
-                    subtitle
-                );
-            })
-            .catch(error => {
-                this.setState({refreshing: false});
-                console.log(error);
-                Alert.alert(
-                    'Refresh Failed',
-                );
-            });
-        this.setState({refreshing: true});
-    }
-
     render() {
         return (
             <PatientListScreen
-                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
-                refreshing={this.state.refreshing}
                 patientList={this.state.patientList}
                 patientCount={this.state.patientCount}
                 searchText={this.state.searchText}

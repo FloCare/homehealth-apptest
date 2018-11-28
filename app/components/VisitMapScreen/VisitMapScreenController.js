@@ -68,13 +68,15 @@ class VisitMapScreenContainer extends Component {
             boundsCoordinates.push([geoDataObject.bounds.southwest.lat, geoDataObject.bounds.southwest.lng]);
             boundsCoordinates.push([geoDataObject.bounds.northeast.lat, geoDataObject.bounds.northeast.lng]);
 
-            totalDistance = geoDataObject.distance;
+            totalDistance = geoDataObject.totalDistance;
         } catch (error) {
+            console.log('caught an error in VisitMapScreenController get polyLines');
             console.log(error);
             noErrorFlag = false;
             throw (error);
         }
         if (noErrorFlag) {
+            //note that this total distance is not currently being used since it doesnt incorporate the value of distance to next visit
             this.setState({polylines: newPolylines, viewport: MapUtils.getViewPortFromBounds(boundsCoordinates), totalDistance});
         }
     }
@@ -88,6 +90,7 @@ class VisitMapScreenContainer extends Component {
         this.props.orderedVisitID.forEach(visitID => {
             if (!nextOrder.includes(visitID)) mutableNextOrder.push(visitID);
         });
+        //TODO clear out the currently displayed stale value then
         VisitService.getInstance().setVisitOrderForDate(mutableNextOrder, this.props.date);
     }
 
@@ -106,7 +109,7 @@ class VisitMapScreenContainer extends Component {
                         })
                     )}
                     polylines={this.state.polylines}
-                    totalDistance={this.state.totalDistance}
+                    totalDistance={this.props.remainingDistance}
                 />
                 <ControlPanel
                     onOrderChange={this.onOrderChange}
@@ -121,10 +124,18 @@ function mapStateToProps(state) {
     const todaysVisits = getVisitsWithAddressFromReduxState(state);
     const defaultViewport = VisitMapScreenContainer.getViewportFromVisitCoordinates(todaysVisits);
 
+    let remainingDistance = 0;
+
+    todaysVisits.forEach(miniVisit => {
+        const visit = state.visits[miniVisit.visitID];
+        remainingDistance += visit.visitMiles.computedMiles && !visit.isDone ? visit.visitMiles.computedMiles : 0;
+    });
+
     return {
         date: state.date,
         orderedVisitID: state.visitOrder,
         filteredVisits: todaysVisits.filter(visit => !visit.isDone),
+        remainingDistance: remainingDistance ? remainingDistance.toFixed(2) + ' mi' : undefined,
         defaultViewport
     };
 }

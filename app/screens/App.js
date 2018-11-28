@@ -33,8 +33,8 @@ function getLargeNavBarOrSubstitute() {
     return null;
 }
 
-const StartApp = async (key) => {
-    await initialiseApp(key);
+const StartApp = async (key, syncDataFromServer) => {
+    await initialiseApp(key, syncDataFromServer);
     Navigation.startTabBasedApp({
         tabs: [
             {
@@ -42,7 +42,10 @@ const StartApp = async (key) => {
                 label: 'Today',
                 icon: Images.calendar,
                 screen: screenNames.homeScreen,
-                navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'}
+                navigatorStyle: {navBarHidden: true, statusBarTextColorSchemeSingleScreen: 'dark'},
+                passProps: {
+                    syncDataFromServer
+                }
             },
             {
                 title: 'Patients',

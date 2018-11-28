@@ -25,7 +25,7 @@ function VisitListScreen(props) {
                     Total Remaining Distance :
                 </StyledText>
                 <StyledText style={{fontSize: 14, color: '#222222', alignSelf: 'center'}}>
-                    {props.totalDistance ? props.totalDistance : ' -- '}
+                    {props.remainingDistance ? props.remainingDistance : ' -- '}
                 </StyledText>
             </View>
 

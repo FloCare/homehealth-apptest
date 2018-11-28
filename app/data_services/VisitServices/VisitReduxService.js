@@ -55,6 +55,10 @@ export class VisitReduxService {
         this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitService.getFlatVisitMap([visit])});
     }
 
+    updateVisitsToRedux(visits) {
+        this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitService.getFlatVisitMap(visits)});
+    }
+
     addVisitsToRedux(visits) {
         this.store.dispatch({type: VisitActions.ADD_VISITS, visitList: VisitService.getFlatVisitMap(visits)});
         PatientDataService.getInstance().addPatientsToRedux(visits.map(visit => visit.getPatient()).filter(patient => patient));

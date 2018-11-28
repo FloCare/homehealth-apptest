@@ -1,6 +1,9 @@
 import {Report, ReportItem} from '../../utils/data/schema';
 import {generateUUID} from '../../utils/utils';
 
+// The day I will be a 1000 years old
+const TIME_INF = 32384687400000;
+
 export class ReportService {
     static reportService;
 
@@ -20,9 +23,52 @@ export class ReportService {
         this.floDB = floDB;
     }
 
-    filterNonReportedVisits = (visits) => visits.filtered('reportItems.@size == 0')
+    filterNonReportedVisits = (visits) => visits.filtered('reportItems.@size == 0');
 
-    filterReportedVisits = (visits) => visits.filtered('reportItems.@size == 1')
+    filterReportedVisits = (visits) => visits.filtered('reportItems.@size == 1');
+
+    getReports = () => (
+        // TODO sort by created at date
+        this.floDB.objects(Report)//.filtered(`status == "${Report.reportStateEnum.ACCEPTED}" OR status == "${Report.reportStateEnum.CREATED}"`)
+    );
+
+    getReportDateWiseSummary = (report) => {
+        const status = report.status;
+        // Older visits might not be synced. If the patient was deleted/unassigned before soft delete went live.
+        // These patients and hence visits will not be synced
+        const visits = report.reportItems.map(reportItem => reportItem.visit).filter(visit => visit);
+        const dateWiseSummary = {};
+        let minDate = TIME_INF;
+        let maxDate = 0;
+        visits.forEach(visit => {
+            const date = visit.midnightEpochOfVisit;
+            if (date in dateWiseSummary) {
+                const dateSummary = dateWiseSummary[date];
+                dateSummary.computedMiles += visit.visitMiles.computedMiles ? visit.visitMiles.computedMiles : 0;
+                dateSummary.extraMiles += visit.visitMiles.extraMiles ? visit.visitMiles.extraMiles : 0;
+                dateSummary.nVisits += 1;
+            } else {
+                dateWiseSummary[date] = {
+                    computedMiles: visit.visitMiles.computedMiles ? visit.visitMiles.computedMiles : 0,
+                    extraMiles: visit.visitMiles.extraMiles ? visit.visitMiles.extraMiles : 0,
+                    nVisits: 1
+                };
+            }
+            if (visit.midnightEpochOfVisit > maxDate) {
+                maxDate = visit.midnightEpochOfVisit;
+            }
+            if (visit.midnightEpochOfVisit < minDate) {
+                minDate = visit.midnightEpochOfVisit;
+            }
+        });
+        return {
+            status,
+            minDate,
+            maxDate,
+            dateWiseSummary
+        };
+    };
+
 
     createReport(reportID, status) {
         return this.floDB.create(Report, {
@@ -63,7 +109,7 @@ export class ReportService {
             reportObject = report;
         });
         return reportObject;
-    }
+    };
 
     updateStatusByReportID = (reportID, status) => {
         const report = this.floDB.objectForPrimaryKey(Report, reportID);

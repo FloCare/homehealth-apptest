@@ -29,15 +29,16 @@ function coordinatesToCSVString(coordinates) {
     return `${coordinates.latitude},${coordinates.longitude}`;
 }
 
-async function callDirectionsApiForPoints(coordinates) {
+async function callDirectionsApiForPoints(coordinates, multipleLegs = true) {
+    //Just added multipleLegs control, dont send false unless you know what you're doing, this is incomplete since not needed right now
     try {
-        if (coordinates.length < 2) { console.error('directins request between less than two points'); }
+        if (coordinates.length < 2) { console.error('directions request between less than two points'); }
         let requestString = `https://maps.googleapis.com/maps/api/directions/json?key=${googleMapsAPIKey}&origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
         // let requestString = `https://maps.googleapis.com/maps/api/directions/json?units='imperial'&origin=${coordinatesToCSVString(coordinates[0])}&destination=${coordinatesToCSVString(coordinates[coordinates.length - 1])}`;
         if (coordinates.length > 2) {
             requestString += '&waypoints=';
             for (let i = 1; i < coordinates.length - 1; i++) {
-                requestString = `${requestString}via:${coordinatesToCSVString(coordinates[i])}|`;
+                requestString = `${requestString}${multipleLegs ? '' : 'via:'}${coordinatesToCSVString(coordinates[i])}|`;
             }
         }
         console.log(requestString)
@@ -58,8 +59,14 @@ function extractInformationFromDirectionApiResponse(respJson) {
         longitude: point[1]
     }));
     geoData.bounds = respJson.routes[0].bounds;
-    //TODO when multiple legs are introduced, change this
-    geoData.distance = respJson.routes[0].legs[0].distance.text;
+    geoData.distances = [];
+    geoData.totalDistance = 0;
+    respJson.routes[0].legs.map(leg=>{
+        const distanceMiles = leg.distance.value / 1609.344;
+        geoData.distances.push(distanceMiles.toFixed(2));
+        geoData.totalDistance+=distanceMiles;
+    });
+    geoData.totalDistance = geoData.totalDistance.toFixed(1) + ' mi';
     return geoData;
 }
 
@@ -92,14 +99,20 @@ async function getProcessedDataForOrderedList(coordinates) {
             respJson = directionsResposeCache[cacheKey];
         }
         else {
-            respJson = await this.callDirectionsApiForPoints(coordinates);
+            console.log("making a new call to directions api");
+            respJson = await callDirectionsApiForPoints(coordinates);
             if(respJson.status === 'OK')
                 directionsResposeCache[cacheKey] = respJson;
-            else console.log("error message: "+respJson.error_message);
+            else {
+                console.log("callDirectionsApiForPoints response not okay: ");
+                console.log(respJson);
+            }
         }
-        return this.extractInformationFromDirectionApiResponse(respJson);
+        return extractInformationFromDirectionApiResponse(respJson);
     } catch (error) {
-        console.log('error log: getProcessedGeoDataBetweenTwoPoints');
+        console.log('error log: getProcessedDataForOrderedList'+coordinates.length);
+        console.log(coordinates);
+        console.log(error);
         throw error;
     }
 }

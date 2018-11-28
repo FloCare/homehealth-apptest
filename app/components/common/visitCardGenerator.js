@@ -17,9 +17,8 @@ import moment from 'moment/moment';
 import {CustomCheckBox} from './CustomCheckBox';
 import {styles} from './styles';
 import {
-    ErrorMessageColor,
     eventNames,
-    parameterValues, PrimaryColor,
+    parameterValues,
     PrimaryFontFamily, screenNames, visitSubjects,
 } from '../../utils/constants';
 import {Images} from '../../Images';
@@ -27,9 +26,8 @@ import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {EpisodeDataService} from '../../data_services/EpisodeDataService';
 import {navigateTo} from '../../utils/MapUtils';
 import AddOrEditMilesModal from '../Miles/AddOrEditMilesModal';
-import {milesRenderString} from '../../utils/renderFormatUtils';
-import {VisitMiles} from '../../utils/data/schemas/Models/visitMiles/VisitMiles';
 import {Address} from '../../utils/data/schemas/Models/address/Address';
+import {milesRenderString} from '../../utils/renderFormatUtils';
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
@@ -43,7 +41,8 @@ const mapStateToProps = (state, ownProps) => {
         // miles related information
         odometerStart: visit.visitMiles.odometerStart,
         odometerEnd: visit.visitMiles.odometerEnd,
-        totalMiles: visit.visitMiles.totalMiles,
+        computedMiles: visit.visitMiles.computedMiles,
+        extraMiles: visit.visitMiles.extraMiles,
         milesComments: visit.visitMiles.milesComments
     };
 
@@ -72,13 +71,14 @@ const mapStateToProps = (state, ownProps) => {
         longitude: address.longitude
     };
     props.formattedAddress = address.formattedAddress;
+    props.navigationAddress = address.navigationAddress;
     return props;
 };
 
 const cardActions = {
     call: 'Call Patient',
     goToAddress: 'Go To Address',
-    addOrEditMiles: 'Add/Edit Miles',
+    addOrEditMiles: 'View/Edit Miles',
     reschedule: 'Reschedule Visit',
     deleteVisit: 'Delete Visit',
     cancel: 'Cancel'
@@ -289,7 +289,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                         type: parameterValues.NAVIGATION
                     });
                     if (this.props.coordinates) {
-                        navigateTo(this.props.coordinates.latitude, this.props.coordinates.longitude, this.props.formattedAddress);
+                        navigateTo(this.props.coordinates.latitude, this.props.coordinates.longitude, this.props.navigationAddress);
                     }
                     break;
                 case cardActions.addOrEditMiles:
@@ -344,7 +344,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                   </Text>
               </View>
             );
-        }
+        };
 
         renderClinicianVisitRow(clinicianVisits) {
             return (
@@ -362,7 +362,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                 filteredVisits = clinicianVisitData[this.props.midnightEpochOfVisit].filter((visit) => !visit.ownVisit);
             }
             return filteredVisits;
-        }
+        };
 
         renderClinicianVisitData = (clinicianVisitData) => {
             const numberOfCliniciansInRow = RenderRow.numberOfCliniciansInRow;
@@ -379,7 +379,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                     </View>
                 );
             }
-        }
+        };
 
         willLayoutSizeChange = (newClinicianVisitData) => {
             const numberOfCliniciansInRow = RenderRow.numberOfCliniciansInRow;
@@ -393,131 +393,53 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
             const newNoOfRows = Math.ceil((newOtherUsersVisits.length) / numberOfCliniciansInRow);
 
             return (currentNoOfRows !== newNoOfRows);
-        }
+        };
 
         onVisitDataChange = (clinicianVisitData) => {
             if (this.props.onItemLayoutUpdate && this.willLayoutSizeChange(clinicianVisitData)) {
                 this.props.onItemLayoutUpdate(this.props.visitID);
             }
             this.setState({clinicianVisitData});
-        }
+        };
 
         // Miles Section
 
-        isMilesEnabled = () => (!(this.props.isLocalSubject))
+        isMilesEnabled = () => (!(this.props.isLocalSubject));
 
         dismissMilesModal = () => {
             this.setState({milesModalVisible: false});
-        }
-
-        getOdometerDataComponent = (odometerValue) => (
-            typeof (odometerValue) === 'number' ?
-                (
-                    <Text style={styles.milesDataStyle}>
-                        {milesRenderString(odometerValue)}
-                    </Text>
-                )
-                :
-                (
-                    <Text style={{...styles.milesDataStyle, color: ErrorMessageColor}}>
-                        {'____'}
-                    </Text>
-                )
-        );
-
-        getMilesTravelledComponentInDetailedView = (totalMiles) => {
-            if (totalMiles) {
-                return (
-                    <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 15}}>
-                        <Text style={{...styles.milesDataStyle, fontSize: 15}}>
-                            {milesRenderString(totalMiles)}
-                        </Text>
-                        <Text style={styles.milesDataStyle}>
-                            {' mi'}
-                        </Text>
-                    </View>
-                );
-            }
-            return (
-                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 15}}>
-                    <Text style={{...styles.milesDataStyle, color: ErrorMessageColor}}>
-                        {' _____ mi'}
-                    </Text>
-                </View>
-            );
-        }
-
-        renderAddMilesButton = () => (
-            <TouchableOpacity
-                style={{marginTop: 8, marginBottom: 8, alignItems: 'center'}}
-                onPress={this.onPressAddOrEditMiles}
-            >
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Image source={Images.plus} style={{height: 9, width: 9, marginRight: 5}} />
-                    <Text
-                        style={{fontSize: 16, color: PrimaryColor, fontFamily: PrimaryFontFamily}}
-                    >
-                        {'Add Miles'}
-                    </Text>
-                </View>
-
-            </TouchableOpacity>
-        )
+        };
 
         renderDetailedMilesView = () => {
-            const {odometerStart, odometerEnd} = this.props;
-            if (!odometerStart && !odometerEnd) {
-                return this.renderAddMilesButton();
-            }
             return (
-                <View style={{marginLeft: 10, marginBottom: 5, marginTop: 5}}>
+                <View style={{marginLeft: 10, marginBottom: 5, marginTop: 5, flexDirection: 'row'}}>
                     <Text style={styles.milesHeadingStyle}>
-                        Odometer Reading
+                        Mileage:
                     </Text>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <View style={{flexDirection: 'row', marginTop: 5}}>
-                            <View style={{flexDirection: 'row', alignItems: 'center', paddingRight: 10}}>
-                                <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
-                                    {'Start: '}
-                                </Text>
-                                {this.getOdometerDataComponent(odometerStart, 'start')}
-                            </View>
-                            <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 10}}>
-                                <Text style={{...styles.milesHeadingStyle, fontSize: 9}}>
-                                    {'End '}
-                                </Text>
-                                {this.getOdometerDataComponent(odometerEnd, 'end')}
-                            </View>
-                        </View>
-                        {
-                            this.getMilesTravelledComponentInDetailedView(VisitMiles.getMiles(odometerStart, odometerEnd))
-                        }
-                    </View>
+                    {
+                        this.renderMileage()
+                    }
                 </View>
             );
-        }
+        };
 
-        // Shows up below three dots button
-        renderMiniMilesSummary = () => {
-            const {odometerStart, odometerEnd} = this.props;
-            const milesTravelled = VisitMiles.getMiles(odometerStart, odometerEnd);
-            const milesSection = milesTravelled ?
-                (
-                    <Text style={{...styles.milesDataStyle, fontSize: 10}}>
-                        {`${milesRenderString(milesTravelled)} Mi`}
-                    </Text>
-                )
-                :
-                (
-                    <Text style={{...styles.milesDataStyle, fontSize: 10, color: ErrorMessageColor}}>
-                        {'__ Mi'}
-                    </Text>
-                );
+        renderMileage = () => {
+            const {computedMiles, extraMiles} = this.props;
+            if (computedMiles === null || computedMiles === undefined) {
+                return;
+            }
+            let totalMiles = computedMiles;
+            totalMiles += extraMiles ? extraMiles : 0;
+            totalMiles = milesRenderString(totalMiles);
+
             return (
-                <View>
-                    {
-                        milesSection
-                    }
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{...styles.milesDataStyle}}>
+                        {totalMiles}
+                    </Text>
+                    <Text style={{...styles.milesDataStyle, fontSize: 8, marginLeft: 1}}>
+                        Mi
+                    </Text>
                 </View>
             );
         };
@@ -587,12 +509,7 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                         />
                                     </TouchableOpacity>
                                     {
-                                        this.props.isDone && this.isMilesEnabled() && !showDetailedMilesView &&
-                                        <View>
-                                            {
-                                                this.renderMiniMilesSummary()
-                                            }
-                                        </View>
+                                        this.isMilesEnabled() && !showDetailedMilesView && this.renderMileage()
                                     }
 
                                 </View>
@@ -615,7 +532,8 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                                             visitID={this.props.visitID}
                                             odometerStart={this.props.odometerStart}
                                             odometerEnd={this.props.odometerEnd}
-                                            totalMiles={this.props.totalMiles}
+                                            computedMiles={this.props.computedMiles}
+                                            extraMiles={this.props.extraMiles}
                                             comments={this.props.milesComments}
                                             dismissMilesModal={this.dismissMilesModal}
                                         />

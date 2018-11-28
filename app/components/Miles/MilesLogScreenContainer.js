@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
-import {Alert} from 'react-native';
-import MilesLogScreen from './MilesLogScreen';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
+import {createSectionedListByField, sortByArray} from '../../utils/collectionUtils';
+import {EpisodeMessagingService} from '../../data_services/MessagingServices/PubNubMessagingService/EpisodeMessagingService';
+import ActiveLogsScreen from './ActiveLogsScreen';
+import ReportsScreen from './ReportsScreen';
+import {styles} from './styles';
+import {defaultBackGroundColor, PrimaryColor} from '../../utils/constants';
+import {timeZoneConvertedEpoch} from '../../utils/utils';
 
 export default class MilesLogScreenContainer extends Component {
 
@@ -10,130 +16,176 @@ export default class MilesLogScreenContainer extends Component {
 
     constructor(props) {
         super(props);
-        this.setNavigatorButtonsForActiveLogs();
-        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-        this.activeVisitSubscriber = VisitService.getInstance().subscribeToActiveVisits(this.setActiveVisits);
-        this.submittedVisitsSubscriber = VisitService.getInstance().subscribeToSubmittedVisits(this.setSubmittedVisits);
+        this.activeVisitSubscriber = VisitService.getInstance().subscribeToActiveVisits(this.setActiveLogs);
+        this.reportsSubscriber = VisitService.getInstance().subscribeToReports(this.setReports);
+        const selectedDatesSet = new Set([]);
+        const {order, formattedData} = this.getOrderAndFormattedDataForActiveLogs(this.activeVisitSubscriber.currentData);
         this.state = {
             screenIndex: MilesLogScreenContainer.ACTIVE_TAB_INDEX,
-            sectionedActiveVisits: this.getSectionedDataFromVisits(this.activeVisitSubscriber.currentData, MilesLogScreenContainer.ACTIVE_TAB_INDEX),
-            sectionedSubmittedVisits: null,
-            selectedVisitsSet: new Set([])
+            selectedDatesSet,
+            activeLogsData: formattedData,
+            activeLogsOrder: order,
+            reportsData: this.reportsSubscriber.currentData
         };
+    }
+
+
+    componentDidMount() {
+        const data = this.state.activeLogsData;
+        const dates = Object.keys(data);
+        dates.forEach((date) => {
+            const milesVisits = data[date].visits.slice(1);
+            if (this.visitMilesNotPresentForVisits(milesVisits)) {
+                VisitService.getInstance().updateMilesDataForVisitList(data[date].visits, date);
+            }
+        });
     }
 
     componentWillUnmount() {
         this.activeVisitSubscriber.unsubscribe();
-        this.submittedVisitsSubscriber.unsubscribe();
+        this.reportsSubscriber.unsubscribe();
     }
 
-    onNavigatorEvent(event) {
-        if (event.id === 'send-report') {
-            if (this.state.selectedVisitsSet.size > 0) {
-                Alert.alert(
-                    'Send Report',
-                    'Send report for the selected visits?',
-                    [
-                        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                        {text: 'OK', onPress: () => { this.handleSendReportClick(Array.from(this.state.selectedVisitsSet)); }}
-                    ]
-                );
+    getOrderAndFormattedDataForActiveLogs = (visits) => {
+        let visitsByMidnightEpoch = createSectionedListByField(visits, (visit) => visit.midnightEpochOfVisit, 'date', 'visits');
+        visitsByMidnightEpoch.forEach(section => {
+            const allVisits = section.visits;
+            let serverEntityVisits = allVisits.filter(visit => EpisodeMessagingService.isVisitOfCommonInterest(visit));
+            if (serverEntityVisits.length > 0) {
+                const midnightEpoch = parseInt(section.date, 10);
+                const visitOrder = VisitService.getInstance().getVisitOrderForDate(midnightEpoch).visitList.map(visit => visit.visitID);
+                sortByArray(serverEntityVisits, visitOrder, (visit => visit.visitID));
+                serverEntityVisits = [...serverEntityVisits.filter(visit => visit.isDone), ...serverEntityVisits.filter(visit => !visit.isDone)];
             }
-        }
-    }
-
-    setNavigatorButtonsForActiveLogs() {
-        this.props.navigator.setButtons({
-            rightButtons: [
-                {
-                    id: 'send-report',
-                    title: 'Send Report',
-                    buttonFontSize: 12
-                }
-            ]
+            section.visits = serverEntityVisits;
         });
-    }
+        //Remove days with no visits. Might be empty if a day has only local visits
+        visitsByMidnightEpoch = visitsByMidnightEpoch.filter(section => section.visits.length);
+        const formattedData = {};
+        visitsByMidnightEpoch.forEach(section => { formattedData[section.date] = section; });
+        const order = visitsByMidnightEpoch.map(section => section.date).sort(this.sortDateComparator);
+        return {
+            order,
+            formattedData
+        };
+    };
 
-    getSectionedDataFromVisits = (visits, screenIndex) => {
-        let title = screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? 'Select All' : null;
-        if (visits.length === 0) title = null;
-        // TODO Change this to one section per week/similar
-        return [{
-            title,
-            data: visits
-        }];
-    }
 
-    setActiveVisits = (visits) => {
-        this.setState({sectionedActiveVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.ACTIVE_TAB_INDEX)});
-    }
-
-    setSubmittedVisits = (visits) => {
-        this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(visits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
-    }
-
-    getSectionToRenderBasedOnTab = () => {
-        if (this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
-            return this.state.sectionedActiveVisits;
-        } else if (this.state.screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
-            return this.state.sectionedSubmittedVisits;
+    getScreenBasedOnSelectedIndex = () => {
+        switch (this.state.screenIndex) {
+            case MilesLogScreenContainer.ACTIVE_TAB_INDEX:
+                return (
+                    <ActiveLogsScreen
+                        data={this.state.activeLogsData}
+                        order={this.state.activeLogsOrder}
+                        navigator={this.props.navigator}
+                        selectedDatesSet={this.state.selectedDatesSet}
+                        toggleDateSelected={this.toggleDateSelected}
+                        toggleSelectAll={this.toggleSelectAll}
+                        selectDatesInRange={this.selectDatesInRange}
+                        createReport={this.createReport}
+                    />);
+            case MilesLogScreenContainer.SUBMITTED_TAB_INDEX:
+                return (
+                    <ReportsScreen
+                        data={this.state.reportsData}
+                        deleteReport={this.deleteReport}
+                        submitReport={this.submitReport}
+                    />);
+            default:
+                return <View />;
         }
-    }
+    };
 
-    handleSendReportClick = (visitIDs) => {
-        VisitService.getInstance().generateReportAndSubmitVisits(visitIDs);
-        this.setState({selectedVisitsSet: new Set([])});
-    }
+    setActiveLogs = (visits) => {
+        const {order, formattedData} = this.getOrderAndFormattedDataForActiveLogs(visits);
+        this.setState({
+            activeLogsData: formattedData,
+            activeLogsOrder: order
+        });
+    };
 
-    toggleVisitSelected = (visitID) => {
-        const newSelectedVisitsSet = new Set(this.state.selectedVisitsSet);
-        if (this.state.selectedVisitsSet.has(visitID)) {
-            newSelectedVisitsSet.delete(visitID);
+    setReports = (reports) => {
+        this.setState({reportsData: reports});
+    };
+
+    createReport = (visitIDs) => {
+        VisitService.getInstance().generateReportForVisits(visitIDs);
+        this.setState({selectedDatesSet: new Set([])});
+    };
+
+    deleteReport = (reportID) => {
+        VisitService.getInstance().deleteReportAndItems(reportID);
+    };
+
+    sortDateComparator = (date1, date2) => (
+        (parseInt(date2, 10) - parseInt(date1, 10))
+    );
+
+    toggleDateSelected = (date) => {
+        const newSelectedDateSet = new Set(this.state.selectedDatesSet);
+        if (this.state.selectedDatesSet.has(date)) {
+            newSelectedDateSet.delete(date);
         } else {
-            newSelectedVisitsSet.add(visitID);
+            newSelectedDateSet.add(date);
         }
-        this.setState({selectedVisitsSet: newSelectedVisitsSet});
-    }
+        this.setState({selectedDatesSet: newSelectedDateSet});
+    };
 
-    toggleSectionSelected = (sectionTitle, isCurrentlySelected) => {
-        const sectionData = this.state.sectionedActiveVisits.find(section => section.title === sectionTitle).data;
-        const visitIDs = sectionData.map(visit => visit.visitID);
-        const newSelectedVisitsSet = new Set(this.state.selectedVisitsSet);
+    toggleSelectAll = (isCurrentlySelected) => {
         if (isCurrentlySelected) {
-            visitIDs.forEach(visitID => newSelectedVisitsSet.delete(visitID));
+            this.setState({selectedDatesSet: new Set()});
         } else {
-            visitIDs.forEach(visitID => newSelectedVisitsSet.add(visitID));
+            const allDates = Object.keys(this.state.activeLogsData);
+            this.setState({selectedDatesSet: new Set(allDates)});
         }
+    };
 
-        this.setState({selectedVisitsSet: newSelectedVisitsSet});
-    }
+    selectDatesInRange = (startDate, endDate) => {
+        const allDates = Object.keys(this.state.activeLogsData);
+        const timeZoneMoment = (date) => timeZoneConvertedEpoch(parseInt(date, 10)).valueOf();
+        const selectedDates = allDates.filter(date => (timeZoneMoment(date) >= (startDate) && timeZoneMoment(date) <= endDate));
+        this.setState({selectedDatesSet: new Set(selectedDates)});
+    };
+
+
+    submitReport = (reportID) => {
+        VisitService.getInstance().submitReport(reportID);
+    };
 
     updateScreenIndex = (screenIndex) => {
-        if (screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX) {
-            this.props.navigator.setButtons({
-                rightButtons: []
-            });
-            if (!this.state.sectionedSubmittedVisits) {
-                const submittedVisits = this.submittedVisitsSubscriber.currentData;
-                this.setState({sectionedSubmittedVisits: this.getSectionedDataFromVisits(submittedVisits, MilesLogScreenContainer.SUBMITTED_TAB_INDEX)});
-            }
-        } else if (screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX) {
-            this.setNavigatorButtonsForActiveLogs();
-        }
         this.setState({screenIndex});
-    }
+    };
+
+    visitMilesNotPresentForVisits = (visits) => (visits.some(visit => !visit.visitMiles.IsMilesInformationPresent));
 
     render() {
+        const selectedTabStyle = {borderBottomWidth: 2, borderBottomColor: PrimaryColor};
         return (
-            <MilesLogScreen
-                screenIndex={this.state.screenIndex}
-                updateScreenIndex={this.updateScreenIndex}
-                sectionData={this.getSectionToRenderBasedOnTab()}
-                showCheckBox={this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX}
-                toggleVisitSelected={this.toggleVisitSelected}
-                toggleSectionSelected={this.toggleSectionSelected}
-                selectedVisitsSet={this.state.selectedVisitsSet}
-            />
+            <View style={{flex: 1, backgroundColor: defaultBackGroundColor}}>
+                <View style={{flexDirection: 'row', ...styles.shadowStyle}}>
+                    <TouchableOpacity
+                        style={[{flex: 1, alignItems: 'center'}, this.state.screenIndex === MilesLogScreenContainer.ACTIVE_TAB_INDEX ? selectedTabStyle : {}]}
+                        onPress={() => this.updateScreenIndex(MilesLogScreenContainer.ACTIVE_TAB_INDEX)}
+                    >
+                        <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
+                            Active Logs
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[{flex: 1, alignItems: 'center'}, this.state.screenIndex === MilesLogScreenContainer.SUBMITTED_TAB_INDEX ? selectedTabStyle : {}]}
+                        onPress={() => this.updateScreenIndex(MilesLogScreenContainer.SUBMITTED_TAB_INDEX)}
+                    >
+                        <Text style={{textAlign: 'center', fontSize: 16, marginTop: 10, marginBottom: 5}}>
+                            Reports
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                {
+                    this.getScreenBasedOnSelectedIndex()
+                }
+            </View>
+
         );
     }
 }

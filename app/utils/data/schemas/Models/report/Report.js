@@ -4,8 +4,9 @@ export class Report extends Realm.Object {
 
     static reportStateEnum = {
         CREATED: 'CREATED',
+        SUBMIT_QUEUED: 'SUBMIT_QUEUED',
         ACCEPTED: 'ACCEPTED',
-    }
+    };
 
     static getSchemaName() {
         return 'Report';

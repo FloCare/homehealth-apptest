@@ -3,12 +3,13 @@
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {apiServerURL} from '../constants';
 
-export function getPatientIDList() {
+// Gets all patients that have been assigned to the user
+export function getAllPatients() {
     return RNSecureKeyStore.get('accessToken').catch(error => {
         console.log('error in getting access token');
         throw error;
     })
-        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-assigned-patient-ids/?format=json`,
+        .then(token => fetch(`${apiServerURL}/phi/v1.0/get-patients-for-sync/?format=json`,
             {
                 method: 'GET',
                 headers: {
@@ -21,11 +22,6 @@ export function getPatientIDList() {
             }
             throw new Error('HTTP request not OK');
         });
-    // return new Promise((resolve) => {
-    //     setTimeout(resolve, 300, {
-    //         patients: [1, 2, 3, 4]
-    //     });
-    // });
 }
 
 export function getPatientsByID(patientIDs) {
