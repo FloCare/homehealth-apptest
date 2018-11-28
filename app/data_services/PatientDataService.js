@@ -203,7 +203,7 @@ export class PatientDataService {
         });
         console.log('done with first block');
 
-        if (episodeArgument.careTeam && episodeArgument.careTeam.length > 0) {
+        if (episodeArgument && episodeArgument.careTeam && episodeArgument.careTeam.length > 0) {
             console.log('going for the kill');
             const promises = episodeArgument.careTeam.map(userID => UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID));
             Promise.all(promises).then(() => {
@@ -288,7 +288,7 @@ export class PatientDataService {
             //Only writing code for including missing members into local db
             //the purpose of this is to get existing users to build their db
             //for all other cases, pubnub episode messaging should take care of things
-            if (episode.careTeam) {
+            if (episode && episode.careTeam) {
                 episode.careTeam.forEach(userID => {
                     EpisodeDataService.getInstance().ensureUserInCareTeam(episode.episodeID, userID);
                 });

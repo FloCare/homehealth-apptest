@@ -16,6 +16,7 @@ const navigatorStyle = {
     tabBarButtonColor: 'black',
     hideBackButtonTitle: true,
     statusBarTextColorScheme: 'light',
+    navBarTitleTextCentered: true,
 };
 
 function getLargeNavBarOrSubstitute() {

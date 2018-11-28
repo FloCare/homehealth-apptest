@@ -143,17 +143,17 @@ export class PatientScreenContainer extends Component {
     }
 
     renderActionButtons(style) {
+        const imageLength = 30;
         return (<View
             style={{
-                flex: 1,
                 flexDirection: 'row',
                 justifyContent: 'space-evenly',
-                paddingVertical: 10,
+                paddingTop: 10,
                 ...style
             }}
         >
             <TouchableOpacity
-                style={{paddingHorizontal: 12.5}}
+                style={{paddingHorizontal: 15}}
                 onPress={() => {
                     if (this.state.patientDetail.primaryContact) {
                         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
@@ -167,21 +167,21 @@ export class PatientScreenContainer extends Component {
                     }
                 }}
             >
-                <Image source={Images.callIcon} style={{height: 28, resizeMode: 'contain'}} />
+                <Image source={Images.callIcon} style={{height: imageLength, width: imageLength, resizeMode: 'contain'}} />
             </TouchableOpacity>
             <TouchableOpacity
-                style={{paddingHorizontal: 12.5}}
+                style={{paddingHorizontal: 15}}
                 onPress={() => {
                     const coordinates = this.state.patientDetail.address.coordinates;
                     if (coordinates) {
                         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                             type: parameterValues.NAVIGATION
                         });
-                        navigateTo(coordinates.latitude, coordinates.longitude, coordinates.address.formattedAddress);
+                        navigateTo(coordinates.latitude, coordinates.longitude, this.state.patientDetail.address.formattedAddress);
                     }
                 }}
             >
-                <Image source={Images.mapSolid} style={{height: 28, resizeMode: 'contain'}} />
+                <Image source={Images.mapSolid} style={{height: imageLength, width: imageLength, resizeMode: 'contain'}} />
             </TouchableOpacity>
         </View>);
     }
@@ -208,7 +208,8 @@ export class PatientScreenContainer extends Component {
                     style={{
                         flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'space-evenly'
+                        justifyContent: 'space-evenly',
+                        backgroundColor: 'white',
                     }}
                 >
                     <StyledText
@@ -216,7 +217,7 @@ export class PatientScreenContainer extends Component {
                             color: '#202020',
                             fontWeight: '100',
                             paddingVertical: 5,
-                            fontSize: 9
+                            fontSize: 11
                         }}
                     >
                         {this.state.patientDetail.primaryContact}
@@ -226,12 +227,12 @@ export class PatientScreenContainer extends Component {
                             color: '#202020',
                             fontWeight: '100',
                             paddingVertical: 5,
-                            fontSize: 9
+                            fontSize: 11
                         }}
                     >
                         {this.state.patientDetail.address.formattedAddress}
                     </StyledText>
-                    {this.renderActionButtons({marginVertical: 7.5})}
+                    {this.renderActionButtons()}
                 </View>
                 <TabView
                     navigationState={this.state}
@@ -239,7 +240,7 @@ export class PatientScreenContainer extends Component {
                     renderTabBar={props =>
                         <TabBar
                             {...props}
-                            style={{backgroundColor: 'clear'}}
+                            style={{backgroundColor: 'white'}}
                             labelStyle={{color: '#202020'}}
                             indicatorStyle={{backgroundColor: PrimaryColor}}
                         />
