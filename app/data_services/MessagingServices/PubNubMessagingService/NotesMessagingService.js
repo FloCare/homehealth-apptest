@@ -1,13 +1,48 @@
-import {NetInfo} from 'react-native';
 import firebase from 'react-native-firebase';
 import moment from 'moment';
 import {BaseMessagingService} from './BaseMessagingService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {NoteDataService} from '../../NotesDataService';
-import {screenNames} from '../../../utils/constants';
+import {eventNames, notificationType, screenNames} from '../../../utils/constants';
+import {NotificationService, showNotification} from '../NotificationService';
 
-//TODO
+function getNewNoteNotificationObject(messageObject) {
+    const body = messageObject.notificationBody;
+    const data = {
+        navigateTo: screenNames.patient,
+        tabBarHidden: true,
+        payload: {
+            selectedScreen: 'notes',
+        }
+    };
+    const notificationID = messageObject.message.messageID;
+    return {body, data, notificationID};
+}
+
+function getNewNoteNotificationCenterObject(messageObject) {
+    const notificationObject = getNewNoteNotificationObject(messageObject);
+
+    return {
+        notificationID: notificationObject.notificationID,
+        type: notificationType.NEW_NOTE,
+        createdTime: parseInt(messageObject.timestamp),
+        body: messageObject.message.notificationBody,
+        screenName: notificationObject.data.navigateTo,
+        passProps: JSON.stringify({
+            ...notificationObject.data.payload,
+            patientId: messageObject.message.patientID,
+        }),
+        navigatorStyle: JSON.stringify({
+            tabBarHidden: true
+        }),
+        metadata: JSON.stringify({
+            episodeID: messageObject.message.episodeID,
+            patientId: messageObject.message.patientID,
+        })
+    };
+}
+
 export class NotesMessagingService extends BaseMessagingService {
     static identifier = 'NotesMessagingService';
 
@@ -19,21 +54,27 @@ export class NotesMessagingService extends BaseMessagingService {
         const {message, channel, timetoken} = messageObject;
         return new Promise((resolve, reject) => {
             console.log('onMessage called');
-            const episodeID = channel.split('_')[1];
-            const {messageType, userID, messageID, dataJson} = message;
-            // if (userID === UserDataService.getCurrentUserProps().userID) {
-            //     console.log('on message called for a message published by myself, ignoring');
-            //     resolve();
-            //     return;
-            // }
+            const {messageType, userID} = message;
 
             switch (messageType) {
                 case 'NEW_NOTE' :
                     this.processNewNoteMessage(messageObject);
-                    resolve();
-                    // reject(error);
-                    break;
-                case 'NOTIFICATION':
+
+                    if (userID === UserDataService.getCurrentUserProps().userID) {
+                        console.log('skipping notification for own message');
+                        resolve();
+                        break;
+                    }
+
+                    if (!messageObject.suppressNotification) {
+                        firebase.analytics().logEvent(eventNames.NEW_NOTE_NOTIFICATION, {
+                            type: 1
+                        });
+                        const notificationObject = getNewNoteNotificationObject(messageObject);
+
+                        showNotification(message.notificationBody, notificationObject.data, notificationObject.notificationID);
+                    }
+                    NotificationService.getInstance().addNotificationToCenter(getNewNoteNotificationCenterObject(messageObject));
                     resolve();
                     break;
                 default:
@@ -99,10 +140,12 @@ export class NotesMessagingService extends BaseMessagingService {
         this.taskQueue.createJob('publishNotesMessage', {
             messageID: payload.messageID,
             episodeID: payload.episodeID,
+            patientID: payload.patientID,
             messageType: payload.messageType,
             userID: payload.userID,
             superID: payload.superID,
             data: payload.data,
+            notificationBody: payload.notificationBody,
 
             pn_apns: payload.makePeersRefresh ?
                 {
@@ -113,31 +156,9 @@ export class NotesMessagingService extends BaseMessagingService {
             pn_gcm: payload.makePeersRefresh ?
                 {
                     data: {
-                        content_available: true,
-                        notificationBody: payload.notificationBody,
-                        sound: 'default',
-                        navigateTo: screenNames.patientDetailsScreen,
-                        episodeID: payload.episodeID
+                        content_available: true
                     },
                 } : undefined,
-        }, {
-            attempts: 5
-        });
-
-        this.taskQueue.createJob('publishNotesMessage', {
-            messageType: 'NOTIFICATION',
-            pn_apns: {
-                aps: {
-                    alert: {
-                        body: payload.notificationBody,
-                    },
-                    sound: 'default',
-                },
-                payload: {
-                    episodeID: payload.episodeID,
-                    navigateTo: screenNames.patientDetailsScreen
-                }
-            }
         }, {
             attempts: 5
         });
@@ -147,6 +168,7 @@ export class NotesMessagingService extends BaseMessagingService {
         this._createPublishNotesMessageJob({
             messageID: note.messageID,
             episodeID: note.episode.episodeID,
+            patientID: note.episode.patient[0].patientID,
             messageType: note.messageType,
             userID: note.user.userID,
             superID: note.superID,

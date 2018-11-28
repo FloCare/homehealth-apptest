@@ -112,6 +112,7 @@ const eventNames = {
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
+    NEW_NOTE_NOTIFICATION: 'NewNoteNotification',
     COLLABORATION: 'Collaboration',
     ADD_EDIT_MILES: 'AddOrEditMiles',
     SEND_REPORT: 'SendReport',
@@ -149,6 +150,7 @@ const parameterValues = {
 
 const notificationType = {
     VISIT_COLLISION: 'VISIT_COLLISION',
+    NEW_NOTE: 'NEW_NOTE',
     NEW_PATIENT: 'NEW_PATIENT'
 };
 

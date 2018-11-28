@@ -25,7 +25,7 @@ export class PatientScreenContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            index: 0,
+            index: (props.selectedScreen && props.selectedScreen === 'notes') ? 1 : 0,
             routes: [
                 {key: 'details', title: 'Details'},
                 {key: 'notes', title: 'Notes'},
