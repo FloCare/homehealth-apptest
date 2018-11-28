@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, SafeAreaView, Dimensions, Platform, Linking, Image, TouchableOpacity} from 'react-native';
+import {View, Dimensions, Platform, Linking, Image, TouchableOpacity} from 'react-native';
 import firebase from 'react-native-firebase';
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -153,7 +153,7 @@ export class PatientScreenContainer extends Component {
             }}
         >
             <TouchableOpacity
-                style={{paddingHorizontal: 15}}
+                style={{paddingHorizontal: 15, alignItems: 'center'}}
                 onPress={() => {
                     if (this.state.patientDetail.primaryContact) {
                         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
@@ -168,9 +168,18 @@ export class PatientScreenContainer extends Component {
                 }}
             >
                 <Image source={Images.callIcon} style={{height: imageLength, width: imageLength, resizeMode: 'contain'}} />
+                <StyledText
+                    style={{
+                        marginTop: 5,
+                        fontSize: 9,
+                        color: '#888888'
+                    }}
+                >
+                    Call
+                </StyledText>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{paddingHorizontal: 15}}
+                style={{paddingHorizontal: 15, alignItems: 'center'}}
                 onPress={() => {
                     const coordinates = this.state.patientDetail.address.coordinates;
                     if (coordinates) {
@@ -182,6 +191,15 @@ export class PatientScreenContainer extends Component {
                 }}
             >
                 <Image source={Images.mapSolid} style={{height: imageLength, width: imageLength, resizeMode: 'contain'}} />
+                <StyledText
+                    style={{
+                        marginTop: 5,
+                        fontSize: 9,
+                        color: '#888888'
+                    }}
+                >
+                    Navigate
+                </StyledText>
             </TouchableOpacity>
         </View>);
     }
@@ -201,7 +219,7 @@ export class PatientScreenContainer extends Component {
 
     render() {
         return (
-            <SafeAreaView
+            <View
                 style={{flex: 1}}
             >
                 <View
@@ -248,7 +266,7 @@ export class PatientScreenContainer extends Component {
                     onIndexChange={index => this.setState({index})}
                     initialLayout={{width: Dimensions.get('window').width}}
                 />
-            </SafeAreaView>
+            </View>
         );
     }
 }
