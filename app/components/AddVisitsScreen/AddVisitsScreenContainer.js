@@ -206,7 +206,7 @@ class AddVisitsScreenContainer extends Component {
                 title={item.object.name}
                 subtitle={item.object.address.formattedAddress}
                 avatar={avatar}
-                avatarStyle={{resizeMode: 'contain'}}
+                avatarStyle={{resizeMode: 'contain', height: 25, width: 25}}
                 rightIcon={rightIcon}
                 titleStyle={{fontSize: 17, color: '#222222'}}
                 subtitleStyle={{fontSize: 12, color: '#666666', fontWeight: 'normal'}}
