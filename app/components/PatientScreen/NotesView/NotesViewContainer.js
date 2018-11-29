@@ -12,9 +12,9 @@ export class NotesViewContainer extends Component {
     constructor(props) {
         super(props);
         console.log(`patientID mila ${props.patientID}`);
-        const patient = PatientDataService.getInstance().getPatientByID(props.patientID);
+        this.patient = PatientDataService.getInstance().getPatientByID(props.patientID);
 
-        this.episode = patient.episodes[0];
+        this.episode = this.patient.episodes[0];
         this.notes = NoteDataService.getInstance().getNotesForEpisodeID(this.episode.episodeID);
         this.state = {sectionedData: this.getSectionedDataForNotes(this.notes)};
 
@@ -131,7 +131,7 @@ export class NotesViewContainer extends Component {
                     {'No Notes Created'}
                 </StyledText>
                 <StyledText style={{color: '#202020', textAlign: 'center', fontSize: 12}}>
-                    {'Jot Down patient notes that you want to share with care team'}
+                    {'Jot down patient notes that you want to share with care team'}
                 </StyledText>
             </View>
         );
@@ -148,6 +148,7 @@ export class NotesViewContainer extends Component {
             >
                 {this.notesSectionBody()}
                 <NoteTextBox
+                    patientName={this.patient ? this.patient.name : undefined}
                     onSubmit={message => {
                         NoteDataService.getInstance().generateAndPublishNote(message, this.episode);
                     }}

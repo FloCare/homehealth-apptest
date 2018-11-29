@@ -32,7 +32,7 @@ export function NoteBubble(note) {
             >
                 <View
                     style={{
-                        width: '60%',
+                        width: '90%',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         alignItems: 'flex-end',

@@ -38,7 +38,7 @@ export class NoteTextBox extends Component {
                     value={this.state.text}
                     onChangeText={text => { this.setState({text}); }}
                     multiline
-                    placeholder={'Enter note for the patient here'}
+                    placeholder={`Leave a note about ${this.props.patientName || 'patient'}`}
                 />
                 <View
                     style={{height: 40, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}
@@ -53,7 +53,7 @@ export class NoteTextBox extends Component {
                             opacity: this.state.text ? 1 : 0.6,
                             backgroundColor: 'transparent',
                             borderColor: PrimaryColor,
-                            borderWidth: 1,
+                            borderWidth: 2,
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}
