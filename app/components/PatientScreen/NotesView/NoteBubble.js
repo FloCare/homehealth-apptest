@@ -3,6 +3,7 @@ import moment from 'moment';
 import {View, Image} from 'react-native';
 import StyledText from '../../common/StyledText';
 import {Images} from '../../../Images';
+import {PrimaryColor} from '../../../utils/constants';
 
 export function NoteBubble(note) {
     return (
@@ -43,7 +44,7 @@ export function NoteBubble(note) {
                         style={{
                             fontSize: 14,
                             fontWeight: 'bold',
-                            color: '#262626'
+                            color: PrimaryColor
                         }}
                     >
                         {`${note.user.lastName}, ${note.user.role}`}

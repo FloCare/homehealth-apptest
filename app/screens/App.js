@@ -13,7 +13,7 @@ const navigatorStyle = {
     tabBarBackgroundColor: '#f8f8f8',
     tabBarTranslucent: false,
     tabBarSelectedButtonColor: PrimaryColor,
-    tabBarButtonColor: 'black',
+    tabBarButtonColor: '#A8AFBA',
     hideBackButtonTitle: true,
     statusBarTextColorScheme: 'light',
     navBarTitleTextCentered: true,
