@@ -39,7 +39,7 @@ function getNewNoteNotificationCenterObject(messageObject) {
         }),
         metadata: JSON.stringify({
             episodeID: messageObject.message.episodeID,
-            patientId: messageObject.message.patientID,
+            patientID: messageObject.message.patientID,
         })
     };
 }
@@ -59,24 +59,27 @@ export class NotesMessagingService extends BaseMessagingService {
 
             switch (messageType) {
                 case 'NEW_NOTE' :
-                    this.processNewNoteMessage(messageObject);
+                    this.processNewNoteMessage(messageObject).then(() => {
+                        if (userID === UserDataService.getCurrentUserProps().userID) {
+                            console.log('skipping notification for own message');
+                            resolve();
+                        }
 
-                    if (userID === UserDataService.getCurrentUserProps().userID) {
-                        console.log('skipping notification for own message');
+                        if (!messageObject.suppressNotification) {
+                            firebase.analytics().logEvent(eventNames.NEW_NOTE_NOTIFICATION, {
+                                type: 1
+                            });
+                            const notificationObject = getNewNoteNotificationObject(messageObject);
+
+                            showNotification(message.notificationBody, notificationObject.data, notificationObject.notificationID);
+                        }
+                        NotificationService.getInstance().addNotificationToCenter(getNewNoteNotificationCenterObject(messageObject));
                         resolve();
-                        break;
-                    }
-
-                    if (!messageObject.suppressNotification) {
-                        firebase.analytics().logEvent(eventNames.NEW_NOTE_NOTIFICATION, {
-                            type: 1
-                        });
-                        const notificationObject = getNewNoteNotificationObject(messageObject);
-
-                        showNotification(message.notificationBody, notificationObject.data, notificationObject.notificationID);
-                    }
-                    NotificationService.getInstance().addNotificationToCenter(getNewNoteNotificationCenterObject(messageObject));
-                    resolve();
+                    }).catch(error => {
+                        console.log('NoteMessagingService: error in NEW_NOTE');
+                        console.log(error);
+                        resolve();
+                    });
                     break;
                 default:
                     console.log(`NotesMessagingService: unrecognised message: ${message}`);
@@ -85,18 +88,17 @@ export class NotesMessagingService extends BaseMessagingService {
         });
     }
 
-    processNewNoteMessage(messageObject) {
-        const noteObject = this.getNoteObjectFromMessage(messageObject.message, messageObject.timestamp, true);
+    async processNewNoteMessage(messageObject) {
+        const noteObject = await this.getNoteObjectFromMessage(messageObject.message, messageObject.timestamp, true);
         console.log('trying to save note object');
         console.log(messageObject);
         NoteDataService.getInstance().saveNoteObject(noteObject);
         console.log('saving finished');
     }
 
-    getNoteObjectFromMessage(message, timetoken, synced) {
+    async getNoteObjectFromMessage(message, timetoken, synced) {
         const episode = EpisodeDataService.getInstance().getEpisodeByID(message.episodeID);
-        const user = UserDataService.getInstance().getUserByID(message.userID);
-
+        const user = await UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(message.userID);
         if (!episode || !user) {
             throw new Error('Episode or user missing for note message');
         }

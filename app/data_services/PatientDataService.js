@@ -306,7 +306,6 @@ export class PatientDataService {
                 //TODO
                 console.log(`archiving patient ${patientId}, unsubscribing from episodes`);
                 console.log(patient.episodes.length);
-                console.log(patient.episodes);
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).unsubscribeToEpisodes(patient.episodes);
                 getMessagingServiceInstance(NotesMessagingService.identifier).unsubscribeToEpisodeNotes(patient.episodes);
             }

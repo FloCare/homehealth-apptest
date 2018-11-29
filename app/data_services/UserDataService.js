@@ -68,18 +68,18 @@ export class UserDataService {
 
     fetchAndSaveUserToRealmIfMissing(id) {
         const user = this.getUserByID(id);
-        console.log('fetch and save user if missing');
+        console.log(`fetch and save user if missing ${id}`);
         if (user) {
-            console.log('found');
+            console.log(`found ${id}`);
             return new Promise((resolve) => resolve(user));
         }
-        console.log('not found');
+        console.log(`not found ${id}`);
 
         return UserDataService.fetchUserProps(id).then(userJson => {
-            console.log('successfully fetched user props');
+            console.log(`successfully fetched user props ${id}`);
             return this.saveUserToRealm(userJson);
         }).catch(error => {
-            console.log('error in fetch and save user');
+            console.log(`error in fetch and save user${id}`);
             console.log(error);
             throw error;
         });
