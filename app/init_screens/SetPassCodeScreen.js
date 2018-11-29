@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import RNSecureKeyStore from 'react-native-secure-key-store';
-import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import VirtualKeyboard from 'react-native-virtual-keyboard';
-import {StyleSheet, Text, View, Image, Alert, AsyncStorage, Dimensions} from 'react-native';
-import StartApp from '../screens/App';
+import {StyleSheet, Text, View, Alert, AsyncStorage, Dimensions} from 'react-native';
 import {screenNames, eventNames, parameterValues, PrimaryColor, PrimaryFontFamily} from '../utils/constants';
 
 const passCodeScreenStates = {
@@ -143,18 +141,15 @@ class SetPassCodeScreen extends Component {
     // }
 
     render() {
-        const primaryColor = PrimaryColor;
-        const secondary = '#34da92';
         const {width, height} = Dimensions.get('window');
         const header = this.getScreenState() === passCodeScreenStates.FIRST_ENTRY_SCREEN ? 'Set a Passcode' : 'Confirm passcode';
         return (
-            <LinearGradient
-                colors={[primaryColor, secondary]}
-                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
+            <View
                 style={{
                     flex: 1,
                     alignItems: 'center',
                     justifyContent: 'space-evenly',
+                    backgroundColor: PrimaryColor
                 }}
             >
                 {/*<KeyboardAwareScrollView>*/}
@@ -219,7 +214,7 @@ class SetPassCodeScreen extends Component {
                         />
                     </View>
                 {/*</KeyboardAwareScrollView>*/}
-            </LinearGradient>
+            </View>
         );
     }
 }

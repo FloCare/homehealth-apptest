@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 
-const PrimaryColor = '#45ceb1';
+const PrimaryColor = '#64CCC9';
 const ErrorMessageColor = '#F51414';
 const defaultBackGroundColor = '#FFFFFF';
 const detailBackGroundColor = '#F7F7F7';

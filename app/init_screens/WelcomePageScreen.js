@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button} from 'react-native-elements';
 import firebase from 'react-native-firebase';
 import {StyleSheet, Text, View, Image} from 'react-native';
-import {screenNames, PrimaryFontFamily} from '../utils/constants';
+import {screenNames, PrimaryFontFamily, PrimaryColor} from '../utils/constants';
 import {Images} from '../Images';
 
 export class WelcomePageScreen extends Component {
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   buttonStyle: {
-    backgroundColor: '#45ceb1',
+    backgroundColor: PrimaryColor,
     marginLeft: 0,
     marginRight: 0,
     height: 50
