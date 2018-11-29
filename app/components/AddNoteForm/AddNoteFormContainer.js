@@ -63,16 +63,29 @@ class AddNoteFormContainer extends Component {
             //const queryStr = `patientID = "${patientId}"`;
             //const patients = floDB.objects(Patient.schema.name).filtered(queryStr);
             //const patient = patients[0];
-            this.setState({
-                patientList: null,
-                note: patient.notes,
-                patientId: patient.patientID,
-                name: patient.name,
-                searching: false,
-                searchText: null
+            this.props.navigator.push({
+                screen: screenNames.patient,
+                title: patient.name,
+                passProps: {
+                    patientId: patient.patientID,
+                    selectedScreen: 'notes'
+                },
+                navigatorStyle: {
+                    tabBarHidden: true,
+                    largeTitle: false
+                }
             });
-            // Todo: Can be removed now?
-            this.search.clearText();
+            //
+            // this.setState({
+            //     patientList: null,
+            //     note: patient.notes,
+            //     patientId: patient.patientID,
+            //     name: patient.name,
+            //     searching: false,
+            //     searchText: null
+            // });
+            // // Todo: Can be removed now?
+            // this.search.clearText();
         } catch (e) {
             console.log('Error in selecting Item:', e);
         }
