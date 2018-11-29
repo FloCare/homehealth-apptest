@@ -223,7 +223,7 @@ export class PatientDataService {
             this.addPatientsToRedux([newPatient], true);
             try {
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).subscribeToEpisodes(newPatient.episodes);
-                getMessagingServiceInstance(NotesMessagingService.identifier).subscribeToEpisodes(newPatient.episodes);
+                getMessagingServiceInstance(NotesMessagingService.identifier).subscribeToEpisodeNotes(newPatient.episodes);
             } catch (e) {
                 console.log('error trying to subscribe to new patient');
                 console.log(e);

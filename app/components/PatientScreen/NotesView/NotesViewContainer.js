@@ -63,8 +63,8 @@ export class NotesViewContainer extends Component {
     getSectionedDataForNotes(notesResult) {
         const sectionedList = [];
         if (notesResult.length === 0) { return sectionedList; }
-        const firstMessageDate = notesResult[0].timetoken;
-        const lastMessageDate = notesResult[notesResult.length - 1].timetoken;
+        const firstMessageDate = moment(notesResult[0].timetoken).startOf('day');
+        const lastMessageDate = moment(notesResult[notesResult.length - 1].timetoken).startOf('day');
 
         const dayCounter = moment(firstMessageDate);
         while (dayCounter.valueOf() <= moment(lastMessageDate).valueOf()) {

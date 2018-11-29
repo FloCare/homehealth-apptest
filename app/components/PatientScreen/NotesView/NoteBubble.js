@@ -9,6 +9,7 @@ export function NoteBubble(note) {
         <View
             style={{
                 flex: 1,
+                opacity: note.synced === 'true' ? 1 : 0.6,
                 flexDirection: 'row',
                 marginVertical: 17.5,
             }}

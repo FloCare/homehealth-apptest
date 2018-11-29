@@ -1,4 +1,5 @@
 import firebase from 'react-native-firebase';
+import {NetInfo} from 'react-native';
 import moment from 'moment';
 import {BaseMessagingService} from './BaseMessagingService';
 import {UserDataService} from '../../UserDataService';
@@ -137,30 +138,32 @@ export class NotesMessagingService extends BaseMessagingService {
     }
 
     _createPublishNotesMessageJob(payload) {
-        this.taskQueue.createJob('publishNotesMessage', {
-            messageID: payload.messageID,
-            episodeID: payload.episodeID,
-            patientID: payload.patientID,
-            messageType: payload.messageType,
-            userID: payload.userID,
-            superID: payload.superID,
-            data: payload.data,
-            notificationBody: payload.notificationBody,
+        NetInfo.isConnected.fetch().then(isConnected => {
+            this.taskQueue.createJob('publishNotesMessage', {
+                messageID: payload.messageID,
+                episodeID: payload.episodeID,
+                patientID: payload.patientID,
+                messageType: payload.messageType,
+                userID: payload.userID,
+                superID: payload.superID,
+                data: payload.data,
+                notificationBody: payload.notificationBody,
 
-            pn_apns: payload.makePeersRefresh ?
-                {
-                    aps: {
-                        'content-available': 1
-                    },
-                } : undefined,
-            pn_gcm: payload.makePeersRefresh ?
-                {
-                    data: {
-                        content_available: true
-                    },
-                } : undefined,
-        }, {
-            attempts: 5
+                pn_apns: payload.makePeersRefresh ?
+                    {
+                        aps: {
+                            'content-available': 1
+                        },
+                    } : undefined,
+                pn_gcm: payload.makePeersRefresh ?
+                    {
+                        data: {
+                            content_available: true
+                        },
+                    } : undefined,
+            }, {
+                attempts: 5
+            }, isConnected);
         });
     }
 
