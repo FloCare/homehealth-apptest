@@ -25,7 +25,8 @@ export class NoteTextBox extends Component {
                     flexDirection: 'column',
                     paddingHorizontal: 17.5,
                     borderTopWidth: 2.5,
-                    borderColor: '#f1f1f1'
+                    borderColor: '#f1f1f1',
+                    backgroundColor: 'white'
                 }}
                 behavior={'padding'}
                 keyboardVerticalOffset={70}
