@@ -7,6 +7,7 @@ import {EpisodeDataService} from '../../EpisodeDataService';
 import {NoteDataService} from '../../NotesDataService';
 import {eventNames, notificationType, screenNames} from '../../../utils/constants';
 import {NotificationService, showNotification} from '../NotificationService';
+import {PatientDataService} from '../../PatientDataService';
 
 function getNewNoteNotificationObject(messageObject) {
     const body = messageObject.notificationBody;
@@ -23,12 +24,14 @@ function getNewNoteNotificationObject(messageObject) {
 
 function getNewNoteNotificationCenterObject(messageObject) {
     const notificationObject = getNewNoteNotificationObject(messageObject);
+    const user = UserDataService.getInstance().getUserByID(messageObject.message.userID);
+    const patient = PatientDataService.getInstance().getPatientByID(messageObject.message.patientID);
 
     return {
         notificationID: notificationObject.notificationID,
         type: notificationType.NEW_NOTE,
         createdTime: parseInt(messageObject.timestamp),
-        body: messageObject.message.notificationBody,
+        body: `${user.firstName} shared a new note for ${patient.name}.`,
         screenName: notificationObject.data.navigateTo,
         passProps: JSON.stringify({
             ...notificationObject.data.payload,
@@ -181,7 +184,7 @@ export class NotesMessagingService extends BaseMessagingService {
             data: note.data,
             makePeersRefresh: true,
 
-            notificationBody: `New note added for ${note.episode.patient[0].abbName}`
+            notificationBody: `${note.user.firstName} shared a new patient note with you.`
         });
     }
 
