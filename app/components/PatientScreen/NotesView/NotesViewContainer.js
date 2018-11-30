@@ -147,7 +147,7 @@ export class NotesViewContainer extends Component {
                         NoteDataService.getInstance().generateAndPublishNote(message, this.episode);
                     }}
                 />
-                {Platform.OS === 'ios' ? <KeyboardSpacer /> : undefined}
+                {Platform.OS === 'ios' ? <KeyboardSpacer onToggle={this.props.onKeyboardToggle} /> : undefined}
             </View>
         );
     }

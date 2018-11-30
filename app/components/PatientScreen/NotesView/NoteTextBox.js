@@ -26,7 +26,8 @@ export class NoteTextBox extends Component {
             >
                 <TextInput
                     style={{
-                        marginVertical: 15
+                        paddingTop: 15,
+                        maxHeight: 75,
                     }}
                     value={this.state.text}
                     onChangeText={text => { this.setState({text}); }}
