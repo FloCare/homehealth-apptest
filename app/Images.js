@@ -32,7 +32,7 @@ export const Images = {
     notes: require('../resources/notes.png'),
     notificationBell: require('../resources/notification.png'),
     notificationAddNote: require('../resources/addNote.png'),
-    notificationAddPatient: require('../resources/addNote.png'),
+    notificationAddPatient: require('../resources/addPatientNotif.png'),
     notificationVisitCollision: require('../resources/visitCollision.png'),
     patient: require('../resources/patient.png'),
     person_ic: require('../resources/person_ic.png'),
