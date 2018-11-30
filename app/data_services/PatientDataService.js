@@ -3,7 +3,7 @@ import firebase from 'react-native-firebase';
 import {Episode, Patient, User} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {
-    arrayToObjectByKey, hasNonEmptyValueForAllKeys,
+    arrayToObjectByKey, filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
 } from '../utils/collectionUtils';
 import {eventNames, notificationType, screenNames} from '../utils/constants';
 import {addressDataService} from './AddressDataService';
@@ -211,6 +211,7 @@ export class PatientDataService {
                 });
             }).catch(error => {
                 console.log(`error while attaching care team to episode ${episode.episodeID}`);
+                console.log(error);
             });
         } else {
             console.log(`for patient id ${patientId}, episode id ${episodeArgument.episodeID}, no care team description found`);
