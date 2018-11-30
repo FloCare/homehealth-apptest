@@ -484,8 +484,8 @@ function VisitCardGenerator({onDoneTogglePress, navigator}, showEllipse = true, 
                             <View style={{flex: 8, flexDirection: 'row', borderLeftColor: cardBorderColor, borderLeftWidth: 1}}>
                                 <View style={{margin: 10, flex: 1}}>
                                     <Text style={{...styles.nameStyle, fontSize: 15}}>{this.props.name}</Text>
-                                    <View style={{flexDirection: 'row', marginTop: 2}}>
-                                        <Image source={Images.location} style={{marginRight: 8}} />
+                                    <View style={{flexDirection: 'row', marginTop: 2, alignItems: 'center'}}>
+                                        <Image source={Images.location} style={{marginRight: 4, height: 12, width: 12, resizeMode: 'contain'}} />
                                         <Text style={styles.addressStyle}>
                                             {Address.minifiedAddress(this.props.formattedAddress)}
                                         </Text>
