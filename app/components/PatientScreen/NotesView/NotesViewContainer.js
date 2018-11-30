@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, {Component} from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
-import {View, SectionList, Image} from 'react-native';
+import {View, SectionList, Image, Platform} from 'react-native';
 import {NoteDataService} from '../../../data_services/NotesDataService';
 import {PatientDataService} from '../../../data_services/PatientDataService';
 import {NoteBubble} from './NoteBubble';
@@ -147,7 +147,7 @@ export class NotesViewContainer extends Component {
                         NoteDataService.getInstance().generateAndPublishNote(message, this.episode);
                     }}
                 />
-                <KeyboardSpacer />
+                {Platform.OS === 'ios' ? <KeyboardSpacer onToggle={this.props.onKeyboardToggle} /> : undefined}
             </View>
         );
     }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Dimensions, Platform, Linking, Image, TouchableOpacity} from 'react-native';
+import {View, Dimensions, Platform, Linking, Image, TouchableOpacity, Animated} from 'react-native';
 import firebase from 'react-native-firebase';
 import {TabView, TabBar, SceneMap} from 'react-native-tab-view';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
@@ -31,6 +31,7 @@ export class PatientScreenContainer extends Component {
                 {key: 'notes', title: 'Notes'},
             ],
             patientDetail: floDB.objectForPrimaryKey(Patient, props.patientId),
+            infoHeight: new Animated.Value(100),
         };
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.handleDBUpdate = this.handleDBUpdate.bind(this);
@@ -40,6 +41,16 @@ export class PatientScreenContainer extends Component {
         if (patientDetails && patientDetails.isLocallyOwned) {
             this.showEditNavButton();
         }
+    }
+
+    onKeyboardToggle(keyboardState) {
+        Animated.timing(
+            this.state.infoHeight,
+            {
+                toValue: keyboardState ? 0 : 100,
+                duration: 250,
+            }
+        ).start();
     }
 
     componentDidMount() {
@@ -209,7 +220,13 @@ export class PatientScreenContainer extends Component {
     }
 
     notesScreen() {
-        return <NotesViewContainer {...this.props} patientID={this.props.patientId} />;
+        return (
+            <NotesViewContainer
+                {...this.props}
+                onKeyboardToggle={this.onKeyboardToggle.bind(this)}
+                patientID={this.props.patientId}
+            />
+        );
     }
 
     sceneMap = SceneMap({
@@ -222,8 +239,13 @@ export class PatientScreenContainer extends Component {
             <View
                 style={{flex: 1}}
             >
-                <View
+                <Animated.View
                     style={{
+                        height: this.state.infoHeight,
+                        opacity: this.state.infoHeight.interpolate({
+                            inputRange: [0, 100],
+                            outputRange: [0, 1]
+                        }),
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'space-evenly',
@@ -251,7 +273,7 @@ export class PatientScreenContainer extends Component {
                         {this.state.patientDetail.address.formattedAddress}
                     </StyledText>
                     {this.renderActionButtons()}
-                </View>
+                </Animated.View>
                 <TabView
                     navigationState={this.state}
                     renderScene={this.sceneMap}
