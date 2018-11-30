@@ -63,6 +63,7 @@ export class NotesMessagingService extends BaseMessagingService {
                         if (userID === UserDataService.getCurrentUserProps().userID) {
                             console.log('skipping notification for own message');
                             resolve();
+                            return;
                         }
 
                         if (!messageObject.suppressNotification) {
