@@ -1,6 +1,7 @@
 import moment from 'moment';
 import React, {Component} from 'react';
-import {View, SectionList, KeyboardAvoidingView, Platform, Image} from 'react-native';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
+import {View, SectionList, Image} from 'react-native';
 import {NoteDataService} from '../../../data_services/NotesDataService';
 import {PatientDataService} from '../../../data_services/PatientDataService';
 import {NoteBubble} from './NoteBubble';
@@ -21,11 +22,6 @@ export class NotesViewContainer extends Component {
         this.notesChangeListener = notesResult => {
             this.setState({sectionedData: this.getSectionedDataForNotes(notesResult)});
         };
-
-        this.platformBasedView = Platform.select({
-            android: View,
-            ios: KeyboardAvoidingView
-        });
 
         this.sectionList = React.createRef();
     }
@@ -51,14 +47,14 @@ export class NotesViewContainer extends Component {
     }
 
     scrollToBottom(animated) {
-        if (this.sectionList.scrollToLocation && this.state.sectionedData.length > 0) {
-            this.sectionList.scrollToLocation({
-                animated,
-                sectionIndex: this.state.sectionedData.length - 1,
-                itemIndex: this.state.sectionedData[this.state.sectionedData.length - 1].data.length - 1,
-                viewPosition: 1
-            });
-        }
+        // if (this.sectionList.scrollToLocation && this.state.sectionedData.length > 0) {
+        //     this.sectionList.scrollToLocation({
+        //         animated,
+        //         sectionIndex: this.state.sectionedData.length - 1,
+        //         itemIndex: this.state.sectionedData[this.state.sectionedData.length - 1].data.length - 1,
+        //         viewPosition: 1
+        //     });
+        // }
     }
 
     getSectionedDataForNotes(notesResult) {
@@ -138,10 +134,8 @@ export class NotesViewContainer extends Component {
     }
 
     render() {
-        const PlatformBasedView = this.platformBasedView;
-
         return (
-            <PlatformBasedView
+            <View
                 style={{flex: 1}}
                 behavior={'padding'}
                 keyboardVerticalOffset={64}
@@ -153,7 +147,8 @@ export class NotesViewContainer extends Component {
                         NoteDataService.getInstance().generateAndPublishNote(message, this.episode);
                     }}
                 />
-            </PlatformBasedView>
+                <KeyboardSpacer />
+            </View>
         );
     }
 }
