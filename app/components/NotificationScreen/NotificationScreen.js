@@ -1,13 +1,14 @@
 import moment from 'moment/moment';
 import React, {Component} from 'react';
-import {View, TouchableOpacity, SectionList, AsyncStorage, Alert} from 'react-native';
-import {PrimaryColor} from '../../utils/constants';
+import {View, TouchableOpacity, SectionList, AsyncStorage, Alert, Image} from 'react-native';
+import {notificationType} from '../../utils/constants';
 import StyledText from '../common/StyledText';
 import styles from '../common/SectionedList/styles';
 import {NotificationService} from '../../data_services/MessagingServices/NotificationService';
 import {dateService} from '../../data_services/DateService';
 import {PatientDataService} from '../../data_services/PatientDataService';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
+import {Images} from '../../Images';
 
 function renderSectionHeader({section}) {
     return (
@@ -117,6 +118,21 @@ export class NotificationScreen extends Component {
             timeSinceNotification = `${daysDiff} day${daysDiff > 1 ? 's' : ''} ago`;
         }
 
+        let leftIcon;
+        switch (item.type) {
+            case notificationType.NEW_NOTE:
+                leftIcon = Images.notificationAddNote;
+                break;
+            case notificationType.NEW_PATIENT:
+                leftIcon = Images.notificationAddPatient;
+                break;
+            case notificationType.VISIT_COLLISION:
+                leftIcon = Images.notificationVisitCollision;
+                break;
+            default:
+                break;
+        }
+
         return (
             <TouchableOpacity
                 style={{
@@ -163,18 +179,18 @@ export class NotificationScreen extends Component {
                             justifyContent: 'space-around'
                         }}
                     >
-                        <View
+                        <Image
+                            source={leftIcon}
                             style={{
-                                backgroundColor: item.createdTime <= this.state.lastSeenNotificationTimestamp ? 'transparent' : PrimaryColor,
-                                borderRadius: 7,
-                                height: 7,
-                                width: 7
+                                width: '40%',
+                                resizeMode: 'contain',
+                                tintColor: (item.createdTime <= this.state.lastSeenNotificationTimestamp ? '#cccccc' : undefined)
                             }}
                         />
                     </View>
                     <View
                         style={{
-                            flex: 6
+                            flex: 5
                         }}
                     >
                         <StyledText
