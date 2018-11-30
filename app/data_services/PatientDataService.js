@@ -202,7 +202,7 @@ export class PatientDataService {
         console.log('done with first block');
 
         if (episodeArgument && episodeArgument.careTeam && episodeArgument.careTeam.length > 0) {
-            console.log('going for the kill');
+            console.log(`trying to attach care team to patient for episode ${episodeArgument.careTeam}`);
             const promises = episodeArgument.careTeam.map(userID => UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID));
             Promise.all(promises).then(() => {
                 const careTeamUsers = filterResultObjectByListMembership(this.floDB.objects(User), 'userID', episodeArgument.careTeam);
@@ -210,8 +210,11 @@ export class PatientDataService {
                     episodeObject.careTeam = careTeamUsers;
                 });
             }).catch(error => {
-                console.log('yahan phata');
+                console.log(`error while attaching care team to episode ${episode.episodeID}`);
             });
+        } else {
+            console.log(`for patient id ${patientId}, episode id ${episodeArgument.episodeID}, no care team description found`);
+            console.log(episodeArgument);
         }
 
         if (newPatient) {

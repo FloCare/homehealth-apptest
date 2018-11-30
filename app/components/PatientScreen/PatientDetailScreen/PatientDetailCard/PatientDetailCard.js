@@ -391,6 +391,7 @@ const cardViewStyle = {
         height: 0.1
     },
     shadowOpacity: 1,
+    elevation: 4,
 };
 
 export {PatientDetailCard};
