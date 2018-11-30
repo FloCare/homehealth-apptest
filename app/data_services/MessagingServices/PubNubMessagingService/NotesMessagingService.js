@@ -1,11 +1,17 @@
 import firebase from 'react-native-firebase';
+import PubNub from 'pubnub';
 import {NetInfo} from 'react-native';
 import moment from 'moment';
 import {BaseMessagingService} from './BaseMessagingService';
 import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {NoteDataService} from '../../NotesDataService';
-import {eventNames, notificationType, screenNames} from '../../../utils/constants';
+import {
+    eventNames,
+    notificationType,
+    pubnubEternalPubKey, pubnubEternalSubKey,
+    screenNames
+} from '../../../utils/constants';
 import {NotificationService, showNotification} from '../NotificationService';
 import {PatientDataService} from '../../PatientDataService';
 
@@ -52,6 +58,16 @@ export class NotesMessagingService extends BaseMessagingService {
 
     getName() {
         return NotesMessagingService.identifier;
+    }
+
+    newClient(userID) {
+        return new PubNub({
+            publishKey: pubnubEternalPubKey,
+            subscribeKey: pubnubEternalSubKey,
+            uuid: userID,
+            ssl: true,
+            keepAlive: false
+        });
     }
 
     onMessage(messageObject) {

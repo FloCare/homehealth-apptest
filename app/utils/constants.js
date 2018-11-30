@@ -187,6 +187,11 @@ export const pubnubPubKey = 'pubnubPubKey';
 //ending in 524 is dev key
 export const pubnubSubKey = 'pubnubSubKey';
 
+//ending in a3b is dev key
+export const pubnubEternalPubKey = 'pubnubPubKey';
+//ending in 524 is dev key
+export const pubnubEternalSubKey = 'pubnubSubKey';
+
 export const instabugKey = 'instabugKey';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
