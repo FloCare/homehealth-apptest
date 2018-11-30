@@ -55,8 +55,8 @@ function navigationButtons(props) {
             <View
                 style={{
                     flex: 1,
-                    borderTopLeftRadius: 17.5,
-                    borderBottomLeftRadius: 17.5,
+                    borderTopLeftRadius: 17,
+                    borderBottomLeftRadius: 17,
                     backgroundColor: PrimaryColor,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -78,8 +78,8 @@ function navigationButtons(props) {
             <View
                 style={{
                     flex: 1,
-                    borderTopRightRadius: 17.5,
-                    borderBottomRightRadius: 17.5,
+                    borderTopRightRadius: 17,
+                    borderBottomRightRadius: 17,
                     backgroundColor: PrimaryColor,
                     flexDirection: 'row',
                     alignItems: 'center',
