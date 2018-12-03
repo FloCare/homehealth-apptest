@@ -39,6 +39,7 @@
     "react-native-elements": "^0.19.1",
     "react-native-firebase": "^4.3.8",
     "react-native-google-places-autocomplete": "github:FloCare/react-native-google-places-autocomplete",
+    "react-native-image-picker": "^0.27.1",
     "react-native-immediate-phone-call": "^1.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.6.0",
     "react-native-keyboard-spacer": "^0.4.1",

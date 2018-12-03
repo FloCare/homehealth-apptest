@@ -49,6 +49,8 @@
 	<string> FloCare needs access to the microphone to be able to attach voice notes </string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string> FloCare needs access to your photo library for you to be able to attach images</string>
+	<key>NSCameraUsageDescription</key>
+	<string>FloCare would like access to your camera to enable photo sharing in notes.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>

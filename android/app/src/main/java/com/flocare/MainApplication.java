@@ -20,6 +20,8 @@ import com.facebook.soloader.SoLoader;
 import com.facebook.react.ReactInstanceManager;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import com.imagepicker.ImagePickerPackage;
+
 // Add CodePush imports
 import com.microsoft.codepush.react.ReactInstanceHolder;
 import com.microsoft.codepush.react.CodePush;
@@ -60,6 +62,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
               .setPrimaryColor(PrimaryColor)
               .build(),
             new RNFirebaseMessagingPackage(),
+            new ImagePickerPackage(),
             new RNFirebaseNotificationsPackage()
     );
   }
