@@ -143,8 +143,8 @@ export class NotesViewContainer extends Component {
                 {this.notesSectionBody()}
                 <NoteTextBox
                     patientName={this.patient ? this.patient.name : undefined}
-                    onSubmit={message => {
-                        NoteDataService.getInstance().generateAndPublishNote(message, this.episode);
+                    onSubmit={({text, imageData}) => {
+                        NoteDataService.getInstance().generateAndPublishNote(text, this.episode, imageData);
                     }}
                 />
                 {Platform.OS === 'ios' ? <KeyboardSpacer onToggle={this.props.onKeyboardToggle} /> : undefined}

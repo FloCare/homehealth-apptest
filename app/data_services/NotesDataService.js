@@ -40,7 +40,7 @@ export class NoteDataService {
         });
     }
 
-    generateNewNote(message, episode) {
+    generateNewNote(message, episode, imageData = undefined) {
         const note = {
             messageID: generateUUID(),
             episode,
