@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {PrimaryColor} from '../../utils/constants';
+import { PrimaryColor, PrimaryFontFamily } from '../../utils/constants'
 
 export const styles = StyleSheet.create({
     // container: {
@@ -60,20 +60,32 @@ export const styles = StyleSheet.create({
     cardContainerStyle: {
         borderRadius: 4,
         // paddingBottom: 0,
-        margin: 10,
-        marginLeft: 15,
-        marginRight: 15,
         marginBottom: undefined,
         backgroundColor: '#ffffff',
-        shadowColor: 'rgba(0, 0, 0, 0.11)',
+        shadowColor: 'rgba(0, 0, 0, 0.21)',
         shadowOffset: {
             width: 0,
             height: 0
         },
-        shadowRadius: 11,
+        shadowRadius: 1,
         shadowOpacity: 1,
-        elevation: 4
+        elevation: 3
     },
+    cardMarginStyle: {
+        margin: 10,
+        marginLeft: 5,
+        marginRight: 15,
+    },
+    milesHeadingStyle: {
+        fontSize: 11,
+        color: '#999999',
+        fontFamily: PrimaryFontFamily
+    },
+    milesDataStyle: {
+        fontSize: 10,
+        color: '#222222',
+        fontFamily: PrimaryFontFamily
+    }
     // containerStyle: {
     //     flex: 1,
     //     margin: 4,

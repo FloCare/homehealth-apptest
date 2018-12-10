@@ -2,21 +2,37 @@ import React, {Component} from 'react';
 import firebase from 'react-native-firebase';
 import {connect} from 'react-redux';
 import codePush from 'react-native-code-push';
-import {View, Alert, NetInfo, Dimensions, Platform} from 'react-native';
+import {
+    SafeAreaView,
+    Alert,
+    NetInfo,
+    Dimensions,
+    Platform,
+    AsyncStorage,
+    ScrollView,
+    View
+} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import moment from 'moment';
-import {HomeScreen} from './HomeScreen';
+import Instabug from 'instabug-reactnative';
+import {HomeDayView} from './HomeDayView';
 import {screenNames, eventNames, parameterValues} from '../../utils/constants';
 import Fab from '../common/Fab';
 // import {addListener, todayMomentInUTCMidnight} from '../../utils/utils';
 import {HandleConnectionChange} from '../../utils/connectionUtils';
 import {dateService} from '../../data_services/DateService';
+import {setItem} from '../../utils/InMemoryStore';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
+import {CalendarStripStyled} from '../common/CalendarStripStyled';
+import {DayCard} from '../WeekViewScreen/DayCard';
+import {VisitService} from '../../data_services/VisitServices/VisitService';
 
-var codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1 };
+const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1, ignoreFailedUpdates: false};
 
 class HomeScreenContainer extends Component {
     constructor(props) {
         super(props);
+        this.state = {calendarMode: 'Day', currentViewWeekStart: moment(this.props.date).day(1)};
 
         this.navigateToVisitListScreen = this.navigateToVisitListScreen.bind(this);
         this.navigateToVisitMapScreen = this.navigateToVisitMapScreen.bind(this);
@@ -30,8 +46,10 @@ class HomeScreenContainer extends Component {
         this.navigateToAddVisitFAB = this.navigateToAddVisitFAB.bind(this);
 
         this.onNavigatorEvent = this.onNavigatorEvent.bind(this);
+        this.onModeChange = this.onModeChange.bind(this);
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
         // addListener(this.onOrderChange);
+        setItem('navigator', this.props.navigator);
     }
 
     componentDidMount() {
@@ -45,7 +63,36 @@ class HomeScreenContainer extends Component {
         );
 
         SplashScreen.hide();
+        setTimeout(() => { this.showInstabugOnboardingMessage(); }, 1000);
     }
+
+    setOnboardingStatus = (onBoardingStatus) => {
+        AsyncStorage.setItem('onBoardingMessagesStatus', JSON.stringify(onBoardingStatus));
+    };
+
+    getOnboardingStatus = async () => {
+        try {
+            return JSON.parse(await AsyncStorage.getItem('onBoardingMessagesStatus'));
+        } catch (error) {
+            return { };
+        }
+    };
+
+    isInstaBugOnboardingMessageShown = (onBoardingStatusObject) => (
+        onBoardingStatusObject && onBoardingStatusObject.instaBugStatus
+    );
+
+    showInstabugOnboardingMessage = async () => {
+        const onboardingStatus = await this.getOnboardingStatus();
+        if (!this.isInstaBugOnboardingMessageShown(onboardingStatus)) {
+            Instabug.showWelcomeMessage(Instabug.welcomeMessageMode.live);
+            const updatedOnBoardingStatus = {
+                ...onboardingStatus,
+                instaBugStatus: true
+            };
+            this.setOnboardingStatus(updatedOnBoardingStatus);
+        }
+    };
 
     onNavigatorEvent(event) {
         // if (event.type === 'DeepLink') {
@@ -68,6 +115,10 @@ class HomeScreenContainer extends Component {
         if (event.id === 'didAppear') {
             firebase.analytics().setCurrentScreen(screenNames.home, screenNames.home);
         }
+        if (event.id === 'bottomTabReselected') {
+            this.onDateSelected(todayMomentInUTCMidnight());
+            this.calendarRef.resetCalendar();
+        }
     }
 
     onDateSelected(date) {
@@ -81,6 +132,10 @@ class HomeScreenContainer extends Component {
     //     this.forceUpdate();
     //     console.log('Home screen force update');
     // }
+
+    onModeChange(mode) {
+        this.setState({calendarMode: mode});
+    }
 
     onPatientAdded() {
         Alert.alert(
@@ -103,6 +158,7 @@ class HomeScreenContainer extends Component {
                 selectedScreen: 'list',
             },
             navigatorStyle: {
+                navBarTextColor: 'white',
                 tabBarHidden: true
             }
         });
@@ -115,6 +171,7 @@ class HomeScreenContainer extends Component {
                 selectedScreen: 'map',
             },
             navigatorStyle: {
+                navBarTextColor: 'white',
                 tabBarHidden: true
             }
         });
@@ -181,19 +238,21 @@ class HomeScreenContainer extends Component {
         });
     }
 
-    render() {
-        return (
-            <View
-                style={[
-                    {backgroundColor: '#fcfcfc'},
-                    Platform.select({
-                        ios: {height: Dimensions.get('window').height - getTabBarHeight()},
-                        android: {flex: 1}
-                    })]}
-            >
-                <HomeScreen
+    getDatesForWeek(date) {
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+            dates.push(moment(date).utc().day(1).add(i, 'd').valueOf());
+        }
+        return dates;
+    }
+
+    getMainBody(calendarMode) {
+        if (calendarMode === 'Day') {
+            return (
+                <HomeDayView
                     visitID={this.props.nextVisitID}
                     navigator={this.props.navigator}
+                    dateMinusToday={this.props.dateMinusToday}
                     navigateToVisitMapScreen={this.navigateToVisitMapScreen}
                     navigateToVisitListScreen={this.navigateToVisitListScreen}
                     date={moment(this.props.date).utc()}
@@ -204,17 +263,81 @@ class HomeScreenContainer extends Component {
                     onPressAddVisit={this.navigateToAddVisit}
                     onPressAddVisitZeroState={this.navigateToAddVisitFAB}
                 />
+            );
+        }
+
+        const weekViewColumnGenerator = dayFilter => (
+                <View
+                    style={{flex: 1}}
+                >
+                    {
+                        this.getDatesForWeek(this.state.currentViewWeekStart).map(date => {
+                            const day = moment(date).utc().day();
+                            const visitOrder = VisitService.getInstance().visitRealmService.getVisitOrderForDate(date);
+                            if (dayFilter(day, visitOrder.visitList.length)) {
+                                return (
+                                    <DayCard
+                                        visitOrder={visitOrder}
+                                    />
+                                );
+                            }
+                        })
+                    }
+                </View>
+            );
+
+        return (
+            <View
+                style={{
+                    flexDirection: 'row',
+                    marginTop: 10,
+                    marginHorizontal: 5
+                }}
+            >
+                {weekViewColumnGenerator((day, visitsOnDay) => day % 2 === 1 || (day === 0 && visitsOnDay > 0))}
+                {weekViewColumnGenerator((day) => day % 2 === 0 && day !== 0)}
+            </View>
+        );
+    }
+
+    render() {
+        return (
+            <SafeAreaView
+                style={[
+                    {backgroundColor: '#F8F8F8'},
+                    Platform.select({
+                        ios: {height: Dimensions.get('window').height - getTabBarHeight()},
+                        android: {flex: 1}
+                    })]}
+            >
+                <CalendarStripStyled
+                    ref={ref => { this.calendarRef = ref; }}
+                    onModeChange={this.onModeChange}
+                    onWeekChanged={date => this.setState({currentViewWeekStart: moment(date).utc().day(1)})}
+                    dateRowAtBottom
+                    showMonth
+                    paddingTop={Platform.select({ios: 20, android: 20})}
+                    date={moment(this.props.date).utc()}
+                    // noRounding={props.remainingVisitsCount === 0}
+                    onDateSelected={this.onDateSelected}
+                />
+                <ScrollView
+                    style={{flex: 1}}
+                    keyboardShouldPersistTaps
+                >
+                    {this.getMainBody(this.state.calendarMode)}
+                </ScrollView>
                 <Fab
                     onPressAddNote={this.navigateToAddNote}
-                    onPressAddVisit={() => {         
+                    onPressAddVisit={() => {
                         firebase.analytics().logEvent(eventNames.FLOATING_BUTTON, {
                             type: parameterValues.ADD_VISIT
-                        }); 
-                        this.navigateToAddVisitFAB(); 
+                        });
+                        this.navigateToAddVisitFAB();
                     }}
                     onPressAddPatient={this.navigateToAddPatient}
                 />
-            </View>
+            </SafeAreaView>
         );
     }
 }
@@ -233,13 +356,14 @@ function getTabBarHeight() {
 }
 
 function stateToProps(state) {
+    const isVisitDone = (visitID) => state.visits[visitID] && state.visits[visitID].isDone;
     return {
         nextVisitID: state.visitOrder[0],
         date: state.date,
-        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (state.visits[visitID].isDone ? 0 : 1), 0),
+        dateMinusToday: state.date < todayMomentInUTCMidnight().valueOf() ? -1 : (state.date === todayMomentInUTCMidnight().valueOf() ? 0 : 1),
+        remainingVisits: state.visitOrder.reduce((totalRemaining, visitID) => totalRemaining + (isVisitDone(visitID) ? 0 : 1), 0),
         totalVisits: state.visitOrder.length,
     };
 }
 
-HomeScreenContainer = codePush(codePushOptions)(HomeScreenContainer);
-export default connect(stateToProps)(HomeScreenContainer);
+export default connect(stateToProps)(codePush(codePushOptions)(HomeScreenContainer));

@@ -1,18 +1,20 @@
 import React from 'react';
-import {Platform, Text, TouchableOpacity} from 'react-native';
+import {Platform, TouchableOpacity} from 'react-native';
 import {PrimaryColor} from '../../utils/constants';
+import StyledText from './StyledText';
 
 const SimpleButton = (props) => (
     <TouchableOpacity
-        style={[styles.buttonStyle, props.style]}
+        disabled={props.disabled}
+        style={{...styles.buttonStyle, ...props.style}}
         onPress={props.onPress}
         underlayColor={'transparent'}
     >
-        <Text
-            style={[styles.textStyle, props.textStyle]}
+        <StyledText
+            style={{...styles.textStyle, ...props.textStyle}}
         >
             {props.title}
-        </Text>
+        </StyledText>
     </TouchableOpacity>
 );
 
@@ -22,7 +24,7 @@ export const ButtonTextStyles = {
         fontSize: 18,
         fontFamily: Platform.select({ios: 'SFProDisplay-Regular', android: 'SF-Pro-Display-Regular'}),
     }
-}
+};
 
 const styles = {
     buttonStyle: {

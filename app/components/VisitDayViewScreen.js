@@ -55,7 +55,7 @@ class VisitDayViewScreen extends Component {
             rightButtons: [
                 {
                     id: 'map-view',
-                    icon: Images.mapView
+                    icon: Images.map
                 },
             ]
         });
@@ -70,7 +70,7 @@ class VisitDayViewScreen extends Component {
             rightButtons: [
                 {
                     id: 'list-view',
-                    icon: Images.listView,
+                    icon: Images.list,
                 },
             ]
         });

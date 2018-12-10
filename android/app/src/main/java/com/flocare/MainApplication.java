@@ -3,6 +3,7 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.microsoft.codepush.react.CodePush;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
@@ -17,10 +18,13 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.facebook.react.ReactInstanceManager;
-
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 // Add CodePush imports
 import com.microsoft.codepush.react.ReactInstanceHolder;
 import com.microsoft.codepush.react.CodePush;
+
+import com.facebook.soloader.SoLoader;
 
 import com.reactnativenavigation.NavigationApplication;
 
@@ -37,6 +41,9 @@ public class MainApplication extends NavigationApplication implements ReactInsta
     return BuildConfig.DEBUG;
   }
 
+  static String PrimaryColor = "#64CCC9";
+  static String instabugKey = "29d3f443148b83202e3213845ff10c87";
+
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
             new RealmReactPackage(),
@@ -47,7 +54,13 @@ public class MainApplication extends NavigationApplication implements ReactInsta
             new RNImmediatePhoneCallPackage(),
             new SplashScreenReactPackage(),
             new RNFirebaseAnalyticsPackage(),
-            new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG)
+            new CodePush("DB8_DQ_y6WcixAQfvBs9jKnTAyP7HyHVeyEM7", getApplicationContext(), BuildConfig.DEBUG),
+            new RNInstabugReactnativePackage.Builder(instabugKey, MainApplication.this)
+              .setInvocationEvent("screenshot")
+              .setPrimaryColor(PrimaryColor)
+              .build(),
+            new RNFirebaseMessagingPackage(),
+            new RNFirebaseNotificationsPackage()
     );
   }
 
@@ -72,4 +85,10 @@ public class MainApplication extends NavigationApplication implements ReactInsta
         // CodePush must be told how to find React Native instance
         return getReactNativeHost().getReactInstanceManager();
     }
+
+    @Override
+      public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+      }
 }

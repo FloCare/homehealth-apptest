@@ -34,9 +34,9 @@ const PatientFormTemplate = (locals) => {
             <View style={styles.margin}>
                 {locals.inputs.primaryContact}
             </View>
-            <View style={{...styles.margin}}>
-                {locals.inputs.notes}
-            </View>
+            {/*<View style={{...styles.margin}}>*/}
+                {/*{locals.inputs.notes}*/}
+            {/*</View>*/}
             {
                 locals.value.showDateOfBirth &&
                 <View style={{...styles.margin}}>

@@ -1,5 +1,5 @@
 import {VisitActions, VisitOrderActions} from '../../redux/Actions';
-import {placeDataService} from '../PlaceDataService';
+import {PlaceDataService} from '../PlaceDataService';
 import {VisitService} from './VisitService';
 import {PatientDataService} from '../PatientDataService';
 
@@ -31,6 +31,17 @@ export class VisitReduxService {
         this.store.dispatch({type: VisitOrderActions.SET_ORDER, visitOrder: visitOrder.map(visit => visit.visitID)});
     }
 
+    updateVisitPropertyInRedux(visitID, key, value) {
+        this.store.dispatch(
+            {
+                type: VisitActions.EDIT_SINGLE_VISIT,
+                visitID,
+                updateKey: key,
+                updateValue: value
+            }
+        );
+    }
+
     updateVisitOrderToReduxIfLive(visitList, midnightEpoch) {
         // console.log('checking to see if visit order date matches state date');
         console.log('Updating visit order in Redux for date:', midnightEpoch);
@@ -44,17 +55,21 @@ export class VisitReduxService {
         this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitService.getFlatVisitMap([visit])});
     }
 
+    updateVisitsToRedux(visits) {
+        this.store.dispatch({type: VisitActions.EDIT_VISITS, visitList: VisitService.getFlatVisitMap(visits)});
+    }
+
     addVisitsToRedux(visits) {
         this.store.dispatch({type: VisitActions.ADD_VISITS, visitList: VisitService.getFlatVisitMap(visits)});
         PatientDataService.getInstance().addPatientsToRedux(visits.map(visit => visit.getPatient()).filter(patient => patient));
-        placeDataService.addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
+        PlaceDataService.getInstance().addPlacesToRedux(visits.map(visit => visit.getPlace()).filter(place => place));
     }
 
-    deleteVisitsFromRedux(visits) {
+    deleteVisitsFromRedux(visitIDs) {
         console.log('Deleting visits from Redux');
         this.store.dispatch({
             type: VisitActions.DELETE_VISITS,
-            visitList: VisitService.getFlatVisitMap(visits)
+            visitIDs
         });
     }
 }

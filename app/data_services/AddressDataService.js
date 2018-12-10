@@ -7,7 +7,7 @@ class AddressDataService {
         return {
             addressID: address.addressID,
             formattedAddress: address.formattedAddress,
-
+            navigationAddress: address.navigationAddress,
             latitude: address.latitude,
             longitude: address.longitude,
         };
@@ -35,10 +35,10 @@ class AddressDataService {
     }
 
     // Should be a part of a realm write transaction
-    addAddressToTransaction(owner, address, addressId) {
-        if (owner) {
+    addAddressToTransaction(subject, address, addressId) {
+        if (subject) {
             if (address.lat && address.long) {
-                owner.address = {
+                subject.address = {
                     addressID: addressId,
                     streetAddress: address.streetAddress ? address.streetAddress.toString().trim() : '',
                     apartmentNo: address.apartmentNo ? address.apartmentNo.toString().trim() : '',
@@ -48,12 +48,12 @@ class AddressDataService {
                     country: address.country ? address.country.toString().trim() : 'US',
                     isValidated: true
                 };
-                owner.address.coordinates = {
+                subject.address.coordinates = {
                     latitude: address.lat,
                     longitude: address.long
                 };
             } else {
-                owner.address = {
+                subject.address = {
                     addressID: addressId,
                     streetAddress: address.streetAddress ? address.streetAddress.toString().trim() : '',
                     apartmentNo: address.apartmentNo ? address.apartmentNo.toString().trim() : '',

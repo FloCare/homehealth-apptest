@@ -1,16 +1,22 @@
 import React, {Component} from 'react';
-import {Linking, Alert, Platform} from 'react-native';
+import {Linking, Alert, Platform, NetInfo} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNImmediatePhoneCall from 'react-native-immediate-phone-call';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {PatientListScreen} from '../components/PatientListScreen';
 import {floDB, Patient} from '../utils/data/schema';
-import {screenNames, eventNames, parameterValues} from '../utils/constants';
-import {createSectionedListByName} from '../utils/collectionUtils';
+import {
+    screenNames,
+    eventNames,
+    parameterValues,
+    visitSubjects,
+} from '../utils/constants';
+import {createSectionedListByField} from '../utils/collectionUtils';
 import {styles} from '../components/common/styles';
 import {Images} from '../Images';
 import {PatientDataService} from '../data_services/PatientDataService';
 import {addressDataService} from '../data_services/AddressDataService';
+import {getAllPatientsBasicInfo} from '../utils/API/PatientAPI';
 
 class PatientListScreenContainer extends Component {
     static navigatorButtons = {
@@ -38,10 +44,15 @@ class PatientListScreenContainer extends Component {
             patientList: [],
             patientCount: 0,      // not always a count of patientList
             selectedPatient: props.selectedPatient || null,
-            refreshing: false,
-            isTeamVersion: undefined
+            allPatientsJson: undefined,
+            searchingOnline: false,
         };
-        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
+        NetInfo.addEventListener('connectionChange', this.onConnectionStatusChange.bind(this));
+        NetInfo.isConnected.fetch().then(isConnected => {
+            if (isConnected) this.setState({online: true});
+            else this.setState({online: false});
+        });
+
         this.patientMoreMenu = [
             {id: 'Notes', title: 'Add Notes'},
             {id: 'Call', title: 'Call'},
@@ -66,13 +77,25 @@ class PatientListScreenContainer extends Component {
     }
 
     onSearch(query) {
+        if ((!this.state.searchText || this.state.searchText.length === 0) && query.length === 1) {
+            this.setState({searchingOnline: true});
+            getAllPatientsBasicInfo().then(respJson => {
+                this.setState({allPatientsJson: respJson, searchingOnline: false}, () => {
+                    this.getSectionData(this.state.searchText);
+                });
+            }).catch(error => {
+                console.log('failed to fetch all patients');
+                console.log(error);
+                this.setState({allPatientsJson: null, searchingOnline: false});
+            });
+        }
         this.setState({searchText: query});
         this.getSectionData(query);
     }
 
     onItemPressed(item) {
         this.navigateTo(
-            screenNames.patientDetails,
+            screenNames.patient,
             item.item.name, {
                 patientId: item.item.patientID
             });
@@ -157,14 +180,15 @@ class PatientListScreenContainer extends Component {
                     VALUE: 1
                 });
                 this.props.navigator.showLightBox({
-                    screen: screenNames.addVisitsForPatientScreen,
+                    screen: screenNames.addOrRescheduleVisitsLightBox,
                     style: {
                         backgroundBlur: 'dark',
                         backgroundColor: '#00000070',
                         tapBackgroundToDismiss: true
                     },
                     passProps: {
-                        patientId: item.patientID
+                        patientId: item.patientID,
+                        visitSubject: visitSubjects.PATIENT
                     },
                 });
                 break;
@@ -208,7 +232,7 @@ class PatientListScreenContainer extends Component {
             const sortedPatientList = this.patientDataService().getPatientsSortedByName(patientList);
             const formattedPatientList = this.getFormattedPatientList(sortedPatientList);
             const patientCount = formattedPatientList.length;
-            const sectionedPatientList = createSectionedListByName(formattedPatientList);
+            const sectionedPatientList = createSectionedListByField(formattedPatientList);
             const recentPatientsSection = this.createRecentPatientsSection(formattedPatientList);
             this.setState({
                 patientList: recentPatientsSection ? [recentPatientsSection, ...sectionedPatientList] : sectionedPatientList,
@@ -220,8 +244,10 @@ class PatientListScreenContainer extends Component {
             // Todo: Search on other fields ???
             const filteredPatientList = PatientDataService.getInstance().getPatientsFilteredByName(query);
             const formattedPatientList = this.getFormattedPatientList(filteredPatientList);
-            const sectionedPatientList = createSectionedListByName(formattedPatientList);
-            this.setState({patientList: sectionedPatientList});
+            const sectionedPatientList = createSectionedListByField(formattedPatientList);
+
+            const onlinePatientsSection = this.createOnlinePatientsSection(query);
+            this.setState({patientList: onlinePatientsSection ? [...sectionedPatientList, onlinePatientsSection] : sectionedPatientList});
         }
     }
 
@@ -238,6 +264,85 @@ class PatientListScreenContainer extends Component {
         return undefined;
     }
 
+    onConnectionStatusChange(connectionInfo) {
+        console.log(`Connection change, type: ${connectionInfo.type}, effectiveType: ${connectionInfo.effectiveType}`);
+        if (connectionInfo.type !== 'none' && connectionInfo.type !== 'unknown') {
+            this.setState({online: true}, () => { this.getSectionData(this.state.searchText); });
+        } else {
+            this.setState({online: false}, () => { this.getSectionData(this.state.searchText); });
+        }
+    }
+
+    onPressOnlinePatient(patient) {
+        this.props.navigator.showLightBox({
+            screen: screenNames.onlinePatientLightBox,
+            style: {
+                backgroundBlur: 'dark',
+                backgroundColor: '#00000070',
+                tapBackgroundToDismiss: true
+            },
+            passProps: {
+                patient,
+            },
+        });
+    }
+
+    createOnlinePatientsSection(query) {
+        if (!this.state.online) return;
+
+        if (!this.state.allPatientsJson && this.state.searchingOnline) {
+            return {title: 'Online Results', data: [{name: 'Searching...', address: {}}]};
+        }
+        if (this.state.allPatientsJson) {
+            const filteresPatients = this.state.allPatientsJson.filter(patientJson => {
+                let allTermsFound = true;
+                query.split(' ').forEach(queryTerm => {
+                    allTermsFound = allTermsFound && (
+                        (patientJson.firstName && patientJson.firstName.toLowerCase().includes(queryTerm.toLowerCase()))
+                        || (patientJson.lastName && patientJson.lastName.toLowerCase().includes(queryTerm.toLowerCase())));
+                });
+                return allTermsFound;
+            }).filter(patientJson => {
+                const patient = PatientDataService.getInstance().getPatientByID(patientJson.patientID);
+                return !patient || patient.archived;
+            });
+
+            const data = filteresPatients.map(patientJson => ({
+                name: PatientDataService.constructName(patientJson.firstName, patientJson.lastName),
+                address: {
+                    formattedAddress: this.getformattedAddress(patientJson.address)
+                },
+                patientID: patientJson.patientID,
+                onPress: this.onPressOnlinePatient.bind(this),
+            }));
+
+            return data.length > 0 ? {
+                title: 'Online Results',
+                data
+            } : undefined;
+        }
+    }
+
+    getformattedAddress(addressObj) {
+        let addr = '';
+        if (addressObj.apartmentNo) {
+            addr += `${addressObj.apartmentNo}, `;
+        }
+        if (addressObj.streetAddress) {
+            addr += `${addressObj.streetAddress}`;
+        }
+        if (addressObj.city) {
+            addr += `, ${addressObj.city}`;
+        }
+        if (addressObj.zipCode) {
+            addr += ` ${addressObj.zipCode}`;
+        }
+        if (addressObj.state) {
+            addr += `, ${addressObj.state}`;
+        }
+        return addr;
+    }
+
     componentWillUnmount() {
         floDB.removeListener('change', this.handleListUpdate);
     }
@@ -248,7 +353,7 @@ class PatientListScreenContainer extends Component {
         });
 
         // Todo: Don't query again
-        this.getSectionData(null);
+        this.getSectionData(this.state.searchText);
     }
 
     navigateTo(screen, title, props) {
@@ -271,41 +376,9 @@ class PatientListScreenContainer extends Component {
         this.navigateTo(screenNames.addPatient, title, prop);
     }
 
-    onRefresh() {
-        firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
-            type: parameterValues.REFRESH
-        });
-        this.patientDataService().updatePatientListFromServer()
-            .then((result) => {
-                this.setState({refreshing: false});
-
-                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
-                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
-
-                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
-                if (!newPatientsCount && !deletedPatientsCount) {
-                    subtitle = 'No new changes';
-                }
-                Alert.alert(
-                    'Refresh Completed',
-                    subtitle
-                );
-            })
-            .catch(error => {
-                this.setState({refreshing: false});
-                console.log(error);
-                Alert.alert(
-                    'Refresh Failed',
-                );
-            });
-        this.setState({refreshing: true});
-    }
-
     render() {
         return (
             <PatientListScreen
-                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
-                refreshing={this.state.refreshing}
                 patientList={this.state.patientList}
                 patientCount={this.state.patientCount}
                 searchText={this.state.searchText}

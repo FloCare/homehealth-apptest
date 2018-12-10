@@ -6,14 +6,35 @@ import {Address} from './schemas/Models/address/Address';
 import {Episode} from './schemas/Models/episode/Episode';
 import {Patient} from './schemas/Models/patient/Patient';
 import {Place} from './schemas/Models/place/Place';
+import {User} from './schemas/Models/user/User';
 import {Visit} from './schemas/Models/visit/Visit';
+import {Note} from './schemas/Models/note/Note';
 import {VisitOrder} from './schemas/Models/visitOrder/VisitOrder';
+import {Physician} from './schemas/Models/physician/Physician';
+import {Task} from './schemas/Models/task/Task';
+import {VisitMiles} from './schemas/Models/visitMiles/VisitMiles';
+import {ReportItem} from './schemas/Models/reportItem/ReportItem';
+import {Report} from './schemas/Models/report/Report';
+import {Notification} from './schemas/Models/notification/Notification';
 import * as PatientSchemas from './schemas/Models/patient/schemaVersions/SchemaIndex';
 import * as AddressSchemas from './schemas/Models/address/schemaVersions/SchemaIndex';
 import * as EpisodeSchemas from './schemas/Models/episode/schemaVersions/SchemaIndex';
 import * as PlaceSchemas from './schemas/Models/place/schemaVersions/SchemaIndex';
+import * as UserSchemas from './schemas/Models/user/schemaVersions/SchemaIndex';
 import * as VisitSchemas from './schemas/Models/visit/schemaVersions/SchemaIndex';
 import * as VisitOrderSchemas from './schemas/Models/visitOrder/schemaVersions/SchemaIndex';
+import * as PhysicianSchemas from './schemas/Models/physician/schemaVersions/SchemaIndex';
+import * as TaskSchemas from './schemas/Models/task/schemaVersions/SchemaIndex';
+import * as NotificationSchemas from './schemas/Models/notification/schemaVersions/SchemaIndex';
+import * as VisitMilesSchemas from './schemas/Models/visitMiles/schemaVersions/SchemaIndex';
+import * as ReportItemSchemas from './schemas/Models/reportItem/schemaVersions/SchemaIndex';
+import * as ReportSchemas from './schemas/Models/report/schemaVersions/SchemaIndex';
+import * as NoteSchemas from './schemas/Models/note/schemaVersions/SchemaIndex';
+import {PhysicianDataService} from '../../data_services/PhysicianDataService';
+import {UserDataService} from '../../data_services/UserDataService';
+import {getPatientsByOldID} from '../API/PatientAPI';
+import {arrayToObjectByKey} from '../collectionUtils';
+import {setItem} from '../InMemoryStore';
 
 const Realm = require('realm');
 
@@ -24,7 +45,7 @@ class FloDBProvider {
         return floDB;
     }
 
-    static initialize(key) {
+    static async initialize(key) {
         console.log('initializing the DB ...');
 
         // 0th element intentionally left blank to make index of the array match with schema version
@@ -36,7 +57,9 @@ class FloDBProvider {
                 schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV3, AddressSchemas.AddressSchemaV1,
                     EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
                 schemaVersion: 1,
-                migration: () => { console.log('Migration function goes here'); },
+                migration: () => {
+                    console.log('Migration function goes here');
+                },
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key)
             },
@@ -83,18 +106,134 @@ class FloDBProvider {
                 migration: Migrations.v005,
                 path: 'database.realm',
                 encryptionKey: stringToArrayBuffer(key),
+            },
+            // {
+            //     schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+            //         EpisodeSchemas.EpisodeSchemaV1, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1],
+            //     schemaVersion: 6,
+            //     prerequisite: () => {
+            //         //TODO get realm old patient to new patient data
+            //         setItem('patientMigrationMapping', {
+            //             18: 'xyz1',
+            //             19: 'xyz2',
+            //             20: 'xyz3',
+            //         });
+            //     },
+            //     migration: (oldRealm, newRealm) => {
+            //         if (oldRealm.schemaVersion < 6) {
+            //             const newPatientObjects = newRealm.objects(Patient.getSchemaName());
+            //
+            //             for (let i = 0; i < newPatientObjects.length; i++) {
+            //                 if (getItem('patientMigrationMapping')[newPatientObjects[i].patientID]) { newPatientObjects[i].patientID = getItem('patientMigrationMapping')[newPatientObjects[i].patientID]; } else console.log('not found');
+            //             }
+            //         }
+            //     },
+            //     path: 'database.realm',
+            //     encryptionKey: stringToArrayBuffer(key),
+            // }
+            {
+                schema: [VisitSchemas.VisitSchemaV1, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    PhysicianSchemas.PhysicianSchemaV1],
+                schemaVersion: 6,
+                migration: () => {
+                    console.log('Migrating to v6. Adding physician');
+                },
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV2, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1],
+                schemaVersion: 7,
+                prerequisite: async oldRealm => {
+                    const allPatients = oldRealm.objects(Patient.getSchemaName());
+                    await getPatientsByOldID(allPatients.filtered('isLocallyOwned = false').map(patient => patient.patientID))
+                        .then(responseJson => {
+                            const patientJsonByOldID = arrayToObjectByKey(responseJson.success, 'id');
+                            setItem('patientJsonByOldID', patientJsonByOldID);
+                        }).catch(error => {
+                            console.log('error in prereq for migrating patient ids');
+                            console.log(error);
+                            throw error;
+                        });
+                },
+                migration: Migrations.v007,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1],
+                schemaVersion: 8,
+                migration: Migrations.v008,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV1, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1],
+                schemaVersion: 9,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV2, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV1,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1],
+                schemaVersion: 10,
+                migration: Migrations.v010,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV2, PlaceSchemas.PlaceSchemaV2, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV1, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV2,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1],
+                schemaVersion: 11,
+                migration: Migrations.v11,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
+            },
+            {
+                schema: [VisitSchemas.VisitSchemaV3, PatientSchemas.PatientSchemaV5, AddressSchemas.AddressSchemaV1,
+                    EpisodeSchemas.EpisodeSchemaV3, PlaceSchemas.PlaceSchemaV2, VisitOrderSchemas.VisitOrderSchemaV1,
+                    UserSchemas.UserSchemaV2, PhysicianSchemas.PhysicianSchemaV1, VisitMilesSchemas.VisitMilesSchemaV2,
+                    ReportItemSchemas.ReportItemSchemaV1, ReportSchemas.ReportSchemaV1, TaskSchemas.TaskSchemaV1,
+                    NotificationSchemas.NotificationSchemaV1, NoteSchemas.NoteSchemaV1],
+                schemaVersion: 12,
+                path: 'database.realm',
+                encryptionKey: stringToArrayBuffer(key),
             }
         ];
 
         const targetSchemaVersion = schemaMigrations[schemaMigrations.length - 1].schemaVersion;
-        const models = [Visit, Patient, Address, Episode, Place, VisitOrder];
+        const models = [Visit, Patient, Address, Episode, Place, VisitOrder, User,
+            Physician, VisitMiles, ReportItem, Report, Task, Notification, Note];
 
-        let currentSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
-        if (currentSchemaVersion >= 0) {
+        let existingSchemaVersion = Realm.schemaVersion('database.realm', stringToArrayBuffer(key));
+        if (existingSchemaVersion >= 0) {
             // Run migrations if schema exists
-            while (currentSchemaVersion < targetSchemaVersion) {
-                const migratedRealm = new Realm(schemaMigrations[currentSchemaVersion++]);
+            while (existingSchemaVersion < targetSchemaVersion) {
+                if (schemaMigrations[existingSchemaVersion + 1].prerequisite) {
+                    const previousRealm = new Realm(schemaMigrations[existingSchemaVersion]);
+                    await schemaMigrations[existingSchemaVersion + 1].prerequisite(previousRealm);
+                    previousRealm.close();
+                }
+                const migratedRealm = new Realm(schemaMigrations[existingSchemaVersion + 1]);
                 migratedRealm.close();
+
+                existingSchemaVersion++;
             }
         }
 
@@ -111,12 +250,28 @@ class FloDBProvider {
                 schemaVersion: schemaMigrations[targetSchemaVersion].schemaVersion,
                 encryptionKey: schemaMigrations[targetSchemaVersion].encryptionKey,
                 path: schemaMigrations[targetSchemaVersion].path,
-                migration: schemaMigrations[targetSchemaVersion].migration
+                migration: schemaMigrations[targetSchemaVersion].migration,
             });
+
+            if (existingSchemaVersion === -1) {
+                FloDBProvider.seedInitialData(floDB);
+            }
             console.log('initialization done ...');
         } catch (err) {
             console.log('ERROR IN DB INITIALIZATION: ', err);
             throw err;
+        }
+    }
+
+    static seedInitialData(db) {
+        try {
+            db.write(() => {
+                const ownUser = db.create(User, UserDataService.getCurrentUserProps());
+                console.log(ownUser);
+            });
+        } catch (e) {
+            console.log('seedInitialData failed');
+            console.log(e);
         }
     }
 }
@@ -131,6 +286,8 @@ function CreateAndSaveDummies() {
     const episodeID = `${Math.random().toString()}_Episode`;
     const patientID = `${Math.random().toString()}_Patient`;
     const visitID = `${Math.random().toString()}_Visit`;
+    const physicianID = `${Math.random().toString()}_Visit`;
+    const npiId = Math.floor(Math.random() * 1000000000).toString();
 
     console.log('==========================================');
     console.log('Creating Realm objects');
@@ -175,10 +332,20 @@ function CreateAndSaveDummies() {
             longitude: -122 + 0.05 * Math.random()
         };
         // Create an Episode
+        const primaryPhysician = PhysicianDataService.getInstance().createNewPhysician({
+            physicianID,
+            npiId,
+            firstName: 'Bellandur',
+            lastName: 'DrName',
+            phone1: '9823401232',
+            phone2: '9857401265',
+            faxNo: '9378620212',
+        });
         patient.episodes.push({
             episodeID,
             diagnosis: ['A', 'B', 'C'],
-            isClosed: true
+            isClosed: true,
+            primaryPhysician
         });
         // patient.episodes[0].visits.push({
         //     visitID,
@@ -192,4 +359,7 @@ function CreateAndSaveDummies() {
     console.log('==========================================');
 }
 
-export {FloDBProvider, floDB, Patient, Episode, Visit, Place, Address, VisitOrder, CreateAndSaveDummies};
+export {
+    FloDBProvider, floDB, Patient, Episode, Visit, Place, Address,
+    VisitOrder, User, Physician, VisitMiles, Report, ReportItem, Task, CreateAndSaveDummies
+};

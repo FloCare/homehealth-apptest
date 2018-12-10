@@ -1,12 +1,18 @@
 import {Platform} from 'react-native';
 
-const PrimaryColor = '#45ceb1';
-const TransparentPrimaryColor = (opacity) => 
+const PrimaryColor = '#64CCC9';
+const ErrorMessageColor = '#F51414';
+const defaultBackGroundColor = '#FFFFFF';
+const detailBackGroundColor = '#F7F7F7';
+
+const TransparentPrimaryColor = (opacity) =>
     // Todo: Can use a method to convert PrimaryColor in hexcode 
     // Todo: to rgba
      `rgba(69, 206, 177, ${opacity})`;
 const PrimaryFontFamily = Platform.select({ios: 'SFProText-Regular', android: 'SF-Pro-Text-Regular'});
 
+const MaxFailedAttempts = 4;
+const LockTimeOnFailedAttempts = 1; // minutes
 
 const diagnosisList = [
     {
@@ -38,23 +44,29 @@ const screenNames = {
     //Top Level Screens
     homeScreen: 'HomeScreen',
     patientList: 'PatientList',
+    notificationScreen: 'NotificationScreen',
     moreScreen: 'MoreScreen',
     loginScreen: 'LoginScreen',
     welcomeScreen: 'WelcomeScreen',
     inviteScreen: 'InviteScreen',
     setPassCodeScreen: 'SetPassCodeScreen',
+    settingUpScreen: 'settingUpScreen',
     thankyouScreen: 'ThankYouScreen',
     passcodeVerificationScreen: 'passcodeVerificationScreen',
     legal: 'Legal',
 
     addPatient: 'AddPatient',
+    patient: 'Patient',
     patientDetails: 'PatientDetails',
     addNote: 'AddNote',
     addStop: 'AddStop',
     stopList: 'StopList',
 
     addVisitScreen: 'AddVisitScreen',
-    addVisitsForPatientScreen: 'AddVisitsForPatientScreen',
+    addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
+    onlinePatientLightBox: 'OnlinePatientLightBox',
+    addTaskComponent: 'addTaskComponent',
+    milesLogScreen: 'MilesLogScreen',
     visitListScreen: 'VisitListScreen',
     visitMapScreen: 'VisitMapScreen',
     visitDayViewScreen: 'VisitDayViewScreen',
@@ -104,13 +116,23 @@ const eventNames = {
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
+    NEW_NOTE_NOTIFICATION: 'NewNoteNotification',
+    COLLABORATION: 'Collaboration',
+    ADD_EDIT_MILES: 'AddOrEditMiles',
+    SEND_REPORT: 'SendReport',
+    SEND_REPORT_RESPONSE: 'SendReportResponse',
+    ADD_TASK: 'AddTask',
+    MARK_TASK_DONE: 'MarkTaskDone',
 };
 
 const parameterValues = {
     SUCCESS: 'success',
     FAILURE: 'failure',
+    IMPORT_PATIENT: 'import_patient',
     CALL_PATIENT: 'call_patient',
     CALL_EMERGENCY: 'call_emergency',
+    CALL_PHYSICIAN: 'call_physician',
+    CALL_CLINICIAN: 'call_clinician',
     NAVIGATION: 'navigation',
     EDIT_NOTES: 'edit_notes',
     MAP: 'map',
@@ -121,8 +143,24 @@ const parameterValues = {
     TOGGLE: 'toggle',
     DND: 'dnd',
     DETAILS: 'details',
-    REFRESH: 'refresh'
+    REFRESH: 'refresh',
+    RESCHEDULE: 'date_reschedule',
+    DELETE_VISIT: 'delete_visit',
+    ADD_TIME: 'add_time',
+    EDIT_TIME: 'edit_time',
+    VIEW_VISIT_CALENDAR: 'view_visit_calendar',
 
+};
+
+const notificationType = {
+    VISIT_COLLISION: 'VISIT_COLLISION',
+    NEW_NOTE: 'NEW_NOTE',
+    NEW_PATIENT: 'NEW_PATIENT'
+};
+
+const visitSubjects = {
+    PLACE: 'Place',
+    PATIENT: 'Patient'
 };
 
 let inActivityTimer = null;
@@ -149,8 +187,18 @@ export const pubnubPubKey = 'pubnubPubKey';
 //ending in 524 is dev key
 export const pubnubSubKey = 'pubnubSubKey';
 
-export const apiServerURL = 'http://192.168.1.101:8000';
-// export const apiServerURL = 'https://app-9781.on-aptible.com';
+//ending in a3b is dev key
+export const pubnubEternalPubKey = 'pubnubPubKey';
+//ending in 524 is dev key
+export const pubnubEternalSubKey = 'pubnubSubKey';
+
+export const instabugKey = 'instabugKey';
+
+// export const apiServerURL = 'http://192.168.1.101:8000';
+export const apiServerURL = 'https://app-11293.on-aptible.com';
 
 
-export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList, screenNames, visitType, PrimaryColor, TransparentPrimaryColor, PrimaryFontFamily, userProperties, eventNames, parameterValues};
+export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
+    screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
+    PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects,
+    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts, defaultBackGroundColor, detailBackGroundColor};

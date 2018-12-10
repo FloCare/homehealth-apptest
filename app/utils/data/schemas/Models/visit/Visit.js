@@ -1,11 +1,15 @@
-import * as CollectionUtils from "../../../../collectionUtils";
+import * as CollectionUtils from '../../../../collectionUtils';
 
 const Realm = require('realm');
 
 export class Visit extends Realm.Object {
 
-    static getSchemaName(){
+    static getSchemaName() {
         return 'Visit';
+    }
+
+    static getAllFields() {
+        return Object.keys(Visit.schema.properties);
     }
 
     get key() {
@@ -36,18 +40,22 @@ export class Visit extends Realm.Object {
     }
 
     getAddress() {
-        return this.getFromOwner(patient => patient.address, place => place.address);
+        return this.getFromSubject(patient => patient.address, place => place.address);
     }
 
     getAssociatedName() {
-        return this.getFromOwner(patient => patient.name, place => place.name);
+        return this.getFromSubject(patient => patient.name, place => place.name);
+    }
+
+    getAssociatedAbbName() {
+        return this.getFromSubject(patient => patient.abbName, place => place.name);
     }
 
     getAssociatedNumber() {
-        return this.getFromOwner(patient => patient.primaryContact, place => place.primaryContact);
+        return this.getFromSubject(patient => patient.primaryContact, place => place.primaryContact);
     }
 
-    getFromOwner(patientHandler, placeHandler) {
+    getFromSubject(patientHandler, placeHandler) {
         const patient = this.getPatient();
         if (patient) {
             return patientHandler(patient);
@@ -59,7 +67,7 @@ export class Visit extends Realm.Object {
         throw new Error('Visit belongs to neither place nor patient');
     }
 
-    isOwnerArchived() {
+    isSubjectArchived() {
         if ((this.getPatient() && this.getPatient().archived) ||
             (this.getPlace() && this.getPlace().archived)
         ) {
@@ -67,4 +75,20 @@ export class Visit extends Realm.Object {
         }
         return false;
     }
+
+    getReportStatus() {
+        if (this.reportItems.length > 0) {
+            const report = this.reportItems[0].getReport();
+            return report ? report.status : null;
+        }
+        return null;
+    }
+
+    getReportItem() {
+        if (this.reportItems.length > 0) {
+            return this.reportItems[0];
+        }
+        return null;
+    }
+
 }

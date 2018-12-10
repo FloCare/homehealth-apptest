@@ -6,7 +6,8 @@ import {ListItem} from 'react-native-elements';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {AddVisitsScreen} from './AddVisitsScreen';
 import {floDB, Patient, Place} from '../../utils/data/schema';
-import {screenNames, PrimaryColor} from '../../utils/constants';
+import {screenNames, PrimaryColor, eventNames} from '../../utils/constants';
+import {todayMomentInUTCMidnight} from '../../utils/utils';
 import {Images} from '../../Images';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 import {PatientDataService} from '../../data_services/PatientDataService';
@@ -61,11 +62,8 @@ class AddVisitsScreenContainer extends Component {
         this.state = {
             date: props.date,
             selectedItems: Map(),
-            refreshing: false,
-            isTeamVersion: undefined,
             searchText: undefined
         };
-        RNSecureKeyStore.get('accessToken').then(() => this.setState({isTeamVersion: true}), () => this.setState({isTeamVersion: false}));
         this.placeResultObject = floDB.objects(Place.schema.name).filtered('archived = false').sorted('name');
         const patientList = this.patientDataService().getAllPatients();
         this.patientsResultObject = this.patientDataService().getPatientsSortedByName(patientList);
@@ -104,6 +102,7 @@ class AddVisitsScreenContainer extends Component {
         }
         if (event.type === 'NavBarButtonPress') {
             if (event.id === 'new-stop') {
+                firebase.analytics().logEvent(eventNames.ADD_STOP, {});
                 this.props.navigator.push(newStopNavigatorArg);
             } else if (event.id === 'new-patient') {
                 this.props.navigator.push(newPatientNavigatorArg);
@@ -119,6 +118,7 @@ class AddVisitsScreenContainer extends Component {
                             this.props.navigator.push(newPatientNavigatorArg);
                             break;
                         case 1:
+                            firebase.analytics().logEvent(eventNames.ADD_STOP, {});
                             this.props.navigator.push(newStopNavigatorArg);
                             break;
                         default:
@@ -202,10 +202,11 @@ class AddVisitsScreenContainer extends Component {
         return (
             <ListItem
                 key={item.key}
+                containerStyle={{borderBottomColor: '#e1e1e1'}}
                 title={item.object.name}
                 subtitle={item.object.address.formattedAddress}
                 avatar={avatar}
-                avatarStyle={{resizeMode: 'contain'}}
+                avatarStyle={{resizeMode: 'contain', height: 25, width: 25}}
                 rightIcon={rightIcon}
                 titleStyle={{fontSize: 17, color: '#222222'}}
                 subtitleStyle={{fontSize: 12, color: '#666666', fontWeight: 'normal'}}
@@ -216,6 +217,11 @@ class AddVisitsScreenContainer extends Component {
     }
 
     onDone() {
+        // Logging the firebase event for number of visits added & if the visits were added for today or not
+        firebase.analytics().logEvent(eventNames.ADD_VISIT, {
+            VALUE: this.state.selectedItems.size,
+            today: this.state.date.valueOf() === todayMomentInUTCMidnight().valueOf() ? 1 : 0
+        });
         VisitService.getInstance().createNewVisits(this.state.selectedItems.values(), this.state.date.valueOf());
         //This is the part where we create the new visit items
         // floDB.write(() => {
@@ -278,38 +284,9 @@ class AddVisitsScreenContainer extends Component {
         console.log('add visits container all done');
     }
 
-    onRefresh() {
-        this.patientDataService().updatePatientListFromServer()
-            .then((result) => {
-                this.setState({refreshing: false});
-
-                const newPatientsCount = result.additions === 0 ? undefined : result.additions;
-                const deletedPatientsCount = result.deletions === 0 ? undefined : result.deletions;
-
-                let subtitle = (newPatientsCount ? `${newPatientsCount} new patients added` : '') + (deletedPatientsCount ? `${newPatientsCount ? ', and ' : ''}${deletedPatientsCount} existing patients removed` : '');
-                if (!newPatientsCount && !deletedPatientsCount) {
-                    subtitle = 'No new changes';
-                }
-                Alert.alert(
-                    'Refresh Completed',
-                    subtitle
-                );
-            })
-            .catch(error => {
-                this.setState({refreshing: false});
-                console.log(error);
-                Alert.alert(
-                    'Refresh Failed',
-                );
-            });
-        this.setState({refreshing: true});
-    }
-
     render() {
         return (
             <AddVisitsScreen
-                onRefresh={this.state.isTeamVersion ? this.onRefresh.bind(this) : undefined}
-                refreshing={this.state.refreshing}
                 isZeroState={floDB.objects(Place.schema.name).length + floDB.objects(Patient.schema.name).length === 0}
                 onChangeText={this.onChangeText}
                 searchText={this.state.searchText}

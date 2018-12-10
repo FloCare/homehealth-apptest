@@ -26,6 +26,7 @@ class AddNoteScreenContainer extends Component {
         const {patientId, name} = this.props;
         return (
             <AddNoteScreen
+                navigator={this.props.navigator}
                 onSubmit={this.onSubmit}
                 patientId={patientId}
                 name={name}

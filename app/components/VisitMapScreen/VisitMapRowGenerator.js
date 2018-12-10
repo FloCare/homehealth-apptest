@@ -2,23 +2,25 @@ import React, {PureComponent} from 'react';
 import {View} from 'react-native';
 import {Text} from 'react-native-elements';
 import {connect} from 'react-redux';
+import moment from 'moment';
 import StyledText from '../common/StyledText';
 
 const mapStateToProps = (state, ownProps) => {
     const visitID = ownProps.data;
     const visit = state.visits[visitID];
 
-    let visitOwner;
+    let visitSubject;
     if (visit.isPatientVisit) {
         const patientID = visit.patientID;
-        visitOwner = state.patients[patientID];
+        visitSubject = state.patients[patientID];
     } else {
         const placeID = visit.placeID;
-        visitOwner = state.places[placeID];
+        visitSubject = state.places[placeID];
     }
 
     return {
-        name: visitOwner.name
+        name: visitSubject.name,
+        plannedStartTime: visit.plannedStartTime
     };
 };
 
@@ -26,6 +28,7 @@ function VisitMapRowGenerator() {
     class RenderRow extends PureComponent {
         render() {
             const {index, name, sortingActive, active} = this.props;
+            const visitTime = this.props.plannedStartTime ? moment(this.props.plannedStartTime).format('hh:mm A') : '--:-- ';
             return (
                 <View
                     style={[
@@ -58,25 +61,43 @@ function VisitMapRowGenerator() {
                         style={[{
                             flex: 1,
                             flexDirection: 'row',
-                            backgroundColor: 'rgba(255,255,255,0.35)',
+                            backgroundColor: 'rgba(21, 58, 44, 0.15)',
                             marginLeft: 10,
                             alignItems: 'center'
                         }, active ? {elevation: 6, borderColor: 'white', borderWidth: 1} : {}
                         ]}
                     >
-                        <View style={{flex: 1, margin: 10, justifyContent: 'space-between'}}>
-                            <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
-                            <View style={{height: 2}} />
-                            <View style={{height: 1, borderColor: 'white', borderWidth: 1}} />
+                        <View style={{flex: 1, marginLeft: 6, justifyContent: 'space-between'}}>
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
+                            <View style={{height: 1}} />
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
+                            <View style={{height: 1}} />
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
+                            <View style={{height: 1}} />
+                            <View style={{flexDirection: 'row'}}>
+                                <View style={{height: 1, width: 1, borderColor: 'white', borderWidth: 1}} />
+                                <View style={{height: 1, width: 1, marginLeft: 1, borderColor: 'white', borderWidth: 1}} />
+                            </View>
                         </View>
-                        <StyledText
-                            style={{
-                                flex: 20,
-                                paddingLeft: 5,
-                                color: 'white',
-                                fontSize: 14
-                            }}
-                        >{name}</StyledText>
+                        <View style={{flexDirection: 'row', flex: 20}}>
+                            <StyledText style={{width: 70, color: 'white', fontSize: 13}}>
+                                {visitTime}
+                            </StyledText>
+                            <View style={{borderLeftWidth: 1, borderLeftColor: 'white'}}>
+                                <StyledText style={{color: 'white', fontSize: 14, marginLeft: 10}}>
+                                    {name}
+                                </StyledText>
+                            </View>
+                        </View>
                     </View>
                 </View>
             );

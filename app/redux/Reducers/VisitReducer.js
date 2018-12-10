@@ -10,8 +10,20 @@ export default function VisitReducer(visits = {}, action) {
             return {...visits, ...action.visitList};
         case VisitActions.DELETE_VISITS:
             const newVisits = {...visits};
-            Object.keys(action.visitList).map(key => delete newVisits[key]);
+            action.visitIDs.map(visitID => delete newVisits[visitID]);
             return newVisits;
+        case VisitActions.EDIT_SINGLE_VISIT:
+            const visitID = action.visitID;
+            if (Object.keys(visits).includes(visitID)) {
+                return {
+                    ...visits,
+                    [visitID]: {
+                        ...visits[visitID],
+                        [action.updateKey]: action.updateValue
+                    }
+                };
+            }
+            return {...visits};
         default:
             return visits;
     }

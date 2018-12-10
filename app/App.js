@@ -1,8 +1,11 @@
 import {Navigation} from 'react-native-navigation';
-import {AsyncStorage} from 'react-native';
+import {AsyncStorage, processColor, Platform} from 'react-native';
+import Instabug, {BugReporting} from 'instabug-reactnative';
 import SplashScreen from 'react-native-splash-screen';
-import {screenNames, PrimaryColor} from './utils/constants';
+import {screenNames, PrimaryColor, instabugKey} from './utils/constants';
 import RegisterInitScreens from './init_screens';
+import {setAutoScreenShotForInstabug, setFeedbackOptionOnly} from './utils/instabugUtils';
+import { initialiseStoreAndSetUserForInstabug } from './utils/InMemoryStore'
 
 RegisterInitScreens();
 
@@ -16,18 +19,37 @@ const navigatorStyle = {
     keepStyleAcrossPush: false
 };
 
-const StartApp = async () => {
-    const isFirstRun = async () => {
-        try {
-            return await AsyncStorage.getItem('isFirstVisit');
-        } catch (error) {
-            console.error('AsyncStorage error: ', error.message);
-            // Todo: Figure out what to do here ???
-            return false;
-        }
-    };
+const isFirstRun = async () => {
+    try {
+        const isFirstVisitKeySet = await AsyncStorage.getItem('isFirstVisit');
+        return !isFirstVisitKeySet;
+    } catch (error) {
+        console.error('AsyncStorage error: ', error.message);
+        // Todo: Figure out what to do here ???
+        return true;
+    }
+};
 
-	if (await isFirstRun()) {
+const setupInstaBug = () => {
+    if (Platform.OS === 'ios') {
+        // ios specific code for instabug
+        Instabug.startWithToken(instabugKey, [Instabug.invocationEvent.screenshot]);
+        Instabug.setPrimaryColor(processColor(PrimaryColor));
+        Instabug.setIBGLogPrintsToConsole(false);
+    }
+    if (Platform.OS === 'android') {
+        Instabug.enable();
+    }
+    Instabug.setWelcomeMessageMode(Instabug.welcomeMessageMode.disabled);
+    BugReporting.setInvocationOptions([Instabug.invocationOptions.invocationOptionsEmailFieldHidden]);
+    setFeedbackOptionOnly();
+    setAutoScreenShotForInstabug(true);
+};
+
+export const StartApp = async () => {
+    setupInstaBug();
+	if (!await isFirstRun()) {
+        await initialiseStoreAndSetUserForInstabug();
 		Navigation.startSingleScreenApp({
 			screen: {
 				screen: screenNames.passcodeVerificationScreen,
@@ -50,5 +72,3 @@ const StartApp = async () => {
 	}
 	SplashScreen.hide();
 };
-
-StartApp();

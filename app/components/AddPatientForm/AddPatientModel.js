@@ -97,7 +97,7 @@ const AddPatientModel = t.struct({
     state: t.maybe(t.String),
     primaryContact: PhoneNumber,
     //diagnosis: t.maybe(t.String),
-    notes: t.maybe(t.String),
+    // notes: t.maybe(t.String),
     dateOfBirth: t.maybe(t.Date),
     showDateOfBirth: t.maybe(t.Boolean),
     emergencyContactInfo: t.maybe(EmergencyContactInformationModel),
@@ -187,31 +187,31 @@ const formOptions = {
             error: 'Please enter a valid state name',
             placeholder: 'CA'
         },
-        notes: {
-            multiline: true,
-            error: 'Please enter a valid note',
-            label: 'Notes (Optional)',
-            placeholder: 'Door Password - 1234',
-            stylesheet: {
-                ...stylesheet,
-                textboxView: {
-                    borderBottomView: 0
-                },
-                textbox: {
-                    ...stylesheet.textbox,
-                    normal: {
-                        ...stylesheet.textbox.normal,
-                        height: 100,
-                        textAlignVertical: 'top',
-                        borderWidth: 0.5
-                    },
-                    error: {
-                        ...stylesheet.textbox.error,
-                        height: 200,
-                    },
-                },
-            },
-        },
+        // notes: {
+        //     multiline: true,
+        //     error: 'Please enter a valid note',
+        //     label: 'Notes (Optional)',
+        //     placeholder: 'Door Password - 1234',
+        //     stylesheet: {
+        //         ...stylesheet,
+        //         textboxView: {
+        //             borderBottomView: 0
+        //         },
+        //         textbox: {
+        //             ...stylesheet.textbox,
+        //             normal: {
+        //                 ...stylesheet.textbox.normal,
+        //                 height: 100,
+        //                 textAlignVertical: 'top',
+        //                 borderWidth: 0.5
+        //             },
+        //             error: {
+        //                 ...stylesheet.textbox.error,
+        //                 height: 200,
+        //             },
+        //         },
+        //     },
+        // },
         dateOfBirth: {
             factory: DatePickerPopup
         },

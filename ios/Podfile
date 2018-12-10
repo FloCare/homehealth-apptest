@@ -20,7 +20,7 @@ target 'FloCare' do
     'RCTActionSheet',
     'RCTAnimation',
     'RCTPushNotification',
-    'RCTGeolocation',
+     #'RCTGeolocation',
     'RCTImage',
     'RCTLinkingIOS',
     'RCTNetwork',

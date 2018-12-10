@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import {TextInput, View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView, AsyncStorage} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {View, ActivityIndicator, Dimensions, SafeAreaView, KeyboardAvoidingView, AsyncStorage, TextInput} from 'react-native';
 import firebase from 'react-native-firebase';
 import RNSecureKeyStore from 'react-native-secure-key-store';
 import {screenNames, PrimaryFontFamily, PrimaryColor, userProperties, apiServerURL} from '../utils/constants';
 import StyledText from '../components/common/StyledText';
 import {SimpleButton} from '../components/common/SimpleButton';
-import {getUserProps} from '../utils/API/UserAPI';
+import {UserDataService} from '../data_services/UserDataService';
+import {PatientDataService} from '../data_services/PatientDataService';
+import {setUserForInstabug} from '../utils/instabugUtils';
 
 class LoginScreen extends Component {
     state = {email: undefined, password: undefined, authSubtitle: ' ', loading: false};
@@ -22,6 +23,13 @@ class LoginScreen extends Component {
 
     componentDidMount() {
       firebase.analytics().setCurrentScreen(screenNames.login, screenNames.login);
+      // setTimeout(() => {
+      //     this.state = {
+      //         email: 'admin.admin',
+      //         password: '545819'
+      //     };
+      //     this.onSubmit();
+      // });
     }
 
     onSubmit() {
@@ -57,14 +65,15 @@ class LoginScreen extends Component {
                 console.log(`token set to ${token}`);
                 RNSecureKeyStore.set('accessToken', token);
             })
-            .then(() => getUserProps())
+            .then(() => UserDataService.fetchUserProps())
             .then(userPropsJson => {
-                firebase.analytics().setUserId(userPropsJson.id.toString());
-                firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.roles[0].role);
-                firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.roles[0].org);
+                firebase.analytics().setUserId(userPropsJson.userID);
+                firebase.analytics().setUserProperty(userProperties.ROLE, userPropsJson.role);
+                firebase.analytics().setUserProperty(userProperties.ORG, userPropsJson.org);
 
-                AsyncStorage.setItem('userID', userPropsJson.id.toString());
-
+                AsyncStorage.setItem('myUserDetails', JSON.stringify(userPropsJson));
+                const userName = PatientDataService.constructName(userPropsJson.firstName, userPropsJson.lastName);
+                setUserForInstabug(userPropsJson.email, userName);
                 this.props.navigator.resetTo({
                     screen: screenNames.welcomeScreen,
                     title: 'Welcome',
@@ -102,16 +111,13 @@ class LoginScreen extends Component {
     }
 
     render() {
-        const primaryColor = PrimaryColor;
-        const secondary = '#34da92';
         return (
-            <LinearGradient
-                colors={[primaryColor, secondary]}
-                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
+            <View
                 style={{
                     flex: 1,
                     alignItems: 'center',
                     justifyContent: 'flex-start',
+                    backgroundColor: PrimaryColor
                 }}
             >
                 <KeyboardAvoidingView
@@ -182,7 +188,7 @@ class LoginScreen extends Component {
                         </View>
                     </SafeAreaView>
                 </KeyboardAvoidingView>
-            </LinearGradient>
+            </View>
         );
     }
 }
@@ -192,7 +198,7 @@ const InputField = React.forwardRef((props, ref) => (
             style={{width: Dimensions.get('window').width * 0.7, marginVertical: 10}}
         >
             <StyledText
-                style={{color: 'white', textAlign: 'left'}}
+                style={{color: 'white', textAlign: 'left', fontWeight: '500'}}
             >
                 {props.title}
             </StyledText>
@@ -210,7 +216,7 @@ const InputField = React.forwardRef((props, ref) => (
                 selectionColor={'rgba(255,255,255,0.5)'}
                 underlineColorAndroid={'white'}
                 autoCorrect={false}
-                style={{color: 'white'}}
+                style={{color: 'rgba(255,255,255,0.85)', fontSize: 18}}
                 placeholderTextColor={'rgba(255,255,255,0.35)'}
             />
         </View>

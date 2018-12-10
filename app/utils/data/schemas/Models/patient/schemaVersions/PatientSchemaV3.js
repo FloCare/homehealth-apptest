@@ -1,4 +1,4 @@
-import {Patient} from '../Patient'
+import {Patient} from '../Patient';
 
 export const PatientSchemaV3 = {
     name: Patient.getSchemaName(),
