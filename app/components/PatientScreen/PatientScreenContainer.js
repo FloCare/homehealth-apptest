@@ -197,7 +197,7 @@ export class PatientScreenContainer extends Component {
                         firebase.analytics().logEvent(eventNames.PATIENT_ACTIONS, {
                             type: parameterValues.NAVIGATION
                         });
-                        navigateTo(coordinates.latitude, coordinates.longitude, this.state.patientDetail.address.formattedAddress);
+                        navigateTo(coordinates.latitude, coordinates.longitude, this.state.patientDetail.address.navigationAddress);
                     }
                 }}
             >
