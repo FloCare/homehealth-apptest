@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, TouchableWithoutFeedback, TouchableHighlight, Text, Image, Dimensions} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 import {VisitCardGenerator} from '../common/visitCardGenerator';
 import {eventNames, parameterValues, PrimaryColor, screenNames} from '../../utils/constants';
@@ -18,7 +17,7 @@ function onPressCard(visitID, navigator) {
     const visit = floDB.objectForPrimaryKey(Visit, visitID);
     if (visit.getPatient() && !visit.getPatient().archived) {
         navigator.push({
-            screen: screenNames.patientDetails,
+            screen: screenNames.patient,
             passProps: {
                 patientId: visit.getPatient().patientID
             },
@@ -53,14 +52,12 @@ function navigationButtons(props) {
         }}
     >
         <TouchableWithoutFeedback onPress={props.navigateToVisitMapScreen}>
-            <LinearGradient
-                colors={['#34da92', PrimaryColor]}
-                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
+            <View
                 style={{
                     flex: 1,
-                    borderTopLeftRadius: 17.5,
-                    borderBottomLeftRadius: 17.5,
-                    backgroundColor: '#45ceb0',
+                    borderTopLeftRadius: 17,
+                    borderBottomLeftRadius: 17,
+                    backgroundColor: PrimaryColor,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -74,18 +71,16 @@ function navigationButtons(props) {
                 <Text style={{marginHorizontal: 10, alignSelf: 'center', color: '#ffffff'}}>
                     Map
                 </Text>
-            </LinearGradient>
+            </View>
         </TouchableWithoutFeedback>
         <View style={{width: 1, backgroundColor: 'white'}} />
         <TouchableWithoutFeedback onPress={props.navigateToVisitListScreen}>
-            <LinearGradient
-                colors={['#34da92', PrimaryColor]}
-                start={{x: 0.0, y: 0.0}} end={{x: 0, y: 1}}
+            <View
                 style={{
                     flex: 1,
-                    borderTopRightRadius: 17.5,
-                    borderBottomRightRadius: 17.5,
-                    backgroundColor: '#45ceb0',
+                    borderTopRightRadius: 17,
+                    borderBottomRightRadius: 17,
+                    backgroundColor: PrimaryColor,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -99,7 +94,7 @@ function navigationButtons(props) {
                 <Text style={{marginHorizontal: 10, alignSelf: 'center', color: '#ffffff'}}>
                     List
                 </Text>
-            </LinearGradient>
+            </View>
         </TouchableWithoutFeedback>
 
     </View>);

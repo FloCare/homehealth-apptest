@@ -41,7 +41,7 @@ public class MainApplication extends NavigationApplication implements ReactInsta
     return BuildConfig.DEBUG;
   }
 
-  static String PrimaryColor = "#45ceb1";
+  static String PrimaryColor = "#64CCC9";
   static String instabugKey = "29d3f443148b83202e3213845ff10c87";
 
   protected List<ReactPackage> getPackages() {

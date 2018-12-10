@@ -1,6 +1,7 @@
 import {Episode} from '../utils/data/schema';
 import {VisitService} from './VisitServices/VisitService';
 import {PatientDataService} from './PatientDataService';
+import {UserDataService} from './UserDataService';
 
 export class EpisodeDataService {
     static episodeDataService;
@@ -43,6 +44,10 @@ export class EpisodeDataService {
     _getFlatVisitsByDay(visits) {
         const flatVisitForVisit = visit => {
             const user = visit.user;
+            if (!visit.user) {
+                console.log('missing user for visit');
+                console.log(visit);
+            }
             return {
                 ownVisit: VisitService.isVisitOwn(visit),
                 role: user.role,
@@ -65,6 +70,35 @@ export class EpisodeDataService {
         return flatVisitsByDate;
     }
 
+    removeUserFromCareTeam(episodeID, userID) {
+        VisitService.getInstance().deleteVisitsOfEpisodeByUserID(episodeID, userID);
+        const episode = this.getEpisodeByID(episodeID);
+        if (!episode) { throw new Error('Episode not found while trying to augment care team'); }
+        const existingMatchingUserObjects = episode.careTeam.filtered('userID == $0', userID);
+        if (!existingMatchingUserObjects || existingMatchingUserObjects.length === 0) {
+            console.log('User already is not part of care team');
+            return;
+        }
+        const filteredCareTeam = episode.careTeam.filtered('userID != $0', userID);
+        this.floDB.write(() => {
+            episode.careTeam = filteredCareTeam;
+        });
+    }
+
+    async ensureUserInCareTeam(episodeID, userID) {
+        const episode = this.getEpisodeByID(episodeID);
+        if (!episode) { throw new Error('Episode not found while trying to augment care team'); }
+        const existingMatchingUserObjects = episode.careTeam.filtered('userID == $0', userID);
+        if (!existingMatchingUserObjects || existingMatchingUserObjects.length === 0) {
+            const user = await UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID);
+            this.floDB.write(() => {
+                episode.careTeam.push(user);
+            });
+        } else {
+            console.log('User is already part of care team');
+        }
+    }
+
     getAllSyncedEpisodes() {
         return this.floDB.objects(Episode).filtered('patient.isLocallyOwned = false');
     }
@@ -74,12 +108,14 @@ export class EpisodeDataService {
     }
 
     subscribeToVisitsForDays(episodeID, startDate, endDate, callbackFunction) {
+        console.log('trying to subscribe to visits for days');
         const visitsResult = VisitService.getInstance().getVisitsByEpisodeID(episodeID).filtered('midnightEpochOfVisit >= $0 && midnightEpochOfVisit <= $1', startDate, endDate);
         const realmListener = (visits) => {
             callbackFunction(this._getFlatVisitsByDay(visits));
         };
 
         visitsResult.addListener(realmListener);
+        console.log('done trying to subscribe to visits for days');
         return {
             currentData: this._getFlatVisitsByDay(visitsResult),
             unsubscribe: () => visitsResult.removeListener(realmListener),

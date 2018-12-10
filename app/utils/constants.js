@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 
-const PrimaryColor = '#45ceb1';
+const PrimaryColor = '#64CCC9';
 const ErrorMessageColor = '#F51414';
 const defaultBackGroundColor = '#FFFFFF';
 const detailBackGroundColor = '#F7F7F7';
@@ -42,7 +42,7 @@ const diagnosisList = [
 
 const screenNames = {
     //Top Level Screens
-    homeScreen: 'HomeDayView',
+    homeScreen: 'HomeScreen',
     patientList: 'PatientList',
     notificationScreen: 'NotificationScreen',
     moreScreen: 'MoreScreen',
@@ -56,6 +56,7 @@ const screenNames = {
     legal: 'Legal',
 
     addPatient: 'AddPatient',
+    patient: 'Patient',
     patientDetails: 'PatientDetails',
     addNote: 'AddNote',
     addStop: 'AddStop',
@@ -115,6 +116,7 @@ const eventNames = {
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
+    NEW_NOTE_NOTIFICATION: 'NewNoteNotification',
     COLLABORATION: 'Collaboration',
     ADD_EDIT_MILES: 'AddOrEditMiles',
     SEND_REPORT: 'SendReport',
@@ -152,6 +154,7 @@ const parameterValues = {
 
 const notificationType = {
     VISIT_COLLISION: 'VISIT_COLLISION',
+    NEW_NOTE: 'NEW_NOTE',
     NEW_PATIENT: 'NEW_PATIENT'
 };
 
@@ -183,6 +186,11 @@ const clearInActivityTimer = () => {
 export const pubnubPubKey = 'pubnubPubKey';
 //ending in 524 is dev key
 export const pubnubSubKey = 'pubnubSubKey';
+
+//ending in a3b is dev key
+export const pubnubEternalPubKey = 'pubnubPubKey';
+//ending in 524 is dev key
+export const pubnubEternalSubKey = 'pubnubSubKey';
 
 export const instabugKey = 'instabugKey';
 

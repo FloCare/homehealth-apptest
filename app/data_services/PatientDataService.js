@@ -1,9 +1,9 @@
 import moment from 'moment';
 import firebase from 'react-native-firebase';
-import {Episode, Patient} from '../utils/data/schema';
+import {Episode, Patient, User} from '../utils/data/schema';
 import {PatientActions} from '../redux/Actions';
 import {
-    arrayToObjectByKey, hasNonEmptyValueForAllKeys,
+    arrayToObjectByKey, filterResultObjectByListMembership, hasNonEmptyValueForAllKeys,
 } from '../utils/collectionUtils';
 import {eventNames, notificationType, screenNames} from '../utils/constants';
 import {addressDataService} from './AddressDataService';
@@ -16,6 +16,9 @@ import {getMessagingServiceInstance} from './MessagingServices/PubNubMessagingSe
 import {EpisodeMessagingService} from './MessagingServices/PubNubMessagingService/EpisodeMessagingService';
 import {getEpisodeDetailsByIds} from '../utils/API/EpisodeAPI';
 import {PhysicianDataService} from './PhysicianDataService';
+import {NotesMessagingService} from './MessagingServices/PubNubMessagingService/NotesMessagingService';
+import {EpisodeDataService} from './EpisodeDataService';
+import {UserDataService} from './UserDataService';
 
 export class PatientDataService {
     static patientDataService;
@@ -100,7 +103,7 @@ export class PatientDataService {
             type: notificationType.NEW_PATIENT,
             createdTime: parseInt(messageObject.timestamp),
             body,
-            screenName: screenNames.patientDetails,
+            screenName: screenNames.patient,
             passProps: JSON.stringify({
                 patientId: patientID,
             }),
@@ -125,8 +128,9 @@ export class PatientDataService {
         return sortedSeedArray.map(seedData => seedData.data);
     }
 
-    createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false, episode) {
+    createNewPatient(patient, isLocallyOwned = true, updateIfExisting = false, episodeArgument) {
         // Todo: Add proper ID generators
+        console.log('creating new patient');
         // Create a patient, create & add an address, and create & add an episode
         const patientId = !isLocallyOwned && patient.patientID ? patient.patientID : Math.random().toString();
         const episodeId = Math.random().toString();
@@ -138,6 +142,17 @@ export class PatientDataService {
         const emergencyContactNumber = patient.emergencyContactInfo.contactNumber;
         const emergencyContactName = patient.emergencyContactInfo.contactName;
         const emergencyContactRelation = patient.emergencyContactInfo.contactRelation;
+
+        let episode;
+        if (!episodeArgument) {
+            episode = {
+                episodeID: episodeId,
+                diagnosis: []
+            };
+        } else episode = JSON.parse(JSON.stringify(episodeArgument || {}));
+
+        episode.careTeam = []; //this is needed cause episode arg is used to create an episode object, and careTeam key is not as expected for realm in this arg
+        let episodeObject;
 
         this.floDB.write(() => {
             // Add the patient
@@ -163,12 +178,6 @@ export class PatientDataService {
             } else addressDataService.addAddressToTransaction(newPatient, patient.address, patient.address.addressID);
 
             //Todo: Add an episode, Move this to its own Data Service
-            if (!episode) {
-                episode = {
-                    episodeID: episodeId,
-                    diagnosis: []
-                };
-            }
             if (episode.primaryPhysician &&
                 hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['physicianID', 'npi', 'firstName'])) {
                 const physicianDetails = episode.primaryPhysician;
@@ -184,11 +193,30 @@ export class PatientDataService {
 
                 episode.primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
             }
-            const episodeObject = this.floDB.create(Episode, episode, true);
+            console.log('creating episode now');
+            episodeObject = this.floDB.create(Episode, episode, true);
             if (!newPatient.episodes.map(e => e.episodeID).includes(episodeObject.episodeID)) {
                 newPatient.episodes.push(episodeObject);
             }
         });
+        console.log('done with first block');
+
+        if (episodeArgument && episodeArgument.careTeam && episodeArgument.careTeam.length > 0) {
+            console.log(`trying to attach care team to patient for episode ${episodeArgument.careTeam}`);
+            const promises = episodeArgument.careTeam.map(userID => UserDataService.getInstance().fetchAndSaveUserToRealmIfMissing(userID));
+            Promise.all(promises).then(() => {
+                const careTeamUsers = filterResultObjectByListMembership(this.floDB.objects(User), 'userID', episodeArgument.careTeam);
+                this.floDB.write(() => {
+                    episodeObject.careTeam = careTeamUsers;
+                });
+            }).catch(error => {
+                console.log(`error while attaching care team to episode ${episode.episodeID}`);
+                console.log(error);
+            });
+        } else {
+            console.log(`for patient id ${patientId}, episode id ${episodeArgument.episodeID}, no care team description found`);
+            console.log(episodeArgument);
+        }
 
         if (newPatient) {
             if (patient.notes) {
@@ -199,6 +227,7 @@ export class PatientDataService {
             this.addPatientsToRedux([newPatient], true);
             try {
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).subscribeToEpisodes(newPatient.episodes);
+                getMessagingServiceInstance(NotesMessagingService.identifier).subscribeToEpisodeNotes(newPatient.episodes);
             } catch (e) {
                 console.log('error trying to subscribe to new patient');
                 console.log(e);
@@ -241,22 +270,31 @@ export class PatientDataService {
                     emergencyContactRelation: emergencyContactRelation ? emergencyContactRelation.toString().trim() : undefined,
                 }, true);
 
-                if (episode && episode.primaryPhysician &&
-                    hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['physicianID', 'npi', 'firstName'])) {
-                    const physicianDetails = episode.primaryPhysician;
-                    const physician = {
-                        physicianID: physicianDetails.physicianID.toString(),
-                        npiId: physicianDetails.npi.toString(),
-                        firstName: physicianDetails.firstName,
-                        lastName: physicianDetails.lastName,
-                        phone1: physicianDetails.phone1,
-                        phone2: physicianDetails.phone2,
-                        faxNo: physicianDetails.fax,
-                    };
-
-                    updatedPatient.getFirstEpisode().primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
+                if (episode) {
+                    if (episode.primaryPhysician &&
+                        hasNonEmptyValueForAllKeys(episode.primaryPhysician, ['physicianID', 'npi', 'firstName'])) {
+                        const physicianDetails = episode.primaryPhysician;
+                        const physician = {
+                            physicianID: physicianDetails.physicianID.toString(),
+                            npiId: physicianDetails.npi.toString(),
+                            firstName: physicianDetails.firstName,
+                            lastName: physicianDetails.lastName,
+                            phone1: physicianDetails.phone1,
+                            phone2: physicianDetails.phone2,
+                            faxNo: physicianDetails.fax,
+                        };
+                        updatedPatient.getFirstEpisode().primaryPhysician = PhysicianDataService.getInstance().createNewPhysician(physician, true);
+                    }
                 }
             });
+            //Only writing code for including missing members into local db
+            //the purpose of this is to get existing users to build their db
+            //for all other cases, pubnub episode messaging should take care of things
+            if (episode && episode.careTeam) {
+                episode.careTeam.forEach(userID => {
+                    EpisodeDataService.getInstance().ensureUserInCareTeam(episode.episodeID, userID);
+                });
+            }
             if (this.store) { this.updatePatientsInRedux([patientObj], isServerUpdate); }
         }
     }
@@ -272,8 +310,8 @@ export class PatientDataService {
                 //TODO
                 console.log(`archiving patient ${patientId}, unsubscribing from episodes`);
                 console.log(patient.episodes.length);
-                console.log(patient.episodes);
                 getMessagingServiceInstance(EpisodeMessagingService.identifier).unsubscribeToEpisodes(patient.episodes);
+                getMessagingServiceInstance(NotesMessagingService.identifier).unsubscribeToEpisodeNotes(patient.episodes);
             }
 
             this.floDB.write(() => {
@@ -411,7 +449,7 @@ export class PatientDataService {
         );
     }
 
-    formatForPayload = (value) => (value ? value : undefined)
+    formatForPayload = (value) => (value || undefined)
 
     getCreatePatientPayload(patient) {
         const address = patient.address;

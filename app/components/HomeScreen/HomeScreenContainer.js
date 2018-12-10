@@ -27,7 +27,7 @@ import {CalendarStripStyled} from '../common/CalendarStripStyled';
 import {DayCard} from '../WeekViewScreen/DayCard';
 import {VisitService} from '../../data_services/VisitServices/VisitService';
 
-const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1};
+const codePushOptions = {checkFrequency: codePush.CheckFrequency.ON_APP_RESUME, installMode: codePush.InstallMode.ON_NEXT_RESUME, minimumBackgroundDuration: 60 * 1, ignoreFailedUpdates: false};
 
 class HomeScreenContainer extends Component {
     constructor(props) {
@@ -158,6 +158,7 @@ class HomeScreenContainer extends Component {
                 selectedScreen: 'list',
             },
             navigatorStyle: {
+                navBarTextColor: 'white',
                 tabBarHidden: true
             }
         });
@@ -170,6 +171,7 @@ class HomeScreenContainer extends Component {
                 selectedScreen: 'map',
             },
             navigatorStyle: {
+                navBarTextColor: 'white',
                 tabBarHidden: true
             }
         });

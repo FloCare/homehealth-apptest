@@ -143,7 +143,7 @@ const navigateTo = async (latitude, longitude, address) => {
     const latLng = `${latitude},${longitude}`;
     const label = address;
     const url = Platform.select({
-        ios: hasGoogleMaps ? `${scheme}${latLng}`: `${scheme}${label}@${address}`,
+        ios: hasGoogleMaps ? `${scheme}${label}`: `${scheme}${label}@${address}`,
         android: `${scheme}${latLng}(${label})`
     });
     // console.log('Opening the URL:', url);

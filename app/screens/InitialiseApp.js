@@ -21,6 +21,7 @@ import {Provider} from "react-redux";
 import {initialiseStoreAndSetUserForInstabug} from "../utils/InMemoryStore";
 import {RootReducer} from "../redux/RootReducer";
 import {AsyncStorage} from "react-native";
+import {NoteDataService} from "../data_services/NotesDataService";
 
 
 var isInitialising = false;
@@ -48,6 +49,7 @@ export async function initialiseApp(key, syncDataFromServer = false) {
     PatientDataService.initialiseService(FloDBProvider.db, store);
     VisitService.initialiseService(FloDBProvider.db, store);
     EpisodeDataService.initialiseService(FloDBProvider.db, store);
+    NoteDataService.initialiseService(FloDBProvider.db, store);
     UserDataService.initialiseService(FloDBProvider.db, store);
     PhysicianDataService.initialiseService(FloDBProvider.db, store);
     TaskService.initialiseService(FloDBProvider.db);
@@ -68,7 +70,6 @@ export async function initialiseApp(key, syncDataFromServer = false) {
             console.log('error while trying to sync. Will try on next app start');
             console.log(error);
         }
-
     }
 
     dateService.setDate(todayMomentInUTCMidnight().valueOf());
