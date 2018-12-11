@@ -5,6 +5,7 @@ import {NotesMessagingService} from './MessagingServices/PubNubMessagingService/
 import {generateUUID} from '../utils/utils';
 import {UserDataService} from './UserDataService';
 import {EpisodeDataService} from './EpisodeDataService';
+import {noteMessageType} from '../utils/constants';
 
 export class NoteDataService {
     static noteDataService;
@@ -35,27 +36,29 @@ export class NoteDataService {
     }
 
     saveNoteObject(noteObject) {
+        let noteRealmObject;
         this.floDB.write(() => {
-            this.floDB.create('Note', noteObject, true);
+            noteRealmObject = this.floDB.create('Note', noteObject, true);
         });
+        console.log('saved realm object', noteRealmObject);
+        return noteRealmObject;
     }
 
-    generateNewNote(message, episode, imageData = undefined) {
+    generateNewNote(message, episode) {
         const note = {
             messageID: generateUUID(),
             episode,
-            messageType: 'NEW_NOTE',
-            //TODO
+            messageType: noteMessageType.RICH_NEW_NOTE,
             timetoken: moment().toDate(),
             user: UserDataService.getInstance().getUserByID(UserDataService.getCurrentUserProps().userID),
-            data: message,
+            data: JSON.stringify(message),
             synced: 'false',
         };
         return note;
     }
 
-    generateAndPublishNote(message, episode) {
-        const note = this.generateNewNote(message, episode);
+    generateAndPublishNote(data, episode) {
+        const note = this.generateNewNote(data, episode);
         this.saveNoteObject(note);
         getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);
     }

@@ -13,24 +13,43 @@ export class NoteTextBox extends Component {
         this.textBox = React.createRef();
     }
 
+
+    storePicture(picturePath) {
+        const xhr = new XMLHttpRequest();
+        const presignedUrl = this.props.s3.getSignedUrl('putObject', {Bucket: 'health.flocare.notes', Key: 'yo', ContentType: 'image/jpeg'});
+        console.log('presignedUrl', presignedUrl);
+        xhr.open('PUT', presignedUrl);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    console.log('Image successfully uploaded to S3');
+                } else {
+                    console.log('Error while sending the image to S3');
+                    console.log(xhr.responseText);
+                }
+            }
+        };
+        xhr.setRequestHeader('Content-Type', 'image/jpeg');
+        xhr.send({uri: picturePath, type: 'image/jpeg', name: 'myimage.jpg'});
+    }
+
+
     showCamera() {
         const options = {
             cameraType: 'back',
-            quality: 0.8,
+            quality: 0.5,
             mediaType: 'photo',
             allowsEditing: false
         };
 
         ImagePicker.launchCamera(options, (response) => {
-            console.log('Response = ', response);
-
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
                 console.log('ImagePicker Error: ', response.error);
             } else {
-                console.log(response.data);
-                this.props.onSubmit({imageData: response.data});
+                console.log('submitting image from camera to app');
+                this.props.onSubmit({imageData: response.data, imagePath: response.uri});
             }
         });
     }
@@ -63,7 +82,7 @@ export class NoteTextBox extends Component {
                     style={{height: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
                 >
                     <TouchableOpacity
-                        onPress={this.showCamera}
+                        onPress={this.showCamera.bind(this)}
                     >
                         <Image
                             source={Images.camera}

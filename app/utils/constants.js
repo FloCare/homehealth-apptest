@@ -64,6 +64,7 @@ const screenNames = {
 
     addVisitScreen: 'AddVisitScreen',
     addOrRescheduleVisitsLightBox: 'AddOrRescheduleVisitsLightBox',
+    imageLightBox: 'ImageLightBox',
     onlinePatientLightBox: 'OnlinePatientLightBox',
     addTaskComponent: 'addTaskComponent',
     milesLogScreen: 'MilesLogScreen',
@@ -113,6 +114,7 @@ const eventNames = {
     VISIT_VIEW: 'VisitView',
     ADD_NOTE: 'AddNote',
     ADD_VISIT: 'AddVisit',
+    FULLSCREEN_IMAGE: 'FullScreenImage',
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',
     ADD_STOP: 'StopAdded',
@@ -158,6 +160,11 @@ const notificationType = {
     NEW_PATIENT: 'NEW_PATIENT'
 };
 
+const noteMessageType = {
+    NEW_NOTE: 'NEW_NOTE',
+    RICH_NEW_NOTE: 'RICH_NEW_NOTE'
+};
+
 const visitSubjects = {
     PLACE: 'Place',
     PATIENT: 'Patient'
@@ -201,4 +208,5 @@ export const apiServerURL = 'https://app-11293.on-aptible.com';
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
     screenNames, visitType, PrimaryColor, TransparentPrimaryColor, ErrorMessageColor,
     PrimaryFontFamily, userProperties, eventNames, parameterValues, visitSubjects,
-    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts, defaultBackGroundColor, detailBackGroundColor};
+    notificationType, MaxFailedAttempts, LockTimeOnFailedAttempts, defaultBackGroundColor,
+    detailBackGroundColor, noteMessageType};

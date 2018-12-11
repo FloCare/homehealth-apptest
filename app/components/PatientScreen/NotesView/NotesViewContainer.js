@@ -8,6 +8,11 @@ import {NoteBubble} from './NoteBubble';
 import StyledText from '../../common/StyledText';
 import {NoteTextBox} from './NoteTextBox';
 import {Images} from '../../../Images';
+import {generateUUID} from '../../../utils/utils';
+import {ImageService} from '../../../data_services/ImageService';
+import {getMessagingServiceInstance} from '../../../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {NotesMessagingService} from '../../../data_services/MessagingServices/PubNubMessagingService/NotesMessagingService';
+
 
 export class NotesViewContainer extends Component {
     constructor(props) {
@@ -24,11 +29,48 @@ export class NotesViewContainer extends Component {
         };
 
         this.sectionList = React.createRef();
+        this.onNoteSubmit = this.onNoteSubmit.bind(this);
     }
 
     componentDidMount() {
         this.notes.addListener(this.notesChangeListener);
         this.scrollToBottom(false);
+    }
+
+    async onNoteSubmit({text, imageData, imagePath}) {
+        const imageUUID = generateUUID();
+
+        const noteDataServiceInstance = NoteDataService.getInstance();
+        const imageServiceInstance = ImageService.getInstance();
+
+        const data = {};
+        data.text = text;
+        if (imageData) {
+            data.imageS3Object = {Bucket: ImageService.bucketName, Key: imageUUID};
+            data.imageType = 'base64';
+        }
+
+        const note = noteDataServiceInstance.generateNewNote(data, this.episode);
+
+        if (imageData) {
+            imageServiceInstance.createImage(imageServiceInstance.getIDByBucketAndKey(ImageService.bucketName, imageUUID), imageData);
+            console.log('image created');
+        }
+
+        noteDataServiceInstance.saveNoteObject(note);
+        console.log('note created');
+
+        if (imageData) {
+            ImageService.getInstance().uploadImageDataToS3(imageData, imageUUID)
+                .then(() => {
+                    console.log('image uploaded');
+                    getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);
+                }).catch(error => {
+                    console.log('image upload to s3 failed', error);
+            });
+        } else {
+            getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);
+        }
     }
 
     componentWillUnmount() {
@@ -81,7 +123,7 @@ export class NotesViewContainer extends Component {
             return (
                 <SectionList
                     ref={ref => (this.sectionList = ref)}
-                    renderItem={({item}) => NoteBubble(item)}
+                    renderItem={({item}) => NoteBubble(item, this.props.navigator)}
                     onScrollToIndexFailed={() => {
                     }}
                     renderSectionHeader={({section: {title}}) => (
@@ -106,6 +148,7 @@ export class NotesViewContainer extends Component {
                         </View>
                     )}
                     sections={this.state.sectionedData}
+                    keyExtractor={(item) => item.messageID}
                 />);
         }
         return this.emptyNotesCopy();
@@ -143,9 +186,8 @@ export class NotesViewContainer extends Component {
                 {this.notesSectionBody()}
                 <NoteTextBox
                     patientName={this.patient ? this.patient.name : undefined}
-                    onSubmit={({text, imageData}) => {
-                        NoteDataService.getInstance().generateAndPublishNote(text, this.episode, imageData);
-                    }}
+                    s3={this.s3}
+                    onSubmit={this.onNoteSubmit}
                 />
                 {Platform.OS === 'ios' ? <KeyboardSpacer onToggle={this.props.onKeyboardToggle} /> : undefined}
             </View>
