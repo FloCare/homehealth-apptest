@@ -40,7 +40,7 @@ export class NoteDataService {
         this.floDB.write(() => {
             noteRealmObject = this.floDB.create('Note', noteObject, true);
         });
-        console.log('saved realm object', noteRealmObject);
+        // console.log('saved realm object', noteObject);
         return noteRealmObject;
     }
 

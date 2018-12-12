@@ -44,7 +44,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string> FloCare needs access to the microphone to be able to attach voice notes </string>
 	<key>NSPhotoLibraryUsageDescription</key>

@@ -3,6 +3,8 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import fr.snapp.imagebase64.RNImgToBase64Package;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.microsoft.codepush.react.CodePush;
 import io.invertase.firebase.RNFirebasePackage;
@@ -63,6 +65,8 @@ public class MainApplication extends NavigationApplication implements ReactInsta
               .build(),
             new RNFirebaseMessagingPackage(),
             new ImagePickerPackage(),
+            new ImageResizerPackage(),
+            new RNImgToBase64Package(),
             new RNFirebaseNotificationsPackage()
     );
   }

@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import moment from 'moment';
 import {View, Image, ActivityIndicator, TouchableOpacity} from 'react-native';
+import ImageOverlay from 'react-native-image-overlay';
+import Icon from 'react-native-vector-icons/Ionicons';
 import firebase from 'react-native-firebase';
 import StyledText from '../../common/StyledText';
 import {Images} from '../../../Images';
 import {eventNames, noteMessageType, PrimaryColor, screenNames} from '../../../utils/constants';
 import {ImageService} from '../../../data_services/ImageService';
-import {Icon} from 'react-native-elements';
 
 class S3Image extends Component {
     constructor(props) {
@@ -15,13 +16,11 @@ class S3Image extends Component {
         this.imageServiceInstance = ImageService.getInstance();
         this.imageUpdateHandler = this.imageUpdateHandler.bind(this);
 
-        this.state = {image64Data: undefined, blur: false};
-        // if (props.imageS3Object && props.imageS3Object.Key && props.imageS3Object.Bucket) {
-        //     const imageData = this.imageServiceInstance.getBase64DataForBucketAndKey(props.imageS3Object.Bucket, props.imageS3Object.Key);
-        //     if (imageData) {
-        //         this.state.image64Data = imageData;
-        //     }
-        // }
+        this.state = {
+            localDataExists: ImageService.getInstance().doesLocalImageDataExistForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key),
+            loading: false,
+            blur: false
+        };
     }
 
     componentDidMount() {
@@ -31,8 +30,6 @@ class S3Image extends Component {
                     this.imageServiceInstance.getIDByBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key),
                     this.imageUpdateHandler
                 );
-
-                // this.imageUpdateHandler();
             }
         }, 500);
     }
@@ -49,23 +46,64 @@ class S3Image extends Component {
     }
 
     imageUpdateHandler() {
-        console.log('image updated');
-        if (this.propsHaveImage()) {
-            const imageData = ImageService.getInstance().getBase64DataForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key);
-            if (imageData) {
-                this.setState({image64Data: imageData});
-            }
-        }
+        this.setState({
+            localDataExists: this.imageServiceInstance.doesLocalImageDataExistForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key)
+        });
     }
 
     render() {
-        if (!this.state.image64Data && this.props.imageS3Object) {
-            return (
-                <ActivityIndicator size="large" color="#000000" style={{marginVertical: 20}} />
-            );
+        let onPress;
+        if (this.state.localDataExists) {
+            onPress = () => {
+                firebase.analytics().logEvent(eventNames.FULLSCREEN_IMAGE, {
+                    VALUE: 1
+                });
+                this.props.navigator.showLightBox({
+                    screen: screenNames.imageLightBox,
+                    style: {
+                        backgroundBlur: 'dark',
+                        backgroundColor: '#00000070',
+                        tapBackgroundToDismiss: true
+                    },
+                    passProps: {
+                        imageS3Object: this.props.imageS3Object,
+                    },
+                });
+            };
+        } else {
+            onPress = () => {
+                if (!this.state.loading) {
+                    firebase.analytics().logEvent(eventNames.DOWNLOAD_MISSING_IMAGE, {
+                        VALUE: 1
+                    });
+                    ImageService.getInstance().fetchAndSaveImageForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key)
+                        .then(() => {
+                            this.setState({loading: false, localDataExists: true});
+                        }).catch(error => {
+                            console.log('error in loading full sized image', error);
+                            this.setState({loading: false});
+                    });
+                    this.setState({loading: true});
+                }
+            };
         }
 
-        { /*<Icon type="material-community" name="chevron-up" color={PrimaryColor} />}*/
+        let imageOverlay;
+        if (!this.state.localDataExists) {
+            if (!this.state.loading) {
+                imageOverlay = (
+                    <Icon
+                        name="md-cloud-download"
+                        style={{
+                            fontSize: 50,
+                            height: 50,
+                            color: 'rgba(255,255,255,0.4)',
+                        }}
+                    />
+                );
+            } else {
+                imageOverlay = <ActivityIndicator size="large" color="#ffffff" style={{marginVertical: 20}} />;
+            }
         }
 
         return (
@@ -83,33 +121,21 @@ class S3Image extends Component {
                         width: 130,
                         flex: 1,
                     }}
-                    onPress={() => {
-                        firebase.analytics().logEvent(eventNames.FULLSCREEN_IMAGE, {
-                            VALUE: 1
-                        });
-                        this.props.navigator.showLightBox({
-                            screen: screenNames.imageLightBox,
-                            style: {
-                                backgroundBlur: 'dark',
-                                backgroundColor: '#00000070',
-                                tapBackgroundToDismiss: true
-                            },
-                            passProps: {
-                                uri: this.state.image64Data,
-                            },
-                        });
-                    }}
+                    onPress={onPress}
                 >
-                    <Image
-                        style={{
+                    <ImageOverlay
+                        blurRadius={this.state.localDataExists ? undefined : 6}
+                        containerStyle={{
                             borderRadius: 15,
                             flex: 1,
                             width: undefined,
                             height: undefined,
                             resizeMode: 'cover',
                         }}
-                        source={{uri: this.state.image64Data}}
-                    />
+                        source={{uri: this.props.thumbnailData}}
+                    >
+                        {imageOverlay}
+                    </ImageOverlay>
                 </TouchableOpacity>
             </View>
         );
@@ -145,6 +171,7 @@ function noteBody(note, navigator) {
         if (noteDataJson.imageS3Object) {
             image = (<S3Image
                 imageS3Object={noteDataJson.imageS3Object}
+                thumbnailData={noteDataJson.thumbnailData}
                 navigator={navigator}
             />);
         }

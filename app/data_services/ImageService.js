@@ -64,6 +64,10 @@ export class ImageService {
         return `Bucket:${bucket}/Key:${key}`;
     }
 
+    doesLocalImageDataExistForBucketAndKey(bucket, key) {
+        return !!this.getImageForBucketAndKey(bucket, key);
+    }
+
     getBase64DataForBucketAndKey(bucket, key) {
         const image = this.getImageForBucketAndKey(bucket, key);
         if (!image) { return undefined; }
@@ -100,6 +104,12 @@ export class ImageService {
             console.log('done decoding');
         });
     }
+
+    // deleteAllLocalImages() {
+    //     this.floDB.write(() => {
+    //         this.floDB.delete(this.floDB.objects(Image));
+    //     });
+    // }
 
     fetchAndSaveImageForBucketAndKey(Bucket, Key) {
         // const dataJSON = JSON.parse(note.data);

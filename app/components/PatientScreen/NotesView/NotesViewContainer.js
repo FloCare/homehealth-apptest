@@ -2,6 +2,8 @@ import moment from 'moment';
 import React, {Component} from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {View, SectionList, Image, Platform} from 'react-native';
+import ImageResizer from 'react-native-image-resizer';
+import ImgToBase64 from 'react-native-image-base64';
 import {NoteDataService} from '../../../data_services/NotesDataService';
 import {PatientDataService} from '../../../data_services/PatientDataService';
 import {NoteBubble} from './NoteBubble';
@@ -37,6 +39,29 @@ export class NotesViewContainer extends Component {
         this.scrollToBottom(false);
     }
 
+    async getThumbnail(imageData) {
+        console.log('trying to get thumbnail');//, `data:image/png;base64,${imageData}`);
+        return await ImageResizer.createResizedImage(`data:image/png;base64,${imageData}`, 300, 300, 'JPEG', 60, 0, null).then((response) => {
+            // response.uri is the URI of the new image that can now be displayed, uploaded...
+            // response.path is the path of the new image
+            // response.name is the name of the new image with the extension
+            // response.size is the size of the new image
+            console.log(response);
+            return new Promise((resolve, reject) => {
+                ImgToBase64.getBase64String(response.uri).then(base64string => {
+                    console.log('got base64 for downsized image');
+                    resolve(`data:image/jpeg;base64,${base64string}`);
+                }).catch(err => {
+                    console.log('error', err);
+                    reject(err);
+                });
+            });
+        }).catch((err) => {
+            console.log('error in generating thumbnail', err);
+            throw err;
+        });
+    }
+
     async onNoteSubmit({text, imageData, imagePath}) {
         const imageUUID = generateUUID();
 
@@ -48,6 +73,8 @@ export class NotesViewContainer extends Component {
         if (imageData) {
             data.imageS3Object = {Bucket: ImageService.bucketName, Key: imageUUID};
             data.imageType = 'base64';
+
+            data.thumbnailData = await this.getThumbnail(imageData);
         }
 
         const note = noteDataServiceInstance.generateNewNote(data, this.episode);
@@ -66,7 +93,7 @@ export class NotesViewContainer extends Component {
                     console.log('image uploaded');
                     getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);
                 }).catch(error => {
-                    console.log('image upload to s3 failed', error);
+                console.log('image upload to s3 failed', error);
             });
         } else {
             getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);

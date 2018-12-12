@@ -83,6 +83,9 @@ export class NoteTextBox extends Component {
                 >
                     <TouchableOpacity
                         onPress={this.showCamera.bind(this)}
+                        style={{
+                            padding: 6
+                        }}
                     >
                         <Image
                             source={Images.camera}

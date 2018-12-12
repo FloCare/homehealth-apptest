@@ -114,6 +114,7 @@ const eventNames = {
     VISIT_VIEW: 'VisitView',
     ADD_NOTE: 'AddNote',
     ADD_VISIT: 'AddVisit',
+    DOWNLOAD_MISSING_IMAGE: 'DownloadMissingImage',
     FULLSCREEN_IMAGE: 'FullScreenImage',
     PATIENT_ADDED: 'PatientAdded',
     FLOATING_BUTTON: 'FloatingButton',

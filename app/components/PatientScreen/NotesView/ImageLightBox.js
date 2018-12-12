@@ -4,12 +4,14 @@ import firebase from 'react-native-firebase';
 import {screenNames} from '../../../utils/constants';
 import {todayMomentInUTCMidnight} from '../../../utils/utils';
 import {Images} from '../../../Images';
+import {ImageService} from '../../../data_services/ImageService';
 
 export class ImageLightBox extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: props.date || todayMomentInUTCMidnight()
+            date: props.date || todayMomentInUTCMidnight(),
+            uri: ImageService.getInstance().getBase64DataForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key)
         };
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     }
@@ -32,7 +34,14 @@ export class ImageLightBox extends Component {
                 }}
             >
                 <View style={{flexDirection: 'row', justifyContent: 'flex-end', padding: 10}}>
-                    <TouchableOpacity onPress={() => this.props.navigator.dismissLightBox()}>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigator.dismissLightBox()}
+                        style={{
+                            padding: 6,
+                            paddingLeft: 20,
+                            paddingBottom: 13
+                        }}
+                    >
                         <Image source={Images.close} />
                     </TouchableOpacity>
                 </View>
@@ -49,7 +58,7 @@ export class ImageLightBox extends Component {
                             width: width * 0.8,
                             resizeMode: 'contain'
                         }}
-                        source={{uri: this.props.uri}}
+                        source={{uri: this.state.uri}}
                     />
                 </View>
             </View>
