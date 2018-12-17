@@ -76,14 +76,16 @@ class S3Image extends Component {
                     firebase.analytics().logEvent(eventNames.DOWNLOAD_MISSING_IMAGE, {
                         VALUE: 1
                     });
-                    ImageService.getInstance().fetchAndSaveImageForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key)
-                        .then(() => {
-                            this.setState({loading: false, localDataExists: true});
-                        }).catch(error => {
+                    if (this.props.imageType === 'base64') {
+                        ImageService.getInstance().fetchAndSaveImageForBucketAndKey(this.props.imageS3Object.Bucket, this.props.imageS3Object.Key)
+                            .then(() => {
+                                this.setState({loading: false, localDataExists: true});
+                            }).catch(error => {
                             console.log('error in loading full sized image', error);
                             this.setState({loading: false});
-                    });
-                    this.setState({loading: true});
+                        });
+                        this.setState({loading: true});
+                    }
                 }
             };
         }
@@ -170,6 +172,7 @@ function noteBody(note, navigator) {
         let image;
         if (noteDataJson.imageS3Object) {
             image = (<S3Image
+                imageType={noteDataJson.imageType}
                 imageS3Object={noteDataJson.imageS3Object}
                 thumbnailData={noteDataJson.thumbnailData}
                 navigator={navigator}

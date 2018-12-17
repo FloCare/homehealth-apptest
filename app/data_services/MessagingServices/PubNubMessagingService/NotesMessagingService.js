@@ -131,7 +131,7 @@ export class NotesMessagingService extends BaseMessagingService {
                                 resolve();
                             };
 
-                            if (noteObjDataJson.imageS3Object) {
+                            if (noteObjDataJson.imageS3Object && noteObjDataJson.imageType === 'base64') {
                                 ImageService.getInstance().fetchAndSaveImageForBucketAndKey(noteObjDataJson.imageS3Object.Bucket, noteObjDataJson.imageS3Object.Key)
                                     .then(saveAndProcessNote).catch(error => {
                                         console.log('error infetch and save image', error);
