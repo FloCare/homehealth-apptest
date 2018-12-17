@@ -2,12 +2,19 @@ import moment from 'moment';
 import React, {Component} from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {View, SectionList, Image, Platform} from 'react-native';
+import ImageResizer from 'react-native-image-resizer';
+import ImgToBase64 from 'react-native-image-base64';
 import {NoteDataService} from '../../../data_services/NotesDataService';
 import {PatientDataService} from '../../../data_services/PatientDataService';
 import {NoteBubble} from './NoteBubble';
 import StyledText from '../../common/StyledText';
 import {NoteTextBox} from './NoteTextBox';
 import {Images} from '../../../Images';
+import {generateUUID} from '../../../utils/utils';
+import {ImageService} from '../../../data_services/ImageService';
+import {getMessagingServiceInstance} from '../../../data_services/MessagingServices/PubNubMessagingService/MessagingServiceCoordinator';
+import {NotesMessagingService} from '../../../data_services/MessagingServices/PubNubMessagingService/NotesMessagingService';
+
 
 export class NotesViewContainer extends Component {
     constructor(props) {
@@ -24,11 +31,73 @@ export class NotesViewContainer extends Component {
         };
 
         this.sectionList = React.createRef();
+        this.onNoteSubmit = this.onNoteSubmit.bind(this);
     }
 
     componentDidMount() {
         this.notes.addListener(this.notesChangeListener);
         this.scrollToBottom(false);
+    }
+
+    async getThumbnail(imageData) {
+        console.log('trying to get thumbnail');//, `data:image/png;base64,${imageData}`);
+        return await ImageResizer.createResizedImage(`data:image/png;base64,${imageData}`, 300, 300, 'JPEG', 60, 0, null).then((response) => {
+            // response.uri is the URI of the new image that can now be displayed, uploaded...
+            // response.path is the path of the new image
+            // response.name is the name of the new image with the extension
+            // response.size is the size of the new image
+            console.log(response);
+            return new Promise((resolve, reject) => {
+                ImgToBase64.getBase64String(response.uri).then(base64string => {
+                    console.log('got base64 for downsized image');
+                    resolve(`data:image/jpeg;base64,${base64string}`);
+                }).catch(err => {
+                    console.log('error', err);
+                    reject(err);
+                });
+            });
+        }).catch((err) => {
+            console.log('error in generating thumbnail', err);
+            throw err;
+        });
+    }
+
+    async onNoteSubmit({text, imageData, imagePath}) {
+        const imageUUID = generateUUID();
+
+        const noteDataServiceInstance = NoteDataService.getInstance();
+        const imageServiceInstance = ImageService.getInstance();
+
+        const data = {};
+        data.text = text;
+        if (imageData) {
+            data.imageS3Object = {Bucket: ImageService.bucketName, Key: imageUUID};
+            data.imageType = 'base64';
+
+            data.thumbnailData = await this.getThumbnail(imageData);
+        }
+
+        const note = noteDataServiceInstance.generateNewNote(data, this.episode);
+
+        if (imageData) {
+            imageServiceInstance.createImage(imageServiceInstance.getIDByBucketAndKey(ImageService.bucketName, imageUUID), imageData);
+            console.log('image created');
+        }
+
+        noteDataServiceInstance.saveNoteObject(note);
+        console.log('note created');
+
+        if (imageData) {
+            ImageService.getInstance().uploadImageDataToS3(imageData, imageUUID)
+                .then(() => {
+                    console.log('image uploaded');
+                    getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);
+                }).catch(error => {
+                console.log('image upload to s3 failed', error);
+            });
+        } else {
+            getMessagingServiceInstance(NotesMessagingService.identifier).publishNewNote(note);
+        }
     }
 
     componentWillUnmount() {
@@ -81,7 +150,7 @@ export class NotesViewContainer extends Component {
             return (
                 <SectionList
                     ref={ref => (this.sectionList = ref)}
-                    renderItem={({item}) => NoteBubble(item)}
+                    renderItem={({item}) => NoteBubble(item, this.props.navigator)}
                     onScrollToIndexFailed={() => {
                     }}
                     renderSectionHeader={({section: {title}}) => (
@@ -106,6 +175,7 @@ export class NotesViewContainer extends Component {
                         </View>
                     )}
                     sections={this.state.sectionedData}
+                    keyExtractor={(item) => item.messageID}
                 />);
         }
         return this.emptyNotesCopy();
@@ -143,9 +213,8 @@ export class NotesViewContainer extends Component {
                 {this.notesSectionBody()}
                 <NoteTextBox
                     patientName={this.patient ? this.patient.name : undefined}
-                    onSubmit={message => {
-                        NoteDataService.getInstance().generateAndPublishNote(message, this.episode);
-                    }}
+                    s3={this.s3}
+                    onSubmit={this.onNoteSubmit}
                 />
                 {Platform.OS === 'ios' ? <KeyboardSpacer onToggle={this.props.onKeyboardToggle} /> : undefined}
             </View>

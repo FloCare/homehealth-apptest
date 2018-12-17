@@ -3,6 +3,8 @@ package com.flocare;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import fr.snapp.imagebase64.RNImgToBase64Package;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.microsoft.codepush.react.CodePush;
 import io.invertase.firebase.RNFirebasePackage;
@@ -20,6 +22,8 @@ import com.facebook.soloader.SoLoader;
 import com.facebook.react.ReactInstanceManager;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import com.imagepicker.ImagePickerPackage;
+
 // Add CodePush imports
 import com.microsoft.codepush.react.ReactInstanceHolder;
 import com.microsoft.codepush.react.CodePush;
@@ -60,6 +64,9 @@ public class MainApplication extends NavigationApplication implements ReactInsta
               .setPrimaryColor(PrimaryColor)
               .build(),
             new RNFirebaseMessagingPackage(),
+            new ImagePickerPackage(),
+            new ImageResizerPackage(),
+            new RNImgToBase64Package(),
             new RNFirebaseNotificationsPackage()
     );
   }

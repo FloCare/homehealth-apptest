@@ -110,12 +110,10 @@ export class UserDataService {
 
     saveUserToRealm(user) {
         let userObject;
-        console.log('save to realm');
+        console.log('save user to realm');
         this.floDB.write(() => {
             userObject = this.floDB.create(User, user, true);
         });
-        console.log('save to realm');
-        console.log(userObject);
         return userObject;
     }
 

@@ -4,6 +4,7 @@ export const Images = {
     addButton: require('../resources/addPatient.png'),
     birthday: require('../resources/birthdayIcon.png'),
     calendar: require('../resources/calendar.png'),
+    camera: require('../resources/camera.png'),
     callButton: require('../resources/callButton.png'),
     callIcon: require('../resources/callIcon.png'),
     close: require('../resources/close.png'),
