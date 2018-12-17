@@ -7,13 +7,14 @@ import {UserDataService} from '../../UserDataService';
 import {EpisodeDataService} from '../../EpisodeDataService';
 import {NoteDataService} from '../../NotesDataService';
 import {
-    eventNames,
+    eventNames, noteMessageType,
     notificationType,
     pubnubEternalPubKey, pubnubEternalSubKey,
     screenNames
 } from '../../../utils/constants';
 import {NotificationService, showNotification} from '../NotificationService';
 import {PatientDataService} from '../../PatientDataService';
+import {ImageService} from '../../ImageService';
 
 function getNewNoteNotificationObject(messageObject) {
     const body = messageObject.notificationBody;
@@ -77,7 +78,7 @@ export class NotesMessagingService extends BaseMessagingService {
             const {messageType, userID} = message;
 
             switch (messageType) {
-                case 'NEW_NOTE' :
+                case noteMessageType.NEW_NOTE :
                     this.processNewNoteMessage(messageObject).then(() => {
                         if (userID === UserDataService.getCurrentUserProps().userID) {
                             console.log('skipping notification for own message');
@@ -101,6 +102,46 @@ export class NotesMessagingService extends BaseMessagingService {
                         resolve();
                     });
                     break;
+                case noteMessageType.RICH_NEW_NOTE:
+                    const processNoteNotification = () => {
+                        if (userID === UserDataService.getCurrentUserProps().userID) {
+                            console.log('skipping notification for own message');
+                            resolve();
+                            return;
+                        }
+
+                        if (!messageObject.suppressNotification) {
+                            firebase.analytics().logEvent(eventNames.NEW_NOTE_NOTIFICATION, {
+                                type: 1
+                            });
+                            const notificationObject = getNewNoteNotificationObject(messageObject);
+
+                            showNotification(message.notificationBody, notificationObject.data, notificationObject.notificationID);
+                        }
+                        NotificationService.getInstance().addNotificationToCenter(getNewNoteNotificationCenterObject(messageObject));
+                    };
+
+                    this.getNoteObjectFromMessage(messageObject.message, messageObject.timestamp, true)
+                        .then(noteObject => {
+                            console.log('noteObject', noteObject.data);
+                            const noteObjDataJson = JSON.parse(noteObject.data);
+                            const saveAndProcessNote = () => {
+                                NoteDataService.getInstance().saveNoteObject(noteObject);
+                                processNoteNotification();
+                                resolve();
+                            };
+
+                            if (noteObjDataJson.imageS3Object && noteObjDataJson.imageType === 'base64') {
+                                ImageService.getInstance().fetchAndSaveImageForBucketAndKey(noteObjDataJson.imageS3Object.Bucket, noteObjDataJson.imageS3Object.Key)
+                                    .then(saveAndProcessNote).catch(error => {
+                                        console.log('error infetch and save image', error);
+                                        saveAndProcessNote();
+                                });
+                            } else {
+                                saveAndProcessNote();
+                            }
+                        });
+                    break;
                 default:
                     console.log(`NotesMessagingService: unrecognised message: ${message}`);
                     reject();
@@ -110,10 +151,7 @@ export class NotesMessagingService extends BaseMessagingService {
 
     async processNewNoteMessage(messageObject) {
         const noteObject = await this.getNoteObjectFromMessage(messageObject.message, messageObject.timestamp, true);
-        console.log('trying to save note object');
-        console.log(messageObject);
-        NoteDataService.getInstance().saveNoteObject(noteObject);
-        console.log('saving finished');
+        return NoteDataService.getInstance().saveNoteObject(noteObject);
     }
 
     async getNoteObjectFromMessage(message, timetoken, synced) {
@@ -145,11 +183,12 @@ export class NotesMessagingService extends BaseMessagingService {
     }
 
     async _publishNotesMessage(jobID, payload) {
+        console.log('publish note scheduled');
         await this.pubnub.publish({
             channel: `episode_${payload.episodeID}_notes`,
             message: payload,
         }).then(result => {
-            // console.log('publish note result');
+            console.log('publish note result done');
             //console.log(payload);
             //console.log(result);
         }).catch(error => {

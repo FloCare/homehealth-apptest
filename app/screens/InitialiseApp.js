@@ -22,6 +22,7 @@ import {initialiseStoreAndSetUserForInstabug} from "../utils/InMemoryStore";
 import {RootReducer} from "../redux/RootReducer";
 import {AsyncStorage} from "react-native";
 import {NoteDataService} from "../data_services/NotesDataService";
+import {ImageService} from "../data_services/ImageService";
 
 
 var isInitialising = false;
@@ -55,6 +56,7 @@ export async function initialiseApp(key, syncDataFromServer = false) {
     TaskService.initialiseService(FloDBProvider.db);
     NotificationService.initialiseService(FloDBProvider.db);
     PlaceDataService.initialiseService(FloDBProvider.db, store);
+    ImageService.initialiseService(FloDBProvider.db, store);
     initialiseAddressService(FloDBProvider.db, store);
     initialiseDate(FloDBProvider.db, store);
 
