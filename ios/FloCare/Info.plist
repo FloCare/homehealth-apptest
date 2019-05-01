@@ -23,7 +23,7 @@
 	<key>CFBundleVersion</key>
 	<string>2</string>
 	<key>CodePushDeploymentKey</key>
-	<string>codepushiOSKey</string>
+	<string>INSERT_KEY_HERE</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>comgooglemaps</string>

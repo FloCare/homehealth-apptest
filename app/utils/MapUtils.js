@@ -4,7 +4,7 @@ import {Platform, Linking} from 'react-native';
 
 const directionsResposeCache = {};
 
-const googleMapsAPIKey = 'googleMapsKey';
+const googleMapsAPIKey = 'INSERT_KEY_HERE';
 
 function getViewPortFromBounds(boundsCoordinates) {
     console.log(boundsCoordinates);

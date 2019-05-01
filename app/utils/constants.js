@@ -191,19 +191,19 @@ const clearInActivityTimer = () => {
 };
 
 //ending in a3b is dev key
-export const pubnubPubKey = 'pubnubPubKey';
+export const pubnubPubKey = '';
 //ending in 524 is dev key
-export const pubnubSubKey = 'pubnubSubKey';
+export const pubnubSubKey = '';
 
 //ending in a3b is dev key
-export const pubnubEternalPubKey = 'pubnubPubKey';
+export const pubnubEternalPubKey = '';
 //ending in 524 is dev key
-export const pubnubEternalSubKey = 'pubnubSubKey';
+export const pubnubEternalSubKey = '';
 
-export const instabugKey = 'instabugKey';
+export const instabugKey = '';
 
 // export const apiServerURL = 'http://192.168.1.101:8000';
-export const apiServerURL = 'https://app-11293.on-aptible.com';
+export const apiServerURL = '';
 
 
 export {setInActivityTimer, clearInActivityTimer, lastActiveTime, diagnosisList,
