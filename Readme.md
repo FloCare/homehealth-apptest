@@ -16,8 +16,7 @@ Current app link: https://play.google.com/store/apps/details?id=com.flocare
 
 
 #### Entity Definition:
-The major entities are listed and defined below. For the complete list of entities browse in models.py for the 
-different modules (phi/models.py, user_auth/models.py and flocarebase/models.py)
+The major entities are listed and defined below. For the complete list of entities browse `app/utils/data/schemas/Models`
 
 #####Patient:
 The patient that the office and clinicians track. Created by admin from the dashboard
